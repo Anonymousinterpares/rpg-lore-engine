@@ -1,0 +1,61 @@
+{
+    "id": "acolyte",
+    "name": "Acolyte",
+    "description": "You have spent your life in the service of a temple to a specific deity or pantheon.",
+    "skillProficiencies": [
+        "Insight",
+        "Religion"
+    ],
+    "toolProficiencies": [],
+    "languages": [
+        "Two of your choice"
+    ],
+    "startingEquipment": [
+        {
+            "id": "holy_symbol",
+            "quantity": 1
+        },
+        {
+            "id": "prayer_book",
+            "quantity": 1
+        },
+        {
+            "id": "incense_stick",
+            "quantity": 5
+        },
+        {
+            "id": "vestments",
+            "quantity": 1
+        },
+        {
+            "id": "common_clothes",
+            "quantity": 1
+        },
+        {
+            "id": "pouch",
+            "quantity": 1
+        }
+    ],
+    "feature": {
+        "name": "Shelter of the Faithful",
+        "description": "As an acolyte, you command the respect of those who share your faith, and you can perform the religious ceremonies of your deity."
+    },
+    "personalitySuggested": {
+        "traits": [
+            "I idolize a particular hero of my faith, and constantly refer to that person's deeds and example.",
+            "I can find common ground between the fiercest enemies, empathizing with them and always working toward peace."
+        ],
+        "ideals": [
+            "Faith. I trust that my deity will guide my actions. I trust that if I work hard, things will go well.",
+            "Tradition. The ancient traditions of worship and sacrifice must be preserved and upheld."
+        ],
+        "bonds": [
+            "I would die to recover an ancient relic of my faith that was lost long ago.",
+            "I will someday get revenge on the corrupt temple hierarchy who branded me a heretic."
+        ],
+        "flaws": [
+            "I judge others harshly, and myself even more severely.",
+            "I put too much trust in those who have power within my temple's hierarchy."
+        ]
+    }
+}

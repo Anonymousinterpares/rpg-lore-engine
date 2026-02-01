@@ -1,0 +1,55 @@
+{
+    "id": "noble",
+    "name": "Noble",
+    "description": "You understand wealth, power, and privilege. You carry a noble title, and your family owns land, collects taxes, and wields significant political influence.",
+    "skillProficiencies": [
+        "History",
+        "Persuasion"
+    ],
+    "toolProficiencies": [
+        "One type of gaming set"
+    ],
+    "languages": [
+        "One of your choice"
+    ],
+    "startingEquipment": [
+        {
+            "id": "fine_clothes",
+            "quantity": 1
+        },
+        {
+            "id": "signet_ring",
+            "quantity": 1
+        },
+        {
+            "id": "scroll_of_pedigree",
+            "quantity": 1
+        },
+        {
+            "id": "purse",
+            "quantity": 1
+        }
+    ],
+    "feature": {
+        "name": "Position of Privilege",
+        "description": "Thanks to your noble birth, people are inclined to think the best of you. You are welcome in high society, and people assume you have the right to be wherever you are."
+    },
+    "personalitySuggested": {
+        "traits": [
+            "My eloquent flattery makes everyone I talk to feel like the most wonderful and important person in the world.",
+            "The common folk love me for my kindness and generosity."
+        ],
+        "ideals": [
+            "Respect. Respect is due to me because of my position, but all people deserve to be treated with dignity.",
+            "Responsibility. It is my duty to protect and care for the people beneath me."
+        ],
+        "bonds": [
+            "I will face any challenge to win the approval of my family.",
+            "My house's name is ancient and noble, and I must ensure its survival."
+        ],
+        "flaws": [
+            "I have an inflated sense of self-importance.",
+            "I can't resist a pretty face and a silver tongue."
+        ]
+    }
+}

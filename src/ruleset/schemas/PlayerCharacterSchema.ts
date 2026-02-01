@@ -38,6 +38,11 @@ export const PlayerCharacterSchema = z.object({
     inspiration: z.boolean().default(false),
     biography: z.object({
         background: z.string().optional(),
+        backgroundId: z.string().optional(),
+        traits: z.array(z.string()).default([]),
+        ideals: z.array(z.string()).default([]),
+        bonds: z.array(z.string()).default([]),
+        flaws: z.array(z.string()).default([]),
         chronicles: z.array(z.object({
             turn: z.number(),
             event: z.string()

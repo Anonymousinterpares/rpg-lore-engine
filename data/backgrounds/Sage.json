@@ -1,0 +1,61 @@
+{
+    "id": "sage",
+    "name": "Sage",
+    "description": "You spent years learning the lore of the multiverse. You scoured manuscripts, studied scrolls, and listened to the greatest experts on the subjects that interest you.",
+    "skillProficiencies": [
+        "Arcana",
+        "History"
+    ],
+    "toolProficiencies": [],
+    "languages": [
+        "Two of your choice"
+    ],
+    "startingEquipment": [
+        {
+            "id": "ink_bottle",
+            "quantity": 1
+        },
+        {
+            "id": "quill",
+            "quantity": 1
+        },
+        {
+            "id": "small_knife",
+            "quantity": 1
+        },
+        {
+            "id": "letter_from_dead_colleague",
+            "quantity": 1
+        },
+        {
+            "id": "common_clothes",
+            "quantity": 1
+        },
+        {
+            "id": "pouch",
+            "quantity": 1
+        }
+    ],
+    "feature": {
+        "name": "Researcher",
+        "description": "When you attempt to learn or recall a piece of lore, if you do not know that information, you often know where and from whom you can obtain it."
+    },
+    "personalitySuggested": {
+        "traits": [
+            "I use polysyllabic words that convey the impression of great erudition.",
+            "I've read every book in the world's greatest libraries—or I like to boast that I have."
+        ],
+        "ideals": [
+            "Knowledge. The path to power and self-improvement is through knowledge.",
+            "Beauty. What is beautiful points us beyond itself toward what is true."
+        ],
+        "bonds": [
+            "It is my duty to protect my students.",
+            "I have an ancient text that holds a secret to the past, and I must protect it."
+        ],
+        "flaws": [
+            "I am easily flustered when my knowledge is challenged.",
+            "I speak without thinking, often offending others."
+        ]
+    }
+}

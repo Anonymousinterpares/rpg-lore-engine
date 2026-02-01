@@ -1,0 +1,58 @@
+{
+    "id": "folk_hero",
+    "name": "Folk Hero",
+    "description": "You come from a humble social rank, but you are destined for so much more.",
+    "skillProficiencies": [
+        "Animal Handling",
+        "Survival"
+    ],
+    "toolProficiencies": [
+        "One type of artisan's tools",
+        "Vehicles (land)"
+    ],
+    "languages": [],
+    "startingEquipment": [
+        {
+            "id": "artisans_tools",
+            "quantity": 1
+        },
+        {
+            "id": "shovel",
+            "quantity": 1
+        },
+        {
+            "id": "iron_pot",
+            "quantity": 1
+        },
+        {
+            "id": "common_clothes",
+            "quantity": 1
+        },
+        {
+            "id": "pouch",
+            "quantity": 1
+        }
+    ],
+    "feature": {
+        "name": "Rustic Hospitality",
+        "description": "Since you come from the ranks of the common folk, you fit in among them with ease. You can find a place to hide, rest, or recuperate among other commoners, unless you have shown yourself to be a danger to them."
+    },
+    "personalitySuggested": {
+        "traits": [
+            "I judge people by their actions, not their words.",
+            "If someone is in trouble, I'm always ready to lend help."
+        ],
+        "ideals": [
+            "Respect. People deserve to be treated with dignity and respect.",
+            "Fairness. No one should get preferential treatment before the law, and no one is above the law."
+        ],
+        "bonds": [
+            "I have a family, but I have no idea where they are. One day, I hope to see them again.",
+            "I protect those who cannot protect themselves."
+        ],
+        "flaws": [
+            "The tyrant who oppressed my people still sometimes haunts my dreams.",
+            "I'm quick to trust those who profess to be on the side of the people."
+        ]
+    }
+}

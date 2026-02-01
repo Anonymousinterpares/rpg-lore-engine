@@ -1,0 +1,58 @@
+{
+    "id": "soldier",
+    "name": "Soldier",
+    "description": "War has been your life for as long as you care to remember. You trained as a youth, studied the use of weapons and armor, learned basic survival techniques, including how to stay alive on the battlefield.",
+    "skillProficiencies": [
+        "Athletics",
+        "Intimidation"
+    ],
+    "toolProficiencies": [
+        "One type of gaming set",
+        "Vehicles (land)"
+    ],
+    "languages": [],
+    "startingEquipment": [
+        {
+            "id": "insignia_of_rank",
+            "quantity": 1
+        },
+        {
+            "id": "trophy_from_fallen_enemy",
+            "quantity": 1
+        },
+        {
+            "id": "bone_dice",
+            "quantity": 1
+        },
+        {
+            "id": "common_clothes",
+            "quantity": 1
+        },
+        {
+            "id": "pouch",
+            "quantity": 1
+        }
+    ],
+    "feature": {
+        "name": "Military Rank",
+        "description": "You have a military rank from your career as a soldier. Soldiers loyal to your former military organization still recognize your authority and influence, and they defer to you if they are of a lower rank."
+    },
+    "personalitySuggested": {
+        "traits": [
+            "I'm always polite and respectful.",
+            "I'm full of inspiring and cautionary tales from my military experience relevant to almost every combat situation."
+        ],
+        "ideals": [
+            "Greater Good. Our lot is to lay down our lives in defense of others.",
+            "Responsibility. I do what must be done and follow orders, even if I don't like them."
+        ],
+        "bonds": [
+            "I would still lay down my life for the people I served with.",
+            "Someone saved my life on the battlefield. To this day, I will never leave a friend behind."
+        ],
+        "flaws": [
+            "The monstrous enemy we faced in battle still leaves me quivering with fear.",
+            "I have little respect for anyone who is not a proven warrior."
+        ]
+    }
+}
