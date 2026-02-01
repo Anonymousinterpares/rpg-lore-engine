@@ -6,6 +6,8 @@ import { MonsterSchema } from './MonsterSchema';
 
 import { MechanicsSchema } from './MechanicsSchema';
 
+import { PlayerCharacterSchema } from './PlayerCharacterSchema';
+
 /**
  * The RulebookRegistry acts as a central hub for all strictly-typed game data.
  * This is the foundation of the "VibeCoding" hallucination-proof strategy.
@@ -16,7 +18,8 @@ export const RulebookRegistry = {
     class: ClassSchema,
     item: ItemSchema,
     monster: MonsterSchema,
-    mechanics: MechanicsSchema
+    mechanics: MechanicsSchema,
+    character: PlayerCharacterSchema
 };
 
 export type RulebookRegistryType = typeof RulebookRegistry;
