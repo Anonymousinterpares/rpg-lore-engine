@@ -32,3 +32,10 @@ export const CurrencySchema = z.object({
   gp: z.number().default(0),
   pp: z.number().default(0)
 });
+export const SkillNameSchema = z.enum([
+  'Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Deception',
+  'History', 'Insight', 'Intimidation', 'Investigation', 'Medicine',
+  'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion',
+  'Sleight of Hand', 'Stealth', 'Survival'
+]);
+export type SkillName = z.infer<typeof SkillNameSchema>;

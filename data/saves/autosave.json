@@ -1,0 +1,46 @@
+{
+  "character": {
+    "name": "Durin Strongbeard",
+    "level": 2,
+    "race": "Dwarf",
+    "class": "Fighter",
+    "stats": {
+      "STR": 17,
+      "DEX": 12,
+      "CON": 15,
+      "INT": 8,
+      "WIS": 10,
+      "CHA": 12
+    },
+    "hp": {
+      "current": 22,
+      "max": 22,
+      "temp": 0
+    },
+    "hitDice": {
+      "current": 1,
+      "max": 2,
+      "dieType": "1d10"
+    },
+    "spellSlots": {},
+    "ac": 16,
+    "inventory": {
+      "gold": 10,
+      "items": []
+    },
+    "xp": 300,
+    "inspiration": false,
+    "biography": {
+      "chronicles": []
+    }
+  },
+  "location": {
+    "hexId": "0,0",
+    "coordinates": [
+      0,
+      0
+    ]
+  },
+  "worldTime": 0,
+  "storySummary": "Starting a new adventure."
+}
