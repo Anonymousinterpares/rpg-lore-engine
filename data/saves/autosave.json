@@ -12,6 +12,13 @@
       "WIS": 10,
       "CHA": 12
     },
+    "savingThrowProficiencies": [
+      "STR",
+      "CON"
+    ],
+    "skillProficiencies": [
+      "Athletics"
+    ],
     "hp": {
       "current": 22,
       "max": 22,

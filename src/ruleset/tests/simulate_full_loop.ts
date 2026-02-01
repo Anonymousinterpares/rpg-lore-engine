@@ -1,5 +1,5 @@
-import { GameLoop } from './GameLoop';
-import { GameState } from './GameStateManager';
+import { GameLoop } from '../combat/GameLoop';
+import { GameState } from '../combat/GameStateManager';
 
 async function runFullLoopSimulation() {
     console.log('--- Phase 9: Full Game Loop & Persistence Verification ---');
@@ -11,6 +11,8 @@ async function runFullLoopSimulation() {
             race: 'Dwarf',
             class: 'Fighter',
             stats: { 'STR': 17, 'DEX': 12, 'CON': 15, 'INT': 8, 'WIS': 10, 'CHA': 12 },
+            savingThrowProficiencies: ['STR', 'CON'],
+            skillProficiencies: ['Athletics'],
             hp: { current: 12, max: 22, temp: 0 },
             hitDice: { current: 0, max: 2, dieType: '1d10' },
             spellSlots: {},

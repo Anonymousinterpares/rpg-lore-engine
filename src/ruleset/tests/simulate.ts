@@ -1,7 +1,7 @@
-import { CombatEngine } from './CombatEngine';
-import { InitiativeTracker } from './InitiativeTracker';
-import { CombatFactory } from './CombatFactory';
-import { StandardActions } from './StandardActions';
+import { CombatFactory } from '../combat/CombatFactory';
+import { StandardActions } from '../combat/StandardActions';
+import { InitiativeTracker } from '../combat/InitiativeTracker';
+import { CombatEngine } from '../combat/CombatEngine';
 
 /**
  * Example simulation script to verify combat logic.
@@ -15,12 +15,22 @@ function runSimulation() {
         level: 1,
         race: 'Elf',
         class: 'Wizard',
-        stats: { 'STR': 8, 'DEX': 15, 'CON': 12, 'INT': 16, 'WIS': 13, 'CHA': 10 },
+        stats: { 'STR': 10, 'DEX': 14, 'CON': 12, 'INT': 16, 'WIS': 12, 'CHA': 10 },
+        savingThrowProficiencies: ['INT', 'WIS'],
+        skillProficiencies: ['Arcana', 'Investigation'],
         hp: { current: 7, max: 7, temp: 0 },
-        ac: 12, // Mage Armor would be higher
-        equipment: ['Quarterstaff'],
+        hitDice: { current: 1, max: 1, dieType: '1d6' },
+        spellSlots: { '1': { current: 2, max: 2 } },
+        ac: 12,
+        inventory: {
+            gold: 10,
+            items: [
+                { id: 'staff_01', name: 'Quarterstaff', weight: 4, quantity: 1, equipped: true }
+            ]
+        },
         xp: 0,
-        inspiration: false
+        inspiration: false,
+        biography: { chronicles: [] }
     });
     hero.initiative = 18;
 

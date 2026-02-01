@@ -1,0 +1,35 @@
+{
+  "grid_id": "world_01",
+  "hexes": {
+    "0,0": {
+      "coordinates": [
+        0,
+        0
+      ],
+      "generated": true,
+      "visited": true,
+      "biome": "Grassland",
+      "name": "Starting Clearing",
+      "description": "A calm meadow where your adventure begins.",
+      "interest_points": []
+    },
+    "0,1": {
+      "coordinates": [
+        0,
+        1
+      ],
+      "generated": false,
+      "visited": true,
+      "interest_points": []
+    },
+    "1,1": {
+      "coordinates": [
+        1,
+        1
+      ],
+      "generated": false,
+      "visited": true,
+      "interest_points": []
+    }
+  }
+}

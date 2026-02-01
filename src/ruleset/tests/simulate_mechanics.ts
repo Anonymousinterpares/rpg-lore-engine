@@ -1,6 +1,6 @@
-import { MechanicsEngine } from './MechanicsEngine';
-import { RestingEngine } from './RestingEngine';
-import { InventoryEngine } from './InventoryEngine';
+import { MechanicsEngine } from '../combat/MechanicsEngine';
+import { RestingEngine } from '../combat/RestingEngine';
+import { InventoryEngine } from '../combat/InventoryEngine';
 import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
 
 function runMechanicsSimulation() {
