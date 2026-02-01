@@ -1,0 +1,43 @@
+{
+  "name": "Nightmare",
+  "cr": 3,
+  "size": "Large",
+  "type": "fiend",
+  "alignment": "neutral evil",
+  "ac": 13,
+  "hp": {
+    "average": 68,
+    "formula": "8d10"
+  },
+  "speed": "walk: 60 ft., fly: 90 ft.",
+  "stats": {
+    "STR": 18,
+    "DEX": 15,
+    "CON": 16,
+    "INT": 10,
+    "WIS": 13,
+    "CHA": 15
+  },
+  "traits": [
+    {
+      "name": "Confer Fire Resistance",
+      "description": "The nightmare can grant resistance to fire damage to anyone riding it."
+    },
+    {
+      "name": "Illumination",
+      "description": "The nightmare sheds bright light in a 10-foot radius and dim light for an additional 10 feet."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Hooves",
+      "description": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 13 (2d8 + 4) bludgeoning damage plus 7 (2d6) fire damage.",
+      "attackBonus": 6
+    },
+    {
+      "name": "Ethereal Stride",
+      "description": "The nightmare and up to three willing creatures within 5 feet of it magically enter the Ethereal Plane from the Material Plane, or vice versa."
+    }
+  ],
+  "legendaryActions": []
+}

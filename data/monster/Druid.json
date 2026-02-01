@@ -1,0 +1,35 @@
+{
+  "name": "Druid",
+  "cr": 2,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "any alignment",
+  "ac": 11,
+  "hp": {
+    "average": 27,
+    "formula": "5d8"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 10,
+    "DEX": 12,
+    "CON": 13,
+    "INT": 12,
+    "WIS": 15,
+    "CHA": 11
+  },
+  "traits": [
+    {
+      "name": "Spellcasting",
+      "description": "The druid is a 4th-level spellcaster. Its spellcasting ability is Wisdom (spell save DC 12, +4 to hit with spell attacks). It has the following druid spells prepared:\n\n- Cantrips (at will): druidcraft, produce flame, shillelagh\n- 1st level (4 slots): entangle, longstrider, speak with animals, thunderwave\n- 2nd level (3 slots): animal messenger, barkskin"
+    }
+  ],
+  "actions": [
+    {
+      "name": "Quarterstaff",
+      "description": "Melee Weapon Attack: +2 to hit (+4 to hit with shillelagh), reach 5 ft., one target. Hit: 3 (1d6) bludgeoning damage, or 6 (1d8 + 2) bludgeoning damage with shillelagh or if wielded with two hands.",
+      "attackBonus": 2
+    }
+  ],
+  "legendaryActions": []
+}

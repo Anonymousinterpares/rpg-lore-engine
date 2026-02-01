@@ -1,0 +1,49 @@
+{
+  "name": "Satyr",
+  "cr": 0.5,
+  "size": "Medium",
+  "type": "fey",
+  "alignment": "chaotic neutral",
+  "ac": 14,
+  "hp": {
+    "average": 31,
+    "formula": "7d8"
+  },
+  "speed": "walk: 40 ft.",
+  "stats": {
+    "STR": 12,
+    "DEX": 16,
+    "CON": 11,
+    "INT": 12,
+    "WIS": 10,
+    "CHA": 14
+  },
+  "traits": [
+    {
+      "name": "Magic Resistance",
+      "description": "The satyr has advantage on saving throws against spells and other magical effects."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Ram",
+      "description": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 6 (2d4 + 1) bludgeoning damage.",
+      "attackBonus": 3
+    },
+    {
+      "name": "Shortsword",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 6 (1 d6 + 3) piercing damage.",
+      "attackBonus": 5
+    },
+    {
+      "name": "Shortbow",
+      "description": "Ranged Weapon Attack: +5 to hit, range 80/320 ft., one target. Hit: 6 (1d6 + 3) piercing damage.",
+      "attackBonus": 5
+    },
+    {
+      "name": "Variant: Panpipes",
+      "description": "Gentle Lullaby. The creature falls asleep and is unconscious for 1 minute. The effect ends if the creature takes damage or if someone takes an action to shake the creature awake."
+    }
+  ],
+  "legendaryActions": []
+}

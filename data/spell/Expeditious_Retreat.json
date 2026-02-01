@@ -1,0 +1,14 @@
+{
+  "name": "Expeditious Retreat",
+  "level": 1,
+  "school": "Transmutation",
+  "time": "1 bonus action",
+  "range": "Self",
+  "components": {
+    "v": true,
+    "s": true
+  },
+  "duration": "Up to 10 minutes",
+  "concentration": true,
+  "description": "This spell allows you to move at an incredible pace. When you cast this spell, and then as a bonus action on each of your turns until the spell ends, you can take the Dash action."
+}

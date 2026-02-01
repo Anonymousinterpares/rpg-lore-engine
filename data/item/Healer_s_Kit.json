@@ -1,0 +1,13 @@
+{
+  "name": "Healer's Kit",
+  "type": "Adventuring Gear",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 5,
+    "pp": 0
+  },
+  "weight": 3,
+  "description": "This kit is a leather pouch containing bandages, salves, and splints. The kit has ten uses. As an action, you can expend one use of the kit to stabilize a creature that has 0 hit points, without needing to make a Wisdom (Medicine) check."
+}

@@ -1,0 +1,60 @@
+{
+  "name": "Iron Golem",
+  "cr": 16,
+  "size": "Large",
+  "type": "construct",
+  "alignment": "unaligned",
+  "ac": 20,
+  "hp": {
+    "average": 210,
+    "formula": "20d10"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 24,
+    "DEX": 9,
+    "CON": 20,
+    "INT": 3,
+    "WIS": 11,
+    "CHA": 1
+  },
+  "traits": [
+    {
+      "name": "Fire Absorption",
+      "description": "Whenever the golem is subjected to fire damage, it takes no damage and instead regains a number of hit points equal to the fire damage dealt."
+    },
+    {
+      "name": "Immutable Form",
+      "description": "The golem is immune to any spell or effect that would alter its form."
+    },
+    {
+      "name": "Magic Resistance",
+      "description": "The golem has advantage on saving throws against spells and other magical effects."
+    },
+    {
+      "name": "Magic Weapons",
+      "description": "The golem's weapon attacks are magical."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The golem makes two melee attacks."
+    },
+    {
+      "name": "Slam",
+      "description": "Melee Weapon Attack: +13 to hit, reach 5 ft., one target. Hit: 20 (3d8 + 7) bludgeoning damage.",
+      "attackBonus": 13
+    },
+    {
+      "name": "Sword",
+      "description": "Melee Weapon Attack: +13 to hit, reach 10 ft., one target. Hit: 23 (3d10 + 7) slashing damage.",
+      "attackBonus": 13
+    },
+    {
+      "name": "Poison Breath (Recharge 5-6)",
+      "description": "The golem exhales poisonous gas in a 15-foot cone. Each creature in that area must make a DC 19 Constitution saving throw, taking 45 (l0d8) poison damage on a failed save, or half as much damage on a successful one."
+    }
+  ],
+  "legendaryActions": []
+}

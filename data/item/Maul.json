@@ -1,0 +1,20 @@
+{
+  "name": "Maul",
+  "type": "Weapon",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 10,
+    "pp": 0
+  },
+  "weight": 10,
+  "damage": {
+    "dice": "2d6",
+    "type": "Bludgeoning"
+  },
+  "properties": [
+    "Heavy",
+    "Two-Handed"
+  ]
+}

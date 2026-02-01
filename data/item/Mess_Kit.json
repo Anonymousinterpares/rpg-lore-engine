@@ -1,0 +1,13 @@
+{
+  "name": "Mess Kit",
+  "type": "Adventuring Gear",
+  "cost": {
+    "cp": 0,
+    "sp": 2,
+    "ep": 0,
+    "gp": 0,
+    "pp": 0
+  },
+  "weight": 1,
+  "description": "This tin box contains a cup and simple cutlery. The box clamps together, and one side can be used as a cooking pan and the other as a plate or shallow bowl."
+}

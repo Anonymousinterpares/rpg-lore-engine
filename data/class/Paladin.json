@@ -1,0 +1,28 @@
+{
+  "name": "Paladin",
+  "hitDie": "1d10",
+  "primaryAbility": [],
+  "savingThrowProficiencies": [
+    "WIS",
+    "CHA"
+  ],
+  "armorProficiencies": [
+    "All armor",
+    "Shields"
+  ],
+  "weaponProficiencies": [
+    "Simple weapons",
+    "Martial weapons"
+  ],
+  "skillChoices": {
+    "count": 2,
+    "options": [
+      "Skill: Athletics",
+      "Skill: Insight",
+      "Skill: Intimidation",
+      "Skill: Medicine",
+      "Skill: Persuasion",
+      "Skill: Religion"
+    ]
+  }
+}

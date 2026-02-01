@@ -1,0 +1,60 @@
+{
+  "name": "Gynosphinx",
+  "cr": 11,
+  "size": "Large",
+  "type": "monstrosity",
+  "alignment": "lawful neutral",
+  "ac": 17,
+  "hp": {
+    "average": 136,
+    "formula": "16d10"
+  },
+  "speed": "walk: 40 ft., fly: 60 ft.",
+  "stats": {
+    "STR": 18,
+    "DEX": 15,
+    "CON": 16,
+    "INT": 18,
+    "WIS": 18,
+    "CHA": 18
+  },
+  "traits": [
+    {
+      "name": "Inscrutable",
+      "description": "The sphinx is immune to any effect that would sense its emotions or read its thoughts, as well as any divination spell that it refuses. Wisdom (Insight) checks made to ascertain the sphinx's intentions or sincerity have disadvantage."
+    },
+    {
+      "name": "Magic Weapons",
+      "description": "The sphinx's weapon attacks are magical."
+    },
+    {
+      "name": "Spellcasting",
+      "description": "The sphinx is a 9th-level spellcaster. Its spellcasting ability is Intelligence (spell save DC 16, +8 to hit with spell attacks). It requires no material components to cast its spells. The sphinx has the following wizard spells prepared:\n\n- Cantrips (at will): mage hand, minor illusion, prestidigitation\n- 1st level (4 slots): detect magic, identify, shield\n- 2nd level (3 slots): darkness, locate object, suggestion\n- 3rd level (3 slots): dispel magic, remove curse, tongues\n- 4th level (3 slots): banishment, greater invisibility\n- 5th level (1 slot): legend lore"
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The sphinx makes two claw attacks."
+    },
+    {
+      "name": "Claw",
+      "description": "Melee Weapon Attack: +9 to hit, reach 5 ft., one target. Hit: 13 (2d8 + 4) slashing damage.",
+      "attackBonus": 9
+    }
+  ],
+  "legendaryActions": [
+    {
+      "name": "Claw Attack",
+      "description": "The sphinx makes one claw attack."
+    },
+    {
+      "name": "Teleport (Costs 2 Actions)",
+      "description": "The sphinx magically teleports, along with any equipment it is wearing or carrying, up to 120 feet to an unoccupied space it can see."
+    },
+    {
+      "name": "Cast a Spell (Costs 3 Actions)",
+      "description": "The sphinx casts a spell from its list of prepared spells, using a spell slot as normal."
+    }
+  ]
+}

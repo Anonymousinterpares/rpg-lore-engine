@@ -1,0 +1,12 @@
+{
+  "name": "Robes",
+  "type": "Adventuring Gear",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 1,
+    "pp": 0
+  },
+  "weight": 4
+}

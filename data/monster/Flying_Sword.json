@@ -1,0 +1,39 @@
+{
+  "name": "Flying Sword",
+  "cr": 0.25,
+  "size": "Small",
+  "type": "construct",
+  "alignment": "unaligned",
+  "ac": 17,
+  "hp": {
+    "average": 17,
+    "formula": "5d6"
+  },
+  "speed": "walk: 0 ft., fly: 50 ft., hover: true",
+  "stats": {
+    "STR": 12,
+    "DEX": 15,
+    "CON": 11,
+    "INT": 1,
+    "WIS": 5,
+    "CHA": 1
+  },
+  "traits": [
+    {
+      "name": "Antimagic Susceptibility",
+      "description": "The sword is incapacitated while in the area of an antimagic field. If targeted by dispel magic, the sword must succeed on a Constitution saving throw against the caster's spell save DC or fall unconscious for 1 minute."
+    },
+    {
+      "name": "False Appearance",
+      "description": "While the sword remains motionless and isn't flying, it is indistinguishable from a normal sword."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Longsword",
+      "description": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 5 (1d8 + 1) slashing damage.",
+      "attackBonus": 3
+    }
+  ],
+  "legendaryActions": []
+}

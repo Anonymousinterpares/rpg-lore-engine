@@ -1,0 +1,44 @@
+{
+  "name": "Stone Giant",
+  "cr": 7,
+  "size": "Huge",
+  "type": "giant",
+  "alignment": "neutral",
+  "ac": 17,
+  "hp": {
+    "average": 126,
+    "formula": "11d12"
+  },
+  "speed": "walk: 40 ft.",
+  "stats": {
+    "STR": 23,
+    "DEX": 15,
+    "CON": 20,
+    "INT": 10,
+    "WIS": 12,
+    "CHA": 9
+  },
+  "traits": [
+    {
+      "name": "Stone Camouflage",
+      "description": "The giant has advantage on Dexterity (Stealth) checks made to hide in rocky terrain."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The giant makes two greatclub attacks."
+    },
+    {
+      "name": "Greatclub",
+      "description": "Melee Weapon Attack: +9 to hit, reach 15 ft., one target. Hit: 19 (3d8 + 6) bludgeoning damage.",
+      "attackBonus": 9
+    },
+    {
+      "name": "Rock",
+      "description": "Ranged Weapon Attack: +9 to hit, range 60/240 ft., one target. Hit: 28 (4d10 + 6) bludgeoning damage. If the target is a creature, it must succeed on a DC 17 Strength saving throw or be knocked prone.",
+      "attackBonus": 9
+    }
+  ],
+  "legendaryActions": []
+}

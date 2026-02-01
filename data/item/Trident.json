@@ -1,0 +1,20 @@
+{
+  "name": "Trident",
+  "type": "Weapon",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 5,
+    "pp": 0
+  },
+  "weight": 4,
+  "damage": {
+    "dice": "1d6",
+    "type": "Slashing"
+  },
+  "properties": [
+    "Thrown",
+    "Versatile"
+  ]
+}

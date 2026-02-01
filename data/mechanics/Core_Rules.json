@@ -1,0 +1,48 @@
+{
+    "xpTable": {
+        "1": 0,
+        "2": 300,
+        "3": 900,
+        "4": 2700,
+        "5": 6500,
+        "6": 14000,
+        "7": 23000,
+        "8": 34000,
+        "9": 48000,
+        "10": 64000,
+        "11": 85000,
+        "12": 100000,
+        "13": 120000,
+        "14": 140000,
+        "15": 165000,
+        "16": 195000,
+        "17": 225000,
+        "18": 265000,
+        "19": 305000,
+        "20": 355000
+    },
+    "resting": {
+        "shortRest": {
+            "duration": "1 hour",
+            "benefits": [
+                "Expend Hit Dice to heal",
+                "Regain specific class features (e.g., Ki, Superiority Dice)"
+            ]
+        },
+        "longRest": {
+            "duration": "8 hours",
+            "benefits": [
+                "Full HP recovery",
+                "Regain half of total Hit Dice",
+                "Regain all spell slots and features"
+            ]
+        }
+    },
+    "currencyConversion": {
+        "cp": 1,
+        "sp": 10,
+        "ep": 50,
+        "gp": 100,
+        "pp": 1000
+    }
+}

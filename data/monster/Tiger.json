@@ -1,0 +1,44 @@
+{
+  "name": "Tiger",
+  "cr": 1,
+  "size": "Large",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 12,
+  "hp": {
+    "average": 37,
+    "formula": "5d10"
+  },
+  "speed": "walk: 40 ft.",
+  "stats": {
+    "STR": 17,
+    "DEX": 15,
+    "CON": 14,
+    "INT": 3,
+    "WIS": 12,
+    "CHA": 8
+  },
+  "traits": [
+    {
+      "name": "Keen Smell",
+      "description": "The tiger has advantage on Wisdom (Perception) checks that rely on smell."
+    },
+    {
+      "name": "Pounce",
+      "description": "If the tiger moves at least 20 ft. straight toward a creature and then hits it with a claw attack on the same turn, that target must succeed on a DC 13 Strength saving throw or be knocked prone. If the target is prone, the tiger can make one bite attack against it as a bonus action."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 8 (1d10 + 3) piercing damage.",
+      "attackBonus": 5
+    },
+    {
+      "name": "Claw",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 7 (1d8 + 3) slashing damage.",
+      "attackBonus": 5
+    }
+  ],
+  "legendaryActions": []
+}

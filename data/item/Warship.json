@@ -1,0 +1,12 @@
+{
+  "name": "Warship",
+  "type": "Adventuring Gear",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 25000,
+    "pp": 0
+  },
+  "weight": 0
+}

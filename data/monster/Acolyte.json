@@ -1,0 +1,35 @@
+{
+  "name": "Acolyte",
+  "cr": 0.25,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "any alignment",
+  "ac": 10,
+  "hp": {
+    "average": 9,
+    "formula": "2d8"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 10,
+    "DEX": 10,
+    "CON": 10,
+    "INT": 10,
+    "WIS": 14,
+    "CHA": 11
+  },
+  "traits": [
+    {
+      "name": "Spellcasting",
+      "description": "The acolyte is a 1st-level spellcaster. Its spellcasting ability is Wisdom (spell save DC 12, +4 to hit with spell attacks). The acolyte has following cleric spells prepared:\n\n- Cantrips (at will): light, sacred flame, thaumaturgy\n- 1st level (3 slots): bless, cure wounds, sanctuary"
+    }
+  ],
+  "actions": [
+    {
+      "name": "Club",
+      "description": "Melee Weapon Attack: +2 to hit, reach 5 ft., one target. Hit: 2 (1d4) bludgeoning damage.",
+      "attackBonus": 2
+    }
+  ],
+  "legendaryActions": []
+}

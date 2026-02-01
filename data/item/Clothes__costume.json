@@ -1,0 +1,12 @@
+{
+  "name": "Clothes, costume",
+  "type": "Adventuring Gear",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 5,
+    "pp": 0
+  },
+  "weight": 4
+}

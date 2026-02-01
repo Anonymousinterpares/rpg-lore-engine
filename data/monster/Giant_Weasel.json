@@ -1,0 +1,35 @@
+{
+  "name": "Giant Weasel",
+  "cr": 0.125,
+  "size": "Medium",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 13,
+  "hp": {
+    "average": 9,
+    "formula": "2d8"
+  },
+  "speed": "walk: 40 ft.",
+  "stats": {
+    "STR": 11,
+    "DEX": 16,
+    "CON": 10,
+    "INT": 4,
+    "WIS": 12,
+    "CHA": 5
+  },
+  "traits": [
+    {
+      "name": "Keen Hearing and Smell",
+      "description": "The weasel has advantage on Wisdom (Perception) checks that rely on hearing or smell."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Bite",
+      "description": "Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 5 (1d4 + 3) piercing damage.",
+      "attackBonus": 5
+    }
+  ],
+  "legendaryActions": []
+}

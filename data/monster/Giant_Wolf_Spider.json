@@ -1,0 +1,43 @@
+{
+  "name": "Giant Wolf Spider",
+  "cr": 0.25,
+  "size": "Medium",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 13,
+  "hp": {
+    "average": 11,
+    "formula": "2d8"
+  },
+  "speed": "walk: 40 ft., climb: 40 ft.",
+  "stats": {
+    "STR": 12,
+    "DEX": 16,
+    "CON": 13,
+    "INT": 3,
+    "WIS": 12,
+    "CHA": 4
+  },
+  "traits": [
+    {
+      "name": "Spider Climb",
+      "description": "The spider can climb difficult surfaces, including upside down on ceilings, without needing to make an ability check."
+    },
+    {
+      "name": "Web Sense",
+      "description": "While in contact with a web, the spider knows the exact location of any other creature in contact with the same web."
+    },
+    {
+      "name": "Web Walker",
+      "description": "The spider ignores movement restrictions caused by webbing."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Bite",
+      "description": "Weapon Attack: +3 to hit, reach 5 ft., one creature. Hit: 4 (1d6 + 1) piercing damage, and the target must make a DC 11 Constitution saving throw, taking 7 (2d6) poison damage on a failed save, or half as much damage on a successful one. If the poison damage reduces the target to 0 hit points, the target is stable but poisoned for 1 hour, even after regaining hit points, and is paralyzed while poisoned in this way.",
+      "attackBonus": 3
+    }
+  ],
+  "legendaryActions": []
+}

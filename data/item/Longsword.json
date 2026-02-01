@@ -1,0 +1,19 @@
+{
+  "name": "Longsword",
+  "type": "Weapon",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 15,
+    "pp": 0
+  },
+  "weight": 3,
+  "damage": {
+    "dice": "1d8",
+    "type": "Slashing"
+  },
+  "properties": [
+    "Versatile"
+  ]
+}

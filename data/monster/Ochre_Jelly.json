@@ -1,0 +1,39 @@
+{
+  "name": "Ochre Jelly",
+  "cr": 2,
+  "size": "Large",
+  "type": "ooze",
+  "alignment": "unaligned",
+  "ac": 8,
+  "hp": {
+    "average": 45,
+    "formula": "6d10"
+  },
+  "speed": "walk: 10 ft., climb: 10 ft.",
+  "stats": {
+    "STR": 15,
+    "DEX": 6,
+    "CON": 14,
+    "INT": 2,
+    "WIS": 6,
+    "CHA": 1
+  },
+  "traits": [
+    {
+      "name": "Amorphous",
+      "description": "The jelly can move through a space as narrow as 1 inch wide without squeezing."
+    },
+    {
+      "name": "Spider Climb",
+      "description": "The jelly can climb difficult surfaces, including upside down on ceilings, without needing to make an ability check."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Pseudopod",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 9 (2d6 + 2) bludgeoning damage plus 3 (1d6) acid damage.",
+      "attackBonus": 4
+    }
+  ],
+  "legendaryActions": []
+}

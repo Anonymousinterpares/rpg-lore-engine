@@ -1,0 +1,48 @@
+{
+  "name": "Gladiator",
+  "cr": 5,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "any alignment",
+  "ac": 16,
+  "hp": {
+    "average": 112,
+    "formula": "15d8"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 18,
+    "DEX": 15,
+    "CON": 16,
+    "INT": 10,
+    "WIS": 12,
+    "CHA": 15
+  },
+  "traits": [
+    {
+      "name": "Brave",
+      "description": "The gladiator has advantage on saving throws against being frightened."
+    },
+    {
+      "name": "Brute",
+      "description": "A melee weapon deals one extra die of its damage when the gladiator hits with it (included in the attack)."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The gladiator makes three melee attacks or two ranged attacks."
+    },
+    {
+      "name": "Spear",
+      "description": "Melee or Ranged Weapon Attack: +7 to hit, reach 5 ft. and range 20/60 ft., one target. Hit: 11 (2d6 + 4) piercing damage, or 13 (2d8 + 4) piercing damage if used with two hands to make a melee attack.",
+      "attackBonus": 7
+    },
+    {
+      "name": "Shield Bash",
+      "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one creature. Hit: 9 (2d4 + 4) bludgeoning damage. If the target is a Medium or smaller creature, it must succeed on a DC 15 Strength saving throw or be knocked prone.",
+      "attackBonus": 7
+    }
+  ],
+  "legendaryActions": []
+}

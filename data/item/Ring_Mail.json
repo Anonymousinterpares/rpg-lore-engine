@@ -1,0 +1,14 @@
+{
+  "name": "Ring Mail",
+  "type": "Armor",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 30,
+    "pp": 0
+  },
+  "weight": 40,
+  "acCalculated": "14",
+  "stealthDisadvantage": true
+}

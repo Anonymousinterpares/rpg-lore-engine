@@ -1,0 +1,39 @@
+{
+  "name": "Giant Scorpion",
+  "cr": 3,
+  "size": "Large",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 15,
+  "hp": {
+    "average": 52,
+    "formula": "7d10"
+  },
+  "speed": "walk: 40 ft.",
+  "stats": {
+    "STR": 15,
+    "DEX": 13,
+    "CON": 15,
+    "INT": 1,
+    "WIS": 9,
+    "CHA": 3
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Claw",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 6 (1d8 + 2) bludgeoning damage, and the target is grappled (escape DC 12). The scorpion has two claws, each of which can grapple only one target.",
+      "attackBonus": 4
+    },
+    {
+      "name": "Multiattack",
+      "description": "The scorpion makes three attacks: two with its claws and one with its sting."
+    },
+    {
+      "name": "Sting",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one creature. Hit: 7 (1d10 + 2) piercing damage, and the target must make a DC 12 Constitution saving throw, taking 22 (4d10) poison damage on a failed save, or half as much damage on a successful one.",
+      "attackBonus": 4
+    }
+  ],
+  "legendaryActions": []
+}

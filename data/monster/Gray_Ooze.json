@@ -1,0 +1,43 @@
+{
+  "name": "Gray Ooze",
+  "cr": 0.5,
+  "size": "Medium",
+  "type": "ooze",
+  "alignment": "unaligned",
+  "ac": 8,
+  "hp": {
+    "average": 22,
+    "formula": "3d8"
+  },
+  "speed": "walk: 10 ft., climb: 10 ft.",
+  "stats": {
+    "STR": 12,
+    "DEX": 6,
+    "CON": 16,
+    "INT": 1,
+    "WIS": 6,
+    "CHA": 2
+  },
+  "traits": [
+    {
+      "name": "Amorphous",
+      "description": "The ooze can move through a space as narrow as 1 inch wide without squeezing."
+    },
+    {
+      "name": "Corrode Metal",
+      "description": "Any nonmagical weapon made of metal that hits the ooze corrodes. After dealing damage, the weapon takes a permanent and cumulative -1 penalty to damage rolls. If its penalty drops to -5, the weapon is destroyed. Nonmagical ammunition made of metal that hits the ooze is destroyed after dealing damage.\nThe ooze can eat through 2-inch-thick, nonmagical metal in 1 round."
+    },
+    {
+      "name": "False Appearance",
+      "description": "While the ooze remains motionless, it is indistinguishable from an oily pool or wet rock."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Pseudopod",
+      "description": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 4 (1d6 + 1) bludgeoning damage plus 7 (2d6) acid damage, and if the target is wearing nonmagical metal armor, its armor is partly corroded and takes a permanent and cumulative -1 penalty to the AC it offers. The armor is destroyed if the penalty reduces its AC to 10.",
+      "attackBonus": 3
+    }
+  ],
+  "legendaryActions": []
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Fishing tackle",
+  "type": "Adventuring Gear",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 1,
+    "pp": 0
+  },
+  "weight": 4,
+  "description": "This kit includes a wooden rod, silken line, corkwood bobbers, steel hooks, lead sinkers, velvet lures, and narrow netting."
+}

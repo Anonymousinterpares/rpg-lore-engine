@@ -1,0 +1,40 @@
+{
+  "name": "Elk",
+  "cr": 0.25,
+  "size": "Large",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 10,
+  "hp": {
+    "average": 13,
+    "formula": "2d10"
+  },
+  "speed": "walk: 50 ft.",
+  "stats": {
+    "STR": 16,
+    "DEX": 10,
+    "CON": 12,
+    "INT": 2,
+    "WIS": 10,
+    "CHA": 6
+  },
+  "traits": [
+    {
+      "name": "Charge",
+      "description": "If the elk moves at least 20 ft. straight toward a target and then hits it with a ram attack on the same turn, the target takes an extra 7 (2d6) damage. If the target is a creature, it must succeed on a DC 13 Strength saving throw or be knocked prone."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Ram",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) bludgeoning damage.",
+      "attackBonus": 5
+    },
+    {
+      "name": "Hooves",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one prone creature. Hit: 8 (2d4 + 3) bludgeoning damage.",
+      "attackBonus": 5
+    }
+  ],
+  "legendaryActions": []
+}

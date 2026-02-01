@@ -1,0 +1,20 @@
+{
+  "name": "Scimitar",
+  "type": "Weapon",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 25,
+    "pp": 0
+  },
+  "weight": 3,
+  "damage": {
+    "dice": "1d6",
+    "type": "Slashing"
+  },
+  "properties": [
+    "Finesse",
+    "Light"
+  ]
+}

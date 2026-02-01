@@ -1,0 +1,48 @@
+{
+  "name": "Young Green Dragon",
+  "cr": 8,
+  "size": "Large",
+  "type": "dragon",
+  "alignment": "lawful evil",
+  "ac": 18,
+  "hp": {
+    "average": 136,
+    "formula": "16d10"
+  },
+  "speed": "walk: 40 ft., fly: 80 ft., swim: 40 ft.",
+  "stats": {
+    "STR": 19,
+    "DEX": 12,
+    "CON": 17,
+    "INT": 16,
+    "WIS": 13,
+    "CHA": 15
+  },
+  "traits": [
+    {
+      "name": "Amphibious",
+      "description": "The dragon can breathe air and water."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The dragon makes three attacks: one with its bite and two with its claws."
+    },
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +7 to hit, reach 10 ft., one target. Hit: 15 (2d10 + 4) piercing damage plus 7 (2d6) poison damage.",
+      "attackBonus": 7
+    },
+    {
+      "name": "Claw",
+      "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 11 (2d6 + 4) slashing damage.",
+      "attackBonus": 7
+    },
+    {
+      "name": "Poison Breath (Recharge 5-6)",
+      "description": "The dragon exhales poisonous gas in a 30-foot cone. Each creature in that area must make a DC 14 Constitution saving throw, taking 42 (12d6) poison damage on a failed save, or half as much damage on a successful one."
+    }
+  ],
+  "legendaryActions": []
+}

@@ -1,0 +1,39 @@
+{
+  "name": "Mule",
+  "cr": 0.125,
+  "size": "Medium",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 10,
+  "hp": {
+    "average": 11,
+    "formula": "2d8"
+  },
+  "speed": "walk: 40 ft.",
+  "stats": {
+    "STR": 14,
+    "DEX": 10,
+    "CON": 13,
+    "INT": 2,
+    "WIS": 10,
+    "CHA": 5
+  },
+  "traits": [
+    {
+      "name": "Beast of Burden",
+      "description": "The mule is considered to be a Large animal for the purpose of determining its carrying capacity."
+    },
+    {
+      "name": "Sure-Footed",
+      "description": "The mule has advantage on Strength and Dexterity saving throws made against effects that would knock it prone."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Hooves",
+      "description": "Melee Weapon Attack: +2 to hit, reach 5 ft., one target. Hit: 4 (1d4 + 2) bludgeoning damage.",
+      "attackBonus": 2
+    }
+  ],
+  "legendaryActions": []
+}

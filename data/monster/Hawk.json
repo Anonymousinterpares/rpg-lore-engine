@@ -1,0 +1,35 @@
+{
+  "name": "Hawk",
+  "cr": 0,
+  "size": "Tiny",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 13,
+  "hp": {
+    "average": 1,
+    "formula": "1d4"
+  },
+  "speed": "walk: 10 ft., fly: 60 ft.",
+  "stats": {
+    "STR": 5,
+    "DEX": 16,
+    "CON": 8,
+    "INT": 2,
+    "WIS": 14,
+    "CHA": 6
+  },
+  "traits": [
+    {
+      "name": "Keen Sight",
+      "description": "The hawk has advantage on Wisdom (Perception) checks that rely on sight."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Talons",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 1 slashing damage.",
+      "attackBonus": 5
+    }
+  ],
+  "legendaryActions": []
+}

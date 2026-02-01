@@ -1,0 +1,19 @@
+{
+  "name": "Sling",
+  "type": "Weapon",
+  "cost": {
+    "cp": 0,
+    "sp": 1,
+    "ep": 0,
+    "gp": 0,
+    "pp": 0
+  },
+  "weight": 0,
+  "damage": {
+    "dice": "1d4",
+    "type": "Bludgeoning"
+  },
+  "properties": [
+    "Ammunition"
+  ]
+}

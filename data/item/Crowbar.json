@@ -1,0 +1,13 @@
+{
+  "name": "Crowbar",
+  "type": "Adventuring Gear",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 2,
+    "pp": 0
+  },
+  "weight": 5,
+  "description": "Using a crowbar grants advantage to Strength checks where the crowbar's leverage can be applied."
+}

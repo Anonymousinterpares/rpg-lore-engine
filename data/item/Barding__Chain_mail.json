@@ -1,0 +1,13 @@
+{
+  "name": "Barding: Chain mail",
+  "type": "Adventuring Gear",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 300,
+    "pp": 0
+  },
+  "weight": 110,
+  "description": "Barding is armor designed to protect an animal's head, neck, chest, and body. Any type of armor shown on the Armor table can be purchased as barding. The cost is four times the equivalent armor made for humanoids, and it weighs twice as much."
+}

@@ -1,0 +1,44 @@
+{
+  "name": "Saber-Toothed Tiger",
+  "cr": 2,
+  "size": "Large",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 12,
+  "hp": {
+    "average": 52,
+    "formula": "7d10"
+  },
+  "speed": "walk: 40 ft.",
+  "stats": {
+    "STR": 18,
+    "DEX": 14,
+    "CON": 15,
+    "INT": 3,
+    "WIS": 12,
+    "CHA": 8
+  },
+  "traits": [
+    {
+      "name": "Keen Smell",
+      "description": "The tiger has advantage on Wisdom (Perception) checks that rely on smell."
+    },
+    {
+      "name": "Pounce",
+      "description": "If the tiger moves at least 20 ft. straight toward a creature and then hits it with a claw attack on the same turn, that target must succeed on a DC 14 Strength saving throw or be knocked prone. If the target is prone, the tiger can make one bite attack against it as a bonus action."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 10 (1d10 + 5) piercing damage.",
+      "attackBonus": 6
+    },
+    {
+      "name": "Claw",
+      "description": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 12 (2d6 + 5) slashing damage.",
+      "attackBonus": 6
+    }
+  ],
+  "legendaryActions": []
+}

@@ -1,0 +1,20 @@
+{
+  "name": "Javelin",
+  "type": "Weapon",
+  "cost": {
+    "cp": 0,
+    "sp": 5,
+    "ep": 0,
+    "gp": 0,
+    "pp": 0
+  },
+  "weight": 2,
+  "damage": {
+    "dice": "1d6",
+    "type": "Piercing"
+  },
+  "properties": [
+    "Thrown",
+    "Monk"
+  ]
+}

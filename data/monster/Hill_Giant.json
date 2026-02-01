@@ -1,0 +1,39 @@
+{
+  "name": "Hill Giant",
+  "cr": 5,
+  "size": "Huge",
+  "type": "giant",
+  "alignment": "chaotic evil",
+  "ac": 13,
+  "hp": {
+    "average": 105,
+    "formula": "10d12"
+  },
+  "speed": "walk: 40 ft.",
+  "stats": {
+    "STR": 21,
+    "DEX": 8,
+    "CON": 19,
+    "INT": 5,
+    "WIS": 9,
+    "CHA": 6
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The giant makes two greatclub attacks."
+    },
+    {
+      "name": "Greatclub",
+      "description": "Melee Weapon Attack: +8 to hit, reach 10 ft., one target. Hit: 18 (3d8 + 5) bludgeoning damage.",
+      "attackBonus": 8
+    },
+    {
+      "name": "Rock",
+      "description": "Ranged Weapon Attack: +8 to hit, range 60/240 ft., one target. Hit: 21 (3d10 + 5) bludgeoning damage.",
+      "attackBonus": 8
+    }
+  ],
+  "legendaryActions": []
+}

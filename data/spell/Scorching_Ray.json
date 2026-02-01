@@ -1,0 +1,14 @@
+{
+  "name": "Scorching Ray",
+  "level": 2,
+  "school": "Evocation",
+  "time": "1 action",
+  "range": "120 feet",
+  "components": {
+    "v": true,
+    "s": true
+  },
+  "duration": "Instantaneous",
+  "concentration": false,
+  "description": "You generate three rays of fire and will throw to targets in the range of the spell. You can project them on one or more targets.\nPerform a remote attack spell for each department. If it hits, the target takes 2d6 fire damage."
+}

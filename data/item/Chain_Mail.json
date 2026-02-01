@@ -1,0 +1,14 @@
+{
+  "name": "Chain Mail",
+  "type": "Armor",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 75,
+    "pp": 0
+  },
+  "weight": 55,
+  "acCalculated": "16",
+  "stealthDisadvantage": true
+}

@@ -1,0 +1,35 @@
+{
+  "name": "Giant Fire Beetle",
+  "cr": 0,
+  "size": "Small",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 13,
+  "hp": {
+    "average": 4,
+    "formula": "1d6"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 8,
+    "DEX": 10,
+    "CON": 12,
+    "INT": 1,
+    "WIS": 7,
+    "CHA": 3
+  },
+  "traits": [
+    {
+      "name": "Illumination",
+      "description": "The beetle sheds bright light in a 10-foot radius and dim light for an additional 10 ft.."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +1 to hit, reach 5 ft., one target. Hit: 2 (1d6 - 1) slashing damage.",
+      "attackBonus": 1
+    }
+  ],
+  "legendaryActions": []
+}

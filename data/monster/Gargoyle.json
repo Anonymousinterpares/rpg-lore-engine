@@ -1,0 +1,44 @@
+{
+  "name": "Gargoyle",
+  "cr": 2,
+  "size": "Medium",
+  "type": "elemental",
+  "alignment": "chaotic evil",
+  "ac": 15,
+  "hp": {
+    "average": 52,
+    "formula": "7d8"
+  },
+  "speed": "walk: 30 ft., fly: 60 ft.",
+  "stats": {
+    "STR": 15,
+    "DEX": 11,
+    "CON": 16,
+    "INT": 6,
+    "WIS": 11,
+    "CHA": 7
+  },
+  "traits": [
+    {
+      "name": "False Appearance",
+      "description": "While the gargoyle remains motion less, it is indistinguishable from an inanimate statue."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The gargoyle makes two attacks: one with its bite and one with its claws."
+    },
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) piercing damage.",
+      "attackBonus": 4
+    },
+    {
+      "name": "Claws",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) slashing damage.",
+      "attackBonus": 4
+    }
+  ],
+  "legendaryActions": []
+}

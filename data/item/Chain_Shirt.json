@@ -1,0 +1,14 @@
+{
+  "name": "Chain Shirt",
+  "type": "Armor",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 50,
+    "pp": 0
+  },
+  "weight": 20,
+  "acCalculated": "13",
+  "stealthDisadvantage": false
+}

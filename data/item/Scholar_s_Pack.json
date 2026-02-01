@@ -1,0 +1,12 @@
+{
+  "name": "Scholar's Pack",
+  "type": "Adventuring Gear",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 40,
+    "pp": 0
+  },
+  "weight": 0
+}

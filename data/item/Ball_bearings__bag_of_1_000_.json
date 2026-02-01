@@ -1,0 +1,13 @@
+{
+  "name": "Ball bearings (bag of 1,000)",
+  "type": "Adventuring Gear",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 1,
+    "pp": 0
+  },
+  "weight": 2,
+  "description": "As an action, you can spill these tiny metal balls from their pouch to cover a level, square area that is 10 feet on a side.\nA creature moving across the covered area must succeed on a DC 10 Dexterity saving throw or fall prone.\nA creature moving through the area at half speed doesn't need to make the save."
+}

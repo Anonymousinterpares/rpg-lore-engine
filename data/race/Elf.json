@@ -1,0 +1,24 @@
+{
+  "name": "Elf",
+  "speed": 30,
+  "size": "Medium",
+  "abilityScoreIncreases": {
+    "DEX": 2
+  },
+  "traits": [
+    {
+      "name": "Darkvision"
+    },
+    {
+      "name": "Fey Ancestry"
+    },
+    {
+      "name": "Trance"
+    }
+  ],
+  "languages": [
+    "Common",
+    "Elvish"
+  ],
+  "optional": false
+}

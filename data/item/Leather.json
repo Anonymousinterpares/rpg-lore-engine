@@ -1,0 +1,14 @@
+{
+  "name": "Leather",
+  "type": "Armor",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 10,
+    "pp": 0
+  },
+  "weight": 10,
+  "acCalculated": "11",
+  "stealthDisadvantage": false
+}

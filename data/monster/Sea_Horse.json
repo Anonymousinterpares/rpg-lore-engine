@@ -1,0 +1,29 @@
+{
+  "name": "Sea Horse",
+  "cr": 0,
+  "size": "Tiny",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 11,
+  "hp": {
+    "average": 1,
+    "formula": "1d4"
+  },
+  "speed": "swim: 20 ft.",
+  "stats": {
+    "STR": 1,
+    "DEX": 12,
+    "CON": 8,
+    "INT": 1,
+    "WIS": 10,
+    "CHA": 2
+  },
+  "traits": [
+    {
+      "name": "Water Breathing",
+      "description": "The sea horse can breathe only underwater."
+    }
+  ],
+  "actions": [],
+  "legendaryActions": []
+}

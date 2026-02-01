@@ -1,0 +1,30 @@
+{
+  "name": "Fighter",
+  "hitDie": "1d10",
+  "primaryAbility": [],
+  "savingThrowProficiencies": [
+    "STR",
+    "CON"
+  ],
+  "armorProficiencies": [
+    "All armor",
+    "Shields"
+  ],
+  "weaponProficiencies": [
+    "Simple weapons",
+    "Martial weapons"
+  ],
+  "skillChoices": {
+    "count": 2,
+    "options": [
+      "Skill: Acrobatics",
+      "Skill: Animal Handling",
+      "Skill: Athletics",
+      "Skill: History",
+      "Skill: Insight",
+      "Skill: Intimidation",
+      "Skill: Perception",
+      "Skill: Survival"
+    ]
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "name": "Fire Giant",
+  "cr": 9,
+  "size": "Huge",
+  "type": "giant",
+  "alignment": "lawful evil",
+  "ac": 18,
+  "hp": {
+    "average": 162,
+    "formula": "13d12"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 25,
+    "DEX": 9,
+    "CON": 23,
+    "INT": 10,
+    "WIS": 14,
+    "CHA": 13
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The giant makes two greatsword attacks."
+    },
+    {
+      "name": "Greatsword",
+      "description": "Melee Weapon Attack: +11 to hit, reach 10 ft., one target. Hit: 28 (6d6 + 7) slashing damage.",
+      "attackBonus": 11
+    },
+    {
+      "name": "Rock",
+      "description": "Ranged Weapon Attack: +11 to hit, range 60/240 ft., one target. Hit: 29 (4d10 + 7) bludgeoning damage.",
+      "attackBonus": 11
+    }
+  ],
+  "legendaryActions": []
+}

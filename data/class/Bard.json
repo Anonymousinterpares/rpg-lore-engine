@@ -1,0 +1,41 @@
+{
+  "name": "Bard",
+  "hitDie": "1d8",
+  "primaryAbility": [],
+  "savingThrowProficiencies": [
+    "DEX",
+    "CHA"
+  ],
+  "armorProficiencies": [
+    "Light armor"
+  ],
+  "weaponProficiencies": [
+    "Simple weapons",
+    "Longswords",
+    "Shortswords",
+    "Crossbows, hand"
+  ],
+  "skillChoices": {
+    "count": 3,
+    "options": [
+      "Skill: Acrobatics",
+      "Skill: Animal Handling",
+      "Skill: Arcana",
+      "Skill: Athletics",
+      "Skill: Deception",
+      "Skill: History",
+      "Skill: Insight",
+      "Skill: Intimidation",
+      "Skill: Investigation",
+      "Skill: Medicine",
+      "Skill: Nature",
+      "Skill: Perception",
+      "Skill: Performance",
+      "Skill: Persuasion",
+      "Skill: Religion",
+      "Skill: Sleight of Hand",
+      "Skill: Stealth",
+      "Skill: Survival"
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "Whip",
+  "type": "Weapon",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 2,
+    "pp": 0
+  },
+  "weight": 3,
+  "damage": {
+    "dice": "1d4",
+    "type": "Slashing"
+  },
+  "properties": [
+    "Finesse",
+    "Reach"
+  ]
+}

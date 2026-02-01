@@ -1,0 +1,34 @@
+{
+  "name": "Copper Dragon Wyrmling",
+  "cr": 1,
+  "size": "Medium",
+  "type": "dragon",
+  "alignment": "chaotic good",
+  "ac": 16,
+  "hp": {
+    "average": 22,
+    "formula": "4d8"
+  },
+  "speed": "walk: 30 ft., climb: 30 ft., fly: 60 ft.",
+  "stats": {
+    "STR": 15,
+    "DEX": 12,
+    "CON": 13,
+    "INT": 14,
+    "WIS": 11,
+    "CHA": 13
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 7 (1d10 + 2) piercing damage.",
+      "attackBonus": 4
+    },
+    {
+      "name": "Breath Weapons (Recharge 5-6)",
+      "description": "The dragon uses one of the following breath weapons.\nAcid Breath. The dragon exhales acid in an 20-foot line that is 5 feet wide. Each creature in that line must make a DC 11 Dexterity saving throw, taking 18 (4d8) acid damage on a failed save, or half as much damage on a successful one.\nSlowing Breath. The dragon exhales gas in a 1 5-foot cone. Each creature in that area must succeed on a DC 11 Constitution saving throw. On a failed save, the creature can't use reactions, its speed is halved, and it can't make more than one attack on its turn. In addition, the creature can use either an action or a bonus action on its turn, but not both. These effects last for 1 minute. The creature can repeat the saving throw at the end of each of its turns, ending the effect on itself with a successful save."
+    }
+  ],
+  "legendaryActions": []
+}

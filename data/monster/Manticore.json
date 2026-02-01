@@ -1,0 +1,49 @@
+{
+  "name": "Manticore",
+  "cr": 3,
+  "size": "Large",
+  "type": "monstrosity",
+  "alignment": "lawful evil",
+  "ac": 14,
+  "hp": {
+    "average": 68,
+    "formula": "8d10"
+  },
+  "speed": "walk: 30 ft., fly: 50 ft.",
+  "stats": {
+    "STR": 17,
+    "DEX": 16,
+    "CON": 17,
+    "INT": 7,
+    "WIS": 12,
+    "CHA": 8
+  },
+  "traits": [
+    {
+      "name": "Tail Spike Regrowth",
+      "description": "The manticore has twenty-four tail spikes. Used spikes regrow when the manticore finishes a long rest."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The manticore makes three attacks: one with its bite and two with its claws or three with its tail spikes."
+    },
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 7 (1d8 + 3) piercing damage.",
+      "attackBonus": 5
+    },
+    {
+      "name": "Claw",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) slashing damage.",
+      "attackBonus": 5
+    },
+    {
+      "name": "Tail Spike",
+      "description": "Ranged Weapon Attack: +5 to hit, range 100/200 ft., one target. Hit: 7 (1d8 + 3) piercing damage.",
+      "attackBonus": 5
+    }
+  ],
+  "legendaryActions": []
+}

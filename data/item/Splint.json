@@ -1,0 +1,14 @@
+{
+  "name": "Splint",
+  "type": "Armor",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 200,
+    "pp": 0
+  },
+  "weight": 60,
+  "acCalculated": "17",
+  "stealthDisadvantage": true
+}

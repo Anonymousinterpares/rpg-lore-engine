@@ -1,0 +1,27 @@
+{
+  "name": "Warlock",
+  "hitDie": "1d8",
+  "primaryAbility": [],
+  "savingThrowProficiencies": [
+    "WIS",
+    "CHA"
+  ],
+  "armorProficiencies": [
+    "Light armor"
+  ],
+  "weaponProficiencies": [
+    "Simple weapons"
+  ],
+  "skillChoices": {
+    "count": 2,
+    "options": [
+      "Skill: Arcana",
+      "Skill: Deception",
+      "Skill: History",
+      "Skill: Intimidation",
+      "Skill: Investigation",
+      "Skill: Nature",
+      "Skill: Religion"
+    ]
+  }
+}

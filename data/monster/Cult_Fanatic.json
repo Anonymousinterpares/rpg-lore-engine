@@ -1,0 +1,43 @@
+{
+  "name": "Cult Fanatic",
+  "cr": 2,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "any non-good alignment",
+  "ac": 13,
+  "hp": {
+    "average": 22,
+    "formula": "6d8"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 11,
+    "DEX": 14,
+    "CON": 12,
+    "INT": 10,
+    "WIS": 13,
+    "CHA": 14
+  },
+  "traits": [
+    {
+      "name": "Dark Devotion",
+      "description": "The fanatic has advantage on saving throws against being charmed or frightened."
+    },
+    {
+      "name": "Spellcasting",
+      "description": "The fanatic is a 4th-level spellcaster. Its spell casting ability is Wisdom (spell save DC 11, +3 to hit with spell attacks). The fanatic has the following cleric spells prepared:\n\nCantrips (at will): light, sacred flame, thaumaturgy\n- 1st level (4 slots): command, inflict wounds, shield of faith\n- 2nd level (3 slots): hold person, spiritual weapon"
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The fanatic makes two melee attacks."
+    },
+    {
+      "name": "Dagger",
+      "description": "Melee or Ranged Weapon Attack: +4 to hit, reach 5 ft. or range 20/60 ft., one creature. Hit: 4 (1d4 + 2) piercing damage.",
+      "attackBonus": 4
+    }
+  ],
+  "legendaryActions": []
+}

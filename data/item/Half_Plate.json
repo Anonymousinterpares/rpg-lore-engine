@@ -1,0 +1,14 @@
+{
+  "name": "Half Plate",
+  "type": "Armor",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 750,
+    "pp": 0
+  },
+  "weight": 40,
+  "acCalculated": "15",
+  "stealthDisadvantage": true
+}

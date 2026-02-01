@@ -1,0 +1,30 @@
+{
+  "name": "Commoner",
+  "cr": 0,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "any alignment",
+  "ac": 10,
+  "hp": {
+    "average": 4,
+    "formula": "1d8"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 10,
+    "DEX": 10,
+    "CON": 10,
+    "INT": 10,
+    "WIS": 10,
+    "CHA": 10
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Club",
+      "description": "Melee Weapon Attack: +2 to hit, reach 5 ft., one target. Hit: 2 (1d4) bludgeoning damage.",
+      "attackBonus": 2
+    }
+  ],
+  "legendaryActions": []
+}

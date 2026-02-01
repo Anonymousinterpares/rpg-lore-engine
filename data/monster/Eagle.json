@@ -1,0 +1,35 @@
+{
+  "name": "Eagle",
+  "cr": 0,
+  "size": "Small",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 12,
+  "hp": {
+    "average": 3,
+    "formula": "1d6"
+  },
+  "speed": "walk: 10 ft., fly: 60 ft.",
+  "stats": {
+    "STR": 6,
+    "DEX": 15,
+    "CON": 10,
+    "INT": 2,
+    "WIS": 14,
+    "CHA": 7
+  },
+  "traits": [
+    {
+      "name": "Keen Sight",
+      "description": "The eagle has advantage on Wisdom (Perception) checks that rely on sight."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Talons",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 4 (1d4 + 2) slashing damage.",
+      "attackBonus": 4
+    }
+  ],
+  "legendaryActions": []
+}

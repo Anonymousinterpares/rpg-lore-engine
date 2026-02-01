@@ -1,0 +1,10 @@
+{
+  "name": "High Elf",
+  "speed": 30,
+  "size": "Medium",
+  "abilityScoreIncreases": {
+    "INT": 1
+  },
+  "traits": [],
+  "languages": []
+}

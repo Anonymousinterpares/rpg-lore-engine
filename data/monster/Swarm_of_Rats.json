@@ -1,0 +1,39 @@
+{
+  "name": "Swarm of Rats",
+  "cr": 0.25,
+  "size": "Medium",
+  "type": "swarm of Tiny beasts",
+  "alignment": "unaligned",
+  "ac": 10,
+  "hp": {
+    "average": 24,
+    "formula": "7d8"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 9,
+    "DEX": 11,
+    "CON": 9,
+    "INT": 2,
+    "WIS": 10,
+    "CHA": 3
+  },
+  "traits": [
+    {
+      "name": "Keen Smell",
+      "description": "The swarm has advantage on Wisdom (Perception) checks that rely on smell."
+    },
+    {
+      "name": "Swarm",
+      "description": "The swarm can occupy another creature's space and vice versa, and the swarm can move through any opening large enough for a Tiny rat. The swarm can't regain hit points or gain temporary hit points."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Bites",
+      "description": "Melee Weapon Attack: +2 to hit, reach 0 ft., one target in the swarm's space. Hit: 7 (2d6) piercing damage, or 3 (1d6) piercing damage if the swarm has half of its hit points or fewer.",
+      "attackBonus": 2
+    }
+  ],
+  "legendaryActions": []
+}

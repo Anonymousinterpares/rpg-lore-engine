@@ -1,0 +1,43 @@
+{
+  "name": "Spider",
+  "cr": 0,
+  "size": "Tiny",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 12,
+  "hp": {
+    "average": 1,
+    "formula": "1d4"
+  },
+  "speed": "walk: 20 ft., climb: 20 ft.",
+  "stats": {
+    "STR": 2,
+    "DEX": 14,
+    "CON": 8,
+    "INT": 1,
+    "WIS": 10,
+    "CHA": 2
+  },
+  "traits": [
+    {
+      "name": "Spider Climb",
+      "description": "The spider can climb difficult surfaces, including upside down on ceilings, without needing to make an ability check."
+    },
+    {
+      "name": "Web Sense",
+      "description": "While in contact with a web, the spider knows the exact location of any other creature in contact with the same web."
+    },
+    {
+      "name": "Web Walker",
+      "description": "The spider ignores movement restrictions caused by webbing."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one creature. Hit: 1 piercing damage, and the target must succeed on a DC 9 Constitution saving throw or take 2 (1d4) poison damage.",
+      "attackBonus": 4
+    }
+  ],
+  "legendaryActions": []
+}

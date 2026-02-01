@@ -1,0 +1,14 @@
+{
+  "name": "Lightfoot Halfling",
+  "speed": 30,
+  "size": "Medium",
+  "abilityScoreIncreases": {
+    "CHA": 1
+  },
+  "traits": [
+    {
+      "name": "Naturally Stealthy"
+    }
+  ],
+  "languages": []
+}

@@ -1,0 +1,48 @@
+{
+  "name": "Salamander",
+  "cr": 5,
+  "size": "Large",
+  "type": "elemental",
+  "alignment": "neutral evil",
+  "ac": 15,
+  "hp": {
+    "average": 90,
+    "formula": "12d10"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 18,
+    "DEX": 14,
+    "CON": 15,
+    "INT": 11,
+    "WIS": 10,
+    "CHA": 12
+  },
+  "traits": [
+    {
+      "name": "Heated Body",
+      "description": "A creature that touches the salamander or hits it with a melee attack while within 5 ft. of it takes 7 (2d6) fire damage."
+    },
+    {
+      "name": "Heated Weapons",
+      "description": "Any metal melee weapon the salamander wields deals an extra 3 (1d6) fire damage on a hit (included in the attack)."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The salamander makes two attacks: one with its spear and one with its tail."
+    },
+    {
+      "name": "Spear",
+      "description": "Melee or Ranged Weapon Attack: +7 to hit, reach 5 ft. or range 20 ft./60 ft., one target. Hit: 11 (2d6 + 4) piercing damage, or 13 (2d8 + 4) piercing damage if used with two hands to make a melee attack, plus 3 (1d6) fire damage.",
+      "attackBonus": 7
+    },
+    {
+      "name": "Tail",
+      "description": "Melee Weapon Attack: +7 to hit, reach 10 ft., one target. Hit: 11 (2d6 + 4) bludgeoning damage plus 7 (2d6) fire damage, and the target is grappled (escape DC 14). Until this grapple ends, the target is restrained, the salamander can automatically hit the target with its tail, and the salamander can't make tail attacks against other targets.",
+      "attackBonus": 7
+    }
+  ],
+  "legendaryActions": []
+}

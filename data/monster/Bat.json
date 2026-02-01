@@ -1,0 +1,39 @@
+{
+  "name": "Bat",
+  "cr": 0,
+  "size": "Tiny",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 12,
+  "hp": {
+    "average": 1,
+    "formula": "1d4"
+  },
+  "speed": "walk: 5 ft., fly: 30 ft.",
+  "stats": {
+    "STR": 2,
+    "DEX": 15,
+    "CON": 8,
+    "INT": 2,
+    "WIS": 12,
+    "CHA": 4
+  },
+  "traits": [
+    {
+      "name": "Echolocation",
+      "description": "The bat can't use its blindsight while deafened."
+    },
+    {
+      "name": "Keen Hearing",
+      "description": "The bat has advantage on Wisdom (Perception) checks that rely on hearing."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +0 to hit, reach 5 ft., one creature. Hit: 1 piercing damage.",
+      "attackBonus": 0
+    }
+  ],
+  "legendaryActions": []
+}

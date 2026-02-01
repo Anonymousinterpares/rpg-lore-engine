@@ -1,0 +1,27 @@
+{
+  "name": "Cleric",
+  "hitDie": "1d8",
+  "primaryAbility": [],
+  "savingThrowProficiencies": [
+    "WIS",
+    "CHA"
+  ],
+  "armorProficiencies": [
+    "Light armor",
+    "Medium armor",
+    "Shields"
+  ],
+  "weaponProficiencies": [
+    "Simple weapons"
+  ],
+  "skillChoices": {
+    "count": 2,
+    "options": [
+      "Skill: History",
+      "Skill: Insight",
+      "Skill: Medicine",
+      "Skill: Persuasion",
+      "Skill: Religion"
+    ]
+  }
+}

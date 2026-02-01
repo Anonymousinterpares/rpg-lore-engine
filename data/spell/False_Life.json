@@ -1,0 +1,15 @@
+{
+  "name": "False Life",
+  "level": 1,
+  "school": "Necromancy",
+  "time": "1 action",
+  "range": "Self",
+  "components": {
+    "v": true,
+    "s": true,
+    "m": "A small amount of alcohol or distilled spirits."
+  },
+  "duration": "1 hour",
+  "concentration": false,
+  "description": "Bolstering yourself with a necromantic facsimile of life, you gain 1d4 + 4 temporary hit points for the duration."
+}

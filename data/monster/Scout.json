@@ -1,0 +1,44 @@
+{
+  "name": "Scout",
+  "cr": 0.5,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "any alignment",
+  "ac": 13,
+  "hp": {
+    "average": 16,
+    "formula": "3d8"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 11,
+    "DEX": 14,
+    "CON": 12,
+    "INT": 11,
+    "WIS": 13,
+    "CHA": 11
+  },
+  "traits": [
+    {
+      "name": "Keen Hearing and Sight",
+      "description": "The scout has advantage on Wisdom (Perception) checks that rely on hearing or sight."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The scout makes two melee attacks or two ranged attacks."
+    },
+    {
+      "name": "Shortsword",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) piercing damage.",
+      "attackBonus": 4
+    },
+    {
+      "name": "Longbow",
+      "description": "Ranged Weapon Attack: +4 to hit, ranged 150/600 ft., one target. Hit: 6 (1d8 + 2) piercing damage.",
+      "attackBonus": 4
+    }
+  ],
+  "legendaryActions": []
+}

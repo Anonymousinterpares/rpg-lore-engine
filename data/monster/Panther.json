@@ -1,0 +1,44 @@
+{
+  "name": "Panther",
+  "cr": 0.25,
+  "size": "Medium",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 12,
+  "hp": {
+    "average": 13,
+    "formula": "3d8"
+  },
+  "speed": "walk: 50 ft., climb: 40 ft.",
+  "stats": {
+    "STR": 14,
+    "DEX": 15,
+    "CON": 10,
+    "INT": 3,
+    "WIS": 14,
+    "CHA": 7
+  },
+  "traits": [
+    {
+      "name": "Keen Smell",
+      "description": "The panther has advantage on Wisdom (Perception) checks that rely on smell."
+    },
+    {
+      "name": "Pounce",
+      "description": "If the panther moves at least 20 ft. straight toward a creature and then hits it with a claw attack on the same turn, that target must succeed on a DC 12 Strength saving throw or be knocked prone. If the target is prone, the panther can make one bite attack against it as a bonus action."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) piercing damage.",
+      "attackBonus": 4
+    },
+    {
+      "name": "Claw",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 4 (1d4 + 2) slashing damage.",
+      "attackBonus": 4
+    }
+  ],
+  "legendaryActions": []
+}

@@ -1,0 +1,35 @@
+{
+  "name": "Merfolk",
+  "cr": 0.125,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "neutral",
+  "ac": 11,
+  "hp": {
+    "average": 11,
+    "formula": "2d8"
+  },
+  "speed": "walk: 10 ft., swim: 40 ft.",
+  "stats": {
+    "STR": 10,
+    "DEX": 13,
+    "CON": 12,
+    "INT": 11,
+    "WIS": 11,
+    "CHA": 12
+  },
+  "traits": [
+    {
+      "name": "Amphibious",
+      "description": "The merfolk can breathe air and water."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Spear",
+      "description": "Melee or Ranged Weapon Attack: +2 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 3 (1d6) piercing damage, or 4 (1d8) piercing damage if used with two hands to make a melee attack.",
+      "attackBonus": 2
+    }
+  ],
+  "legendaryActions": []
+}

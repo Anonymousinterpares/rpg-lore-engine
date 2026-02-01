@@ -1,0 +1,40 @@
+{
+  "name": "Hobgoblin",
+  "cr": 0.5,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "lawful evil",
+  "ac": 18,
+  "hp": {
+    "average": 11,
+    "formula": "2d8"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 13,
+    "DEX": 12,
+    "CON": 12,
+    "INT": 10,
+    "WIS": 10,
+    "CHA": 9
+  },
+  "traits": [
+    {
+      "name": "Martial Advantage",
+      "description": "Once per turn, the hobgoblin can deal an extra 7 (2d6) damage to a creature it hits with a weapon attack if that creature is within 5 ft. of an ally of the hobgoblin that isn't incapacitated."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Longsword",
+      "description": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 5 (1d8 + 1) slashing damage, or 6 (1d10 + 1) slashing damage if used with two hands.",
+      "attackBonus": 3
+    },
+    {
+      "name": "Longbow",
+      "description": "Ranged Weapon Attack: +3 to hit, range 150/600 ft., one target. Hit: 5 (1d8 + 1) piercing damage.",
+      "attackBonus": 3
+    }
+  ],
+  "legendaryActions": []
+}

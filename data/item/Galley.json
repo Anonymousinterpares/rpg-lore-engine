@@ -1,0 +1,12 @@
+{
+  "name": "Galley",
+  "type": "Adventuring Gear",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 30000,
+    "pp": 0
+  },
+  "weight": 0
+}

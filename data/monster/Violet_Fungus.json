@@ -1,0 +1,39 @@
+{
+  "name": "Violet Fungus",
+  "cr": 0.25,
+  "size": "Medium",
+  "type": "plant",
+  "alignment": "unaligned",
+  "ac": 5,
+  "hp": {
+    "average": 18,
+    "formula": "4d8"
+  },
+  "speed": "walk: 5 ft.",
+  "stats": {
+    "STR": 3,
+    "DEX": 1,
+    "CON": 10,
+    "INT": 1,
+    "WIS": 3,
+    "CHA": 1
+  },
+  "traits": [
+    {
+      "name": "False Appearance",
+      "description": "While the violet fungus remains motionless, it is indistinguishable from an ordinary fungus."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The fungus makes 1d4 Rotting Touch attacks."
+    },
+    {
+      "name": "Rotting Touch",
+      "description": "Melee Weapon Attack: +2 to hit, reach 10 ft., one creature. Hit: 4 (1d8) necrotic damage.",
+      "attackBonus": 2
+    }
+  ],
+  "legendaryActions": []
+}

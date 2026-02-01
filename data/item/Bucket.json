@@ -1,0 +1,12 @@
+{
+  "name": "Bucket",
+  "type": "Adventuring Gear",
+  "cost": {
+    "cp": 5,
+    "sp": 0,
+    "ep": 0,
+    "gp": 0,
+    "pp": 0
+  },
+  "weight": 2
+}

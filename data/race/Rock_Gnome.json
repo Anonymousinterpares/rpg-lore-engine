@@ -1,0 +1,26 @@
+{
+  "name": "Rock Gnome",
+  "speed": 30,
+  "size": "Medium",
+  "abilityScoreIncreases": {
+    "CON": 1
+  },
+  "traits": [
+    {
+      "name": "Darkvision"
+    },
+    {
+      "name": "Gnome Cunning"
+    },
+    {
+      "name": "Artificer's Lore"
+    },
+    {
+      "name": "Tinker"
+    }
+  ],
+  "languages": [
+    "Common",
+    "Gnomish"
+  ]
+}

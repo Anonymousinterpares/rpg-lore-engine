@@ -1,0 +1,35 @@
+{
+  "name": "Cat",
+  "cr": 0,
+  "size": "Tiny",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 12,
+  "hp": {
+    "average": 2,
+    "formula": "1d4"
+  },
+  "speed": "walk: 40 ft., climb: 30 ft.",
+  "stats": {
+    "STR": 3,
+    "DEX": 15,
+    "CON": 10,
+    "INT": 3,
+    "WIS": 12,
+    "CHA": 7
+  },
+  "traits": [
+    {
+      "name": "Keen Smell",
+      "description": "The cat has advantage on Wisdom (Perception) checks that rely on smell."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Claws",
+      "description": "Melee Weapon Attack: +0 to hit, reach 5 ft., one target. Hit: 1 slashing damage.",
+      "attackBonus": 0
+    }
+  ],
+  "legendaryActions": []
+}

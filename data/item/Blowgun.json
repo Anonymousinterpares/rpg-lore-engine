@@ -1,0 +1,20 @@
+{
+  "name": "Blowgun",
+  "type": "Weapon",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 10,
+    "pp": 0
+  },
+  "weight": 1,
+  "damage": {
+    "dice": "1d1",
+    "type": "Piercing"
+  },
+  "properties": [
+    "Ammunition",
+    "Loading"
+  ]
+}

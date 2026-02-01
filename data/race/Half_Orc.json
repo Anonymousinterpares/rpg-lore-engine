@@ -1,0 +1,25 @@
+{
+  "name": "Half-Orc",
+  "speed": 30,
+  "size": "Medium",
+  "abilityScoreIncreases": {
+    "STR": 2,
+    "CON": 1
+  },
+  "traits": [
+    {
+      "name": "Darkvision"
+    },
+    {
+      "name": "Savage Attacks"
+    },
+    {
+      "name": "Restless Endurance"
+    }
+  ],
+  "languages": [
+    "Common",
+    "Orcish"
+  ],
+  "optional": false
+}

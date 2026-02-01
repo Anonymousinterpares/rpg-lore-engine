@@ -1,0 +1,38 @@
+{
+  "name": "Monk",
+  "hitDie": "1d8",
+  "primaryAbility": [],
+  "savingThrowProficiencies": [
+    "STR",
+    "DEX"
+  ],
+  "armorProficiencies": [],
+  "weaponProficiencies": [
+    "Simple weapons",
+    "Shortswords"
+  ],
+  "skillChoices": {
+    "count": 1,
+    "options": [
+      "Alchemist's supplies",
+      "Brewer's supplies",
+      "Calligrapher's supplies",
+      "Carpenter's tools",
+      "Cartographer's tools",
+      "Cobbler's tools",
+      "Cook's utensils",
+      "Glassblower's tools",
+      "Jeweler's tools",
+      "Leatherworker's tools",
+      "Mason's tools",
+      "Painter's supplies",
+      "Potter's tools",
+      "Smith's tools",
+      "Tinker's tools",
+      "Weaver's tools",
+      "Woodcarver's tools",
+      "Disguise kit",
+      "Forgery kit"
+    ]
+  }
+}

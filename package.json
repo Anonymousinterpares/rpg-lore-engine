@@ -1,0 +1,18 @@
+{
+  "name": "rpg-lore-engine",
+  "version": "1.0.0",
+  "description": "Strictly typed D&D 5e lore engine with Zod validation.",
+  "main": "index.js",
+  "scripts": {
+    "validate": "ts-node src/ruleset/scripts/validate.ts",
+    "docs:gen": "ts-node src/ruleset/scripts/generateDocs.ts"
+  },
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

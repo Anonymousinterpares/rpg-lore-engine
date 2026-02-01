@@ -1,0 +1,35 @@
+{
+  "name": "Bandit",
+  "cr": 0.125,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "any non-lawful alignment",
+  "ac": 12,
+  "hp": {
+    "average": 11,
+    "formula": "2d8"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 11,
+    "DEX": 12,
+    "CON": 12,
+    "INT": 10,
+    "WIS": 10,
+    "CHA": 10
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Scimitar",
+      "description": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 4 (1d6 + 1) slashing damage.",
+      "attackBonus": 3
+    },
+    {
+      "name": "Light Crossbow",
+      "description": "Ranged Weapon Attack: +3 to hit, range 80 ft./320 ft., one target. Hit: 5 (1d8 + 1) piercing damage.",
+      "attackBonus": 3
+    }
+  ],
+  "legendaryActions": []
+}

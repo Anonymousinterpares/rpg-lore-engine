@@ -1,0 +1,39 @@
+{
+  "name": "Blink Dog",
+  "cr": 0.25,
+  "size": "Medium",
+  "type": "fey",
+  "alignment": "lawful good",
+  "ac": 13,
+  "hp": {
+    "average": 22,
+    "formula": "4d8"
+  },
+  "speed": "walk: 40 ft.",
+  "stats": {
+    "STR": 12,
+    "DEX": 17,
+    "CON": 12,
+    "INT": 10,
+    "WIS": 13,
+    "CHA": 11
+  },
+  "traits": [
+    {
+      "name": "Keen Hearing and Smell",
+      "description": "The dog has advantage on Wisdom (Perception) checks that rely on hearing or smell."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 4 (1d6 + 1) piercing damage.",
+      "attackBonus": 3
+    },
+    {
+      "name": "Teleport (Recharge 4-6)",
+      "description": "The dog magically teleports, along with any equipment it is wearing or carrying, up to 40 ft. to an unoccupied space it can see. Before or after teleporting, the dog can make one bite attack."
+    }
+  ],
+  "legendaryActions": []
+}

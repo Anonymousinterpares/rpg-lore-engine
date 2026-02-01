@@ -1,0 +1,35 @@
+{
+  "name": "Crab",
+  "cr": 0,
+  "size": "Tiny",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 11,
+  "hp": {
+    "average": 2,
+    "formula": "1d4"
+  },
+  "speed": "walk: 20 ft., swim: 20 ft.",
+  "stats": {
+    "STR": 2,
+    "DEX": 11,
+    "CON": 10,
+    "INT": 1,
+    "WIS": 8,
+    "CHA": 2
+  },
+  "traits": [
+    {
+      "name": "Amphibious",
+      "description": "The crab can breathe air and water."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Claw",
+      "description": "Melee Weapon Attack: +0 to hit, reach 5 ft., one target. Hit: 1 bludgeoning damage.",
+      "attackBonus": 0
+    }
+  ],
+  "legendaryActions": []
+}

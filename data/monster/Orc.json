@@ -1,0 +1,40 @@
+{
+  "name": "Orc",
+  "cr": 0.5,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "chaotic evil",
+  "ac": 13,
+  "hp": {
+    "average": 15,
+    "formula": "2d8"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 16,
+    "DEX": 12,
+    "CON": 16,
+    "INT": 7,
+    "WIS": 11,
+    "CHA": 10
+  },
+  "traits": [
+    {
+      "name": "Aggressive",
+      "description": "As a bonus action, the orc can move up to its speed toward a hostile creature that it can see."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Greataxe",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 9 (1d12 + 3) slashing damage.",
+      "attackBonus": 5
+    },
+    {
+      "name": "Javelin",
+      "description": "Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or range 30/120 ft., one target. Hit: 6 (1d6 + 3) piercing damage.",
+      "attackBonus": 5
+    }
+  ],
+  "legendaryActions": []
+}

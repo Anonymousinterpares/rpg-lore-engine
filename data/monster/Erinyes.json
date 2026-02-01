@@ -1,0 +1,52 @@
+{
+  "name": "Erinyes",
+  "cr": 12,
+  "size": "Medium",
+  "type": "fiend",
+  "alignment": "lawful evil",
+  "ac": 18,
+  "hp": {
+    "average": 153,
+    "formula": "18d8"
+  },
+  "speed": "walk: 30 ft., fly: 60 ft.",
+  "stats": {
+    "STR": 18,
+    "DEX": 16,
+    "CON": 18,
+    "INT": 14,
+    "WIS": 14,
+    "CHA": 18
+  },
+  "traits": [
+    {
+      "name": "Hellish Weapons",
+      "description": "The erinyes's weapon attacks are magical and deal an extra 13 (3d8) poison damage on a hit (included in the attacks)."
+    },
+    {
+      "name": "Magic Resistance",
+      "description": "The erinyes has advantage on saving throws against spells and other magical effects."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The erinyes makes three attacks"
+    },
+    {
+      "name": "Longsword",
+      "description": "Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) slashing damage, or 9 (1d10 + 4) slashing damage if used with two hands, plus 13 (3d8) poison damage.",
+      "attackBonus": 8
+    },
+    {
+      "name": "Longbow",
+      "description": "Ranged Weapon Attack: +7 to hit, range 150/600 ft., one target. Hit: 7 (1d8 + 3) piercing damage plus 13 (3d8) poison damage, and the target must succeed on a DC 14 Constitution saving throw or be poisoned. The poison lasts until it is removed by the lesser restoration spell or similar magic.",
+      "attackBonus": 7
+    },
+    {
+      "name": "Variant: Rope of Entanglement",
+      "description": "Some erinyes carry a rope of entanglement (detailed in the Dungeon Master's Guide). When such an erinyes uses its Multiattack, the erinyes can use the rope in place of two of the attacks."
+    }
+  ],
+  "legendaryActions": []
+}

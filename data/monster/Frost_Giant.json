@@ -1,0 +1,39 @@
+{
+  "name": "Frost Giant",
+  "cr": 8,
+  "size": "Huge",
+  "type": "giant",
+  "alignment": "neutral evil",
+  "ac": 15,
+  "hp": {
+    "average": 138,
+    "formula": "12d12"
+  },
+  "speed": "walk: 40 ft.",
+  "stats": {
+    "STR": 23,
+    "DEX": 9,
+    "CON": 21,
+    "INT": 9,
+    "WIS": 10,
+    "CHA": 12
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The giant makes two greataxe attacks."
+    },
+    {
+      "name": "Greataxe",
+      "description": "Melee Weapon Attack: +9 to hit, reach 10 ft., one target. Hit: 25 (3d12 + 6) slashing damage.",
+      "attackBonus": 9
+    },
+    {
+      "name": "Rock",
+      "description": "Ranged Weapon Attack: +9 to hit, range 60/240 ft., one target. Hit: 28 (4d10 + 6) bludgeoning damage.",
+      "attackBonus": 9
+    }
+  ],
+  "legendaryActions": []
+}

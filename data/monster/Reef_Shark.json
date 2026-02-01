@@ -1,0 +1,39 @@
+{
+  "name": "Reef Shark",
+  "cr": 0.5,
+  "size": "Medium",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 12,
+  "hp": {
+    "average": 22,
+    "formula": "4d8"
+  },
+  "speed": "swim: 40 ft.",
+  "stats": {
+    "STR": 14,
+    "DEX": 13,
+    "CON": 13,
+    "INT": 1,
+    "WIS": 10,
+    "CHA": 4
+  },
+  "traits": [
+    {
+      "name": "Pack Tactics",
+      "description": "The shark has advantage on an attack roll against a creature if at least one of the shark's allies is within 5 ft. of the creature and the ally isn't incapacitated."
+    },
+    {
+      "name": "Water Breathing",
+      "description": "The shark can breathe only underwater."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 6 (1d8 + 2) piercing damage.",
+      "attackBonus": 4
+    }
+  ],
+  "legendaryActions": []
+}

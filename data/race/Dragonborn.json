@@ -1,0 +1,25 @@
+{
+  "name": "Dragonborn",
+  "speed": 30,
+  "size": "Medium",
+  "abilityScoreIncreases": {
+    "STR": 2,
+    "CHA": 1
+  },
+  "traits": [
+    {
+      "name": "Draconic Ancestry"
+    },
+    {
+      "name": "Breath Weapon"
+    },
+    {
+      "name": "Damage Resistance"
+    }
+  ],
+  "languages": [
+    "Common",
+    "Draconic"
+  ],
+  "optional": true
+}

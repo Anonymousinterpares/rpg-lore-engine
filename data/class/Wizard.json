@@ -1,0 +1,22 @@
+{
+  "name": "Wizard",
+  "hitDie": "1d6",
+  "primaryAbility": [],
+  "savingThrowProficiencies": [
+    "INT",
+    "WIS"
+  ],
+  "armorProficiencies": [],
+  "weaponProficiencies": [],
+  "skillChoices": {
+    "count": 2,
+    "options": [
+      "Skill: Arcana",
+      "Skill: History",
+      "Skill: Insight",
+      "Skill: Investigation",
+      "Skill: Medicine",
+      "Skill: Religion"
+    ]
+  }
+}

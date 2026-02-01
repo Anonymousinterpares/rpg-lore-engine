@@ -1,0 +1,44 @@
+{
+  "name": "Veteran",
+  "cr": 3,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "any alignment",
+  "ac": 17,
+  "hp": {
+    "average": 58,
+    "formula": "9d8"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 16,
+    "DEX": 13,
+    "CON": 14,
+    "INT": 10,
+    "WIS": 11,
+    "CHA": 10
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The veteran makes two longsword attacks. If it has a shortsword drawn, it can also make a shortsword attack."
+    },
+    {
+      "name": "Longsword",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 7 (1d8 + 3) slashing damage, or 8 (1d10 + 3) slashing damage if used with two hands.",
+      "attackBonus": 5
+    },
+    {
+      "name": "Shortsword",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) piercing damage.",
+      "attackBonus": 5
+    },
+    {
+      "name": "Heavy Crossbow",
+      "description": "Ranged Weapon Attack: +3 to hit, range 100/400 ft., one target. Hit: 6 (1d10 + 1) piercing damage.",
+      "attackBonus": 3
+    }
+  ],
+  "legendaryActions": []
+}

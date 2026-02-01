@@ -1,0 +1,30 @@
+{
+  "name": "Axe Beak",
+  "cr": 0.25,
+  "size": "Large",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 11,
+  "hp": {
+    "average": 19,
+    "formula": "3d10"
+  },
+  "speed": "walk: 50 ft.",
+  "stats": {
+    "STR": 14,
+    "DEX": 12,
+    "CON": 12,
+    "INT": 2,
+    "WIS": 10,
+    "CHA": 5
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Beak",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 6 (1d8 + 2) slashing damage.",
+      "attackBonus": 4
+    }
+  ],
+  "legendaryActions": []
+}

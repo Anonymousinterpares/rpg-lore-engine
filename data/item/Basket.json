@@ -1,0 +1,12 @@
+{
+  "name": "Basket",
+  "type": "Adventuring Gear",
+  "cost": {
+    "cp": 0,
+    "sp": 4,
+    "ep": 0,
+    "gp": 0,
+    "pp": 0
+  },
+  "weight": 2
+}

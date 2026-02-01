@@ -1,0 +1,30 @@
+{
+  "name": "Riding Horse",
+  "cr": 0.25,
+  "size": "Large",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 10,
+  "hp": {
+    "average": 13,
+    "formula": "2d10"
+  },
+  "speed": "walk: 60 ft.",
+  "stats": {
+    "STR": 16,
+    "DEX": 10,
+    "CON": 12,
+    "INT": 2,
+    "WIS": 11,
+    "CHA": 7
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Hooves",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 8 (2d4 + 3) bludgeoning damage.",
+      "attackBonus": 5
+    }
+  ],
+  "legendaryActions": []
+}

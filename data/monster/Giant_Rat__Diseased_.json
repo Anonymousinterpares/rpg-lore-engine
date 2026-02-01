@@ -1,0 +1,30 @@
+{
+  "name": "Giant Rat (Diseased)",
+  "cr": 0.125,
+  "size": "Small",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 12,
+  "hp": {
+    "average": 7,
+    "formula": "2d6"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 7,
+    "DEX": 15,
+    "CON": 11,
+    "INT": 2,
+    "WIS": 10,
+    "CHA": 4
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 3 (1d4 + 2) piercing damage. If the target is a creature, it must succeed on a DC 10 Constitution saving throw or contract a disease. Until the disease is cured, the target can't regain hit points except by magical means, and the target's hit point maximum decreases by 3 (1d6) every 24 hours. If the target's hit point maximum drops to 0 as a result of this disease, the target dies.",
+      "attackBonus": 4
+    }
+  ],
+  "legendaryActions": []
+}

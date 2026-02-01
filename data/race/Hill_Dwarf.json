@@ -1,0 +1,14 @@
+{
+  "name": "Hill Dwarf",
+  "speed": 30,
+  "size": "Medium",
+  "abilityScoreIncreases": {
+    "WIS": 1
+  },
+  "traits": [
+    {
+      "name": "Dwarven Toughness"
+    }
+  ],
+  "languages": []
+}

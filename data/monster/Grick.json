@@ -1,0 +1,44 @@
+{
+  "name": "Grick",
+  "cr": 2,
+  "size": "Medium",
+  "type": "monstrosity",
+  "alignment": "neutral",
+  "ac": 14,
+  "hp": {
+    "average": 27,
+    "formula": "6d8"
+  },
+  "speed": "walk: 30 ft., climb: 30 ft.",
+  "stats": {
+    "STR": 14,
+    "DEX": 14,
+    "CON": 11,
+    "INT": 3,
+    "WIS": 14,
+    "CHA": 5
+  },
+  "traits": [
+    {
+      "name": "Stone Camouflage",
+      "description": "The grick has advantage on Dexterity (Stealth) checks made to hide in rocky terrain."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The grick makes one attack with its tentacles. If that attack hits, the grick can make one beak attack against the same target."
+    },
+    {
+      "name": "Tentacles",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 9 (2d6 + 2) slashing damage.",
+      "attackBonus": 4
+    },
+    {
+      "name": "Beak",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) piercing damage.",
+      "attackBonus": 4
+    }
+  ],
+  "legendaryActions": []
+}

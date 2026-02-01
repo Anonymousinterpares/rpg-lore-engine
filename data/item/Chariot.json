@@ -1,0 +1,12 @@
+{
+  "name": "Chariot",
+  "type": "Adventuring Gear",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 250,
+    "pp": 0
+  },
+  "weight": 100
+}

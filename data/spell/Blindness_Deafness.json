@@ -1,0 +1,14 @@
+{
+  "name": "Blindness/Deafness",
+  "level": 2,
+  "school": "Necromancy",
+  "time": "1 action",
+  "range": "30 feet",
+  "components": {
+    "v": true,
+    "s": false
+  },
+  "duration": "1 minute",
+  "concentration": false,
+  "description": "You can blind or deafen a foe. Choose one creature that you can see within range to make a constitution saving throw. If it fails, the target is either blinded or deafened (your choice) for the duration. At the end of each of its turns, the target can make a constitution saving throw. On a success, the spell ends."
+}

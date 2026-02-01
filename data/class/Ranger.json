@@ -1,0 +1,31 @@
+{
+  "name": "Ranger",
+  "hitDie": "1d10",
+  "primaryAbility": [],
+  "savingThrowProficiencies": [
+    "STR",
+    "DEX"
+  ],
+  "armorProficiencies": [
+    "Light armor",
+    "Medium armor",
+    "Shields"
+  ],
+  "weaponProficiencies": [
+    "Simple weapons",
+    "Martial weapons"
+  ],
+  "skillChoices": {
+    "count": 3,
+    "options": [
+      "Skill: Animal Handling",
+      "Skill: Athletics",
+      "Skill: Insight",
+      "Skill: Investigation",
+      "Skill: Nature",
+      "Skill: Perception",
+      "Skill: Stealth",
+      "Skill: Survival"
+    ]
+  }
+}

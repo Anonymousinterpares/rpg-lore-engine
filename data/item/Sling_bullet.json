@@ -1,0 +1,12 @@
+{
+  "name": "Sling bullet",
+  "type": "Adventuring Gear",
+  "cost": {
+    "cp": 1,
+    "sp": 0,
+    "ep": 0,
+    "gp": 0,
+    "pp": 0
+  },
+  "weight": 1.5
+}

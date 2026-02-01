@@ -1,0 +1,15 @@
+{
+  "name": "Hold Person",
+  "level": 2,
+  "school": "Enchantment",
+  "time": "1 action",
+  "range": "60 feet",
+  "components": {
+    "v": true,
+    "s": true,
+    "m": "A small, straight piece of iron."
+  },
+  "duration": "Up to 1 minute",
+  "concentration": true,
+  "description": "Choose a humanoid that you can see within range. The target must succeed on a wisdom saving throw or be paralyzed for the duration. At the end of each of its turns, the target can make another wisdom saving throw. On a success, the spell ends on the target."
+}

@@ -1,0 +1,35 @@
+{
+  "name": "Badger",
+  "cr": 0,
+  "size": "Tiny",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 10,
+  "hp": {
+    "average": 3,
+    "formula": "1d4"
+  },
+  "speed": "walk: 20 ft., burrow: 5 ft.",
+  "stats": {
+    "STR": 4,
+    "DEX": 11,
+    "CON": 12,
+    "INT": 2,
+    "WIS": 12,
+    "CHA": 5
+  },
+  "traits": [
+    {
+      "name": "Keen Smell",
+      "description": "The badger has advantage on Wisdom (Perception) checks that rely on smell."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +2 to hit, reach 5 ft., one target. Hit: 1 piercing damage.",
+      "attackBonus": 2
+    }
+  ],
+  "legendaryActions": []
+}

@@ -1,0 +1,34 @@
+{
+  "name": "Rogue",
+  "hitDie": "1d8",
+  "primaryAbility": [],
+  "savingThrowProficiencies": [
+    "DEX",
+    "INT"
+  ],
+  "armorProficiencies": [
+    "Light armor"
+  ],
+  "weaponProficiencies": [
+    "Simple weapons",
+    "Longswords",
+    "Shortswords",
+    "Crossbows, hand"
+  ],
+  "skillChoices": {
+    "count": 4,
+    "options": [
+      "Skill: Acrobatics",
+      "Skill: Athletics",
+      "Skill: Deception",
+      "Skill: Insight",
+      "Skill: Intimidation",
+      "Skill: Investigation",
+      "Skill: Perception",
+      "Skill: Performance",
+      "Skill: Persuasion",
+      "Skill: Sleight of Hand",
+      "Skill: Stealth"
+    ]
+  }
+}

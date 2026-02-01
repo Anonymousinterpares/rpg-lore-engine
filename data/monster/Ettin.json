@@ -1,0 +1,48 @@
+{
+  "name": "Ettin",
+  "cr": 4,
+  "size": "Large",
+  "type": "giant",
+  "alignment": "chaotic evil",
+  "ac": 12,
+  "hp": {
+    "average": 85,
+    "formula": "10d10"
+  },
+  "speed": "walk: 40 ft.",
+  "stats": {
+    "STR": 21,
+    "DEX": 8,
+    "CON": 17,
+    "INT": 6,
+    "WIS": 10,
+    "CHA": 8
+  },
+  "traits": [
+    {
+      "name": "Two Heads",
+      "description": "The ettin has advantage on Wisdom (Perception) checks and on saving throws against being blinded, charmed, deafened, frightened, stunned, and knocked unconscious."
+    },
+    {
+      "name": "Wakeful",
+      "description": "When one of the ettin's heads is asleep, its other head is awake."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The ettin makes two attacks: one with its battleaxe and one with its morningstar."
+    },
+    {
+      "name": "Battleaxe",
+      "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 14 (2d8 + 5) slashing damage.",
+      "attackBonus": 7
+    },
+    {
+      "name": "Morningstar",
+      "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 14 (2d8 + 5) piercing damage.",
+      "attackBonus": 7
+    }
+  ],
+  "legendaryActions": []
+}

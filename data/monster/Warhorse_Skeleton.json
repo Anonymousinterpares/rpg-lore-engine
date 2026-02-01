@@ -1,0 +1,30 @@
+{
+  "name": "Warhorse Skeleton",
+  "cr": 0.5,
+  "size": "Large",
+  "type": "undead",
+  "alignment": "lawful evil",
+  "ac": 13,
+  "hp": {
+    "average": 22,
+    "formula": "3d10"
+  },
+  "speed": "walk: 60 ft.",
+  "stats": {
+    "STR": 18,
+    "DEX": 12,
+    "CON": 15,
+    "INT": 2,
+    "WIS": 8,
+    "CHA": 5
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Hooves",
+      "description": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 11 (2d6 + 4) bludgeoning damage.",
+      "attackBonus": 6
+    }
+  ],
+  "legendaryActions": []
+}

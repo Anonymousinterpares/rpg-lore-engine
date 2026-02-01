@@ -1,0 +1,19 @@
+{
+  "name": "Greatclub",
+  "type": "Weapon",
+  "cost": {
+    "cp": 0,
+    "sp": 2,
+    "ep": 0,
+    "gp": 0,
+    "pp": 0
+  },
+  "weight": 10,
+  "damage": {
+    "dice": "1d8",
+    "type": "Bludgeoning"
+  },
+  "properties": [
+    "Two-Handed"
+  ]
+}

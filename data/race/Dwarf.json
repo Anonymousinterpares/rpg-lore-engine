@@ -1,0 +1,24 @@
+{
+  "name": "Dwarf",
+  "speed": 30,
+  "size": "Medium",
+  "abilityScoreIncreases": {
+    "CON": 2
+  },
+  "traits": [
+    {
+      "name": "Darkvision"
+    },
+    {
+      "name": "Dwarven Resilience"
+    },
+    {
+      "name": "Stonecunning"
+    }
+  ],
+  "languages": [
+    "Common",
+    "Dwarvish"
+  ],
+  "optional": false
+}

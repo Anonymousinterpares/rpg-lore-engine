@@ -1,0 +1,35 @@
+{
+  "name": "Awakened Shrub",
+  "cr": 0,
+  "size": "Small",
+  "type": "plant",
+  "alignment": "unaligned",
+  "ac": 9,
+  "hp": {
+    "average": 10,
+    "formula": "3d6"
+  },
+  "speed": "walk: 20 ft.",
+  "stats": {
+    "STR": 3,
+    "DEX": 8,
+    "CON": 11,
+    "INT": 10,
+    "WIS": 10,
+    "CHA": 6
+  },
+  "traits": [
+    {
+      "name": "False Appearance",
+      "description": "While the shrub remains motionless, it is indistinguishable from a normal shrub."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Rake",
+      "description": "Melee Weapon Attack: +1 to hit, reach 5 ft., one target. Hit: 1 (1d4 - 1) slashing damage.",
+      "attackBonus": 1
+    }
+  ],
+  "legendaryActions": []
+}

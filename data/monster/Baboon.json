@@ -1,0 +1,35 @@
+{
+  "name": "Baboon",
+  "cr": 0,
+  "size": "Small",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 12,
+  "hp": {
+    "average": 3,
+    "formula": "1d6"
+  },
+  "speed": "walk: 30 ft., climb: 30 ft.",
+  "stats": {
+    "STR": 8,
+    "DEX": 14,
+    "CON": 11,
+    "INT": 4,
+    "WIS": 12,
+    "CHA": 6
+  },
+  "traits": [
+    {
+      "name": "Pack Tactics",
+      "description": "The baboon has advantage on an attack roll against a creature if at least one of the baboon's allies is within 5 ft. of the creature and the ally isn't incapacitated."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +1 to hit, reach 5 ft., one target. Hit: 1 (1d4 - 1) piercing damage.",
+      "attackBonus": 1
+    }
+  ],
+  "legendaryActions": []
+}

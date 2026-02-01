@@ -1,0 +1,43 @@
+{
+  "name": "Killer Whale",
+  "cr": 3,
+  "size": "Huge",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 12,
+  "hp": {
+    "average": 90,
+    "formula": "12d12"
+  },
+  "speed": "swim: 60 ft.",
+  "stats": {
+    "STR": 19,
+    "DEX": 10,
+    "CON": 13,
+    "INT": 3,
+    "WIS": 12,
+    "CHA": 7
+  },
+  "traits": [
+    {
+      "name": "Echolocation",
+      "description": "The whale can't use its blindsight while deafened."
+    },
+    {
+      "name": "Hold Breath",
+      "description": "The whale can hold its breath for 30 minutes"
+    },
+    {
+      "name": "Keen Hearing",
+      "description": "The whale has advantage on Wisdom (Perception) checks that rely on hearing."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 21 (5d6 + 4) piercing damage.",
+      "attackBonus": 6
+    }
+  ],
+  "legendaryActions": []
+}

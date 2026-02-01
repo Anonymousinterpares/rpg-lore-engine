@@ -1,0 +1,13 @@
+{
+  "name": "Case, map or scroll",
+  "type": "Adventuring Gear",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 1,
+    "pp": 0
+  },
+  "weight": 1,
+  "description": "This cylindrical leather case can hold up to ten rolled-up sheets of paper or five rolled-up sheets of parchment."
+}

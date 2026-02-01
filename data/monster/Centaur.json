@@ -1,0 +1,49 @@
+{
+  "name": "Centaur",
+  "cr": 2,
+  "size": "Large",
+  "type": "monstrosity",
+  "alignment": "neutral good",
+  "ac": 12,
+  "hp": {
+    "average": 45,
+    "formula": "6d10"
+  },
+  "speed": "walk: 50 ft.",
+  "stats": {
+    "STR": 18,
+    "DEX": 14,
+    "CON": 14,
+    "INT": 9,
+    "WIS": 13,
+    "CHA": 11
+  },
+  "traits": [
+    {
+      "name": "Charge",
+      "description": "If the centaur moves at least 30 ft. straight toward a target and then hits it with a pike attack on the same turn, the target takes an extra 10 (3d6) piercing damage."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The centaur makes two attacks: one with its pike and one with its hooves or two with its longbow."
+    },
+    {
+      "name": "Pike",
+      "description": "Melee Weapon Attack: +6 to hit, reach 10 ft., one target. Hit: 9 (1d10 + 4) piercing damage.",
+      "attackBonus": 6
+    },
+    {
+      "name": "Hooves",
+      "description": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 11 (2d6 + 4) bludgeoning damage.",
+      "attackBonus": 6
+    },
+    {
+      "name": "Longbow",
+      "description": "Ranged Weapon Attack: +4 to hit, range 150/600 ft., one target. Hit: 6 (1d8 + 2) piercing damage.",
+      "attackBonus": 4
+    }
+  ],
+  "legendaryActions": []
+}

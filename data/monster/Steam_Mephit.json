@@ -1,0 +1,47 @@
+{
+  "name": "Steam Mephit",
+  "cr": 0.25,
+  "size": "Small",
+  "type": "elemental",
+  "alignment": "neutral evil",
+  "ac": 10,
+  "hp": {
+    "average": 21,
+    "formula": "6d6"
+  },
+  "speed": "walk: 30 ft., fly: 30 ft.",
+  "stats": {
+    "STR": 5,
+    "DEX": 11,
+    "CON": 10,
+    "INT": 11,
+    "WIS": 10,
+    "CHA": 12
+  },
+  "traits": [
+    {
+      "name": "Death Burst",
+      "description": "When the mephit dies, it explodes in a cloud of steam. Each creature within 5 ft. of the mephit must succeed on a DC 10 Dexterity saving throw or take 4 (1d8) fire damage."
+    },
+    {
+      "name": "Innate Spellcasting (1/Day)",
+      "description": "The mephit can innately cast blur, requiring no material components. Its innate spellcasting ability is Charisma."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Claws",
+      "description": "Melee Weapon Attack: +2 to hit, reach 5 ft., one creature. Hit: 2 (1d4) slashing damage plus 2 (1d4) fire damage.",
+      "attackBonus": 2
+    },
+    {
+      "name": "Steam Breath (Recharge 6)",
+      "description": "The mephit exhales a 15-foot cone of scalding steam. Each creature in that area must succeed on a DC 10 Dexterity saving throw, taking 4 (1d8) fire damage on a failed save, or half as much damage on a successful one."
+    },
+    {
+      "name": "Variant: Summon Mephits (1/Day)",
+      "description": "The mephit has a 25 percent chance of summoning 1d4 mephits of its kind. A summoned mephit appears in an unoccupied space within 60 feet of its summoner, acts as an ally of its summoner, and can't summon other mephits. It remains for 1 minute, until it or its summoner dies, or until its summoner dismisses it as an action."
+    }
+  ],
+  "legendaryActions": []
+}

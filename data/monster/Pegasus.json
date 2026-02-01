@@ -1,0 +1,30 @@
+{
+  "name": "Pegasus",
+  "cr": 2,
+  "size": "Large",
+  "type": "celestial",
+  "alignment": "chaotic good",
+  "ac": 12,
+  "hp": {
+    "average": 59,
+    "formula": "7d10"
+  },
+  "speed": "walk: 60 ft., fly: 90 ft.",
+  "stats": {
+    "STR": 18,
+    "DEX": 15,
+    "CON": 16,
+    "INT": 10,
+    "WIS": 15,
+    "CHA": 13
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Hooves",
+      "description": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 11 (2d6 + 4) bludgeoning damage.",
+      "attackBonus": 6
+    }
+  ],
+  "legendaryActions": []
+}

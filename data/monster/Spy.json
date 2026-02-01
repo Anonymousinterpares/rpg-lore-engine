@@ -1,0 +1,48 @@
+{
+  "name": "Spy",
+  "cr": 1,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "any alignment",
+  "ac": 12,
+  "hp": {
+    "average": 27,
+    "formula": "6d8"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 10,
+    "DEX": 15,
+    "CON": 10,
+    "INT": 12,
+    "WIS": 14,
+    "CHA": 16
+  },
+  "traits": [
+    {
+      "name": "Cunning Action",
+      "description": "On each of its turns, the spy can use a bonus action to take the Dash, Disengage, or Hide action."
+    },
+    {
+      "name": "Sneak Attack (1/Turn)",
+      "description": "The spy deals an extra 7 (2d6) damage when it hits a target with a weapon attack and has advantage on the attack roll, or when the target is within 5 ft. of an ally of the spy that isn't incapacitated and the spy doesn't have disadvantage on the attack roll."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The spy makes two melee attacks."
+    },
+    {
+      "name": "Shortsword",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) piercing damage.",
+      "attackBonus": 4
+    },
+    {
+      "name": "Hand Crossbow",
+      "description": "Ranged Weapon Attack: +4 to hit, range 30/120 ft., one target. Hit: 5 (1d6 + 2) piercing damage.",
+      "attackBonus": 4
+    }
+  ],
+  "legendaryActions": []
+}

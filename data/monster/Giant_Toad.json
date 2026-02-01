@@ -1,0 +1,43 @@
+{
+  "name": "Giant Toad",
+  "cr": 1,
+  "size": "Large",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 11,
+  "hp": {
+    "average": 39,
+    "formula": "6d10"
+  },
+  "speed": "walk: 20 ft., swim: 40 ft.",
+  "stats": {
+    "STR": 15,
+    "DEX": 13,
+    "CON": 13,
+    "INT": 2,
+    "WIS": 10,
+    "CHA": 3
+  },
+  "traits": [
+    {
+      "name": "Amphibious",
+      "description": "The toad can breathe air and water"
+    },
+    {
+      "name": "Standing Leap",
+      "description": "The toad's long jump is up to 20 ft. and its high jump is up to 10 ft., with or without a running start."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 7 (1d10 + 2) piercing damage plus 5 (1d10) poison damage, and the target is grappled (escape DC 13). Until this grapple ends, the target is restrained, and the toad can't bite another target.",
+      "attackBonus": 4
+    },
+    {
+      "name": "Swallow",
+      "description": "The toad makes one bite attack against a Medium or smaller target it is grappling. If the attack hits, the target is swallowed, and the grapple ends. The swallowed target is blinded and restrained, it has total cover against attacks and other effects outside the toad, and it takes 10 (3d6) acid damage at the start of each of the toad's turns. The toad can have only one target swallowed at a time.\nIf the toad dies, a swallowed creature is no longer restrained by it and can escape from the corpse using 5 feet of movement, exiting prone."
+    }
+  ],
+  "legendaryActions": []
+}

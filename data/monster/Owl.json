@@ -1,0 +1,39 @@
+{
+  "name": "Owl",
+  "cr": 0,
+  "size": "Tiny",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 11,
+  "hp": {
+    "average": 1,
+    "formula": "1d4"
+  },
+  "speed": "walk: 5 ft., fly: 60 ft.",
+  "stats": {
+    "STR": 3,
+    "DEX": 13,
+    "CON": 8,
+    "INT": 2,
+    "WIS": 12,
+    "CHA": 7
+  },
+  "traits": [
+    {
+      "name": "Flyby",
+      "description": "The owl doesn't provoke opportunity attacks when it flies out of an enemy's reach."
+    },
+    {
+      "name": "Keen Hearing and Sight",
+      "description": "The owl has advantage on Wisdom (Perception) checks that rely on hearing or sight."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Talons",
+      "description": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 1 slashing damage.",
+      "attackBonus": 3
+    }
+  ],
+  "legendaryActions": []
+}

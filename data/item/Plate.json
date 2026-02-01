@@ -1,0 +1,14 @@
+{
+  "name": "Plate",
+  "type": "Armor",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 1500,
+    "pp": 0
+  },
+  "weight": 65,
+  "acCalculated": "18",
+  "stealthDisadvantage": true
+}

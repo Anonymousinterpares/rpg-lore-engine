@@ -1,0 +1,28 @@
+{
+  "name": "Druid",
+  "hitDie": "1d8",
+  "primaryAbility": [],
+  "savingThrowProficiencies": [
+    "INT",
+    "WIS"
+  ],
+  "armorProficiencies": [
+    "Light armor",
+    "Medium armor",
+    "Shields"
+  ],
+  "weaponProficiencies": [],
+  "skillChoices": {
+    "count": 2,
+    "options": [
+      "Skill: Animal Handling",
+      "Skill: Arcana",
+      "Skill: Insight",
+      "Skill: Medicine",
+      "Skill: Nature",
+      "Skill: Perception",
+      "Skill: Religion",
+      "Skill: Survival"
+    ]
+  }
+}

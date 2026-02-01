@@ -1,0 +1,24 @@
+{
+  "name": "Halfling",
+  "speed": 25,
+  "size": "Small",
+  "abilityScoreIncreases": {
+    "DEX": 2
+  },
+  "traits": [
+    {
+      "name": "Brave"
+    },
+    {
+      "name": "Halfling Nimbleness"
+    },
+    {
+      "name": "Lucky"
+    }
+  ],
+  "languages": [
+    "Common",
+    "Halfling"
+  ],
+  "optional": false
+}

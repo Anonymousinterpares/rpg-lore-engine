@@ -1,0 +1,19 @@
+{
+  "name": "Warhammer",
+  "type": "Weapon",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 15,
+    "pp": 0
+  },
+  "weight": 2,
+  "damage": {
+    "dice": "1d8",
+    "type": "Bludgeoning"
+  },
+  "properties": [
+    "Versatile"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "name": "Bone Devil",
+  "cr": 12,
+  "size": "Large",
+  "type": "fiend",
+  "alignment": "lawful evil",
+  "ac": 19,
+  "hp": {
+    "average": 142,
+    "formula": "15d10"
+  },
+  "speed": "walk: 40 ft., fly: 40 ft.",
+  "stats": {
+    "STR": 18,
+    "DEX": 16,
+    "CON": 18,
+    "INT": 13,
+    "WIS": 14,
+    "CHA": 16
+  },
+  "traits": [
+    {
+      "name": "Devil's Sight",
+      "description": "Magical darkness doesn't impede the devil's darkvision."
+    },
+    {
+      "name": "Magic Resistance",
+      "description": "The devil has advantage on saving throws against spells and other magical effects."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The devil makes three attacks: two with its claws and one with its sting."
+    },
+    {
+      "name": "Claw",
+      "description": "Melee Weapon Attack: +8 to hit, reach 10 ft., one target. Hit: 8 (1d8 + 4) slashing damage.",
+      "attackBonus": 8
+    },
+    {
+      "name": "Sting",
+      "description": "Melee Weapon Attack: +8 to hit, reach 10 ft., one target. Hit: 13 (2d8 + 4) piercing damage plus 17 (5d6) poison damage, and the target must succeed on a DC 14 Constitution saving throw or become poisoned for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success .",
+      "attackBonus": 8
+    }
+  ],
+  "legendaryActions": []
+}

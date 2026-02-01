@@ -1,0 +1,15 @@
+{
+  "name": "Mending",
+  "level": 0,
+  "school": "Transmutation",
+  "time": "1 minute",
+  "range": "Touch",
+  "components": {
+    "v": true,
+    "s": true,
+    "m": "Two lodestones."
+  },
+  "duration": "Instantaneous",
+  "concentration": false,
+  "description": "This spell repairs a single break or tear in an object you touch, such as a broken key, a torn cloak, or a leaking wineskin. As long as the break or tear is no longer than 1 foot in any dimension, you mend it, leaving no trace of the former damage.\nThis spell can physically repair a magic item or construct, but the spell can't restore magic to such an object."
+}

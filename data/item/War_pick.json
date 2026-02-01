@@ -1,0 +1,17 @@
+{
+  "name": "War pick",
+  "type": "Weapon",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 5,
+    "pp": 0
+  },
+  "weight": 2,
+  "damage": {
+    "dice": "1d8",
+    "type": "Piercing"
+  },
+  "properties": []
+}

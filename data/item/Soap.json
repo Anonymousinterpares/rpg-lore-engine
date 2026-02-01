@@ -1,0 +1,12 @@
+{
+  "name": "Soap",
+  "type": "Adventuring Gear",
+  "cost": {
+    "cp": 2,
+    "sp": 0,
+    "ep": 0,
+    "gp": 0,
+    "pp": 0
+  },
+  "weight": 0
+}

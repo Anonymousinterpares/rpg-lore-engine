@@ -1,0 +1,21 @@
+{
+  "name": "Gnome",
+  "speed": 25,
+  "size": "Small",
+  "abilityScoreIncreases": {
+    "INT": 2
+  },
+  "traits": [
+    {
+      "name": "Darkvision"
+    },
+    {
+      "name": "Gnome Cunning"
+    }
+  ],
+  "languages": [
+    "Common",
+    "Gnomish"
+  ],
+  "optional": false
+}

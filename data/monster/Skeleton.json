@@ -1,0 +1,35 @@
+{
+  "name": "Skeleton",
+  "cr": 0.25,
+  "size": "Medium",
+  "type": "undead",
+  "alignment": "lawful evil",
+  "ac": 13,
+  "hp": {
+    "average": 13,
+    "formula": "2d8"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 10,
+    "DEX": 14,
+    "CON": 15,
+    "INT": 6,
+    "WIS": 8,
+    "CHA": 5
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Shortsword",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) piercing damage.",
+      "attackBonus": 4
+    },
+    {
+      "name": "Shortbow",
+      "description": "Ranged Weapon Attack: +4 to hit, range 80/320 ft., one target. Hit: 5 (1d6 + 2) piercing damage.",
+      "attackBonus": 4
+    }
+  ],
+  "legendaryActions": []
+}

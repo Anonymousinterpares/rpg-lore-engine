@@ -1,0 +1,25 @@
+{
+  "name": "Tiefling",
+  "speed": 30,
+  "size": "Medium",
+  "abilityScoreIncreases": {
+    "INT": 1,
+    "CHA": 2
+  },
+  "traits": [
+    {
+      "name": "Darkvision"
+    },
+    {
+      "name": "Hellish Resistance"
+    },
+    {
+      "name": "Infernal Legacy"
+    }
+  ],
+  "languages": [
+    "Common",
+    "Infernal"
+  ],
+  "optional": false
+}

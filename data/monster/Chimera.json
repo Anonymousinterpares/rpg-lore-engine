@@ -1,0 +1,48 @@
+{
+  "name": "Chimera",
+  "cr": 6,
+  "size": "Large",
+  "type": "monstrosity",
+  "alignment": "chaotic evil",
+  "ac": 14,
+  "hp": {
+    "average": 114,
+    "formula": "12d10"
+  },
+  "speed": "walk: 30 ft., fly: 60 ft.",
+  "stats": {
+    "STR": 19,
+    "DEX": 11,
+    "CON": 19,
+    "INT": 3,
+    "WIS": 14,
+    "CHA": 10
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The chimera makes three attacks: one with its bite, one with its horns, and one with its claws. When its fire breath is available, it can use the breath in place of its bite or horns."
+    },
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 11 (2d6 + 4) piercing damage.",
+      "attackBonus": 7
+    },
+    {
+      "name": "Horns",
+      "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 10 (1d12 + 4) bludgeoning damage.",
+      "attackBonus": 7
+    },
+    {
+      "name": "Claws",
+      "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 11 (2d6 + 4) slashing damage.",
+      "attackBonus": 7
+    },
+    {
+      "name": "Fire Breath (Recharge 5-6)",
+      "description": "The dragon head exhales fire in a 15-foot cone. Each creature in that area must make a DC 15 Dexterity saving throw, taking 31 (7d8) fire damage on a failed save, or half as much damage on a successful one."
+    }
+  ],
+  "legendaryActions": []
+}

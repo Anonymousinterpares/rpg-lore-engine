@@ -1,0 +1,30 @@
+{
+  "name": "Lizard",
+  "cr": 0,
+  "size": "Tiny",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 10,
+  "hp": {
+    "average": 2,
+    "formula": "1d4"
+  },
+  "speed": "walk: 20 ft., climb: 20 ft.",
+  "stats": {
+    "STR": 2,
+    "DEX": 11,
+    "CON": 10,
+    "INT": 1,
+    "WIS": 8,
+    "CHA": 3
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +0 to hit, reach 5 ft., one target. Hit: 1 piercing damage.",
+      "attackBonus": 0
+    }
+  ],
+  "legendaryActions": []
+}

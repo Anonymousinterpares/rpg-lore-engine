@@ -1,0 +1,57 @@
+{
+  "name": "Sahuagin",
+  "cr": 0.5,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "lawful evil",
+  "ac": 12,
+  "hp": {
+    "average": 22,
+    "formula": "4d8"
+  },
+  "speed": "walk: 30 ft., swim: 40 ft.",
+  "stats": {
+    "STR": 13,
+    "DEX": 11,
+    "CON": 12,
+    "INT": 12,
+    "WIS": 13,
+    "CHA": 9
+  },
+  "traits": [
+    {
+      "name": "Blood Frenzy",
+      "description": "The sahuagin has advantage on melee attack rolls against any creature that doesn't have all its hit points."
+    },
+    {
+      "name": "Limited Amphibiousness",
+      "description": "The sahuagin can breathe air and water, but it needs to be submerged at least once every 4 hours to avoid suffocating."
+    },
+    {
+      "name": "Shark Telepathy",
+      "description": "The sahuagin can magically command any shark within 120 feet of it, using a limited telepathy."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The sahuagin makes two melee attacks: one with its bite and one with its claws or spear."
+    },
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 3 (1d4 + 1) piercing damage.",
+      "attackBonus": 3
+    },
+    {
+      "name": "Claws",
+      "description": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 3 (1d4 + 1) slashing damage.",
+      "attackBonus": 3
+    },
+    {
+      "name": "Spear",
+      "description": "Melee or Ranged Weapon Attack: +3 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 4 (1d6 + 1) piercing damage, or 5 (1d8 + 1) piercing damage if used with two hands to make a melee attack.",
+      "attackBonus": 3
+    }
+  ],
+  "legendaryActions": []
+}

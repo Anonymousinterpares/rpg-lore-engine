@@ -1,0 +1,35 @@
+{
+  "name": "Ogre Zombie",
+  "cr": 2,
+  "size": "Large",
+  "type": "undead",
+  "alignment": "neutral evil",
+  "ac": 8,
+  "hp": {
+    "average": 85,
+    "formula": "9d10"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 19,
+    "DEX": 6,
+    "CON": 18,
+    "INT": 3,
+    "WIS": 6,
+    "CHA": 5
+  },
+  "traits": [
+    {
+      "name": "Undead Fortitude",
+      "description": "If damage reduces the zombie to 0 hit points, it must make a Constitution saving throw with a DC of 5+the damage taken, unless the damage is radiant or from a critical hit. On a success, the zombie drops to 1 hit point instead."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Morningstar",
+      "description": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 13 (2d8 + 4) bludgeoning damage.",
+      "attackBonus": 6
+    }
+  ],
+  "legendaryActions": []
+}

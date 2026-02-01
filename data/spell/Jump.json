@@ -1,0 +1,15 @@
+{
+  "name": "Jump",
+  "level": 1,
+  "school": "Transmutation",
+  "time": "1 action",
+  "range": "Touch",
+  "components": {
+    "v": true,
+    "s": true,
+    "m": "A grasshopper's hind leg."
+  },
+  "duration": "1 minute",
+  "concentration": false,
+  "description": "You touch a creature. The creature's jump distance is tripled until the spell ends."
+}

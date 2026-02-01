@@ -1,0 +1,13 @@
+{
+  "name": "Chain (10 feet)",
+  "type": "Adventuring Gear",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 5,
+    "pp": 0
+  },
+  "weight": 10,
+  "description": "A chain has 10 hit points. It can be burst with a successful DC 20 Strength check."
+}

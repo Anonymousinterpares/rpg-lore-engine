@@ -1,0 +1,44 @@
+{
+  "name": "Giant Eagle",
+  "cr": 1,
+  "size": "Large",
+  "type": "beast",
+  "alignment": "neutral good",
+  "ac": 13,
+  "hp": {
+    "average": 26,
+    "formula": "4d10"
+  },
+  "speed": "walk: 10 ft., fly: 80 ft.",
+  "stats": {
+    "STR": 16,
+    "DEX": 17,
+    "CON": 13,
+    "INT": 8,
+    "WIS": 14,
+    "CHA": 10
+  },
+  "traits": [
+    {
+      "name": "Keen Sight",
+      "description": "The eagle has advantage on Wisdom (Perception) checks that rely on sight."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The eagle makes two attacks: one with its beak and one with its talons."
+    },
+    {
+      "name": "Beak",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) piercing damage.",
+      "attackBonus": 5
+    },
+    {
+      "name": "Talons",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 10 (2d6 + 3) slashing damage.",
+      "attackBonus": 5
+    }
+  ],
+  "legendaryActions": []
+}

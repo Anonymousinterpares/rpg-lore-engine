@@ -1,0 +1,21 @@
+{
+  "name": "Crossbow, light",
+  "type": "Weapon",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 25,
+    "pp": 0
+  },
+  "weight": 5,
+  "damage": {
+    "dice": "1d8",
+    "type": "Piercing"
+  },
+  "properties": [
+    "Ammunition",
+    "Loading",
+    "Two-Handed"
+  ]
+}

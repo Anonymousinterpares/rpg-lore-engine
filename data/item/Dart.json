@@ -1,0 +1,20 @@
+{
+  "name": "Dart",
+  "type": "Weapon",
+  "cost": {
+    "cp": 5,
+    "sp": 0,
+    "ep": 0,
+    "gp": 0,
+    "pp": 0
+  },
+  "weight": 0.25,
+  "damage": {
+    "dice": "1d4",
+    "type": "Piercing"
+  },
+  "properties": [
+    "Finesse",
+    "Thrown"
+  ]
+}

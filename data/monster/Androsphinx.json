@@ -1,0 +1,64 @@
+{
+  "name": "Androsphinx",
+  "cr": 17,
+  "size": "Large",
+  "type": "monstrosity",
+  "alignment": "lawful neutral",
+  "ac": 17,
+  "hp": {
+    "average": 199,
+    "formula": "19d10"
+  },
+  "speed": "walk: 40 ft., fly: 60 ft.",
+  "stats": {
+    "STR": 22,
+    "DEX": 10,
+    "CON": 20,
+    "INT": 16,
+    "WIS": 18,
+    "CHA": 23
+  },
+  "traits": [
+    {
+      "name": "Inscrutable",
+      "description": "The sphinx is immune to any effect that would sense its emotions or read its thoughts, as well as any divination spell that it refuses. Wisdom (Insight) checks made to ascertain the sphinx's intentions or sincerity have disadvantage."
+    },
+    {
+      "name": "Magic Weapons",
+      "description": "The sphinx's weapon attacks are magical."
+    },
+    {
+      "name": "Spellcasting",
+      "description": "The sphinx is a 12th-level spellcaster. Its spellcasting ability is Wisdom (spell save DC 18, +10 to hit with spell attacks). It requires no material components to cast its spells. The sphinx has the following cleric spells prepared:\n\n- Cantrips (at will): sacred flame, spare the dying, thaumaturgy\n- 1st level (4 slots): command, detect evil and good, detect magic\n- 2nd level (3 slots): lesser restoration, zone of truth\n- 3rd level (3 slots): dispel magic, tongues\n- 4th level (3 slots): banishment, freedom of movement\n- 5th level (2 slots): flame strike, greater restoration\n- 6th level (1 slot): heroes' feast"
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The sphinx makes two claw attacks."
+    },
+    {
+      "name": "Claw",
+      "description": "Melee Weapon Attack: +12 to hit, reach 5 ft., one target. Hit: 17 (2d10 + 6) slashing damage.",
+      "attackBonus": 12
+    },
+    {
+      "name": "Roar (3/Day)",
+      "description": "The sphinx emits a magical roar. Each time it roars before finishing a long rest, the roar is louder and the effect is different, as detailed below. Each creature within 500 feet of the sphinx and able to hear the roar must make a saving throw.\n\nFirst Roar. Each creature that fails a DC 18 Wisdom saving throw is frightened for 1 minute. A frightened creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.\n\nSecond Roar. Each creature that fails a DC 18 Wisdom saving throw is deafened and frightened for 1 minute. A frightened creature is paralyzed and can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.\n\nThird Roar. Each creature makes a DC 18 Constitution saving throw. On a failed save, a creature takes 44 (8d10) thunder damage and is knocked prone. On a successful save, the creature takes half as much damage and isn't knocked prone."
+    }
+  ],
+  "legendaryActions": [
+    {
+      "name": "Claw Attack",
+      "description": "The sphinx makes one claw attack."
+    },
+    {
+      "name": "Teleport (Costs 2 Actions)",
+      "description": "The sphinx magically teleports, along with any equipment it is wearing or carrying, up to 120 feet to an unoccupied space it can see."
+    },
+    {
+      "name": "Cast a Spell (Costs 3 Actions)",
+      "description": "The sphinx casts a spell from its list of prepared spells, using a spell slot as normal."
+    }
+  ]
+}

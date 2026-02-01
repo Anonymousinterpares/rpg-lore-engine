@@ -1,0 +1,35 @@
+{
+  "name": "Awakened Tree",
+  "cr": 2,
+  "size": "Huge",
+  "type": "plant",
+  "alignment": "unaligned",
+  "ac": 13,
+  "hp": {
+    "average": 59,
+    "formula": "7d12"
+  },
+  "speed": "walk: 20 ft.",
+  "stats": {
+    "STR": 19,
+    "DEX": 6,
+    "CON": 15,
+    "INT": 10,
+    "WIS": 10,
+    "CHA": 7
+  },
+  "traits": [
+    {
+      "name": "False Appearance",
+      "description": "While the tree remains motionless, it is indistinguishable from a normal tree."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Slam",
+      "description": "Melee Weapon Attack: +6 to hit, reach 10 ft., one target. Hit: 14 (3d6 + 4) bludgeoning damage.",
+      "attackBonus": 6
+    }
+  ],
+  "legendaryActions": []
+}

@@ -1,0 +1,44 @@
+{
+  "name": "Wyvern",
+  "cr": 6,
+  "size": "Large",
+  "type": "dragon",
+  "alignment": "unaligned",
+  "ac": 13,
+  "hp": {
+    "average": 110,
+    "formula": "13d10"
+  },
+  "speed": "walk: 20 ft., fly: 80 ft.",
+  "stats": {
+    "STR": 19,
+    "DEX": 10,
+    "CON": 16,
+    "INT": 5,
+    "WIS": 12,
+    "CHA": 6
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The wyvern makes two attacks: one with its bite and one with its stinger. While flying, it can use its claws in place of one other attack."
+    },
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +7 to hit, reach 10 ft., one creature. Hit: 11 (2d6 + 4) piercing damage.",
+      "attackBonus": 7
+    },
+    {
+      "name": "Claws",
+      "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 13 (2d8 + 4) slashing damage.",
+      "attackBonus": 7
+    },
+    {
+      "name": "Stinger",
+      "description": "Melee Weapon Attack: +7 to hit, reach 10 ft., one creature. Hit: 11 (2d6 + 4) piercing damage. The target must make a DC 15 Constitution saving throw, taking 24 (7d6) poison damage on a failed save, or half as much damage on a successful one.",
+      "attackBonus": 7
+    }
+  ],
+  "legendaryActions": []
+}

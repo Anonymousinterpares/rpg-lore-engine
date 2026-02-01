@@ -1,0 +1,35 @@
+{
+  "name": "Hyena",
+  "cr": 0,
+  "size": "Medium",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 11,
+  "hp": {
+    "average": 5,
+    "formula": "1d8"
+  },
+  "speed": "walk: 50 ft.",
+  "stats": {
+    "STR": 11,
+    "DEX": 13,
+    "CON": 12,
+    "INT": 2,
+    "WIS": 12,
+    "CHA": 5
+  },
+  "traits": [
+    {
+      "name": "Pack Tactics",
+      "description": "The hyena has advantage on an attack roll against a creature if at least one of the hyena's allies is within 5 ft. of the creature and the ally isn't incapacitated."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Bite",
+      "description": "Weapon Attack: +2 to hit, reach 5 ft., one target. Hit: 3 (1d6) piercing damage.",
+      "attackBonus": 2
+    }
+  ],
+  "legendaryActions": []
+}

@@ -1,0 +1,39 @@
+{
+  "name": "Ape",
+  "cr": 0.5,
+  "size": "Medium",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 12,
+  "hp": {
+    "average": 19,
+    "formula": "3d8"
+  },
+  "speed": "walk: 30 ft., climb: 30 ft.",
+  "stats": {
+    "STR": 16,
+    "DEX": 14,
+    "CON": 14,
+    "INT": 6,
+    "WIS": 12,
+    "CHA": 7
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The ape makes two fist attacks."
+    },
+    {
+      "name": "Fist",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) bludgeoning damage.",
+      "attackBonus": 5
+    },
+    {
+      "name": "Rock",
+      "description": "Ranged Weapon Attack: +5 to hit, range 25/50 ft., one target. Hit: 6 (1d6 + 3) bludgeoning damage.",
+      "attackBonus": 5
+    }
+  ],
+  "legendaryActions": []
+}

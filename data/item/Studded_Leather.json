@@ -1,0 +1,14 @@
+{
+  "name": "Studded Leather",
+  "type": "Armor",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 45,
+    "pp": 0
+  },
+  "weight": 13,
+  "acCalculated": "12",
+  "stealthDisadvantage": false
+}

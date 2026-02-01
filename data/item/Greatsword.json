@@ -1,0 +1,20 @@
+{
+  "name": "Greatsword",
+  "type": "Weapon",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 50,
+    "pp": 0
+  },
+  "weight": 6,
+  "damage": {
+    "dice": "2d6",
+    "type": "Slashing"
+  },
+  "properties": [
+    "Heavy",
+    "Two-Handed"
+  ]
+}

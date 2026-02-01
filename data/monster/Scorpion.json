@@ -1,0 +1,30 @@
+{
+  "name": "Scorpion",
+  "cr": 0,
+  "size": "Tiny",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 11,
+  "hp": {
+    "average": 1,
+    "formula": "1d4"
+  },
+  "speed": "walk: 10 ft.",
+  "stats": {
+    "STR": 2,
+    "DEX": 11,
+    "CON": 8,
+    "INT": 1,
+    "WIS": 8,
+    "CHA": 2
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Sting",
+      "description": "Melee Weapon Attack: +2 to hit, reach 5 ft., one creature. Hit: 1 piercing damage, and the target must make a DC 9 Constitution saving throw, taking 4 (1d8) poison damage on a failed save, or half as much damage on a successful one.",
+      "attackBonus": 2
+    }
+  ],
+  "legendaryActions": []
+}

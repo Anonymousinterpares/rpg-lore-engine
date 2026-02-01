@@ -1,0 +1,30 @@
+{
+  "name": "Camel",
+  "cr": 0.125,
+  "size": "Large",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 9,
+  "hp": {
+    "average": 15,
+    "formula": "2d10"
+  },
+  "speed": "walk: 50 ft.",
+  "stats": {
+    "STR": 16,
+    "DEX": 8,
+    "CON": 14,
+    "INT": 2,
+    "WIS": 8,
+    "CHA": 5
+  },
+  "traits": [],
+  "actions": [
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 2 (1d4) bludgeoning damage.",
+      "attackBonus": 5
+    }
+  ],
+  "legendaryActions": []
+}

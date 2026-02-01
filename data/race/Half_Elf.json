@@ -1,0 +1,24 @@
+{
+  "name": "Half-Elf",
+  "speed": 30,
+  "size": "Medium",
+  "abilityScoreIncreases": {
+    "CHA": 2
+  },
+  "traits": [
+    {
+      "name": "Darkvision"
+    },
+    {
+      "name": "Fey Ancestry"
+    },
+    {
+      "name": "Skill Versatility"
+    }
+  ],
+  "languages": [
+    "Common",
+    "Elvish"
+  ],
+  "optional": false
+}

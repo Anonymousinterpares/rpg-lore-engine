@@ -1,0 +1,40 @@
+{
+  "name": "Elephant",
+  "cr": 4,
+  "size": "Huge",
+  "type": "beast",
+  "alignment": "unaligned",
+  "ac": 12,
+  "hp": {
+    "average": 76,
+    "formula": "8d12"
+  },
+  "speed": "walk: 40 ft.",
+  "stats": {
+    "STR": 22,
+    "DEX": 9,
+    "CON": 17,
+    "INT": 3,
+    "WIS": 11,
+    "CHA": 6
+  },
+  "traits": [
+    {
+      "name": "Trampling Charge",
+      "description": "If the elephant moves at least 20 ft. straight toward a creature and then hits it with a gore attack on the same turn, that target must succeed on a DC 12 Strength saving throw or be knocked prone. If the target is prone, the elephant can make one stomp attack against it as a bonus action."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Gore",
+      "description": "Melee Weapon Attack: +8 to hit, reach 5 ft., one target. Hit: 19 (3d8 + 6) piercing damage.",
+      "attackBonus": 8
+    },
+    {
+      "name": "Stomp",
+      "description": "Melee Weapon Attack: +8 to hit, reach 5 ft., one prone creature. Hit: 22 (3d10 + 6) bludgeoning damage.",
+      "attackBonus": 8
+    }
+  ],
+  "legendaryActions": []
+}

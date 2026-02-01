@@ -1,0 +1,14 @@
+{
+  "name": "Protection from Energy",
+  "level": 3,
+  "school": "Abjuration",
+  "time": "1 action",
+  "range": "Touch",
+  "components": {
+    "v": true,
+    "s": true
+  },
+  "duration": "Up to 1 hour",
+  "concentration": true,
+  "description": "For the duration, the willing creature you touch has resistance to one damage type of your choice: acid, cold, fire, lightning, or thunder."
+}
