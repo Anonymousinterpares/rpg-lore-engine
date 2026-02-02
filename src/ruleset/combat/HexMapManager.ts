@@ -73,4 +73,43 @@ export class HexMapManager {
     public getRegistry(): MapRegistry {
         return this.registry;
     }
+
+    /**
+     * Returns the size of a contiguous cluster of the same biome.
+     */
+    public getClusterSize(startHex: Hex): number {
+        const biome = startHex.biome;
+        const visited = new Set<string>();
+        const queue = [`${startHex.coordinates[0]},${startHex.coordinates[1]}`];
+
+        while (queue.length > 0) {
+            const current = queue.shift()!;
+            if (visited.has(current)) continue;
+
+            const [x, y] = current.split(',').map(Number);
+            const hex = this.getHex(current);
+
+            if (hex && hex.biome === biome) {
+                visited.add(current);
+                // Check neighbors
+                const directions: HexDirection[] = ['N', 'S', 'E', 'W', 'NE', 'NW', 'SE', 'SW'];
+                for (const dir of directions) {
+                    const nc = HexMapManager.getNewCoords([x, y], dir);
+                    queue.push(`${nc[0]},${nc[1]}`);
+                }
+            }
+        }
+
+        return visited.size;
+    }
+
+    /**
+     * Gets all existing non-null neighbors for a coordinate.
+     */
+    public getNeighbors(coords: [number, number]): Hex[] {
+        const directions: HexDirection[] = ['N', 'S', 'E', 'W', 'NE', 'NW', 'SE', 'SW'];
+        return directions
+            .map(dir => this.getHex(`${HexMapManager.getNewCoords(coords, dir)[0]},${HexMapManager.getNewCoords(coords, dir)[1]}`))
+            .filter(h => h !== null) as Hex[];
+    }
 }

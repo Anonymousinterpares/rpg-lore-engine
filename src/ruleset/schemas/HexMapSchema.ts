@@ -1,24 +1,40 @@
 import { z } from 'zod';
+import { BiomeTypeSchema } from './BiomeSchema';
+import { SkillNameSchema } from './BaseSchemas';
 
 export const HexDirectionSchema = z.enum(['N', 'S', 'E', 'W', 'NE', 'NW', 'SE', 'SW']);
 export type HexDirection = z.infer<typeof HexDirectionSchema>;
+
+export const ResourceNodeSchema = z.object({
+    id: z.string(),
+    resourceType: z.enum(['Ore', 'Herb', 'Wood', 'Hide', 'Gem', 'Arcane']),
+    itemId: z.string(),
+    quantityRemaining: z.number(),
+    skillCheck: z.object({
+        skill: SkillNameSchema,
+        dc: z.number()
+    }).optional()
+});
+
+export type ResourceNode = z.infer<typeof ResourceNodeSchema>;
 
 export const PointOfInterestSchema = z.object({
     id: z.string(),
     name: z.string(),
     discovered: z.boolean().default(false),
     description: z.string().optional(),
-    subLocationId: z.string().optional() // Links to a SubLocation if it has an interior
+    subLocationId: z.string().optional()
 });
 
 export const HexSchema = z.object({
     coordinates: z.tuple([z.number(), z.number()]),
     generated: z.boolean().default(false),
-    biome: z.string().optional(),
+    biome: BiomeTypeSchema.default('Plains'),
     name: z.string().optional(),
     description: z.string().optional(),
     traversable_sides: z.record(HexDirectionSchema, z.boolean()).optional(),
     interest_points: z.array(PointOfInterestSchema).default([]),
+    resourceNodes: z.array(ResourceNodeSchema).default([]),
     visited: z.boolean().default(false)
 });
 

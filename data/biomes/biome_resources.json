@@ -1,0 +1,78 @@
+[
+    {
+        "biome": "Forest",
+        "resources": [
+            {
+                "itemId": "wood_common",
+                "weight": 50
+            },
+            {
+                "itemId": "herb_silverleaf",
+                "weight": 20
+            },
+            {
+                "itemId": "hide_deer",
+                "weight": 15
+            },
+            {
+                "itemId": "gem_amber",
+                "weight": 5
+            }
+        ]
+    },
+    {
+        "biome": "Mountains",
+        "resources": [
+            {
+                "itemId": "ore_iron",
+                "weight": 40
+            },
+            {
+                "itemId": "ore_silver",
+                "weight": 15
+            },
+            {
+                "itemId": "gem_ruby",
+                "weight": 5
+            },
+            {
+                "itemId": "hide_goat",
+                "weight": 25
+            }
+        ]
+    },
+    {
+        "biome": "Plains",
+        "resources": [
+            {
+                "itemId": "food_berries",
+                "weight": 40
+            },
+            {
+                "itemId": "herb_kingsbloom",
+                "weight": 10
+            },
+            {
+                "itemId": "hide_rabbit",
+                "weight": 30
+            }
+        ]
+    },
+    {
+        "biome": "Swamp",
+        "resources": [
+            {
+                "itemId": "rare_swamp_gas",
+                "weight": 5
+            },
+            {
+                "itemId": "herb_bogbean",
+                "weight": 30
+            },
+            {
+                "itemId": "wood_driftwood",
+                "weight": 40
+            }
+        ]
+    }
+]

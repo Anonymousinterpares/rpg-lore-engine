@@ -1,0 +1,96 @@
+[
+    {
+        "id": "Plains",
+        "displayName": "Plains",
+        "baseAppearanceWeight": 25,
+        "adjacencyModifiers": {
+            "Plains": 10,
+            "Forest": 5,
+            "Farmland": 10
+        },
+        "maxClusterSize": 10,
+        "clusterPenaltyMultiplier": 0.2
+    },
+    {
+        "id": "Forest",
+        "displayName": "Forest",
+        "baseAppearanceWeight": 20,
+        "adjacencyModifiers": {
+            "Forest": 30,
+            "Plains": 5,
+            "Hills": 5,
+            "Swamp": 10
+        },
+        "maxClusterSize": 8,
+        "clusterPenaltyMultiplier": 0.2
+    },
+    {
+        "id": "Hills",
+        "displayName": "Hills",
+        "baseAppearanceWeight": 15,
+        "adjacencyModifiers": {
+            "Hills": 15,
+            "Mountains": 10,
+            "Plains": 5
+        },
+        "maxClusterSize": 6,
+        "clusterPenaltyMultiplier": 0.3
+    },
+    {
+        "id": "Mountains",
+        "displayName": "Mountains",
+        "baseAppearanceWeight": 10,
+        "adjacencyModifiers": {
+            "Mountains": 25,
+            "Hills": 15
+        },
+        "maxClusterSize": 5,
+        "clusterPenaltyMultiplier": 0.3
+    },
+    {
+        "id": "Swamp",
+        "displayName": "Swamp",
+        "baseAppearanceWeight": 8,
+        "adjacencyModifiers": {
+            "Swamp": 15,
+            "Forest": 10,
+            "Ocean": 5
+        },
+        "maxClusterSize": 4,
+        "clusterPenaltyMultiplier": 0.2
+    },
+    {
+        "id": "Desert",
+        "displayName": "Desert",
+        "baseAppearanceWeight": 5,
+        "adjacencyModifiers": {
+            "Desert": 40,
+            "Mountains": 5
+        },
+        "maxClusterSize": 10,
+        "clusterPenaltyMultiplier": 0.5
+    },
+    {
+        "id": "Coast",
+        "displayName": "Coast",
+        "baseAppearanceWeight": 5,
+        "adjacencyModifiers": {
+            "Ocean": 50,
+            "Coast": 20,
+            "Plains": 5
+        },
+        "maxClusterSize": 15,
+        "clusterPenaltyMultiplier": 0.4
+    },
+    {
+        "id": "Ocean",
+        "displayName": "Ocean",
+        "baseAppearanceWeight": 0,
+        "adjacencyModifiers": {
+            "Ocean": 100,
+            "Coast": 30
+        },
+        "maxClusterSize": 1000,
+        "clusterPenaltyMultiplier": 1.0
+    }
+]

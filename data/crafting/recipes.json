@@ -1,0 +1,60 @@
+[
+    {
+        "id": "recipe_potion_healing",
+        "name": "Potion of Healing",
+        "resultItemId": "potion_healing",
+        "ingredients": [
+            {
+                "itemId": "herb_silverleaf",
+                "quantity": 1
+            },
+            {
+                "itemId": "herb_bogbean",
+                "quantity": 1
+            }
+        ],
+        "toolRequired": "Herbalism Kit",
+        "skillCheck": {
+            "skill": "Medicine",
+            "dc": 12
+        },
+        "timeDays": 1,
+        "description": "A standard potion of healing."
+    },
+    {
+        "id": "recipe_iron_shield",
+        "name": "Iron Shield",
+        "resultItemId": "shield_iron",
+        "ingredients": [
+            {
+                "itemId": "ore_iron",
+                "quantity": 3
+            }
+        ],
+        "toolRequired": "Smith's Tools",
+        "skillCheck": {
+            "skill": "Athletics",
+            "dc": 10
+        },
+        "timeDays": 2,
+        "description": "A sturdy iron shield."
+    },
+    {
+        "id": "recipe_leather_armor",
+        "name": "Leather Armor",
+        "resultItemId": "armor_leather",
+        "ingredients": [
+            {
+                "itemId": "hide_deer",
+                "quantity": 4
+            }
+        ],
+        "toolRequired": "Leatherworker's Tools",
+        "skillCheck": {
+            "skill": "Sleight of Hand",
+            "dc": 10
+        },
+        "timeDays": 2,
+        "description": "Basic leather armor."
+    }
+]
