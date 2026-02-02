@@ -1,0 +1,49 @@
+{
+    "id": "old_crypt",
+    "parentHexId": "0,0",
+    "parentPoiId": "crypt_entrance",
+    "name": "The Old Crypt",
+    "type": "Dungeon",
+    "initialRoomId": "entry_hall",
+    "rooms": {
+        "entry_hall": {
+            "id": "entry_hall",
+            "name": "Entry Hall",
+            "description": "A damp, stone-walled hall smelling of decay. Dust motes dance in the faint light from the entrance.",
+            "exits": {
+                "North": "burial_chamber",
+                "South": "exit"
+            },
+            "npcs": [],
+            "hazards": [],
+            "items": []
+        },
+        "burial_chamber": {
+            "id": "burial_chamber",
+            "name": "Burial Chamber",
+            "description": "Rows of stone sarcophagi line the walls. A faint green glow emanates from the far corner.",
+            "exits": {
+                "South": "entry_hall"
+            },
+            "npcs": [],
+            "hazards": [
+                {
+                    "id": "crypt_poison_gas",
+                    "name": "Poisonous Miasma",
+                    "type": "Poison",
+                    "damage": "1d6",
+                    "damageType": "Poison",
+                    "saveDC": 12,
+                    "saveAbility": "CON",
+                    "description": "A thick, sickly-sweet gas hangs low in the room."
+                }
+            ],
+            "items": [
+                {
+                    "id": "rusty_sword",
+                    "quantity": 1
+                }
+            ]
+        }
+    }
+}

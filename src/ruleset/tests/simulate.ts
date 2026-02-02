@@ -30,7 +30,14 @@ function runSimulation() {
         },
         xp: 0,
         inspiration: false,
-        biography: { chronicles: [] }
+        biography: {
+            background: 'Acolyte',
+            traits: [],
+            ideals: [],
+            bonds: [],
+            flaws: [],
+            chronicles: []
+        }
     });
     hero.initiative = 18;
 

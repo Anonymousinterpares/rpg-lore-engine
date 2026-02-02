@@ -27,7 +27,14 @@ function runMechanicsSimulation() {
         },
         xp: 900,
         inspiration: false,
-        biography: { chronicles: [] }
+        biography: {
+            background: 'Soldier',
+            traits: [],
+            ideals: [],
+            bonds: [],
+            flaws: [],
+            chronicles: []
+        }
     };
 
     console.log(`\n[Initial State] ${hero.name} | HP: ${hero.hp.current}/${hero.hp.max} | HD: ${hero.hitDice.current}/${hero.hitDice.max}`);

@@ -1,0 +1,29 @@
+{
+    "id": "elara_innkeeper",
+    "name": "Elara the Innkeeper",
+    "disposition": "Friendly",
+    "description": "A warm and welcoming woman in her late 40s, Elara runs the Sleeping Giant inn with efficiency and kindness.",
+    "dialogue_triggers": [
+        "Welcome to the Sleeping Giant! Looking for a room?",
+        "Have you heard the rumors about the cult in the Old Crypt?",
+        "A bit more ale for the road?"
+    ],
+    "inventory": [
+        {
+            "id": "ale_mug",
+            "quantity": 10
+        },
+        {
+            "id": "room_key",
+            "quantity": 5
+        }
+    ],
+    "stats": {
+        "STR": 10,
+        "DEX": 10,
+        "CON": 12,
+        "INT": 12,
+        "WIS": 14,
+        "CHA": 16
+    }
+}

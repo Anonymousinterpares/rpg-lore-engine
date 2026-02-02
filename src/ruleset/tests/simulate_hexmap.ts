@@ -20,8 +20,16 @@ async function runHexMapSimulation() {
             inventory: { gold: 50, items: [] },
             xp: 0,
             inspiration: false,
-            biography: { chronicles: [] }
+            biography: {
+                background: 'Sage',
+                traits: [],
+                ideals: [],
+                bonds: [],
+                flaws: [],
+                chronicles: []
+            }
         },
+        mode: 'EXPLORATION',
         location: { hexId: '0,0', coordinates: [0, 0] },
         worldTime: 0,
         storySummary: ''

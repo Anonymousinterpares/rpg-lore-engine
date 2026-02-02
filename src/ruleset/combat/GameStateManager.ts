@@ -2,11 +2,16 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { PlayerCharacter, PlayerCharacterSchema } from '../schemas/PlayerCharacterSchema';
 
+export type GameMode = 'EXPLORATION' | 'SUB_LOCATION' | 'COMBAT' | 'DIALOGUE' | 'REST' | 'SHOP' | 'CHARACTER_CREATION';
+
 export interface GameState {
     character: PlayerCharacter;
+    mode: GameMode;
     location: {
         hexId: string;
         coordinates: [number, number];
+        subLocationId?: string | null;
+        roomId?: string | null;
     };
     worldTime: number; // In turns or seconds
     storySummary: string;

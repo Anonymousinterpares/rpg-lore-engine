@@ -7,7 +7,8 @@ export const PointOfInterestSchema = z.object({
     id: z.string(),
     name: z.string(),
     discovered: z.boolean().default(false),
-    description: z.string().optional()
+    description: z.string().optional(),
+    subLocationId: z.string().optional() // Links to a SubLocation if it has an interior
 });
 
 export const HexSchema = z.object({

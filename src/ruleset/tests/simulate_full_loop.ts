@@ -20,8 +20,16 @@ async function runFullLoopSimulation() {
             inventory: { gold: 10, items: [] },
             xp: 300,
             inspiration: false,
-            biography: { chronicles: [] }
+            biography: {
+                background: 'Soldier',
+                traits: [],
+                ideals: [],
+                bonds: [],
+                flaws: [],
+                chronicles: []
+            }
         },
+        mode: 'EXPLORATION',
         location: { hexId: '0,0', coordinates: [0, 0] },
         worldTime: 0,
         storySummary: 'Starting a new adventure.'
