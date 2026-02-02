@@ -1,0 +1,49 @@
+﻿--- Phase 18: Advanced Gameplay Verification ---
+
+--- 1. Death Engine ---
+Kaelen has been defeated.
+Rolling death save...
+Rolled 3: Failure.
+
+--- 2. Leveling Engine ---
+Current: Level 1, XP 0, HP 7
+Added 400 XP. Can level up? true
+Kaelen reached Level 2! Max HP increased to 12.
+New: Level 2, XP 400, HP 12
+
+--- 3. Quest Engine ---
+Objective complete: Find the orb in the cave.. All objectives met!
+node.exe : 
+D:\coding\rpg_NEW\src\ruleset\combat\QuestEngine.ts:53
+At C:\nvm4w\nodejs\npx.ps1:29 char:3
++   & $NODE_EXE $NPX_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (D:\codin 
+   g\rpg_N...estEngine.ts:53:String) [], RemoteExcep  
+  tion
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+            if (quest.rewards.items.length > 0) {
+                                    ^
+TypeError: Cannot read properties of undefined 
+(reading 'length')
+    at Function.completeQuest (D:\coding\rpg_NEW\src\r
+uleset\combat\QuestEngine.ts:53:37)
+    at runAdvancedSimulation (D:\coding\rpg_NEW\src\ru
+leset\tests\simulate_advanced_gameplay.ts:62:29)
+    at Object.<anonymous> (D:\coding\rpg_NEW\src\rules
+et\tests\simulate_advanced_gameplay.ts:78:1)
+    at Module._compile 
+(node:internal/modules/cjs/loader:1730:14)
+    at Module.m._compile (D:\coding\rpg_NEW\node_modul
+es\ts-node\src\index.ts:1618:23)
+    at node:internal/modules/cjs/loader:1895:10
+    at Object.require.extensions.<computed> [as .ts] (
+D:\coding\rpg_NEW\node_modules\ts-node\src\index.ts:16
+21:12)
+    at Module.load 
+(node:internal/modules/cjs/loader:1465:32)
+    at Function._load 
+(node:internal/modules/cjs/loader:1282:12)
+    at TracingChannel.traceSync 
+(node:diagnostics_channel:322:14)

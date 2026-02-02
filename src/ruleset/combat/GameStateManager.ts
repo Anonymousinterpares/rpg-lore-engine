@@ -3,6 +3,7 @@ import * as path from 'path';
 import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
 import { WorldClock } from '../schemas/WorldClockSchema';
 import { Faction } from '../schemas/FactionSchema';
+import { Quest } from '../schemas/QuestSchema';
 
 export type GameMode = 'EXPLORATION' | 'SUB_LOCATION' | 'COMBAT' | 'DIALOGUE' | 'REST' | 'SHOP' | 'CHARACTER_CREATION';
 
@@ -18,6 +19,7 @@ export interface GameState {
     worldTime: WorldClock;
     storySummary: string;
     factions: Faction[];
+    activeQuests: Quest[];
 }
 
 export class GameStateManager {

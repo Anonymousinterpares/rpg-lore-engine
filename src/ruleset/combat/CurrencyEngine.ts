@@ -8,11 +8,11 @@ export class CurrencyEngine {
      * Converts a currency object to its total value in copper pieces.
      */
     public static toCopper(currency: Currency): number {
-        return (currency.pp * 1000) +
-            (currency.gp * 100) +
-            (currency.ep * 50) +
-            (currency.sp * 10) +
-            (currency.cp);
+        return ((currency.pp || 0) * 1000) +
+            ((currency.gp || 0) * 100) +
+            ((currency.ep || 0) * 50) +
+            ((currency.sp || 0) * 10) +
+            ((currency.cp || 0));
     }
 
     /**
