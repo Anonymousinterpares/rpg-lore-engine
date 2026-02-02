@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { PlayerCharacter, PlayerCharacterSchema } from '../schemas/PlayerCharacterSchema';
+import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
 import { WorldClock } from '../schemas/WorldClockSchema';
+import { Faction } from '../schemas/FactionSchema';
 
 export type GameMode = 'EXPLORATION' | 'SUB_LOCATION' | 'COMBAT' | 'DIALOGUE' | 'REST' | 'SHOP' | 'CHARACTER_CREATION';
 
@@ -16,6 +17,7 @@ export interface GameState {
     };
     worldTime: WorldClock;
     storySummary: string;
+    factions: Faction[];
 }
 
 export class GameStateManager {

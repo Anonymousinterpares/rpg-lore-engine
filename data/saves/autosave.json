@@ -1,47 +1,69 @@
 {
   "character": {
-    "name": "Chronos",
-    "level": 1,
+    "name": "Valerius",
+    "level": 3,
     "race": "Human",
-    "class": "Fighter",
+    "class": "Paladin",
     "stats": {
-      "STR": 10,
+      "STR": 16,
       "DEX": 10,
-      "CON": 10,
+      "CON": 14,
       "INT": 10,
-      "WIS": 10,
-      "CHA": 10
+      "WIS": 12,
+      "CHA": 14
     },
-    "savingThrowProficiencies": [],
-    "skillProficiencies": [],
     "hp": {
-      "current": 10,
-      "max": 10,
+      "current": 28,
+      "max": 28,
       "temp": 0
     },
-    "hitDice": {
-      "current": 1,
-      "max": 1,
-      "dieType": "1d10"
-    },
-    "spellSlots": {},
-    "ac": 10,
+    "ac": 18,
     "inventory": {
-      "gold": 0,
+      "gold": {
+        "cp": 0,
+        "sp": 0,
+        "ep": 0,
+        "gp": 100,
+        "pp": 0
+      },
       "items": []
     },
+    "spellSlots": {
+      "1": {
+        "current": 3,
+        "max": 3
+      }
+    },
+    "cantripsKnown": [],
+    "knownSpells": [
+      "Searing Smite"
+    ],
+    "preparedSpells": [
+      "Searing Smite"
+    ],
+    "spellbook": [],
+    "equipmentSlots": {},
+    "attunedItems": [],
     "xp": 0,
     "inspiration": false,
     "biography": {
-      "background": "Sage",
+      "background": "Noble",
       "traits": [],
       "ideals": [],
       "bonds": [],
       "flaws": [],
       "chronicles": []
-    }
+    },
+    "savingThrowProficiencies": [
+      "WIS",
+      "CHA"
+    ],
+    "skillProficiencies": [
+      "Persuasion",
+      "Athletics"
+    ]
   },
-  "mode": "EXPLORATION",
+  "mode": "COMBAT",
   "location": {
     "hexId": "0,1",
     "coordinates": [
@@ -50,11 +72,34 @@
     ]
   },
   "worldTime": {
-    "hour": 21,
-    "day": 7,
+    "hour": 14,
+    "day": 1,
     "month": 1,
     "year": 1489,
-    "totalTurns": 94200
+    "totalTurns": 2400
   },
-  "storySummary": ""
+  "storySummary": "Starting your holy quest.",
+  "factions": [
+    {
+      "id": "commoners",
+      "name": "Commoners",
+      "description": "Ordinary folk of the realm.",
+      "standing": 0,
+      "isPlayerMember": false
+    },
+    {
+      "id": "crown",
+      "name": "The Crown",
+      "description": "The royal authority.",
+      "standing": 35,
+      "isPlayerMember": false
+    },
+    {
+      "id": "thieves",
+      "name": "Shadow Guild",
+      "description": "Underworld organization.",
+      "standing": -20,
+      "isPlayerMember": false
+    }
+  ]
 }

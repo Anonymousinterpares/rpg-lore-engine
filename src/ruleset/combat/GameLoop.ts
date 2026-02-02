@@ -8,6 +8,9 @@ import { MovementEngine } from './MovementEngine';
 import { WorldClockEngine } from './WorldClockEngine';
 import { HexDirection } from '../schemas/HexMapSchema';
 import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
+import { StoryScribe } from './StoryScribe';
+import { EncounterDirector } from './EncounterDirector';
+import { FactionEngine } from './FactionEngine';
 
 /**
  * The GameLoop is the central heart of the RPG engine.
@@ -19,13 +22,23 @@ export class GameLoop {
     private contextManager: ContextManager = new ContextManager();
     private hexMapManager: HexMapManager;
     private movementEngine: MovementEngine;
-    private inCombat: boolean = false; // Deprecated, using state.mode
+    private scribe: StoryScribe = new StoryScribe();
+    private director: EncounterDirector = new EncounterDirector();
 
     constructor(initialState: GameState, basePath: string = process.cwd()) {
         this.state = initialState;
         this.stateManager = new GameStateManager(basePath);
         this.hexMapManager = new HexMapManager(basePath);
         this.movementEngine = new MovementEngine(this.hexMapManager);
+
+        // Initialize factions if empty
+        if (!this.state.factions || this.state.factions.length === 0) {
+            this.state.factions = [
+                { id: 'commoners', name: 'Commoners', description: 'Ordinary folk of the realm.', standing: 0, isPlayerMember: false },
+                { id: 'crown', name: 'The Crown', description: 'The royal authority.', standing: 10, isPlayerMember: false },
+                { id: 'thieves', name: 'Shadow Guild', description: 'Underworld organization.', standing: -20, isPlayerMember: false }
+            ];
+        }
 
         // Initialize starting hex if it doesn't exist
         const startHexKey = this.state.location.hexId;
@@ -57,8 +70,16 @@ export class GameLoop {
             systemResponse = 'Combat action logic not yet fully wired to loop.';
         }
 
-        // 2. Agent Phase (Narrative)
+        // 2. Agent Phase (Narrative & Pacing)
         const currentHex = this.hexMapManager.getHex(this.state.location.hexId);
+
+        // Director check for encounter
+        const encounter = this.director.checkEncounter(this.state, currentHex || {});
+        if (encounter) {
+            this.state.mode = 'COMBAT';
+            systemResponse = `[ENCOUNTER] ${encounter.name}: ${encounter.description}`;
+        }
+
         const narratorContext = this.contextManager.getNarratorContext(this.state.character, currentHex || {});
         const narratorOutput = `[SIMULATED NARRATOR] You said: "${input}". 
         Location: ${currentHex?.name || 'Unknown'}. The world reacts to your ${intent.type.toLowerCase()}...`;
@@ -66,6 +87,10 @@ export class GameLoop {
         // 3. State Update & Persistence Phase
         this.contextManager.addEvent('player', input);
         this.contextManager.addEvent('narrator', narratorOutput);
+
+        // Scribe processing (summarization)
+        await this.scribe.processTurn(this.state, this.contextManager.getNarratorContext(this.state.character, {}).recentHistory);
+
         this.stateManager.saveGame(this.state);
 
         return systemResponse ? `${systemResponse}\n\n${narratorOutput}` : narratorOutput;

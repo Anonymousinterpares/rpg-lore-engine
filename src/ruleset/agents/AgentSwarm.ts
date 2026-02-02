@@ -36,3 +36,17 @@ export class DirectorAgent extends BaseAgent {
         Output MUST match DirectorDirectiveSchema.`;
     }
 }
+
+export class NPCControllerAgent extends BaseAgent {
+    constructor() {
+        super('NPCController', 'Companion AI');
+    }
+
+    public getSystemPrompt(context: any): string {
+        return `You are the NPC Controller. You manage the dialogue and actions of party companions.
+        Companions: ${context.companions?.map((c: any) => c.name).join(', ') || 'None'}
+        Current Motivation: ${context.currentMotivation || 'Follow the leader'}
+        Reaction to player: "${context.playerAction}"
+        Output should suggest dialogue lines and tactical actions for companions.`;
+    }
+}

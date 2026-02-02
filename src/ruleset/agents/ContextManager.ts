@@ -30,7 +30,7 @@ export class ContextManager {
                 hp: pc.hp,
                 stats: pc.stats
             },
-            location: hex.name || `Hex ${hex.coordinates.join(',')}`,
+            location: hex.name || (hex.coordinates ? `Hex ${hex.coordinates.join(',')}` : 'Unknown Location'),
             recentHistory: this.history.getRecent(10),
             summary: this.currentSummary,
             partyNames: pc.name // Could expand to include NPCs
