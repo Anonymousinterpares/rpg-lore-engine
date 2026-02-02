@@ -1,53 +1,60 @@
 {
   "character": {
-    "name": "Durin Strongbeard",
-    "level": 2,
-    "race": "Dwarf",
+    "name": "Chronos",
+    "level": 1,
+    "race": "Human",
     "class": "Fighter",
     "stats": {
-      "STR": 17,
-      "DEX": 12,
-      "CON": 15,
-      "INT": 8,
+      "STR": 10,
+      "DEX": 10,
+      "CON": 10,
+      "INT": 10,
       "WIS": 10,
-      "CHA": 12
+      "CHA": 10
     },
-    "savingThrowProficiencies": [
-      "STR",
-      "CON"
-    ],
-    "skillProficiencies": [
-      "Athletics"
-    ],
+    "savingThrowProficiencies": [],
+    "skillProficiencies": [],
     "hp": {
-      "current": 22,
-      "max": 22,
+      "current": 10,
+      "max": 10,
       "temp": 0
     },
     "hitDice": {
       "current": 1,
-      "max": 2,
+      "max": 1,
       "dieType": "1d10"
     },
     "spellSlots": {},
-    "ac": 16,
+    "ac": 10,
     "inventory": {
-      "gold": 10,
+      "gold": 0,
       "items": []
     },
-    "xp": 300,
+    "xp": 0,
     "inspiration": false,
     "biography": {
+      "background": "Sage",
+      "traits": [],
+      "ideals": [],
+      "bonds": [],
+      "flaws": [],
       "chronicles": []
     }
   },
+  "mode": "EXPLORATION",
   "location": {
-    "hexId": "0,0",
+    "hexId": "0,1",
     "coordinates": [
       0,
-      0
+      1
     ]
   },
-  "worldTime": 0,
-  "storySummary": "Starting a new adventure."
+  "worldTime": {
+    "hour": 21,
+    "day": 7,
+    "month": 1,
+    "year": 1489,
+    "totalTurns": 94200
+  },
+  "storySummary": ""
 }

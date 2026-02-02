@@ -6,6 +6,7 @@ export interface MovementResult {
     newHex: Hex | null;
     requiresGeneration: boolean;
     message: string;
+    timeCost: number; // In minutes
 }
 
 export class MovementEngine {
@@ -23,12 +24,11 @@ export class MovementEngine {
         const currentHex = this.mapManager.getHex(currentHexKey);
 
         if (!currentHex) {
-            return { success: false, newHex: null, requiresGeneration: false, message: 'Current location not found in map registry.' };
+            return { success: false, newHex: null, requiresGeneration: false, message: 'Current location not found in map registry.', timeCost: 0 };
         }
 
-        // Check traversability
         if (!this.mapManager.canTraverse(currentHex, direction)) {
-            return { success: false, newHex: null, requiresGeneration: false, message: `Movement blocked to the ${direction}. Path is impassable.` };
+            return { success: false, newHex: null, requiresGeneration: false, message: `Movement blocked to the ${direction}. Path is impassable.`, timeCost: 0 };
         }
 
         const newCoords = HexMapManager.getNewCoords(currentCoords, direction);
@@ -54,7 +54,9 @@ export class MovementEngine {
             ? `You venture ${direction} into unexplored territory... [TRIGGER: HEX_GENERATION]`
             : `You travel ${direction} into ${newHex.name || 'the unknown'}.`;
 
-        return { success: true, newHex, requiresGeneration, message };
+        const timeCost = 4 * 60; // Standard 4 hours per hex travel
+
+        return { success: true, newHex, requiresGeneration, message, timeCost };
     }
 
     /**

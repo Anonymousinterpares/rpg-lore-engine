@@ -5,6 +5,7 @@ import { MechanicsEngine } from './MechanicsEngine';
 import { RestingEngine } from './RestingEngine';
 import { HexMapManager } from './HexMapManager';
 import { MovementEngine } from './MovementEngine';
+import { WorldClockEngine } from './WorldClockEngine';
 import { HexDirection } from '../schemas/HexMapSchema';
 import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
 
@@ -18,7 +19,7 @@ export class GameLoop {
     private contextManager: ContextManager = new ContextManager();
     private hexMapManager: HexMapManager;
     private movementEngine: MovementEngine;
-    private inCombat: boolean = false;
+    private inCombat: boolean = false; // Deprecated, using state.mode
 
     constructor(initialState: GameState, basePath: string = process.cwd()) {
         this.state = initialState;
@@ -46,7 +47,7 @@ export class GameLoop {
      * @param input Raw text from the player
      */
     public async processTurn(input: string): Promise<string> {
-        const intent = IntentRouter.parse(input, this.inCombat);
+        const intent = IntentRouter.parse(input, this.state.mode === 'COMBAT');
         let systemResponse = '';
 
         // 1. Logic Phase (Deterministic)
@@ -78,10 +79,12 @@ export class GameLoop {
             case 'stats':
                 return `Name: ${this.state.character.name} | HP: ${this.state.character.hp.current}/${this.state.character.hp.max} | Level: ${this.state.character.level} | Location: ${this.state.location.hexId}`;
             case 'rest':
-                if (intent.args?.[0] === 'long') {
-                    return RestingEngine.longRest(this.state.character);
-                }
-                return RestingEngine.shortRest(this.state.character);
+                const restResult = intent.args?.[0] === 'long'
+                    ? RestingEngine.longRest(this.state.character)
+                    : RestingEngine.shortRest(this.state.character);
+
+                this.state.worldTime = WorldClockEngine.advanceTime(this.state.worldTime, restResult.timeCost);
+                return restResult.message;
             case 'save':
                 this.stateManager.saveGame(this.state);
                 return 'Game saved.';
@@ -91,12 +94,19 @@ export class GameLoop {
                 if (result.success && result.newHex) {
                     this.state.location.coordinates = result.newHex.coordinates;
                     this.state.location.hexId = `${result.newHex.coordinates[0]},${result.newHex.coordinates[1]}`;
+                    this.state.worldTime = WorldClockEngine.advanceTime(this.state.worldTime, result.timeCost);
                 }
                 return result.message;
             case 'look':
                 const hex = this.hexMapManager.getHex(this.state.location.hexId);
                 if (!hex) return 'You are in an unknown void.';
                 return `[${hex.name || 'Unnamed Hex'}] (${hex.biome || 'Unknown Biome'})\n${hex.description || 'No description.'}`;
+            case 'attack':
+                this.state.mode = 'COMBAT';
+                return `[SYSTEM] Entering COMBAT mode! ${intent.args?.[0] || 'Target'} is being attacked.`;
+            case 'exit':
+                this.state.mode = 'EXPLORATION';
+                return `[SYSTEM] Exiting current mode. Returning to EXPLORATION.`;
             default:
                 return `Unknown command: /${intent.command}`;
         }

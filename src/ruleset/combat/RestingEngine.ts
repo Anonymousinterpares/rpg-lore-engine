@@ -2,6 +2,11 @@ import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
 import { Dice } from './Dice';
 import { MechanicsEngine } from './MechanicsEngine';
 
+export interface RestResult {
+    message: string;
+    timeCost: number; // In minutes
+}
+
 export class RestingEngine {
     /**
      * Executes a Short Rest (1 hour)
@@ -9,9 +14,9 @@ export class RestingEngine {
      * @param pc The character resting
      * @param diceToSpend Number of hit dice the player chooses to spend
      */
-    public static shortRest(pc: PlayerCharacter, diceToSpend: number = 0): string {
+    public static shortRest(pc: PlayerCharacter, diceToSpend: number = 0): RestResult {
         if (diceToSpend > pc.hitDice.current) {
-            return `Not enough hit dice remaining (Current: ${pc.hitDice.current}).`;
+            return { message: `Not enough hit dice remaining (Current: ${pc.hitDice.current}).`, timeCost: 0 };
         }
 
         let totalHealed = 0;
@@ -37,14 +42,14 @@ export class RestingEngine {
             msg += ` Spell slots refreshed.`;
         }
 
-        return msg;
+        return { message: msg, timeCost: 60 };
     }
 
     /**
      * Executes a Long Rest (8 hours)
      * Full HP, regain half hit dice, regain all spell slots.
      */
-    public static longRest(pc: PlayerCharacter): string {
+    public static longRest(pc: PlayerCharacter): RestResult {
         pc.hp.current = pc.hp.max;
 
         // Regain half hit dice (minimum 1)
@@ -58,6 +63,9 @@ export class RestingEngine {
 
         // Clear inspiration if applicable (depends on variant rules, but usually kept)
 
-        return `${pc.name} takes a Long Rest. HP and Spell Slots fully restored. Regained ${regainAmount} Hit Dice (Current: ${pc.hitDice.current}/${pc.hitDice.max}).`;
+        return {
+            message: `${pc.name} takes a Long Rest. HP and Spell Slots fully restored. Regained ${regainAmount} Hit Dice (Current: ${pc.hitDice.current}/${pc.hitDice.max}).`,
+            timeCost: 480
+        };
     }
 }

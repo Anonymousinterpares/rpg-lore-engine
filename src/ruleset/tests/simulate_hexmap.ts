@@ -31,7 +31,7 @@ async function runHexMapSimulation() {
         },
         mode: 'EXPLORATION',
         location: { hexId: '0,0', coordinates: [0, 0] },
-        worldTime: 0,
+        worldTime: { hour: 8, day: 1, month: 1, year: 1489, totalTurns: 0 },
         storySummary: ''
     };
 

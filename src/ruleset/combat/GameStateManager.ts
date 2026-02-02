@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { PlayerCharacter, PlayerCharacterSchema } from '../schemas/PlayerCharacterSchema';
+import { WorldClock } from '../schemas/WorldClockSchema';
 
 export type GameMode = 'EXPLORATION' | 'SUB_LOCATION' | 'COMBAT' | 'DIALOGUE' | 'REST' | 'SHOP' | 'CHARACTER_CREATION';
 
@@ -13,7 +14,7 @@ export interface GameState {
         subLocationId?: string | null;
         roomId?: string | null;
     };
-    worldTime: number; // In turns or seconds
+    worldTime: WorldClock;
     storySummary: string;
 }
 

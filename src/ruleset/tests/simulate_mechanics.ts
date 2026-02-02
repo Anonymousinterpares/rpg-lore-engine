@@ -57,10 +57,10 @@ function runMechanicsSimulation() {
 
     // 3. Resting
     console.log('\n--- 3. Resting ---');
-    console.log(RestingEngine.shortRest(hero, 1));
+    console.log(RestingEngine.shortRest(hero, 1).message);
     console.log(`After Short Rest: HP: ${hero.hp.current}/${hero.hp.max} | HD: ${hero.hitDice.current}/${hero.hitDice.max}`);
 
-    console.log(RestingEngine.longRest(hero));
+    console.log(RestingEngine.longRest(hero).message);
     console.log(`After Long Rest: HP: ${hero.hp.current}/${hero.hp.max} | HD: ${hero.hitDice.current}/${hero.hitDice.max}`);
 
     console.log('\n--- Simulation Finished ---');
