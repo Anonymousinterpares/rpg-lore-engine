@@ -22,6 +22,13 @@ export const CombatantStateSchema = z.object({
         actionSpent: z.boolean().default(false),
         bonusActionSpent: z.boolean().default(false),
         reactionSpent: z.boolean().default(false)
+    }).default({}),
+    tactical: z.object({
+        cover: z.enum(['None', 'Half', 'Three-Quarters', 'Full']).default('None'),
+        reach: z.number().default(5),
+        isRanged: z.boolean().default(false),
+        isGrappledBy: z.string().optional(), // ID of grappler
+        isGrappling: z.string().optional() // ID of target
     }).default({})
 });
 

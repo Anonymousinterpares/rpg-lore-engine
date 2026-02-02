@@ -115,4 +115,39 @@ export class MechanicsEngine {
 
         return msg;
     }
+
+    /**
+     * Calculates passive perception: 10 + WIS mod + Proficiency
+     */
+    public static getPassivePerception(actor: PlayerCharacter | Monster): number {
+        const stats = (actor as any).stats;
+        const wisMod = this.getModifier(stats['WIS'] || 10);
+        let profBonus = 0;
+
+        if ('level' in actor) {
+            const pc = actor as PlayerCharacter;
+            if (pc.skillProficiencies.includes('Perception')) {
+                profBonus = this.getProficiencyBonus(pc.level);
+            }
+        } else {
+            // Monsters often have explicit passive perception, 
+            // but we'll calculate if it's a generic poll
+        }
+
+        return 10 + wisMod + profBonus;
+    }
+
+    /**
+     * Resolves group stealth: if half or more succeed, the group succeeds.
+     */
+    public static resolveGroupStealth(actors: (PlayerCharacter | Monster)[], dc: number): { success: boolean; messages: string[] } {
+        const results = actors.map(a => this.resolveCheck(a, 'DEX', 'Stealth', dc));
+        const successes = results.filter(r => r.success).length;
+        const groupSuccess = successes >= actors.length / 2;
+
+        return {
+            success: groupSuccess,
+            messages: results.map(r => r.message)
+        };
+    }
 }

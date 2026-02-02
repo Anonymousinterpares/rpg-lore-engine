@@ -16,7 +16,7 @@ export class CombatFactory {
                 temp: 0
             },
             ac: monster.ac,
-            initiative: 0, // Should be rolled
+            initiative: 0,
             dexterityScore: monster.stats['DEX'] || 10,
             conditions: [],
             isPlayer: false,
@@ -24,6 +24,11 @@ export class CombatFactory {
                 actionSpent: false,
                 bonusActionSpent: false,
                 reactionSpent: false
+            },
+            tactical: {
+                cover: 'None',
+                reach: 5,
+                isRanged: false
             }
         };
     }
@@ -37,7 +42,7 @@ export class CombatFactory {
             name: pc.name,
             hp: { ...pc.hp },
             ac: pc.ac,
-            initiative: 0, // Should be rolled
+            initiative: 0,
             dexterityScore: pc.stats['DEX'] || 10,
             conditions: [],
             isPlayer: true,
@@ -45,6 +50,11 @@ export class CombatFactory {
                 actionSpent: false,
                 bonusActionSpent: false,
                 reactionSpent: false
+            },
+            tactical: {
+                cover: 'None',
+                reach: 5,
+                isRanged: false
             }
         };
     }

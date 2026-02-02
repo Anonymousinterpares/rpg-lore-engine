@@ -30,12 +30,21 @@ export class InitiativeTracker {
         }
 
         const current = this.combatants[this.currentIndex];
+
+        // Handle Surprise
+        const isSurprised = current.conditions.includes('Surprised');
+
         // Reset resources for the new turn
         current.resources = {
-            actionSpent: false,
-            bonusActionSpent: false,
-            reactionSpent: false
+            actionSpent: isSurprised,
+            bonusActionSpent: isSurprised,
+            reactionSpent: false // Reactions are allowed AFTER the surprised turn ends
         };
+
+        if (isSurprised) {
+            // Remove surprised condition after the turn "ends" (which is now)
+            current.conditions = current.conditions.filter(c => c !== 'Surprised');
+        }
 
         return {
             combatant: current,

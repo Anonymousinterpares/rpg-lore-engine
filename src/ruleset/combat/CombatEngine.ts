@@ -34,7 +34,25 @@ export class CombatEngine {
         const crit = d20 === 20;
         const miss = d20 === 1;
         const total = d20 + attackBonus;
-        const hit = !miss && (crit || total >= target.ac);
+
+        // Cover calculation
+        let effectiveAC = target.ac;
+        if (target.tactical.cover === 'Half') effectiveAC += 2;
+        else if (target.tactical.cover === 'Three-Quarters') effectiveAC += 5;
+
+        const hit = !miss && (crit || total >= effectiveAC);
+        const hitNormalAC = !miss && (crit || total >= target.ac);
+        const targetACWithCover = effectiveAC;
+
+        if (target.tactical.cover === 'Full' && !crit) {
+            return {
+                hit: false,
+                crit: false,
+                roll: d20,
+                total,
+                message: `${attacker.name} cannot target ${target.name} due to Full Cover.`
+            };
+        }
 
         let resultMessage = '';
         let damageTotal = 0;
@@ -46,9 +64,9 @@ export class CombatEngine {
             resultMessage = `${attacker.name} scored a CRITICAL HIT on ${target.name}!`;
         } else if (hit) {
             damageTotal = Dice.roll(damageDice) + damageBonus;
-            resultMessage = `${attacker.name} hits ${target.name} (Roll: ${total} vs AC: ${target.ac}).`;
+            resultMessage = `${attacker.name} hits ${target.name} (Roll: ${total} vs AC: ${targetACWithCover}${target.tactical.cover !== 'None' ? ' [Covered]' : ''}).`;
         } else {
-            resultMessage = `${attacker.name} missed ${target.name} (Roll: ${total} vs AC: ${target.ac}).`;
+            resultMessage = `${attacker.name} missed ${target.name} (Roll: ${total} vs AC: ${targetACWithCover}${target.tactical.cover !== 'None' ? ' [Covered]' : ''}).`;
         }
 
         if (hit) {
