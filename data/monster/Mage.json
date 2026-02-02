@@ -31,5 +31,46 @@
       "attackBonus": 5
     }
   ],
-  "legendaryActions": []
+  "legendaryActions": [],
+  "spellcasting": {
+    "slots": {
+      "1": {
+        "count": 4,
+        "spells": [
+          "detect magic",
+          "mage armor",
+          "magic missile",
+          "shield"
+        ]
+      },
+      "2": {
+        "count": 3,
+        "spells": [
+          "misty step",
+          "suggestion"
+        ]
+      },
+      "3": {
+        "count": 3,
+        "spells": [
+          "counterspell",
+          "fireball",
+          "fly"
+        ]
+      },
+      "4": {
+        "count": 3,
+        "spells": [
+          "greater invisibility",
+          "ice storm"
+        ]
+      }
+    },
+    "cantrips": [
+      "fire bolt",
+      "light",
+      "mage hand",
+      "prestidigitation"
+    ]
+  }
 }

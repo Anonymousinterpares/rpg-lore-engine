@@ -1,0 +1,44 @@
+{
+    "mappings": [
+        {
+            "minAC": 10,
+            "maxAC": 11,
+            "item": null,
+            "description": "No armor / Natural"
+        },
+        {
+            "minAC": 12,
+            "maxAC": 12,
+            "item": "Padded",
+            "description": "Padded armor"
+        },
+        {
+            "minAC": 13,
+            "maxAC": 14,
+            "item": "Leather",
+            "description": "Leather / Studded Leather"
+        },
+        {
+            "minAC": 15,
+            "maxAC": 16,
+            "item": "Chain_Shirt",
+            "description": "Chain Shirt / Scale Mail"
+        },
+        {
+            "minAC": 17,
+            "maxAC": 17,
+            "item": "Splint",
+            "description": "Splint / Half Plate"
+        },
+        {
+            "minAC": 18,
+            "maxAC": 30,
+            "item": "Plate",
+            "description": "Plate armor"
+        }
+    ],
+    "droppableTypes": [
+        "humanoid",
+        "giant"
+    ]
+}

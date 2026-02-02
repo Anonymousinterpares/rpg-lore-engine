@@ -29,7 +29,16 @@ export const CombatantStateSchema = z.object({
         isRanged: z.boolean().default(false),
         isGrappledBy: z.string().optional(), // ID of grappler
         isGrappling: z.string().optional() // ID of target
-    }).default({})
+    }).default({}),
+    spellSlots: z.record(z.string(), z.object({
+        current: z.number(),
+        max: z.number()
+    })).optional(),
+    preparedSpells: z.array(z.string()).default([]),
+    concentration: z.object({
+        spellName: z.string(),
+        startTurn: z.number()
+    }).optional()
 });
 
 export type CombatantState = z.infer<typeof CombatantStateSchema>;

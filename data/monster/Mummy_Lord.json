@@ -68,5 +68,50 @@
       "name": "Whirlwind of Sand (Costs 2 Actions)",
       "description": "The mummy lord magically transforms into a whirlwind of sand, moves up to 60 feet, and reverts to its normal form. While in whirlwind form, the mummy lord is immune to all damage, and it can't be grappled, petrified, knocked prone, restrained, or stunned. Equipment worn or carried by the mummy lord remain in its possession."
     }
-  ]
+  ],
+  "spellcasting": {
+    "slots": {
+      "1": {
+        "count": 4,
+        "spells": [
+          "command",
+          "guiding bolt",
+          "shield of faith"
+        ]
+      },
+      "2": {
+        "count": 3,
+        "spells": [
+          "hold person",
+          "silence",
+          "spiritual weapon"
+        ]
+      },
+      "3": {
+        "count": 3,
+        "spells": [
+          "animate dead",
+          "dispel magic"
+        ]
+      },
+      "4": {
+        "count": 3,
+        "spells": [
+          "divination",
+          "guardian of faith"
+        ]
+      },
+      "5": {
+        "count": 2,
+        "spells": [
+          "contagion",
+          "insect plague"
+        ]
+      }
+    },
+    "cantrips": [
+      "sacred flame",
+      "thaumaturgy"
+    ]
+  }
 }

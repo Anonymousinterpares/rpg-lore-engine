@@ -39,5 +39,29 @@
       "attackBonus": 4
     }
   ],
-  "legendaryActions": []
+  "legendaryActions": [],
+  "spellcasting": {
+    "slots": {
+      "1": {
+        "count": 4,
+        "spells": [
+          "command",
+          "inflict wounds",
+          "shield of faith"
+        ]
+      },
+      "2": {
+        "count": 3,
+        "spells": [
+          "hold person",
+          "spiritual weapon"
+        ]
+      }
+    },
+    "cantrips": [
+      "light",
+      "sacred flame",
+      "thaumaturgy"
+    ]
+  }
 }

@@ -29,7 +29,14 @@ export class CombatFactory {
                 cover: 'None',
                 reach: 5,
                 isRanged: false
-            }
+            },
+            spellSlots: monster.spellcasting ? Object.fromEntries(
+                Object.entries(monster.spellcasting.slots).map(([lv, data]) => [lv, { current: data.count, max: data.count }])
+            ) : undefined,
+            preparedSpells: monster.spellcasting ? [
+                ...monster.spellcasting.cantrips,
+                ...Object.values(monster.spellcasting.slots).flatMap(s => s.spells)
+            ] : []
         };
     }
 
@@ -55,7 +62,9 @@ export class CombatFactory {
                 cover: 'None',
                 reach: 5,
                 isRanged: false
-            }
+            },
+            spellSlots: JSON.parse(JSON.stringify(pc.spellSlots)),
+            preparedSpells: [...pc.cantripsKnown, ...pc.preparedSpells]
         };
     }
 }

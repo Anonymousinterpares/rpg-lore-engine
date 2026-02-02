@@ -33,6 +33,7 @@ export const SpellSchema = z.object({
         ability: z.string(),
         effect: z.string() // e.g., "half", "none"
     }).optional(),
+    ritual: z.boolean().default(false),
     tags: z.array(z.string()).default([])
 });
 

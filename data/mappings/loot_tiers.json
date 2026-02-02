@@ -1,0 +1,61 @@
+{
+    "tiers": [
+        {
+            "id": 0,
+            "minCR": 0,
+            "maxCR": 0.25,
+            "goldDice": "1d6",
+            "goldDenom": "cp",
+            "itemChance": 0.05,
+            "maxItemValue": 10
+        },
+        {
+            "id": 1,
+            "minCR": 0.5,
+            "maxCR": 1,
+            "goldDice": "2d6",
+            "goldDenom": "sp",
+            "itemChance": 0.15,
+            "maxItemValue": 50
+        },
+        {
+            "id": 2,
+            "minCR": 2,
+            "maxCR": 4,
+            "goldDice": "3d6",
+            "goldDenom": "gp",
+            "itemChance": 0.25,
+            "maxItemValue": 500
+        },
+        {
+            "id": 3,
+            "minCR": 5,
+            "maxCR": 10,
+            "goldDice": "4d6",
+            "goldMultiplier": 10,
+            "goldDenom": "gp",
+            "itemChance": 0.40,
+            "maxItemValue": 5000
+        },
+        {
+            "id": 4,
+            "minCR": 11,
+            "maxCR": 16,
+            "goldDice": "5d6",
+            "goldMultiplier": 100,
+            "goldDenom": "gp",
+            "itemChance": 0.60,
+            "maxItemValue": 50000
+        },
+        {
+            "id": 5,
+            "minCR": 17,
+            "maxCR": 40,
+            "goldDice": "6d6",
+            "goldMultiplier": 1000,
+            "goldDenom": "gp",
+            "itemChance": 0.80,
+            "maxItemValue": 500000
+        }
+    ]
+}

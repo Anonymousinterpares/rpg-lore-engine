@@ -35,5 +35,49 @@
       "attackBonus": 7
     }
   ],
-  "legendaryActions": []
+  "legendaryActions": [],
+  "spellcasting": {
+    "slots": {
+      "1": {
+        "count": 4,
+        "spells": [
+          "charm person",
+          "detect magic",
+          "sleep"
+        ]
+      },
+      "2": {
+        "count": 3,
+        "spells": [
+          "detect thoughts",
+          "hold person"
+        ]
+      },
+      "3": {
+        "count": 3,
+        "spells": [
+          "lightning bolt",
+          "water breathing"
+        ]
+      },
+      "4": {
+        "count": 3,
+        "spells": [
+          "blight",
+          "dimension door"
+        ]
+      },
+      "5": {
+        "count": 2,
+        "spells": [
+          "dominate person"
+        ]
+      }
+    },
+    "cantrips": [
+      "mage hand",
+      "minor illusion",
+      "ray of frost"
+    ]
+  }
 }

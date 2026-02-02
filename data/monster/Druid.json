@@ -31,5 +31,30 @@
       "attackBonus": 2
     }
   ],
-  "legendaryActions": []
+  "legendaryActions": [],
+  "spellcasting": {
+    "slots": {
+      "1": {
+        "count": 4,
+        "spells": [
+          "entangle",
+          "longstrider",
+          "speak with animals",
+          "thunderwave"
+        ]
+      },
+      "2": {
+        "count": 3,
+        "spells": [
+          "animal messenger",
+          "barkskin"
+        ]
+      }
+    },
+    "cantrips": [
+      "druidcraft",
+      "produce flame",
+      "shillelagh"
+    ]
+  }
 }

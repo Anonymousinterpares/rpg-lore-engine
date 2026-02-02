@@ -31,5 +31,22 @@
       "attackBonus": 2
     }
   ],
-  "legendaryActions": []
+  "legendaryActions": [],
+  "spellcasting": {
+    "slots": {
+      "1": {
+        "count": 3,
+        "spells": [
+          "bless",
+          "cure wounds",
+          "sanctuary"
+        ]
+      }
+    },
+    "cantrips": [
+      "light",
+      "sacred flame",
+      "thaumaturgy"
+    ]
+  }
 }

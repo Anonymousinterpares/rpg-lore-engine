@@ -127,6 +127,22 @@ export const StandardActions = {
         const result = CombatEngine.resolveAttack(attacker, target, bonus, damage, dmgBonus);
         attacker.resources.reactionSpent = true;
         return `[OPPORTUNITY ATTACK] ${result.message}`;
+    },
+
+    /**
+     * Cast a Spell
+     */
+    castSpell: (caster: CombatantState, target: CombatantState, spell: any, slotLevel: number) => {
+        if (caster.resources.actionSpent && spell.level > 0) return 'Action already spent.';
+
+        // Use SpellcastingEngine for the heavy lifting
+        const { SpellcastingEngine } = require('./SpellcastingEngine');
+        const result = SpellcastingEngine.castSpell(caster, target, spell, slotLevel);
+
+        if (!result.includes('cannot cast')) {
+            caster.resources.actionSpent = true;
+        }
+        return result;
     }
 };
 

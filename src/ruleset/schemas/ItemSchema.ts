@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { CurrencySchema, DamageTypeSchema, DiceRollSchema } from './BaseSchemas';
 
-export const ItemTypeSchema = z.enum(['Weapon', 'Armor', 'Shield', 'Adventuring Gear', 'Tool', 'Misc', 'Magic Item']);
+export const ItemTypeSchema = z.enum(['Weapon', 'Armor', 'Shield', 'Adventuring Gear', 'Tool', 'Misc', 'Magic Item', 'Spell Scroll']);
 
 export const ModifierSchema = z.object({
     type: z.enum(['StatBonus', 'ACBonus', 'DamageAdd', 'AbilitySET']),
@@ -41,6 +41,13 @@ export const ShieldSchema = BaseItemSchema.extend({
     acBonus: z.number().default(2)
 });
 
+export const SpellScrollSchema = BaseItemSchema.extend({
+    type: z.literal('Spell Scroll'),
+    spellName: z.string(),
+    spellLevel: z.number().min(0).max(9),
+    consumedOnUse: z.boolean().default(true)
+});
+
 export const ItemSchema = z.discriminatedUnion('type', [
     WeaponSchema,
     ArmorSchema,
@@ -48,7 +55,8 @@ export const ItemSchema = z.discriminatedUnion('type', [
     BaseItemSchema.extend({ type: z.literal('Adventuring Gear') }),
     BaseItemSchema.extend({ type: z.literal('Tool') }),
     BaseItemSchema.extend({ type: z.literal('Misc') }),
-    BaseItemSchema.extend({ type: z.literal('Magic Item') })
+    BaseItemSchema.extend({ type: z.literal('Magic Item') }),
+    SpellScrollSchema
 ]);
 
 export type Item = z.infer<typeof ItemSchema>;

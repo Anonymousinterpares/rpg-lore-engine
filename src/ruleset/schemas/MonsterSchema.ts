@@ -33,7 +33,19 @@ export const MonsterSchema = z.object({
         description: z.string()
     })).default([]),
     actions: z.array(MonsterActionSchema).default([]),
-    legendaryActions: z.array(MonsterActionSchema).optional()
+    legendaryActions: z.array(MonsterActionSchema).optional(),
+    spellcasting: z.object({
+        casterLevel: z.number(),
+        ability: AbilityScoreSchema,
+        spellSaveDC: z.number(),
+        spellAttackBonus: z.number(),
+        atWill: z.array(z.string()).optional(),
+        cantrips: z.array(z.string()).default([]),
+        slots: z.record(z.string(), z.object({
+            count: z.number(),
+            spells: z.array(z.string())
+        })).default({})
+    }).optional()
 });
 
 export type Monster = z.infer<typeof MonsterSchema>;

@@ -56,5 +56,45 @@
       "name": "Cast a Spell (Costs 3 Actions)",
       "description": "The sphinx casts a spell from its list of prepared spells, using a spell slot as normal."
     }
-  ]
+  ],
+  "spellcasting": {
+    "slots": {
+      "1": {
+        "count": 4,
+        "spells": [
+          "detect magic",
+          "identify",
+          "shield"
+        ]
+      },
+      "2": {
+        "count": 3,
+        "spells": [
+          "darkness",
+          "locate object",
+          "suggestion"
+        ]
+      },
+      "3": {
+        "count": 3,
+        "spells": [
+          "dispel magic",
+          "remove curse",
+          "tongues"
+        ]
+      },
+      "4": {
+        "count": 3,
+        "spells": [
+          "banishment",
+          "greater invisibility"
+        ]
+      }
+    },
+    "cantrips": [
+      "mage hand",
+      "minor illusion",
+      "prestidigitation"
+    ]
+  }
 }

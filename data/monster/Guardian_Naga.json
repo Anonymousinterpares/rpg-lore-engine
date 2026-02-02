@@ -40,5 +40,50 @@
       "attackBonus": 8
     }
   ],
-  "legendaryActions": []
+  "legendaryActions": [],
+  "spellcasting": {
+    "slots": {
+      "1": {
+        "count": 4,
+        "spells": [
+          "command",
+          "cure wounds",
+          "shield of faith"
+        ]
+      },
+      "2": {
+        "count": 3,
+        "spells": [
+          "calm emotions",
+          "hold person"
+        ]
+      },
+      "3": {
+        "count": 3,
+        "spells": [
+          "bestow curse",
+          "clairvoyance"
+        ]
+      },
+      "4": {
+        "count": 3,
+        "spells": [
+          "banishment",
+          "freedom of movement"
+        ]
+      },
+      "5": {
+        "count": 2,
+        "spells": [
+          "flame strike",
+          "geas"
+        ]
+      }
+    },
+    "cantrips": [
+      "mending",
+      "sacred flame",
+      "thaumaturgy"
+    ]
+  }
 }

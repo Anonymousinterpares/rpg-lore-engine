@@ -35,5 +35,61 @@
       "attackBonus": 6
     }
   ],
-  "legendaryActions": []
+  "legendaryActions": [],
+  "spellcasting": {
+    "slots": {
+      "1": {
+        "count": 4,
+        "spells": [
+          "detect magic",
+          "identify",
+          "mage armor",
+          "magic missile"
+        ]
+      },
+      "2": {
+        "count": 3,
+        "spells": [
+          "detect thoughts",
+          "mirror image",
+          "misty step"
+        ]
+      },
+      "3": {
+        "count": 3,
+        "spells": [
+          "counterspell",
+          "fly",
+          "lightning bolt"
+        ]
+      },
+      "4": {
+        "count": 3,
+        "spells": [
+          "banishment",
+          "fire shield",
+          "stoneskin"
+        ]
+      },
+      "5": {
+        "count": 3,
+        "spells": [
+          "cone of cold",
+          "scrying",
+          "wall of force"
+        ]
+      }
+    },
+    "atWill": [
+      "disguise self",
+      "invisibility"
+    ],
+    "cantrips": [
+      "fire bolt",
+      "light",
+      "mage hand",
+      "prestidigitation",
+      "shocking grasp"
+    ]
+  }
 }

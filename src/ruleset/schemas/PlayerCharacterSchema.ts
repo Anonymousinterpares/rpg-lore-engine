@@ -1,5 +1,18 @@
 import { z } from 'zod';
-import { AbilityScoreSchema, SkillNameSchema } from './BaseSchemas';
+import { AbilityScoreSchema, SkillNameSchema, CurrencySchema } from './BaseSchemas';
+
+export const EquipmentSlotsSchema = z.object({
+    head: z.string().optional(),
+    armor: z.string().optional(),
+    cloak: z.string().optional(),
+    hands: z.string().optional(),
+    ring1: z.string().optional(),
+    ring2: z.string().optional(),
+    feet: z.string().optional(),
+    mainHand: z.string().optional(),
+    offHand: z.string().optional(),
+    ammunition: z.string().optional()
+}).default({});
 
 export const PlayerCharacterSchema = z.object({
     name: z.string(),
@@ -23,9 +36,13 @@ export const PlayerCharacterSchema = z.object({
         current: z.number(),
         max: z.number()
     })).default({}),
+    cantripsKnown: z.array(z.string()).default([]),
+    knownSpells: z.array(z.string()).default([]),
+    preparedSpells: z.array(z.string()).default([]),
+    spellbook: z.array(z.string()).default([]),
     ac: z.number(),
     inventory: z.object({
-        gold: z.number().default(0),
+        gold: CurrencySchema.default({}),
         items: z.array(z.object({
             id: z.string(),
             name: z.string(),
@@ -34,6 +51,8 @@ export const PlayerCharacterSchema = z.object({
             equipped: z.boolean().default(false)
         })).default([])
     }).default({}),
+    equipmentSlots: EquipmentSlotsSchema,
+    attunedItems: z.array(z.string()).default([]),
     xp: z.number().default(0),
     inspiration: z.boolean().default(false),
     biography: z.object({

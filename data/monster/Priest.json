@@ -35,5 +35,36 @@
       "attackBonus": 2
     }
   ],
-  "legendaryActions": []
+  "legendaryActions": [],
+  "spellcasting": {
+    "slots": {
+      "1": {
+        "count": 4,
+        "spells": [
+          "cure wounds",
+          "guiding bolt",
+          "sanctuary"
+        ]
+      },
+      "2": {
+        "count": 3,
+        "spells": [
+          "lesser restoration",
+          "spiritual weapon"
+        ]
+      },
+      "3": {
+        "count": 2,
+        "spells": [
+          "dispel magic",
+          "spirit guardians"
+        ]
+      }
+    },
+    "cantrips": [
+      "light",
+      "sacred flame",
+      "thaumaturgy"
+    ]
+  }
 }

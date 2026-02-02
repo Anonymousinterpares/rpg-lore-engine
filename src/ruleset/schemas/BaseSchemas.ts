@@ -7,6 +7,14 @@ import { z } from 'zod';
 export const AbilityScoreSchema = z.enum(['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA']);
 export type AbilityScore = z.infer<typeof AbilityScoreSchema>;
 
+export const CurrencySchema = z.object({
+  cp: z.number().default(0),
+  sp: z.number().default(0),
+  ep: z.number().default(0),
+  gp: z.number().default(0),
+  pp: z.number().default(0)
+});
+
 export const DamageTypeSchema = z.enum([
   'Acid', 'Bludgeoning', 'Cold', 'Fire', 'Force',
   'Lightning', 'Necrotic', 'Piercing', 'Poison',
@@ -14,7 +22,7 @@ export const DamageTypeSchema = z.enum([
 ]);
 export type DamageType = z.infer<typeof DamageTypeSchema>;
 
-export const DiceRollSchema = z.string().regex(/^\d+d\d+(\s*[-+]\s*\d+)?$/, 'Invalid dice format (e.g., 1d8, 2d6+4)');
+export const DiceRollSchema = z.string().regex(/^(\d+)d(\d+)(?:\s*([-+]\s*)(\d+))?$/i, 'Invalid dice format (e.g., 1d8, 2d6+4)');
 export type DiceRoll = z.infer<typeof DiceRollSchema>;
 
 export const SizeSchema = z.enum(['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Gargantuan']);
@@ -25,13 +33,6 @@ export const ScalingSchema = z.object({
   values: z.array(z.union([z.number(), DiceRollSchema]))
 });
 
-export const CurrencySchema = z.object({
-  cp: z.number().default(0),
-  sp: z.number().default(0),
-  ep: z.number().default(0),
-  gp: z.number().default(0),
-  pp: z.number().default(0)
-});
 export const SkillNameSchema = z.enum([
   'Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Deception',
   'History', 'Insight', 'Intimidation', 'Investigation', 'Medicine',
