@@ -21,13 +21,19 @@ function runSimulation() {
         hp: { current: 7, max: 7, temp: 0 },
         hitDice: { current: 1, max: 1, dieType: '1d6' },
         spellSlots: { '1': { current: 2, max: 2 } },
+        cantripsKnown: [],
+        knownSpells: [],
+        preparedSpells: [],
+        spellbook: [],
         ac: 12,
         inventory: {
-            gold: 10,
+            gold: { cp: 0, sp: 0, ep: 0, gp: 10, pp: 0 },
             items: [
                 { id: 'staff_01', name: 'Quarterstaff', weight: 4, quantity: 1, equipped: true }
             ]
         },
+        equipmentSlots: {},
+        attunedItems: [],
         xp: 0,
         inspiration: false,
         biography: {

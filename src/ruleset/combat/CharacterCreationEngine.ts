@@ -114,11 +114,17 @@ export class CharacterCreationEngine {
                 dieType: request.classData.hitDie
             },
             spellSlots: {}, // To be populated if caster
+            cantripsKnown: [],
+            knownSpells: [],
+            preparedSpells: [],
+            spellbook: [],
             ac: 10 + MechanicsEngine.getModifier(finalStats['DEX']),
             inventory: {
-                gold: 0, // Background/Class might provide gold
+                gold: { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 }, // Background/Class might provide gold
                 items: finalItems
             },
+            equipmentSlots: {},
+            attunedItems: [],
             xp: 0,
             inspiration: false,
             biography: {

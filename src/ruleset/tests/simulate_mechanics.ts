@@ -17,14 +17,20 @@ function runMechanicsSimulation() {
         hp: { current: 15, max: 35, temp: 0 },
         hitDice: { current: 1, max: 3, dieType: '1d10' },
         spellSlots: {},
+        cantripsKnown: [],
+        knownSpells: [],
+        preparedSpells: [],
+        spellbook: [],
         ac: 18,
         inventory: {
-            gold: 50,
+            gold: { cp: 0, sp: 0, ep: 0, gp: 50, pp: 0 },
             items: [
                 { id: 'axe_01', name: 'Battleaxe', weight: 4, quantity: 1, equipped: true },
                 { id: 'plate_01', name: 'Plate Armor', weight: 65, quantity: 1, equipped: true }
             ]
         },
+        equipmentSlots: {},
+        attunedItems: [],
         xp: 900,
         inspiration: false,
         biography: {
