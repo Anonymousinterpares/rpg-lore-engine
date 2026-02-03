@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './LobbyBrowser.module.css';
-import glassStyles from '../../styles/glass.module.css';
+import parchmentStyles from '../../styles/parchment.module.css';
 import { Users, Lock, Unlock, Globe, RefreshCw, Plus, X } from 'lucide-react';
 
 interface Lobby {
@@ -32,21 +32,21 @@ const LobbyBrowser: React.FC<LobbyBrowserProps> = ({
 }) => {
     return (
         <div className={`${styles.overlay} ${className}`}>
-            <div className={`${styles.modal} ${glassStyles.glassPanel}`}>
+            <div className={`${styles.modal} ${parchmentStyles.panel}`}>
                 <div className={styles.header}>
                     <div className={styles.headerTitle}>
                         <Globe size={24} className={styles.icon} />
-                        <h2>Multiplayer Lobby</h2>
+                        <h2 className={parchmentStyles.heading}>Multiplayer Lobby</h2>
                     </div>
                     <button className={styles.closeButton} onClick={onClose}><X size={20} /></button>
                 </div>
 
                 <div className={styles.toolbar}>
-                    <button className={styles.refreshButton} onClick={onRefresh}>
+                    <button className={`${styles.refreshButton} ${parchmentStyles.button}`} onClick={onRefresh}>
                         <RefreshCw size={16} />
                         <span>Refresh</span>
                     </button>
-                    <button className={styles.createButton} onClick={onCreate}>
+                    <button className={`${styles.createButton} ${parchmentStyles.button}`} onClick={onCreate}>
                         <Plus size={16} />
                         <span>Host Session</span>
                     </button>
@@ -72,7 +72,7 @@ const LobbyBrowser: React.FC<LobbyBrowserProps> = ({
                                 <span className={styles.playerCount}>{lobby.players} / {lobby.maxPlayers}</span>
                                 <span className={styles.pingValue}>{lobby.ping}ms</span>
                                 <button
-                                    className={styles.joinButton}
+                                    className={`${styles.joinButton} ${parchmentStyles.button}`}
                                     onClick={() => onJoin(lobby.id)}
                                     disabled={lobby.players >= lobby.maxPlayers}
                                 >

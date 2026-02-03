@@ -7,15 +7,23 @@ import RightPanel from './components/layout/RightPanel';
 import MainMenu from './components/menu/MainMenu';
 import SettingsPanel from './components/menu/SettingsPanel';
 import { useGameState } from './hooks/useGameState';
-import { INITIAL_GAME_STATE } from './initialGameState';
+import CharacterCreator from './components/creation/CharacterCreator';
 
 const App: React.FC = () => {
     const { isActive, startGame, endGame } = useGameState();
     const [showSettings, setShowSettings] = useState(false);
+    const [showLobby, setShowLobby] = useState(false);
+    const [showMenu, setShowMenu] = useState(false);
+    const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
 
     const handleNewGame = () => {
-        // In the future this might open a character creator
-        startGame(INITIAL_GAME_STATE);
+        setIsCreatingCharacter(true);
+        setShowMenu(false);
+    };
+
+    const handleCharacterComplete = (state: any) => {
+        setIsCreatingCharacter(false);
+        startGame(state);
     };
 
     const handleLoadGame = () => {
@@ -24,6 +32,7 @@ const App: React.FC = () => {
 
     const handleQuit = () => {
         endGame();
+        setShowMenu(false);
     };
 
     const handleSettingsSave = (newSettings: any) => {
@@ -41,14 +50,19 @@ const App: React.FC = () => {
 
     return (
         <div className={styles.appShell}>
-            {!isActive ? (
+            {isCreatingCharacter ? (
+                <CharacterCreator
+                    onComplete={handleCharacterComplete}
+                    onCancel={() => setIsCreatingCharacter(false)}
+                />
+            ) : !isActive ? (
                 <>
                     <MainMenu
                         onNewGame={handleNewGame}
                         onLoadGame={handleLoadGame}
-                        onMultiplayer={() => console.log("Multiplayer lobby")}
+                        onMultiplayer={() => setShowLobby(true)}
                         onSettings={() => setShowSettings(true)}
-                        onQuit={() => window.close()} // Won't work in standard browser tabs usually
+                        onQuit={() => window.close()}
                     />
                     {showSettings && (
                         <SettingsPanel
@@ -57,15 +71,57 @@ const App: React.FC = () => {
                             initialSettings={defaultSettings}
                         />
                     )}
+                    {showLobby && (
+                        <div className={styles.modalOverlay}>
+                            <div className={styles.placeholderModal}>
+                                <h2>Multiplayer Lobby</h2>
+                                <p>Coming Soon!</p>
+                                <button onClick={() => setShowLobby(false)}>Close</button>
+                            </div>
+                        </div>
+                    )}
                 </>
             ) : (
                 <>
-                    <Header />
+                    <Header
+                        onLobby={() => setShowLobby(true)}
+                        onSettings={() => setShowSettings(true)}
+                        onMenu={() => setShowMenu(true)}
+                    />
                     <div className={styles.mainContent}>
                         <Sidebar className={styles.sidebar} />
                         <MainViewport className={styles.viewport} />
                         <RightPanel className={styles.rightPanel} />
                     </div>
+                    {/* In-game Modals */}
+                    {showSettings && (
+                        <SettingsPanel
+                            onClose={() => setShowSettings(false)}
+                            onSave={handleSettingsSave}
+                            initialSettings={defaultSettings}
+                        />
+                    )}
+                    {showMenu && (
+                        <div className={styles.modalOverlay}>
+                            <MainMenu
+                                onNewGame={handleNewGame}
+                                onLoadGame={handleLoadGame}
+                                onMultiplayer={() => { setShowLobby(true); setShowMenu(false); }}
+                                onSettings={() => { setShowSettings(true); setShowMenu(false); }}
+                                onQuit={handleQuit}
+                            />
+                            <button className={styles.closeOverlay} onClick={() => setShowMenu(false)}>Return to Game</button>
+                        </div>
+                    )}
+                    {showLobby && (
+                        <div className={styles.modalOverlay}>
+                            <div className={styles.placeholderModal}>
+                                <h2>Multiplayer Lobby</h2>
+                                <p>Coming Soon!</p>
+                                <button onClick={() => setShowLobby(false)}>Close</button>
+                            </div>
+                        </div>
+                    )}
                 </>
             )}
         </div>

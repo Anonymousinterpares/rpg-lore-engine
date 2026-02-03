@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './InventoryGrid.module.css';
-import glassStyles from '../../styles/glass.module.css';
+import parchmentStyles from '../../styles/parchment.module.css';
 import { Package, Sword, Shield, FlaskConical, Scroll, Coins } from 'lucide-react';
 
 interface Item {
@@ -30,9 +30,9 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({ items, gold, onItemClick,
     };
 
     return (
-        <div className={`${styles.container} ${glassStyles.glassPanel} ${className}`}>
+        <div className={`${styles.container} ${parchmentStyles.panel} ${className}`}>
             <div className={styles.header}>
-                <h3 className={styles.title}>Inventory</h3>
+                <h3 className={parchmentStyles.heading}>Inventory</h3>
                 <div className={styles.gold}>
                     <Coins size={14} className={styles.goldIcon} />
                     <span>{gold.gp}g {gold.sp}s {gold.cp}c</span>

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styles from './ShopInterface.module.css';
-import glassStyles from '../../styles/glass.module.css';
-import inventoryStyles from './InventoryGrid.module.css';
+import parchmentStyles from '../../styles/parchment.module.css';
 import { ShoppingCart, ArrowLeftRight, X } from 'lucide-react';
 
 interface Item {
@@ -37,24 +36,24 @@ const ShopInterface: React.FC<ShopInterfaceProps> = ({
 
     return (
         <div className={`${styles.overlay} ${className}`}>
-            <div className={`${styles.modal} ${glassStyles.glassPanel}`}>
+            <div className={`${styles.modal} ${parchmentStyles.panel}`}>
                 <div className={styles.header}>
                     <div className={styles.headerTitle}>
                         <ShoppingCart size={20} className={styles.icon} />
-                        <h2>{merchantName}'s Shop</h2>
+                        <h2 className={parchmentStyles.heading}>{merchantName}'s Shop</h2>
                     </div>
                     <button className={styles.closeButton} onClick={onClose}><X size={20} /></button>
                 </div>
 
                 <div className={styles.tabs}>
                     <button
-                        className={`${styles.tab} ${activeTab === 'buy' ? styles.activeTab : ''}`}
+                        className={`${styles.tab} ${activeTab === 'buy' ? styles.activeTab : ''} ${parchmentStyles.button}`}
                         onClick={() => setActiveTab('buy')}
                     >
                         Buy
                     </button>
                     <button
-                        className={`${styles.tab} ${activeTab === 'sell' ? styles.activeTab : ''}`}
+                        className={`${styles.tab} ${activeTab === 'sell' ? styles.activeTab : ''} ${parchmentStyles.button}`}
                         onClick={() => setActiveTab('sell')}
                     >
                         Sell
@@ -82,7 +81,7 @@ const ShopInterface: React.FC<ShopInterfaceProps> = ({
                                             {item.cost.gp}g {item.cost.sp}s {item.cost.cp}c
                                         </div>
                                         <button
-                                            className={styles.actionButton}
+                                            className={`${styles.actionButton} ${parchmentStyles.button}`}
                                             onClick={() => activeTab === 'buy' ? onBuy(item.id) : onSell(item.id)}
                                         >
                                             {activeTab === 'buy' ? 'Buy' : 'Sell'}

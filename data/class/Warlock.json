@@ -1,7 +1,9 @@
 {
   "name": "Warlock",
   "hitDie": "1d8",
-  "primaryAbility": [],
+  "primaryAbility": [
+    "CHA"
+  ],
   "savingThrowProficiencies": [
     "WIS",
     "CHA"

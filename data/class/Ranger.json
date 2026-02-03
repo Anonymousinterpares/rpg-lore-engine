@@ -1,7 +1,10 @@
 {
   "name": "Ranger",
   "hitDie": "1d10",
-  "primaryAbility": [],
+  "primaryAbility": [
+    "DEX",
+    "WIS"
+  ],
   "savingThrowProficiencies": [
     "STR",
     "DEX"

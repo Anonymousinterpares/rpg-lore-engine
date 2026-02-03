@@ -6,22 +6,21 @@ import ConditionDisplay from './ConditionDisplay';
 import SpellSlotTracker from './SpellSlotTracker';
 import { Sword, Shield, Zap } from 'lucide-react';
 
+import { useGameState } from '../../hooks/useGameState';
+
 const CharacterPanel: React.FC = () => {
-    // Mock data for initial visualization
-    const char = {
-        name: "Lirael",
-        class: "Ranger",
-        level: 3,
-        hp: { current: 24, max: 28, temp: 0 },
-        ac: 15,
-        initiative: "+3",
-        stats: { STR: 10, DEX: 16, CON: 14, INT: 12, WIS: 14, CHA: 10 },
-        conditions: ["Poisoned", "Inspired"],
-        spellSlots: {
-            "1": { current: 3, max: 4 },
-            "2": { current: 1, max: 2 }
-        }
-    };
+    const { state } = useGameState();
+
+    if (!state || !state.character) {
+        return <div className={styles.loading}>No character active</div>;
+    }
+
+    const char = state.character;
+
+    // Helper to format initiative
+    const dex = char.stats.DEX ?? 10;
+    const initiative = Math.floor((dex - 10) / 2);
+    const initiativeStr = (initiative >= 0 ? '+' : '') + initiative;
 
     return (
         <div className={`${parchmentStyles.panel} ${styles.panel}`}>
@@ -38,7 +37,7 @@ const CharacterPanel: React.FC = () => {
                 </div>
                 <div className={styles.statBox}>
                     <Zap size={16} />
-                    <span className={styles.statValue}>{char.initiative}</span>
+                    <span className={styles.statValue}>{initiativeStr}</span>
                     <span className={styles.statLabel}>INIT</span>
                 </div>
             </div>
@@ -56,7 +55,9 @@ const CharacterPanel: React.FC = () => {
                 ))}
             </div>
 
-            <SpellSlotTracker slots={char.spellSlots} />
+            {char.spellSlots && Object.keys(char.spellSlots).length > 0 && (
+                <SpellSlotTracker slots={char.spellSlots} />
+            )}
         </div>
     );
 };

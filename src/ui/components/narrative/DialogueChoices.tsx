@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './DialogueChoices.module.css';
-import glassStyles from '../../styles/glass.module.css';
+import parchmentStyles from '../../styles/parchment.module.css';
 
 interface Choice {
     id: string;
@@ -20,7 +20,7 @@ const DialogueChoices: React.FC<DialogueChoicesProps> = ({ choices, onSelect, cl
                 {choices.map((choice, index) => (
                     <button
                         key={choice.id}
-                        className={`${styles.choiceButton} ${glassStyles.glassPanel}`}
+                        className={`${styles.choiceButton} ${parchmentStyles.button}`}
                         onClick={() => onSelect(choice.id)}
                     >
                         <span className={styles.number}>{index + 1}.</span>

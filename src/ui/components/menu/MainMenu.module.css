@@ -30,13 +30,13 @@
 }
 
 .gameTitle {
-    font-family: var(--font-primary);
+    font-family: var(--font-narrative);
     font-size: 5rem;
     font-weight: bold;
-    letter-spacing: 0.2em;
-    color: #fff;
-    text-shadow: 0 0 30px rgba(var(--glass-accent-rgb), 0.5);
-    margin-bottom: var(--spacing-xxl);
+    letter-spacing: 0.15em;
+    color: var(--parchment-bg);
+    text-shadow: 2px 2px 0px #000, 4px 4px 15px rgba(0, 0, 0, 0.8);
+    margin-bottom: var(--spacing-xl);
     animation: float 6s ease-in-out infinite;
 }
 
@@ -52,23 +52,27 @@
     align-items: center;
     gap: var(--spacing-lg);
     padding: var(--spacing-lg) var(--spacing-xl);
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    color: var(--glass-text);
-    font-family: var(--font-mono);
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
+    background-color: var(--parchment-bg);
+    background-image: var(--parchment-bg-image);
+    border: 2px solid var(--parchment-border);
+    border-style: double;
+    color: var(--parchment-text);
+    font-family: var(--font-narrative);
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    letter-spacing: 0.05em;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
 .menuButton:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateX(10px);
-    border-color: var(--glass-accent);
-    box-shadow: 0 0 20px rgba(var(--glass-accent-rgb), 0.3);
+    background-color: #fbf0d5;
+    transform: scale(1.02);
+    border-color: var(--parchment-accent);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5), 0 0 10px rgba(201, 162, 39, 0.3);
 }
 
 .footer {
@@ -76,10 +80,10 @@
     bottom: var(--spacing-xl);
     display: flex;
     gap: var(--spacing-xxl);
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: var(--glass-text-dim);
-    opacity: 0.5;
+    font-family: var(--font-narrative);
+    font-size: 0.9rem;
+    color: var(--parchment-bg);
+    opacity: 0.7;
 }
 
 @keyframes float {

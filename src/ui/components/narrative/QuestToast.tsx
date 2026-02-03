@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './QuestToast.module.css';
-import glassStyles from '../../styles/glass.module.css';
+import parchmentStyles from '../../styles/parchment.module.css';
 
 export type QuestToastType = 'NEW' | 'UPDATE' | 'COMPLETE' | 'FAIL';
 
@@ -45,7 +45,7 @@ const QuestToast: React.FC<QuestToastProps> = ({ title, type, duration = 5000, o
     };
 
     return (
-        <div className={`${styles.toast} ${glassStyles.glassPanel} ${getTypeClass()}`}>
+        <div className={`${styles.toast} ${parchmentStyles.panel} ${getTypeClass()}`}>
             <div className={styles.content}>
                 <span className={styles.label}>{getTypeLabel()}</span>
                 <h4 className={styles.title}>{title}</h4>

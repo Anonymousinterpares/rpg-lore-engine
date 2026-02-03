@@ -1,7 +1,10 @@
 {
   "name": "Paladin",
   "hitDie": "1d10",
-  "primaryAbility": [],
+  "primaryAbility": [
+    "STR",
+    "CHA"
+  ],
   "savingThrowProficiencies": [
     "WIS",
     "CHA"

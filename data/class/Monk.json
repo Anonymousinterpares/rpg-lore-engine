@@ -1,7 +1,10 @@
 {
   "name": "Monk",
   "hitDie": "1d8",
-  "primaryAbility": [],
+  "primaryAbility": [
+    "DEX",
+    "WIS"
+  ],
   "savingThrowProficiencies": [
     "STR",
     "DEX"

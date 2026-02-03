@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styles from './CraftingUI.module.css';
-import glassStyles from '../../styles/glass.module.css';
+import parchmentStyles from '../../styles/parchment.module.css';
 import { Hammer, Beaker, Scissors, Info, X } from 'lucide-react';
 
 interface Ingredient {
@@ -50,11 +50,11 @@ const CraftingUI: React.FC<CraftingUIProps> = ({
 
     return (
         <div className={`${styles.overlay} ${className}`}>
-            <div className={`${styles.modal} ${glassStyles.glassPanel}`}>
+            <div className={`${styles.modal} ${parchmentStyles.panel}`}>
                 <div className={styles.header}>
                     <div className={styles.headerTitle}>
                         <Hammer size={24} className={styles.icon} />
-                        <h2>Crafting Workshop</h2>
+                        <h2 className={parchmentStyles.heading}>Crafting Workshop</h2>
                     </div>
                     <button className={styles.closeButton} onClick={onClose}><X size={20} /></button>
                 </div>
@@ -84,7 +84,7 @@ const CraftingUI: React.FC<CraftingUIProps> = ({
                         {selectedRecipe ? (
                             <div className={styles.recipeDetails}>
                                 <div className={styles.detailHeader}>
-                                    <h3>{selectedRecipe.name}</h3>
+                                    <h3 className={parchmentStyles.heading}>{selectedRecipe.name}</h3>
                                     <p className={styles.detailDesc}>{selectedRecipe.description}</p>
                                 </div>
 
@@ -105,7 +105,7 @@ const CraftingUI: React.FC<CraftingUIProps> = ({
                                 </div>
 
                                 <button
-                                    className={styles.craftButton}
+                                    className={`${styles.craftButton} ${parchmentStyles.button}`}
                                     disabled={!canCraft(selectedRecipe)}
                                     onClick={() => onCraft(selectedRecipe.id)}
                                 >

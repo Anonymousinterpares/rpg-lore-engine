@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './ChatPanel.module.css';
-import glassStyles from '../../styles/glass.module.css';
+import parchmentStyles from '../../styles/parchment.module.css';
 import { Send, MessageSquare, User } from 'lucide-react';
 
 interface ChatMessage {
@@ -36,10 +36,10 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ messages, onSendMessage, classNam
     };
 
     return (
-        <div className={`${styles.container} ${glassStyles.glassPanel} ${className}`}>
+        <div className={`${styles.container} ${parchmentStyles.panel} ${className}`}>
             <div className={styles.header}>
                 <MessageSquare size={16} className={styles.icon} />
-                <h3 className={styles.title}>Party Chat</h3>
+                <h3 className={parchmentStyles.heading}>Party Chat</h3>
             </div>
 
             <div className={styles.messageList} ref={scrollRef}>
@@ -60,11 +60,11 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ messages, onSendMessage, classNam
                 <input
                     type="text"
                     placeholder="Message party..."
-                    className={styles.input}
+                    className={`${styles.input} ${parchmentStyles.input}`}
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                 />
-                <button type="submit" className={styles.sendButton}>
+                <button type="submit" className={`${styles.sendButton} ${parchmentStyles.button}`}>
                     <Send size={16} />
                 </button>
             </form>

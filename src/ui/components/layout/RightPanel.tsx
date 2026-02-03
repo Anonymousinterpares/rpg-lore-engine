@@ -1,8 +1,8 @@
 import React from 'react';
-import glassStyles from '../../styles/glass.module.css';
 import styles from './RightPanel.module.css';
 import terminalStyles from '../../styles/terminal.module.css';
 import { Map as MapIcon, MessageSquare } from 'lucide-react';
+import parchmentStyles from '../../styles/parchment.module.css';
 
 interface RightPanelProps {
     className?: string;
@@ -10,15 +10,16 @@ interface RightPanelProps {
 
 const RightPanel: React.FC<RightPanelProps> = ({ className }) => {
     return (
-        <aside className={`${styles.container} ${className}`}>
-            <div className={`${glassStyles.panel} ${styles.mapSection}`}>
-                <div className={styles.sectionHeader}>
-                    <MapIcon size={18} />
-                    <h2>Hex Map</h2>
-                </div>
-                <div className={styles.mapPlaceholder}>Map Simulation Placeholder</div>
+        <aside className={`${styles.rightPanel} ${parchmentStyles.panel} ${className}`}>
+            <div className={styles.section}>
+                <h3>World Map</h3>
+                <div className={styles.placeholder}>Hex Navigation</div>
             </div>
 
+            <div className={styles.section}>
+                <h3>Current Quests</h3>
+                <div className={styles.placeholder}>Active Objectives</div>
+            </div>
             <div className={`${terminalStyles.panel} ${styles.chatSection}`}>
                 <div className={styles.sectionHeader}>
                     <MessageSquare size={18} />

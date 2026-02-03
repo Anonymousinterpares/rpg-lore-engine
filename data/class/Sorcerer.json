@@ -1,7 +1,9 @@
 {
   "name": "Sorcerer",
   "hitDie": "1d6",
-  "primaryAbility": [],
+  "primaryAbility": [
+    "CHA"
+  ],
   "savingThrowProficiencies": [
     "CON",
     "CHA"

@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useEffect, useState } from 'react';
 import styles from './QuestToast.module.css';
-import glassStyles from '../../styles/glass.module.css';
+import parchmentStyles from '../../styles/parchment.module.css';
 const QuestToast = ({ title, type, duration = 5000, onClose }) => {
     const [isVisible, setIsVisible] = useState(true);
     useEffect(() => {
@@ -31,6 +31,6 @@ const QuestToast = ({ title, type, duration = 5000, onClose }) => {
             default: return styles.new;
         }
     };
-    return (_jsx("div", { className: `${styles.toast} ${glassStyles.glassPanel} ${getTypeClass()}`, children: _jsxs("div", { className: styles.content, children: [_jsx("span", { className: styles.label, children: getTypeLabel() }), _jsx("h4", { className: styles.title, children: title })] }) }));
+    return (_jsx("div", { className: `${styles.toast} ${parchmentStyles.panel} ${getTypeClass()}`, children: _jsxs("div", { className: styles.content, children: [_jsx("span", { className: styles.label, children: getTypeLabel() }), _jsx("h4", { className: styles.title, children: title })] }) }));
 };
 export default QuestToast;

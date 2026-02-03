@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import glassStyles from '../../styles/glass.module.css';
 import styles from './PlayerInputField.module.css';
 import { Send } from 'lucide-react';
+import parchmentStyles from '../../styles/parchment.module.css';
 
 interface PlayerInputFieldProps {
     suggestedActions?: string[];
@@ -20,7 +20,8 @@ export const PlayerInputField: React.FC<PlayerInputFieldProps> = ({
 }) => {
     const [input, setInput] = useState('');
 
-    const handleSubmit = () => {
+    const handleSubmit = (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
         if (input.trim() && !disabled) {
             onSubmit(input.trim());
             setInput('');
@@ -40,7 +41,7 @@ export const PlayerInputField: React.FC<PlayerInputFieldProps> = ({
                     {suggestedActions.map((action, i) => (
                         <button
                             key={i}
-                            className={styles.suggestionChip}
+                            className={`${styles.suggestionChip} ${parchmentStyles.button}`}
                             onClick={() => handleSuggestionClick(action)}
                             disabled={disabled}
                         >
@@ -50,25 +51,24 @@ export const PlayerInputField: React.FC<PlayerInputFieldProps> = ({
                     ))}
                 </div>
             )}
-            <div className={styles.inputRow}>
+            <form onSubmit={handleSubmit} className={styles.inputRow}>
                 <input
                     type="text"
-                    className={styles.textInput}
+                    className={`${styles.textInput} ${parchmentStyles.input}`}
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                     placeholder={placeholder}
                     disabled={disabled}
                 />
                 <button
-                    className={`${glassStyles.button} ${styles.submitButton}`}
-                    onClick={handleSubmit}
+                    type="submit"
+                    className={`${parchmentStyles.button} ${styles.submitButton}`}
                     disabled={disabled || !input.trim()}
                 >
                     <Send size={18} />
                     <span>Submit</span>
                 </button>
-            </div>
+            </form>
         </div>
     );
 };

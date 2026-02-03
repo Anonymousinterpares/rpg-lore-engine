@@ -1,7 +1,9 @@
 {
   "name": "Druid",
   "hitDie": "1d8",
-  "primaryAbility": [],
+  "primaryAbility": [
+    "WIS"
+  ],
   "savingThrowProficiencies": [
     "INT",
     "WIS"

@@ -1,7 +1,9 @@
 {
   "name": "Barbarian",
   "hitDie": "1d12",
-  "primaryAbility": [],
+  "primaryAbility": [
+    "STR"
+  ],
   "savingThrowProficiencies": [
     "STR",
     "CON"

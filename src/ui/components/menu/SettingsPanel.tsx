@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import styles from './SettingsPanel.module.css';
-import glassStyles from '../../styles/glass.module.css';
 import { Settings, Volume2, Monitor, Gamepad, X, Cpu, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 import { LLM_PROVIDERS } from '../../../ruleset/data/StaticData';
 import { LLMClient, TestResult } from '../../../ruleset/combat/LLMClient';
@@ -85,7 +84,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, onSave, initialS
 
     return (
         <div className={`${styles.overlay} ${className}`}>
-            <div className={`${styles.modal} ${glassStyles.glassPanel}`}>
+            <div className={styles.modal}>
                 <div className={styles.header}>
                     <div className={styles.headerTitle}>
                         <Settings size={24} />

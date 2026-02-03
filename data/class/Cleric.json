@@ -1,7 +1,9 @@
 {
   "name": "Cleric",
   "hitDie": "1d8",
-  "primaryAbility": [],
+  "primaryAbility": [
+    "WIS"
+  ],
   "savingThrowProficiencies": [
     "WIS",
     "CHA"

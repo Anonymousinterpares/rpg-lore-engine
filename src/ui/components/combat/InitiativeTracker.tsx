@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './InitiativeTracker.module.css';
-import glassStyles from '../../styles/glass.module.css';
+import parchmentStyles from '../../styles/parchment.module.css';
 import { Shield, ChevronRight } from 'lucide-react';
 
 interface Combatant {
@@ -19,8 +19,8 @@ interface InitiativeTrackerProps {
 
 const InitiativeTracker: React.FC<InitiativeTrackerProps> = ({ combatants, currentTurnId, className = '' }) => {
     return (
-        <div className={`${styles.container} ${glassStyles.glassPanel} ${className}`}>
-            <h3 className={styles.title}>Initiative</h3>
+        <div className={`${styles.container} ${parchmentStyles.panel} ${className}`}>
+            <h3 className={parchmentStyles.heading}>Initiative</h3>
             <div className={styles.list}>
                 {combatants.map((c) => (
                     <div

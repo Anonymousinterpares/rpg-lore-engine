@@ -1,7 +1,9 @@
 {
   "name": "Wizard",
   "hitDie": "1d6",
-  "primaryAbility": [],
+  "primaryAbility": [
+    "INT"
+  ],
   "savingThrowProficiencies": [
     "INT",
     "WIS"

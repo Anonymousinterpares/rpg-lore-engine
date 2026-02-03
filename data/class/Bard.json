@@ -1,7 +1,9 @@
 {
   "name": "Bard",
   "hitDie": "1d8",
-  "primaryAbility": [],
+  "primaryAbility": [
+    "CHA"
+  ],
   "savingThrowProficiencies": [
     "DEX",
     "CHA"

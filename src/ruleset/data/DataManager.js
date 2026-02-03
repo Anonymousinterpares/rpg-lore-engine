@@ -1,0 +1,96 @@
+/**
+ * DataManager
+ *
+ * Responsible for loading and serving static game data (Races, Classes, Backgrounds)
+ * from the JSON files in the /data directory.
+ *
+ * Uses Vite's import.meta.glob for efficient bundling and loading.
+ */
+export class DataManager {
+    static races = {};
+    static classes = {};
+    static backgrounds = {};
+    static items = {}; // Keyed by Lowercase Name/ID for flexible lookup
+    static initialized = false;
+    static async initialize() {
+        if (this.initialized)
+            return;
+        // Load Races
+        const raceModules = import.meta.glob('../../../data/race/*.json');
+        for (const path in raceModules) {
+            const mod = await raceModules[path]();
+            // Default export or the JSON object itself
+            const race = mod.default || mod;
+            if (race.name) {
+                this.races[race.name] = race;
+            }
+        }
+        // Load Classes
+        const classModules = import.meta.glob('../../../data/class/*.json');
+        for (const path in classModules) {
+            const mod = await classModules[path]();
+            const cls = mod.default || mod;
+            if (cls.name) {
+                this.classes[cls.name] = cls;
+            }
+        }
+        // Load Backgrounds
+        const bgModules = import.meta.glob('../../../data/backgrounds/*.json');
+        for (const path in bgModules) {
+            const mod = await bgModules[path]();
+            const bg = mod.default || mod;
+            // Backgrounds use 'id' or 'name' as key? Schema has 'id' and 'name'.
+            // Let's use 'name' for display consistency, or 'id' for internal reference.
+            // Using Name for now as it matches directory keying usually.
+            if (bg.name) {
+                this.backgrounds[bg.name] = bg;
+            }
+        }
+        // Load Items
+        const itemModules = import.meta.glob('../../../data/item/*.json');
+        for (const path in itemModules) {
+            const mod = await itemModules[path]();
+            const item = mod.default || mod;
+            if (item.name) {
+                // Index by name
+                this.items[item.name] = item;
+                // Index by lowercase name (and potential ID format)
+                this.items[item.name.toLowerCase()] = item;
+                this.items[item.name.toLowerCase().replace(/ /g, '_')] = item;
+            }
+        }
+        this.initialized = true;
+        console.log(`[DataManager] Initialized with ${Object.keys(this.races).length} Races, ${Object.keys(this.classes).length} Classes, ${Object.keys(this.backgrounds).length} Backgrounds, ${Object.keys(this.items).length} Items (indexed).`);
+    }
+    static getRaces() {
+        return Object.values(this.races);
+    }
+    static getClasses() {
+        return Object.values(this.classes);
+    }
+    static getBackgrounds() {
+        return Object.values(this.backgrounds);
+    }
+    static getRace(name) {
+        return this.races[name];
+    }
+    static getClass(name) {
+        return this.classes[name];
+    }
+    static getBackground(name) {
+        return this.backgrounds[name];
+    }
+    static getItem(idOrName) {
+        const key = idOrName.toLowerCase();
+        // Try exact match first
+        if (this.items[idOrName])
+            return this.items[idOrName];
+        // Try lowercase key
+        if (this.items[key])
+            return this.items[key];
+        // Try replacing underscores with spaces (common in IDs)
+        if (this.items[key.replace(/_/g, ' ')])
+            return this.items[key.replace(/_/g, ' ')];
+        return undefined;
+    }
+}

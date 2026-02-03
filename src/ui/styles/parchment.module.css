@@ -35,3 +35,45 @@
     border-bottom: 1px solid rgba(139, 115, 85, 0.3);
     padding-bottom: var(--spacing-xs);
 }
+
+.button {
+    background-color: var(--parchment-bg);
+    background-image: var(--parchment-bg-image);
+    border: 1px solid var(--parchment-border);
+    color: var(--parchment-text);
+    font-family: var(--font-narrative);
+    padding: var(--spacing-sm) var(--spacing-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.button:hover {
+    background-color: #fbf0d5;
+    border-color: var(--parchment-accent);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+
+.input {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--parchment-border);
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: var(--parchment-text);
+    font-family: var(--font-narrative);
+    font-size: 1rem;
+    border-radius: var(--radius-sm);
+    outline: none;
+}
+
+.input:focus {
+    border-color: var(--parchment-accent);
+    background: rgba(0, 0, 0, 0.08);
+}

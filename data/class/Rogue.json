@@ -1,7 +1,9 @@
 {
   "name": "Rogue",
   "hitDie": "1d8",
-  "primaryAbility": [],
+  "primaryAbility": [
+    "DEX"
+  ],
   "savingThrowProficiencies": [
     "DEX",
     "INT"

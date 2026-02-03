@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './SaveLoadModal.module.css';
-import glassStyles from '../../styles/glass.module.css';
+import parchmentStyles from '../../styles/parchment.module.css';
 import { Save, FolderOpen, Calendar, Clock, X, Trash2 } from 'lucide-react';
 
 interface SaveSlot {
@@ -32,11 +32,11 @@ const SaveLoadModal: React.FC<SaveLoadModalProps> = ({
 }) => {
     return (
         <div className={`${styles.overlay} ${className}`}>
-            <div className={`${styles.modal} ${glassStyles.glassPanel}`}>
+            <div className={`${styles.modal} ${parchmentStyles.panel}`}>
                 <div className={styles.header}>
                     <div className={styles.headerTitle}>
                         {mode === 'save' ? <Save size={24} /> : <FolderOpen size={24} />}
-                        <h2>{mode === 'save' ? 'Save Chronicle' : 'Load Chronicle'}</h2>
+                        <h2 className={parchmentStyles.heading}>{mode === 'save' ? 'Save Chronicle' : 'Load Chronicle'}</h2>
                     </div>
                     <button className={styles.closeButton} onClick={onClose}><X size={20} /></button>
                 </div>
