@@ -212,9 +212,131 @@
 }
 
 .mod {
-    font-size: 1rem;
+    font-size: 1.2rem;
     color: var(--parchment-accent);
     font-weight: 700;
+    margin-top: var(--spacing-xs);
+}
+
+.budgetDisplay {
+    font-family: var(--font-narrative);
+    font-size: 1.2rem;
+    color: var(--parchment-text);
+    background: rgba(139, 115, 85, 0.1);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border: 1px solid var(--parchment-border);
+    border-radius: var(--radius-sm);
+}
+
+.budgetDisplay span {
+    font-weight: 700;
+    color: var(--parchment-accent);
+}
+
+.budgetDisplay .error {
+    color: #a82e2e;
+}
+
+.statLabelRow {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-xs);
+}
+
+.statTooltip {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--parchment-border);
+    color: #fff;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: help;
+    position: relative;
+    font-weight: bold;
+}
+
+.tooltipText {
+    visibility: hidden;
+    width: 200px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-family: var(--font-narrative);
+    font-weight: normal;
+    font-size: 0.85rem;
+    pointer-events: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.statTooltip:hover .tooltipText {
+    visibility: visible;
+    opacity: 1;
+}
+
+.pointBuyControls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin: var(--spacing-sm) 0;
+}
+
+.pBtn {
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--parchment-border);
+    background: transparent;
+    color: var(--parchment-text);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.pBtn:hover:not(:disabled) {
+    background: rgba(139, 115, 85, 0.1);
+}
+
+.pBtn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.baseVal {
+    font-size: 1.6rem;
+    font-family: var(--font-narrative);
+    font-weight: 700;
+    min-width: 30px;
+    text-align: center;
+}
+
+.racialBonus {
+    font-size: 0.85rem;
+    color: var(--parchment-accent);
+    font-style: italic;
+    margin-bottom: 2px;
+}
+
+.finalStat {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--parchment-text);
 }
 
 .primaryButton,
@@ -289,19 +411,50 @@
     border: 1px solid var(--parchment-border);
 }
 
-.summary p {
-    margin-bottom: var(--spacing-sm);
-    font-size: 1.1rem;
-}
-
 .statsSummary {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: var(--spacing-md);
     margin-top: var(--spacing-lg);
+}
+
+.reviewStat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--parchment-border);
+}
+
+.reviewStatName {
+    font-weight: bold;
     font-family: var(--font-narrative);
-    color: var(--parchment-text);
-    font-weight: 700;
+}
+
+.reviewStatVal {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--parchment-accent);
+}
+
+.reviewStatMod {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.reviewGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+}
+
+.reviewSubhead {
+    border-bottom: 1px solid var(--parchment-border);
+    padding-bottom: 4px;
+    margin-bottom: var(--spacing-md);
+    color: var(--parchment-accent);
 }
 
 .detailsPanel {

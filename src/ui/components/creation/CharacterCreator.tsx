@@ -77,11 +77,51 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
         });
     };
 
-    const handleAbilityChange = (key: string, value: string) => {
-        let val = parseInt(value) || 0;
-        // Clamp between 3 and 20
-        val = Math.max(3, Math.min(20, val));
-        setAbilities({ ...abilities, [key]: val });
+    const POINT_BUY_COSTS: Record<number, number> = {
+        8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9
+    };
+
+    const calculatePointsSpent = (stats: typeof abilities) => {
+        return Object.values(stats).reduce((total, val) => total + (POINT_BUY_COSTS[val] || 0), 0);
+    };
+
+    const handleAbilityChange = (key: string, delta: number) => {
+        const currentVal = (abilities as any)[key];
+        const newVal = currentVal + delta;
+
+        if (newVal < 8 || newVal > 15) return;
+
+        const newAbilities = { ...abilities, [key]: newVal };
+        if (calculatePointsSpent(newAbilities) > 27) return;
+
+        setAbilities(newAbilities);
+    };
+
+    const applyStandardArray = () => {
+        setAbilities({
+            STR: 15, DEX: 14, CON: 13, INT: 12, WIS: 10, CHA: 8
+        });
+    };
+
+    const getRacialBonus = (stat: string) => {
+        const bonuses = selectedRace?.abilityScoreIncreases as any;
+        return bonuses?.[stat] || 0;
+    };
+
+    const getTotalStat = (stat: string) => {
+        return (abilities as any)[stat] + getRacialBonus(stat);
+    };
+
+    const getStatDescription = (stat: string) => {
+        const descriptions: Record<string, string> = {
+            STR: "Melee attacks, athletics checks, carrying capacity.",
+            DEX: "Ranged attacks, finesse weapons, AC, initiative, acrobatics, stealth.",
+            CON: "Hit points, concentration checks, stamina.",
+            INT: "Arcana, history, investigation, nature, religion, wizard spells.",
+            WIS: "Animal handling, insight, medicine, perception, survival, cleric/druid spells.",
+            CHA: "Deception, intimidation, performance, persuasion, sorcerer/warlock/bard spells."
+        };
+        return descriptions[stat] || "";
     };
 
     if (loading) return <div className={styles.overlay}><div className={styles.loader}>Opening the Rulebooks...</div></div>;
@@ -227,25 +267,48 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                     </div>
                 );
             case 4: // Abilities
+                const pointsSpent = calculatePointsSpent(abilities);
                 return (
                     <div className={styles.stepContainer}>
                         <div className={styles.statsHeader}>
                             <h3>Ability Scores</h3>
-                            <button className={styles.rollButton} onClick={rollStats}><Dice5 size={18} /> Roll Stats</button>
+                            <div className={styles.budgetDisplay}>
+                                Points Remaining: <span className={pointsSpent > 27 ? styles.error : ''}>{27 - pointsSpent} / 27</span>
+                            </div>
+                            <button className={styles.secondaryButton} onClick={applyStandardArray}>Use Standard Array</button>
                         </div>
                         <div className={styles.statsGrid}>
-                            {Object.entries(abilities).map(([key, val]) => (
-                                <div key={key} className={styles.statBox}>
-                                    <label>{key}</label>
-                                    <input
-                                        type="number"
-                                        value={val}
-                                        onChange={e => handleAbilityChange(key, e.target.value)}
-                                        min={3} max={20}
-                                    />
-                                    <span className={styles.mod}>{Math.floor((val - 10) / 2) >= 0 ? '+' : ''}{Math.floor((val - 10) / 2)}</span>
-                                </div>
-                            ))}
+                            {Object.entries(abilities).map(([key, val]) => {
+                                const bonus = getRacialBonus(key);
+                                const total = val + bonus;
+                                const mod = Math.floor((total - 10) / 2);
+                                return (
+                                    <div key={key} className={styles.statBox}>
+                                        <div className={styles.statLabelRow}>
+                                            <label>{key}</label>
+                                            <div className={styles.statTooltip}>?
+                                                <span className={styles.tooltipText}>{getStatDescription(key)}</span>
+                                            </div>
+                                        </div>
+                                        <div className={styles.pointBuyControls}>
+                                            <button
+                                                className={styles.pBtn}
+                                                onClick={() => handleAbilityChange(key, -1)}
+                                                disabled={val <= 8}
+                                            >-</button>
+                                            <div className={styles.baseVal}>{val}</div>
+                                            <button
+                                                className={styles.pBtn}
+                                                onClick={() => handleAbilityChange(key, 1)}
+                                                disabled={val >= 15 || pointsSpent + (POINT_BUY_COSTS[val + 1] - POINT_BUY_COSTS[val]) > 27}
+                                            >+</button>
+                                        </div>
+                                        {bonus > 0 && <div className={styles.racialBonus}>+{bonus} ({selectedRace?.name})</div>}
+                                        <div className={styles.finalStat}>Total: {total}</div>
+                                        <span className={styles.mod}>{mod >= 0 ? '+' : ''}{mod}</span>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                 );
@@ -253,12 +316,25 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                 return (
                     <div className={styles.summary}>
                         <h3>Review Character</h3>
-                        <p><strong>Name:</strong> {name || 'Unknown'}</p>
-                        <p><strong>Race:</strong> {selectedRace?.name}</p>
-                        <p><strong>Class:</strong> {selectedClass?.name}</p>
-                        <p><strong>Background:</strong> {selectedBackground?.name}</p>
+                        <div className={styles.reviewGrid}>
+                            <p><strong>Name:</strong> {name || 'Traveler'}</p>
+                            <p><strong>Race:</strong> {selectedRace?.name}</p>
+                            <p><strong>Class:</strong> {selectedClass?.name}</p>
+                            <p><strong>Background:</strong> {selectedBackground?.name}</p>
+                        </div>
+                        <h4 className={styles.reviewSubhead}>Final Stats</h4>
                         <div className={styles.statsSummary}>
-                            {Object.entries(abilities).map(([k, v]) => <span key={k}>{k}:{v}</span>)}
+                            {Object.entries(abilities).map(([k, v]) => {
+                                const total = getTotalStat(k);
+                                const mod = Math.floor((total - 10) / 2);
+                                return (
+                                    <div key={k} className={styles.reviewStat}>
+                                        <span className={styles.reviewStatName}>{k}</span>
+                                        <span className={styles.reviewStatVal}>{total}</span>
+                                        <span className={styles.reviewStatMod}>({mod >= 0 ? '+' : ''}{mod})</span>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                 );
