@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './SettingsPanel.module.css';
 import glassStyles from '../../styles/glass.module.css';
-import { Settings, Volume2, Monitor, Gamepad, X, Cpu } from 'lucide-react';
+import { Settings, Volume2, Monitor, Gamepad, X, Cpu, CheckCircle, AlertCircle, Loader } from 'lucide-react';
 import { LLM_PROVIDERS } from '../../../ruleset/data/StaticData';
 import { LLMClient, TestResult } from '../../../ruleset/combat/LLMClient';
 import { LLMProviderConfig } from '../../../ruleset/schemas/LLMProviderSchema';
@@ -17,16 +17,23 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, onSave, initialS
     const [settings, setSettings] = useState(initialSettings);
     const [activeTab, setActiveTab] = useState<'video' | 'audio' | 'gameplay' | 'ai'>('video');
     const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
+    const [selectedModels, setSelectedModels] = useState<Record<string, string>>({});
     const [testResults, setTestResults] = useState<Record<string, TestResult>>({});
+    const [testingProvider, setTestingProvider] = useState<string | null>(null);
 
     useEffect(() => {
         const loadKeys = async () => {
             const keys: Record<string, string> = {};
+            const models: Record<string, string> = {};
+
             for (const p of LLM_PROVIDERS) {
                 const key = await LLMClient.getApiKey(p);
                 if (key) keys[p.id] = key;
+                // Default to first model if not set (future: load from settings)
+                models[p.id] = p.models[0].id;
             }
             setApiKeys(keys);
+            setSelectedModels(models);
         };
         loadKeys();
     }, []);
@@ -36,10 +43,24 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, onSave, initialS
         LLMClient.setApiKey(id, value);
     };
 
+    const updateModel = (providerId: string, modelId: string) => {
+        setSelectedModels({ ...selectedModels, [providerId]: modelId });
+    };
+
     const testProvider = async (provider: LLMProviderConfig) => {
-        setTestResults(prev => ({ ...prev, [provider.id]: { success: false, message: 'Testing...' } }));
-        const result = await LLMClient.testConnection(provider, provider.models[0]);
-        setTestResults(prev => ({ ...prev, [provider.id]: result }));
+        if (!apiKeys[provider.id]) return;
+
+        setTestingProvider(provider.id);
+        setTestResults(prev => ({ ...prev, [provider.id]: { success: false, message: '' } })); // Clear previous result
+
+        const modelConfig = provider.models.find(m => m.id === selectedModels[provider.id]) || provider.models[0];
+
+        try {
+            const result = await LLMClient.testConnection(provider, modelConfig);
+            setTestResults(prev => ({ ...prev, [provider.id]: result }));
+        } finally {
+            setTestingProvider(null);
+        }
     };
 
     const handleToggle = (key: string, section: string) => {
@@ -175,42 +196,77 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, onSave, initialS
                         {activeTab === 'ai' && (
                             <div className={styles.section}>
                                 <h3>AI Service Configuration</h3>
-                                <p className={styles.hint}>Configure your LLM providers. Keys are stored locally.</p>
-                                {LLM_PROVIDERS.map(provider => (
-                                    <div key={provider.id} className={styles.apiBlock}>
-                                        <div className={styles.apiHeader}>
-                                            <strong>{provider.name}</strong>
-                                            <button
-                                                className={styles.testButton}
-                                                onClick={() => testProvider(provider)}
-                                            >
-                                                Test Connection
-                                            </button>
-                                        </div>
-                                        <div className={styles.settingRow}>
-                                            <span>API Key</span>
-                                            <input
-                                                type="password"
-                                                value={apiKeys[provider.id] || ''}
-                                                onChange={(e) => updateApiKey(provider.id, e.target.value)}
-                                                placeholder={`Enter ${provider.name} Key`}
-                                            />
-                                        </div>
-                                        {testResults[provider.id] && (
-                                            <div className={`${styles.testStatus} ${testResults[provider.id].success ? styles.success : styles.error}`}>
-                                                {testResults[provider.id].message}
-                                                {testResults[provider.id].latencyMs && ` (${testResults[provider.id].latencyMs}ms)`}
+                                <p className={styles.hint}>Configure your LLM providers. Keys are stored safely in local storage.</p>
+
+                                <div className={styles.providerList}>
+                                    {LLM_PROVIDERS.map(provider => (
+                                        <div key={provider.id} className={styles.apiBlock}>
+                                            <div className={styles.apiHeader}>
+                                                <strong>{provider.name}</strong>
+                                                <div className={styles.providerMeta}>
+                                                    {apiKeys[provider.id] ?
+                                                        <span className={styles.keyBadge}>Key Set</span> :
+                                                        <span className={styles.keyBadgeMissing}>No Key</span>
+                                                    }
+                                                </div>
                                             </div>
-                                        )}
-                                    </div>
-                                ))}
+
+                                            <div className={styles.inputGroup}>
+                                                <label>API Key</label>
+                                                <input
+                                                    type="password"
+                                                    value={apiKeys[provider.id] || ''}
+                                                    onChange={(e) => updateApiKey(provider.id, e.target.value)}
+                                                    placeholder={`sk-...`}
+                                                    className={styles.keyInput}
+                                                />
+                                            </div>
+
+                                            <div className={styles.inputGroup}>
+                                                <label>Model</label>
+                                                <select
+                                                    value={selectedModels[provider.id] || ''}
+                                                    onChange={(e) => updateModel(provider.id, e.target.value)}
+                                                    className={styles.modelSelect}
+                                                >
+                                                    {provider.models.map(m => (
+                                                        <option key={m.id} value={m.id}>
+                                                            {m.displayName}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+
+                                            <div className={styles.apiActions}>
+                                                <button
+                                                    className={styles.testButton}
+                                                    onClick={() => testProvider(provider)}
+                                                    disabled={!apiKeys[provider.id] || testingProvider === provider.id}
+                                                >
+                                                    {testingProvider === provider.id ?
+                                                        <><Loader size={12} className={styles.spin} /> Testing...</> :
+                                                        'Test Connection'
+                                                    }
+                                                </button>
+
+                                                {testResults[provider.id] && (
+                                                    <div className={`${styles.testStatus} ${testResults[provider.id].success ? styles.success : styles.error}`}>
+                                                        {testResults[provider.id].success ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
+                                                        <span>{testResults[provider.id].message}</span>
+                                                        {testResults[provider.id].latencyMs && <span className={styles.latency}>({testResults[provider.id].latencyMs}ms)</span>}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         )}
                     </div>
                 </div>
 
                 <div className={styles.footer}>
-                    <button className={styles.saveButton} onClick={() => onSave(settings)}>Save Changes</button>
+                    <button className={styles.saveButton} onClick={() => onSave({ ...settings, ai: { ...settings.ai, selectedModels } })}>Save Changes</button>
                     <button className={styles.cancelButton} onClick={onClose}>Cancel</button>
                 </div>
             </div>

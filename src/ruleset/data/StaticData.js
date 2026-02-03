@@ -5,8 +5,8 @@ export const LLM_PROVIDERS = [
         "apiKeyEnvVar": "GEMINI_API_KEY",
         "baseUrl": "https://generativelanguage.googleapis.com/v1beta",
         "models": [
-            { "id": "gemini-1.5-flash", "apiName": "gemini-1.5-flash", "displayName": "Gemini 1.5 Flash", "contextWindow": 1000000, "costPer1kTokens": 0.0001 },
-            { "id": "gemini-1.5-pro", "apiName": "gemini-1.5-pro", "displayName": "Gemini 1.5 Pro", "contextWindow": 2000000, "costPer1kTokens": 0.00125 }
+            { "id": "gemini-3-0-flash", "apiName": "gemini-3-flash-preview", "displayName": "Gemini 3.0 Flash", "contextWindow": 1000000, "costPer1kTokens": 0.0001 },
+            { "id": "gemini-3-0-pro", "apiName": "gemini-3-pro", "displayName": "Gemini 3.0 Pro", "contextWindow": 2000000, "costPer1kTokens": 0.00125 }
         ]
     },
     {
@@ -15,8 +15,33 @@ export const LLM_PROVIDERS = [
         "apiKeyEnvVar": "OPENAI_API_KEY",
         "baseUrl": "https://api.openai.com/v1",
         "models": [
-            { "id": "gpt-4o", "apiName": "gpt-4o", "displayName": "GPT-4o", "contextWindow": 128000, "costPer1kTokens": 0.005 },
-            { "id": "gpt-4o-mini", "apiName": "gpt-4o-mini", "displayName": "GPT-4o-mini", "contextWindow": 128000, "costPer1kTokens": 0.00015 }
+            { "id": "gpt-5-nano", "apiName": "gpt-5-nano", "displayName": "GPT-5 Nano", "contextWindow": 400000, "costPer1kTokens": 0.00005 },
+            { "id": "gpt-4.1-nano", "apiName": "gpt-4.1-nano", "displayName": "GPT-4.1 Nano", "contextWindow": 1000000, "costPer1kTokens": 0.0001 },
+            { "id": "gpt-5-mini", "apiName": "gpt-5-mini", "displayName": "GPT-5 Mini", "contextWindow": 400000, "costPer1kTokens": 0.00025 }
+        ]
+    },
+    {
+        "id": "anthropic",
+        "name": "Anthropic Claude",
+        "apiKeyEnvVar": "ANTHROPIC_API_KEY",
+        "baseUrl": "https://api.anthropic.com/v1",
+        "models": [
+            { "id": "claude-4-5-haiku", "apiName": "claude-4-5-haiku", "displayName": "Claude 4.5 Haiku", "contextWindow": 200000, "costPer1kTokens": 0.00025 },
+            { "id": "claude-4-5-sonnet", "apiName": "claude-4-5-sonnet", "displayName": "Claude 4.5 Sonnet", "contextWindow": 200000, "costPer1kTokens": 0.003 },
+            { "id": "claude-4-5-opus", "apiName": "claude-4-5-opus", "displayName": "Claude 4.5 Opus", "contextWindow": 200000, "costPer1kTokens": 0.015 }
+        ]
+    },
+    {
+        "id": "openrouter",
+        "name": "OpenRouter",
+        "apiKeyEnvVar": "OPENROUTER_API_KEY",
+        "baseUrl": "https://openrouter.ai/api/v1",
+        "models": [
+            { "id": "mistral-7b", "apiName": "mistralai/mistral-7b-instruct", "displayName": "Mistral 7B", "contextWindow": 32000, "costPer1kTokens": 0.00007 },
+            { "id": "llama-3-8b", "apiName": "meta-llama/llama-3-8b-instruct", "displayName": "Llama 3 8B", "contextWindow": 8000, "costPer1kTokens": 0.00005 },
+            { "id": "nous-hermes-2", "apiName": "nousresearch/nous-hermes-2-mixtral", "displayName": "Nous Hermes 2", "contextWindow": 32000, "costPer1kTokens": 0.0002 },
+            { "id": "gemma-2-9b", "apiName": "google/gemma-2-9b-it", "displayName": "Gemma 2 9B", "contextWindow": 8000, "costPer1kTokens": 0.00005 },
+            { "id": "qwen-2-7b", "apiName": "qwen/qwen-2-7b-instruct", "displayName": "Qwen 2 7B", "contextWindow": 32000, "costPer1kTokens": 0.00005 }
         ]
     }
 ];

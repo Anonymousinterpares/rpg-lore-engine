@@ -3,6 +3,5 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { GameProvider } from './hooks/useGameState';
-import { INITIAL_GAME_STATE } from './initialGameState';
 import './styles/tokens.css';
-ReactDOM.createRoot(document.getElementById('root')).render(_jsx(React.StrictMode, { children: _jsx(GameProvider, { initialGameState: INITIAL_GAME_STATE, children: _jsx(App, {}) }) }));
+ReactDOM.createRoot(document.getElementById('root')).render(_jsx(React.StrictMode, { children: _jsx(GameProvider, { children: _jsx(App, {}) }) }));

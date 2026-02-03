@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 export const ModelSchema = z.object({
-    id: z.string(),             // Internal identifier (e.g., "gemini-3-flash")
-    apiName: z.string(),        // Actual API call name (e.g., "gemini-3-flash-001")
+    id: z.string(),             // Internal identifier (e.g., "gemini-3-flash-preview")
+    apiName: z.string(),        // Actual API call name (e.g., "gemini-3-flash-preview-001")
     displayName: z.string(),    // UI display name
     contextWindow: z.number(),  // Max tokens
     costPer1kTokens: z.number() // For budget tracking

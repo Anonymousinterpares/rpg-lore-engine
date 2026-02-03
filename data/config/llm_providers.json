@@ -7,7 +7,7 @@
         "models": [
             {
                 "id": "gemini-3-0-flash",
-                "apiName": "gemini-3-flash",
+                "apiName": "gemini-3-flash-preview",
                 "displayName": "Gemini 3.0 Flash",
                 "contextWindow": 1000000,
                 "costPer1kTokens": 0.0001

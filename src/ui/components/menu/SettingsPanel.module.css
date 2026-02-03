@@ -15,8 +15,8 @@
 .modal {
     width: 700px;
     max-width: 90vw;
-    height: 550px;
-    max-height: 80vh;
+    height: 600px;
+    max-height: 85vh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -100,6 +100,13 @@
     color: var(--glass-text);
 }
 
+.hint {
+    color: var(--glass-text-dim);
+    font-size: 0.9em;
+    margin-bottom: var(--spacing-lg);
+    font-style: italic;
+}
+
 .settingRow {
     display: flex;
     justify-content: space-between;
@@ -151,4 +158,155 @@
     border-radius: var(--radius-sm);
     font-family: var(--font-mono);
     cursor: pointer;
+}
+
+/* AI Service Configuration Styles */
+
+.providerList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.apiBlock {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.apiHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: var(--spacing-sm);
+}
+
+.apiHeader strong {
+    color: var(--glass-text);
+    font-size: 1.1em;
+}
+
+.keyBadge {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4caf50;
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.keyBadgeMissing {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--glass-text-dim);
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.inputGroup label {
+    font-size: 0.85em;
+    color: var(--glass-text-dim);
+}
+
+.keyInput {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    color: var(--glass-text);
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    width: 100%;
+}
+
+.modelSelect {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    color: var(--glass-text);
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    width: 100%;
+    cursor: pointer;
+}
+
+.modelSelect option {
+    background: #1a1a1a;
+}
+
+.apiActions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: var(--spacing-xs);
+}
+
+.testButton {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    color: var(--glass-text);
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 0.85em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.testButton:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--glass-text-dim);
+}
+
+.testButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.testStatus {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85em;
+}
+
+.success {
+    color: #4caf50;
+}
+
+.error {
+    color: #f44336;
+}
+
+.latency {
+    color: var(--glass-text-dim);
+    font-size: 0.9em;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }

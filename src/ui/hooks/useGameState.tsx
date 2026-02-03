@@ -1,37 +1,66 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { GameLoop } from '../../ruleset/combat/GameLoop';
 import { GameState } from '../../ruleset/combat/GameStateManager';
+import { BrowserStorageProvider } from '../../ruleset/combat/BrowserStorageProvider';
 
 interface GameContextType {
     state: GameState | null;
     engine: GameLoop | null;
+    isActive: boolean;
+    startGame: (initialState: GameState) => void;
+    endGame: () => void;
     processCommand: (command: string) => Promise<void>;
     updateState: () => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
-import { BrowserStorageProvider } from '../../ruleset/combat/BrowserStorageProvider';
-
-export const GameProvider: React.FC<{ children: React.ReactNode; initialGameState: GameState }> = ({ children, initialGameState }) => {
-    const [engine] = useState(() => new GameLoop(initialGameState, '/', new BrowserStorageProvider()));
-    const [state, setState] = useState<GameState>(initialGameState);
+export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const [engine, setEngine] = useState<GameLoop | null>(null);
+    const [state, setState] = useState<GameState | null>(null);
+    const [isActive, setIsActive] = useState(false);
 
     const updateState = useCallback(() => {
-        setState({ ...engine.getState() });
+        if (engine) {
+            setState({ ...engine.getState() });
+        }
     }, [engine]);
 
+    const startGame = useCallback((initialState: GameState) => {
+        const newEngine = new GameLoop(initialState, '/', new BrowserStorageProvider());
+        setEngine(newEngine);
+        setState(initialState);
+        setIsActive(true);
+    }, []);
+
+    const endGame = useCallback(() => {
+        setIsActive(false);
+        setEngine(null);
+        setState(null);
+    }, []);
+
     const processCommand = useCallback(async (command: string) => {
+        if (!engine) return;
         await engine.processTurn(command);
         updateState();
     }, [engine, updateState]);
 
     useEffect(() => {
-        updateState();
-    }, [updateState]);
+        if (isActive && engine) {
+            updateState();
+        }
+    }, [isActive, engine, updateState]);
 
     return (
-        <GameContext.Provider value={{ state, engine, processCommand, updateState }}>
+        <GameContext.Provider value={{
+            state,
+            engine,
+            isActive,
+            startGame,
+            endGame,
+            processCommand,
+            updateState
+        }}>
             {children}
         </GameContext.Provider>
     );
