@@ -25,6 +25,7 @@ export class CharacterFactory {
             return {
                 name: name,
                 id: eq.id,
+                type: itemData?.type || 'Misc',
                 weight: weight,
                 quantity: eq.quantity,
                 equipped: false,
@@ -61,7 +62,7 @@ export class CharacterFactory {
                 spellbook: [],
                 ac: 10 + Math.floor((finalStats['DEX'] - 10) / 2), // Basic AC, armor needs equipping logic
                 inventory: {
-                    gold: { cp: 0, sp: 0, ep: 0, gp: 10, pp: 0 }, // Starter gold
+                    gold: { cp: 0, sp: 0, ep: 0, gp: background.startingGold || 0, pp: 0 },
                     items: inventoryItems
                 },
                 equipmentSlots: {},

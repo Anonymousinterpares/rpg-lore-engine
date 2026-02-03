@@ -29,6 +29,7 @@
             "quantity": 1
         }
     ],
+    "startingGold": 10,
     "feature": {
         "name": "Military Rank",
         "description": "You have a military rank from your career as a soldier. Soldiers loyal to your former military organization still recognize your authority and influence, and they defer to you if they are of a lower rank. You can exert your influence to gain temporary access to friendly military encampments and fortresses where your rank is recognized. You can also usually gain access to a modest lifestyle for yourself (but only yourself) within military structures."

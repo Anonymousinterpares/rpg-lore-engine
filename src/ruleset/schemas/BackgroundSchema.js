@@ -11,6 +11,7 @@ export const BackgroundSchema = z.object({
         id: z.string(),
         quantity: z.number().default(1)
     })).default([]),
+    startingGold: z.number().default(0),
     feature: z.object({
         name: z.string(),
         description: z.string()

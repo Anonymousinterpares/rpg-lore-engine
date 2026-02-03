@@ -36,6 +36,7 @@
             "quantity": 1
         }
     ],
+    "startingGold": 10,
     "feature": {
         "name": "Researcher",
         "description": "When you attempt to learn or recall a piece of lore, if you do not know that information, you often know where and from whom you can obtain it. Usually, this information comes from a library, scriptorium, university, or a sage or other learned person or creature. Your GM might reveal that the information you seek is secreted away in an almost inaccessible archive, or that it simply cannot be found. Unearthing the deepest secrets of the multiverse can require an entire adventure or even a whole campaign."
