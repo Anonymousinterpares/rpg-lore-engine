@@ -11,11 +11,12 @@ export interface CharacterCreationOptions {
     characterClass: CharacterClass;
     background: Background;
     abilityScores: { [key: string]: number }; // STR, DEX, etc.
+    skillProficiencies: string[];
 }
 
 export class CharacterFactory {
     public static createNewGameState(options: CharacterCreationOptions): GameState {
-        const { name, race, characterClass, background, abilityScores } = options;
+        const { name, race, characterClass, background, abilityScores, skillProficiencies } = options;
 
         // Apply Racial Bonuses to Ability Scores
         const finalStats = { ...abilityScores };
@@ -69,7 +70,7 @@ export class CharacterFactory {
                 // For this factory, we assume the UI handles specific skill choices, 
                 // BUT if we are simplifying, we'll take Background skills + 2 random class skills?
                 // Let's take Background skills for sure.
-                skillProficiencies: background.skillProficiencies,
+                skillProficiencies: skillProficiencies as any,
                 hp: { current: maxHp, max: maxHp, temp: 0 },
                 deathSaves: { successes: 0, failures: 0 },
                 hitDice: { current: 1, max: 1, dieType: characterClass.hitDie },

@@ -13,7 +13,13 @@ interface CharacterCreatorProps {
     onCancel: () => void;
 }
 
-const STEPS = ['Identity', 'Race', 'Class', 'Background', 'Abilities', 'Review'];
+const STEPS = ['Identity', 'Race', 'Class', 'Background', 'Abilities', 'Skills', 'Review'];
+
+const ALL_SKILLS = [
+    "Acrobatics", "Animal Handling", "Arcana", "Athletics", "Deception", "History",
+    "Insight", "Intimidation", "Investigation", "Medicine", "Nature", "Perception",
+    "Performance", "Persuasion", "Religion", "Sleight of Hand", "Stealth", "Survival"
+];
 
 const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCancel }) => {
     const [step, setStep] = useState(0);
@@ -31,6 +37,7 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
     const [abilities, setAbilities] = useState({
         STR: 10, DEX: 10, CON: 10, INT: 10, WIS: 10, CHA: 10
     });
+    const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
 
     useEffect(() => {
         const init = async () => {
@@ -59,7 +66,8 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
             race: selectedRace,
             characterClass: selectedClass,
             background: selectedBackground,
-            abilityScores: abilities
+            abilityScores: abilities,
+            skillProficiencies: getFinalSkills()
         });
 
         onComplete(newState);
@@ -122,6 +130,36 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
             CHA: "Deception, intimidation, performance, persuasion, sorcerer/warlock/bard spells."
         };
         return descriptions[stat] || "";
+    };
+
+    const getAutoSkills = () => {
+        const skills = new Set<string>();
+        if (selectedBackground) {
+            selectedBackground.skillProficiencies.forEach(s => skills.add(s));
+        }
+        if (selectedRace) {
+            if (selectedRace.name.includes('Elf')) skills.add('Perception');
+            if (selectedRace.name === 'Half-Orc') skills.add('Intimidation');
+        }
+        return Array.from(skills);
+    };
+
+    const getClassSkillOptions = () => {
+        if (!selectedClass) return [];
+        const auto = getAutoSkills();
+        // Remove "Skill: " prefix and filter out already granted skills
+        return selectedClass.skillChoices.options
+            .map(opt => opt.replace('Skill: ', ''))
+            .filter(opt => !auto.includes(opt));
+    };
+
+    const getRaceSkillChoiceCount = () => {
+        if (selectedRace?.name === 'Half-Elf') return 2;
+        return 0;
+    };
+
+    const getFinalSkills = () => {
+        return Array.from(new Set([...getAutoSkills(), ...selectedSkills]));
     };
 
     if (loading) return <div className={styles.overlay}><div className={styles.loader}>Opening the Rulebooks...</div></div>;
@@ -312,29 +350,159 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                         </div>
                     </div>
                 );
-            case 5: // Review
+            case 5: // Skills
+                const autoSkills = getAutoSkills();
+                const classOptions = getClassSkillOptions();
+                const classCount = selectedClass?.skillChoices.count || 0;
+                const raceCount = getRaceSkillChoiceCount();
+                const totalChoicesNeeded = classCount + raceCount;
+
+                const toggleSkill = (skill: string) => {
+                    if (selectedSkills.includes(skill)) {
+                        setSelectedSkills(selectedSkills.filter(s => s !== skill));
+                    } else if (selectedSkills.length < totalChoicesNeeded) {
+                        setSelectedSkills([...selectedSkills, skill]);
+                    }
+                };
+
                 return (
-                    <div className={styles.summary}>
-                        <h3>Review Character</h3>
-                        <div className={styles.reviewGrid}>
-                            <p><strong>Name:</strong> {name || 'Traveler'}</p>
-                            <p><strong>Race:</strong> {selectedRace?.name}</p>
-                            <p><strong>Class:</strong> {selectedClass?.name}</p>
-                            <p><strong>Background:</strong> {selectedBackground?.name}</p>
+                    <div className={styles.selectionLayout}>
+                        <div className={styles.skillsContainer}>
+                            <h3>Select Proficiencies</h3>
+                            <p className={styles.instruction}>
+                                You gain <strong>{classCount}</strong> skills from your class
+                                {raceCount > 0 && <> and <strong>{raceCount}</strong> from your race</>}.
+                            </p>
+
+                            <div className={styles.skillSourceGroup}>
+                                <h4>Automatic Proficiencies</h4>
+                                <div className={styles.skillBadges}>
+                                    {autoSkills.map(s => <span key={s} className={styles.skillBadgeFixed}>{s}</span>)}
+                                </div>
+                            </div>
+
+                            <div className={styles.skillSourceGroup}>
+                                <h4>Available Choices ({selectedSkills.length} / {totalChoicesNeeded})</h4>
+                                <div className={styles.skillGrid}>
+                                    {raceCount > 0 ? (
+                                        // Half-Elf can pick ANY skill not already granted
+                                        ALL_SKILLS.filter(s => !autoSkills.includes(s)).map(s => (
+                                            <button
+                                                key={s}
+                                                className={`${styles.skillBtn} ${selectedSkills.includes(s) ? styles.selected : ''}`}
+                                                onClick={() => toggleSkill(s)}
+                                                disabled={!selectedSkills.includes(s) && selectedSkills.length >= totalChoicesNeeded}
+                                            >
+                                                {s}
+                                            </button>
+                                        ))
+                                    ) : (
+                                        // Others pick from class list
+                                        classOptions.map(s => (
+                                            <button
+                                                key={s}
+                                                className={`${styles.skillBtn} ${selectedSkills.includes(s) ? styles.selected : ''}`}
+                                                onClick={() => toggleSkill(s)}
+                                                disabled={!selectedSkills.includes(s) && selectedSkills.length >= totalChoicesNeeded}
+                                            >
+                                                {s}
+                                            </button>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
                         </div>
-                        <h4 className={styles.reviewSubhead}>Final Stats</h4>
-                        <div className={styles.statsSummary}>
-                            {Object.entries(abilities).map(([k, v]) => {
-                                const total = getTotalStat(k);
-                                const mod = Math.floor((total - 10) / 2);
-                                return (
-                                    <div key={k} className={styles.reviewStat}>
-                                        <span className={styles.reviewStatName}>{k}</span>
-                                        <span className={styles.reviewStatVal}>{total}</span>
-                                        <span className={styles.reviewStatMod}>({mod >= 0 ? '+' : ''}{mod})</span>
+                        <div className={styles.detailsPanel}>
+                            <h3>About Skills</h3>
+                            <div className={styles.detailsContent}>
+                                <div className={styles.detailItem}>
+                                    <div className={styles.detailName}>What are Proficiencies?</div>
+                                    <div className={styles.detailDesc}>Proficiency represents your training in a specific area. When you make an ability check with a proficient skill, you add your Proficiency Bonus (+2 at level 1) to the roll.</div>
+                                </div>
+                                <div className={styles.detailItem}>
+                                    <div className={styles.detailName}>Background Skills</div>
+                                    <div className={styles.detailDesc}>Your background as a <strong>{selectedBackground?.name}</strong> provides specialized training from your past life.</div>
+                                </div>
+                                <div className={styles.detailItem}>
+                                    <div className={styles.detailName}>Class Skills</div>
+                                    <div className={styles.detailDesc}>Your life as a <strong>{selectedClass?.name}</strong> has taught you specific skills necessary for survival and excellence in your field.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            case 6: // Review
+                const finalSkills = getFinalSkills();
+                return (
+                    <div className={styles.selectionLayout}>
+                        <div className={styles.summaryScroll}>
+                            <h3>Review Character</h3>
+                            <div className={styles.reviewMain}>
+                                <div className={styles.reviewIdentity}>
+                                    <p><strong>Name:</strong> {name || 'Traveler'}</p>
+                                    <p><strong>Race:</strong> {selectedRace?.name}</p>
+                                    <p><strong>Class:</strong> {selectedClass?.name}</p>
+                                    <p><strong>Background:</strong> {selectedBackground?.name}</p>
+                                </div>
+
+                                <h4 className={styles.reviewSubhead}>Final Stats</h4>
+                                <div className={styles.statsSummary}>
+                                    {Object.entries(abilities).map(([k, v]) => {
+                                        const total = getTotalStat(k);
+                                        const mod = Math.floor((total - 10) / 2);
+                                        return (
+                                            <div key={k} className={styles.reviewStat}>
+                                                <span className={styles.reviewStatName}>{k}</span>
+                                                <span className={styles.reviewStatVal}>{total}</span>
+                                                <span className={styles.reviewStatMod}>({mod >= 0 ? '+' : ''}{mod})</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                <h4 className={styles.reviewSubhead}>Proficiencies</h4>
+                                <div className={styles.skillBadges}>
+                                    {finalSkills.sort().map(s => (
+                                        <span key={s} className={styles.skillBadgeFinal}>{s}</span>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                        <div className={styles.detailsPanel}>
+                            <h3>Detailed Summary</h3>
+                            <div className={styles.detailsContent}>
+                                <div className={styles.summarySection}>
+                                    <div className={styles.summarySectionTitle}>RACIAL TRAITS</div>
+                                    {selectedRace?.traits.map(t => (
+                                        <div key={t.name} className={styles.summaryItem}>
+                                            <div className={styles.summaryItemName}>{t.name}</div>
+                                            <div className={styles.summaryItemDesc}>{t.description}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.summarySection}>
+                                    <div className={styles.summarySectionTitle}>CLASS FEATURES</div>
+                                    {selectedClass?.allFeatures.filter(f => f.level === 1).map(f => (
+                                        <div key={f.name} className={styles.summaryItem}>
+                                            <div className={styles.summaryItemName}>{f.name}</div>
+                                            <div className={styles.summaryItemDesc}>{f.description}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.summarySection}>
+                                    <div className={styles.summarySectionTitle}>BACKGROUND: {selectedBackground?.name}</div>
+                                    <div className={styles.summaryItem}>
+                                        <div className={styles.summaryItemName}>{selectedBackground?.feature.name}</div>
+                                        <div className={styles.summaryItemDesc}>{selectedBackground?.feature.description}</div>
                                     </div>
-                                );
-                            })}
+                                    <div className={styles.summaryItem}>
+                                        <div className={styles.summaryItemName}>Starting Gear</div>
+                                        <div className={styles.summaryItemDesc}>
+                                            {selectedBackground?.startingEquipment.map(e => `${e.quantity}x ${e.id}`).join(', ')}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 );
@@ -348,6 +516,11 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
         if (step === 1 && !selectedRace) return true;
         if (step === 2 && !selectedClass) return true;
         if (step === 3 && !selectedBackground) return true;
+        if (step === 5) { // Skills
+            const classCount = selectedClass?.skillChoices.count || 0;
+            const raceCount = getRaceSkillChoiceCount();
+            return selectedSkills.length < (classCount + raceCount);
+        }
         return false;
     };
 
