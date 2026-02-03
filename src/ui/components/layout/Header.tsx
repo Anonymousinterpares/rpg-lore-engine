@@ -1,15 +1,16 @@
 import React from 'react';
 import parchmentStyles from '../../styles/parchment.module.css';
 import styles from './Header.module.css';
-import { Shield, Menu, Settings, Users } from 'lucide-react';
+import { Shield, Menu, Settings, Users, Book } from 'lucide-react';
 
 interface HeaderProps {
     onLobby?: () => void;
     onSettings?: () => void;
+    onCodex?: () => void;
     onMenu?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onLobby, onSettings, onMenu }) => {
+const Header: React.FC<HeaderProps> = ({ onLobby, onSettings, onCodex, onMenu }) => {
     return (
         <header className={styles.header}>
             <div className={styles.logo}>
@@ -20,6 +21,9 @@ const Header: React.FC<HeaderProps> = ({ onLobby, onSettings, onMenu }) => {
                 <button className={parchmentStyles.button} onClick={onLobby}>
                     <Users size={18} />
                     <span>Lobby</span>
+                </button>
+                <button className={parchmentStyles.button} onClick={onCodex} title="Codex">
+                    <Book size={18} />
                 </button>
                 <button className={parchmentStyles.button} onClick={onSettings}>
                     <Settings size={18} />

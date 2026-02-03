@@ -7,6 +7,7 @@ import { CharacterClass } from '../../../ruleset/schemas/ClassSchema';
 import { Background } from '../../../ruleset/schemas/BackgroundSchema';
 import { GameState } from '../../../ruleset/schemas/FullSaveStateSchema';
 import { ArrowRight, ArrowLeft, Check, Dice5 } from 'lucide-react';
+import SkillLink from '../glossary/SkillLink';
 
 interface CharacterCreatorProps {
     onComplete: (state: GameState) => void;
@@ -49,6 +50,33 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
         };
         init();
     }, []);
+
+    // Validate selected skills when race, class, or background changes
+    useEffect(() => {
+        if (!selectedRace || !selectedClass || !selectedBackground) return;
+
+        const auto = getAutoSkills();
+        const classOptions = getClassSkillOptions();
+        const raceCount = getRaceSkillChoiceCount();
+        const classCount = selectedClass.skillChoices.count;
+        const totalMax = raceCount + classCount;
+
+        // Is it a valid choice in current context?
+        const isValidChoice = (skill: string) => {
+            if (auto.includes(skill)) return false; // Already granted automatically
+            if (selectedRace.name === 'Half-Elf') return true; // Half-elf can pick any non-auto skill
+            return classOptions.includes(skill); // Others must pick from class list
+        };
+
+        const validated = selectedSkills.filter(isValidChoice);
+
+        // Trim if we now have fewer slots than before
+        if (validated.length > totalMax) {
+            setSelectedSkills(validated.slice(0, totalMax));
+        } else if (validated.length !== selectedSkills.length) {
+            setSelectedSkills(validated);
+        }
+    }, [selectedRace, selectedClass, selectedBackground]);
 
     const handleNext = () => {
         if (step < STEPS.length - 1) setStep(step + 1);
@@ -288,7 +316,14 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                                     <div className={styles.detailItem}>
                                         <div className={styles.detailName}>Proficiencies & Languages</div>
                                         <div className={styles.detailDesc}>
-                                            <strong>Skills:</strong> {selectedBackground.skillProficiencies.join(', ')}<br />
+                                            <p className={styles.smallInfo}>
+                                                <strong>Proficiencies:</strong> {selectedBackground.skillProficiencies.map((s, i) => (
+                                                    <React.Fragment key={s}>
+                                                        <SkillLink skillName={s} />
+                                                        {i < selectedBackground.skillProficiencies.length - 1 ? ', ' : ''}
+                                                    </React.Fragment>
+                                                ))}
+                                            </p>
                                             {selectedBackground.toolProficiencies.length > 0 && <><strong>Tools:</strong> {selectedBackground.toolProficiencies.join(', ')}<br /></>}
                                             {selectedBackground.languages.length > 0 && <><strong>Languages:</strong> {selectedBackground.languages.join(', ')}</>}
                                         </div>
@@ -377,7 +412,7 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                             <div className={styles.skillSourceGroup}>
                                 <h4>Automatic Proficiencies</h4>
                                 <div className={styles.skillBadges}>
-                                    {autoSkills.map(s => <span key={s} className={styles.skillBadgeFixed}>{s}</span>)}
+                                    {autoSkills.map(s => <span key={s} className={styles.skillBadgeFixed}><SkillLink skillName={s} /></span>)}
                                 </div>
                             </div>
 
@@ -393,7 +428,7 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                                                 onClick={() => toggleSkill(s)}
                                                 disabled={!selectedSkills.includes(s) && selectedSkills.length >= totalChoicesNeeded}
                                             >
-                                                {s}
+                                                <SkillLink skillName={s} inheritColor={selectedSkills.includes(s)} />
                                             </button>
                                         ))
                                     ) : (
@@ -405,7 +440,7 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                                                 onClick={() => toggleSkill(s)}
                                                 disabled={!selectedSkills.includes(s) && selectedSkills.length >= totalChoicesNeeded}
                                             >
-                                                {s}
+                                                <SkillLink skillName={s} inheritColor={selectedSkills.includes(s)} />
                                             </button>
                                         ))
                                     )}
@@ -463,7 +498,7 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                                 <h4 className={styles.reviewSubhead}>Proficiencies</h4>
                                 <div className={styles.skillBadges}>
                                     {finalSkills.sort().map(s => (
-                                        <span key={s} className={styles.skillBadgeFinal}>{s}</span>
+                                        <span key={s} className={styles.skillBadgeFinal}><SkillLink skillName={s} /></span>
                                     ))}
                                 </div>
                             </div>

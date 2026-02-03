@@ -8,12 +8,15 @@ import MainMenu from './components/menu/MainMenu';
 import SettingsPanel from './components/menu/SettingsPanel';
 import { useGameState } from './hooks/useGameState';
 import CharacterCreator from './components/creation/CharacterCreator';
+import Codex from './components/codex/Codex';
+import { Book } from 'lucide-react';
 
 const App: React.FC = () => {
     const { isActive, startGame, endGame } = useGameState();
     const [showSettings, setShowSettings] = useState(false);
     const [showLobby, setShowLobby] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
+    const [showCodex, setShowCodex] = useState(false);
     const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
 
     // Close modals on Escape key
@@ -23,6 +26,7 @@ const App: React.FC = () => {
                 setShowMenu(false);
                 setShowSettings(false);
                 setShowLobby(false);
+                setShowCodex(false);
             }
         };
         window.addEventListener('keydown', handleKeyDown);
@@ -108,6 +112,7 @@ const App: React.FC = () => {
                     <Header
                         onLobby={() => setShowLobby(true)}
                         onSettings={() => setShowSettings(true)}
+                        onCodex={() => setShowCodex(true)}
                         onMenu={() => setShowMenu(true)}
                     />
                     <div className={styles.mainContent}>
@@ -144,6 +149,10 @@ const App: React.FC = () => {
                             </div>
                         </div>
                     )}
+                    <Codex
+                        isOpen={showCodex}
+                        onClose={() => setShowCodex(false)}
+                    />
                 </>
             )}
         </div>
