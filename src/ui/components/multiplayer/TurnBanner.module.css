@@ -1,0 +1,59 @@
+.banner {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    width: 100vw;
+    background: rgba(var(--glass-accent-rgb), 0.9);
+    padding: var(--spacing-xxl) 0;
+    transform: translateY(-50%);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: slideIn 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28), fadeOut 0.5s ease-in 2.5s forwards;
+    pointer-events: none;
+    border-top: 2px solid rgba(255, 255, 255, 0.5);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 50px rgba(var(--glass-accent-rgb), 0.5);
+}
+
+.content {
+    text-align: center;
+    color: #000;
+}
+
+.label {
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 0.5em;
+    opacity: 0.7;
+}
+
+.name {
+    font-family: var(--font-primary);
+    font-size: 5rem;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50%) translateX(-100%);
+    }
+
+    to {
+        transform: translateY(-50%) translateX(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}

@@ -11,6 +11,7 @@ function runMechanicsSimulation() {
         level: 3,
         race: 'Dwarf',
         class: 'Fighter',
+        conditions: [],
         stats: { 'STR': 16, 'DEX': 10, 'CON': 16, 'INT': 8, 'WIS': 12, 'CHA': 10 },
         savingThrowProficiencies: ['STR', 'CON'],
         skillProficiencies: ['Athletics'],

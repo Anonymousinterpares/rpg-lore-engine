@@ -1,0 +1,55 @@
+.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.header {
+    padding: var(--spacing-sm);
+    background: rgba(0, 255, 0, 0.1);
+    border-bottom: 1px solid var(--terminal-border);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--terminal-accent);
+    text-transform: uppercase;
+}
+
+.scrollArea {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.entry {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.turn {
+    color: var(--terminal-text-dim);
+    margin-right: var(--spacing-sm);
+}
+
+.message {
+    color: inherit;
+}
+
+.success {
+    color: #44ff44;
+}
+
+.scrollArea::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollArea::-webkit-scrollbar-thumb {
+    background: var(--terminal-border);
+    border-radius: 3px;
+}

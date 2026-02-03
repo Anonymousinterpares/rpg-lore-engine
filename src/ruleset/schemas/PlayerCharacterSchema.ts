@@ -24,6 +24,7 @@ export const PlayerCharacterSchema = z.object({
     level: z.number().min(1).max(20),
     race: z.string(),
     class: z.string(),
+    conditions: z.array(z.string()).default([]),
     stats: z.record(AbilityScoreSchema, z.number()),
     savingThrowProficiencies: z.array(AbilityScoreSchema).default([]),
     skillProficiencies: z.array(SkillNameSchema).default([]),

@@ -2,6 +2,8 @@ import React from 'react';
 import styles from './CharacterPanel.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
 import HealthBar from './HealthBar';
+import ConditionDisplay from './ConditionDisplay';
+import SpellSlotTracker from './SpellSlotTracker';
 import { Sword, Shield, Zap } from 'lucide-react';
 
 const CharacterPanel: React.FC = () => {
@@ -13,7 +15,12 @@ const CharacterPanel: React.FC = () => {
         hp: { current: 24, max: 28, temp: 0 },
         ac: 15,
         initiative: "+3",
-        stats: { STR: 10, DEX: 16, CON: 14, INT: 12, WIS: 14, CHA: 10 }
+        stats: { STR: 10, DEX: 16, CON: 14, INT: 12, WIS: 14, CHA: 10 },
+        conditions: ["Poisoned", "Inspired"],
+        spellSlots: {
+            "1": { current: 3, max: 4 },
+            "2": { current: 1, max: 2 }
+        }
     };
 
     return (
@@ -38,6 +45,8 @@ const CharacterPanel: React.FC = () => {
 
             <HealthBar current={char.hp.current} max={char.hp.max} />
 
+            <ConditionDisplay conditions={char.conditions} />
+
             <div className={styles.abilityGrid}>
                 {Object.entries(char.stats).map(([stat, val]) => (
                     <div key={stat} className={styles.abilityBox}>
@@ -46,6 +55,8 @@ const CharacterPanel: React.FC = () => {
                     </div>
                 ))}
             </div>
+
+            <SpellSlotTracker slots={char.spellSlots} />
         </div>
     );
 };

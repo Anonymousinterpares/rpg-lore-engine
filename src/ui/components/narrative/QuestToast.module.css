@@ -1,0 +1,72 @@
+.toast {
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    min-width: 300px;
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-left: 4px solid var(--glass-accent);
+    animation: slideDown 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28), fadeOut 0.5s ease-in 4.5s forwards;
+    pointer-events: none;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    color: var(--glass-accent);
+}
+
+.title {
+    font-family: var(--font-primary);
+    font-size: 1.25rem;
+    margin: 0;
+    color: var(--glass-text);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.new {
+    border-left-color: #ffd700;
+}
+
+.update {
+    border-left-color: var(--glass-accent);
+}
+
+.complete {
+    border-left-color: #00ff00;
+}
+
+.fail {
+    border-left-color: #ff0000;
+}
+
+@keyframes slideDown {
+    from {
+        top: 50px;
+        opacity: 0;
+    }
+
+    to {
+        top: 100px;
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}

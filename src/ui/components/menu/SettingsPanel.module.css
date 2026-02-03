@@ -1,0 +1,154 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 6000;
+    backdrop-filter: blur(4px);
+}
+
+.modal {
+    width: 700px;
+    max-width: 90vw;
+    height: 550px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.headerTitle {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    color: var(--glass-accent);
+}
+
+.headerTitle h2 {
+    font-family: var(--font-primary);
+    margin: 0;
+    color: var(--glass-text);
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    color: var(--glass-text-dim);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.layout {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 180px;
+    border-right: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-lg);
+    gap: var(--spacing-sm);
+}
+
+.tabButton {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: none;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    color: var(--glass-text-dim);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.activeTab {
+    color: var(--glass-accent);
+    background: rgba(var(--glass-accent-rgb), 0.1);
+    border-color: var(--glass-accent);
+}
+
+.main {
+    flex: 1;
+    padding: var(--spacing-xl);
+    overflow-y: auto;
+}
+
+.section h3 {
+    font-family: var(--font-primary);
+    margin: 0 0 var(--spacing-xl) 0;
+    color: var(--glass-text);
+}
+
+.settingRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md) 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-family: var(--font-primary);
+    color: var(--glass-text);
+}
+
+.settingRow input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--glass-accent);
+}
+
+.settingRow select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    color: var(--glass-text);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+}
+
+.footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    border-top: 1px solid var(--glass-border);
+}
+
+.saveButton {
+    background: var(--glass-accent);
+    border: none;
+    color: #000;
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.cancelButton {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
+    color: var(--glass-text);
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    cursor: pointer;
+}

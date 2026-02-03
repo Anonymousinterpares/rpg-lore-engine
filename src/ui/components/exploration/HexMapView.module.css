@@ -1,0 +1,106 @@
+.container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 100%);
+}
+
+.grid {
+    position: absolute;
+    width: 1000px;
+    height: 1000px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.hex {
+    position: absolute;
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hex:hover {
+    transform: scale(1.1);
+    z-index: 10;
+    filter: brightness(1.2) drop-shadow(0 0 10px rgba(var(--glass-accent-rgb), 0.5));
+}
+
+.hexInner {
+    width: 90%;
+    height: 90%;
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.unvisited {
+    opacity: 0.3;
+    filter: grayscale(1);
+}
+
+.visited {
+    opacity: 1;
+}
+
+.current {
+    filter: drop-shadow(0 0 15px var(--glass-accent));
+}
+
+.playerMarker {
+    width: 10px;
+    height: 10px;
+    background: var(--glass-accent);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--glass-accent);
+    animation: pulse 2s infinite;
+}
+
+/* Biome Colors */
+.plains .hexInner {
+    background: rgba(144, 238, 144, 0.3);
+}
+
+.forest .hexInner {
+    background: rgba(34, 139, 34, 0.3);
+}
+
+.mountains .hexInner {
+    background: rgba(169, 169, 169, 0.3);
+}
+
+.swamp .hexInner {
+    background: rgba(47, 79, 79, 0.3);
+}
+
+.hills .hexInner {
+    background: rgba(107, 142, 35, 0.3);
+}
+
+.desert .hexInner {
+    background: rgba(244, 164, 96, 0.3);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

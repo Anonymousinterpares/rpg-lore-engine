@@ -1,0 +1,129 @@
+.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: var(--spacing-md);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--glass-border);
+    margin-bottom: var(--spacing-md);
+}
+
+.icon {
+    color: var(--glass-accent);
+}
+
+.title {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--glass-text-dim);
+    margin: 0;
+}
+
+.messageList {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding-right: var(--spacing-xs);
+    margin-bottom: var(--spacing-md);
+}
+
+.message {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.msgHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sender {
+    font-family: var(--font-primary);
+    font-weight: bold;
+    font-size: 0.85rem;
+    color: var(--glass-accent);
+}
+
+.time {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--glass-text-dim);
+    opacity: 0.5;
+}
+
+.msgBody {
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+    color: var(--glass-text);
+    line-height: 1.4;
+}
+
+.system {
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-sm);
+    font-style: italic;
+    font-size: 0.8rem;
+    color: var(--glass-text-dim);
+}
+
+.inputArea {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: var(--glass-text);
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--glass-accent);
+}
+
+.sendButton {
+    background: var(--glass-accent);
+    border: none;
+    border-radius: var(--radius-sm);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sendButton:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(var(--glass-accent-rgb), 0.3);
+}
+
+.messageList::-webkit-scrollbar {
+    width: 4px;
+}
+
+.messageList::-webkit-scrollbar-thumb {
+    background: var(--glass-border);
+    border-radius: 2px;
+}

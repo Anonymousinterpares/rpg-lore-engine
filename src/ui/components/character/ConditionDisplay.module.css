@@ -1,0 +1,35 @@
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-xs);
+}
+
+.badge {
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    white-space: nowrap;
+}
+
+.critical {
+    background: rgba(255, 50, 50, 0.6);
+    border-color: #ff3232;
+    box-shadow: 0 0 5px rgba(255, 50, 50, 0.3);
+}
+
+.warning {
+    background: rgba(255, 150, 0, 0.6);
+    border-color: #ff9600;
+}
+
+.info {
+    background: rgba(0, 150, 255, 0.6);
+    border-color: #0096ff;
+}

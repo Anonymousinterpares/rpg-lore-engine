@@ -1,0 +1,161 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 6000;
+    backdrop-filter: blur(4px);
+}
+
+.modal {
+    width: 600px;
+    max-width: 90vw;
+    height: 700px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.headerTitle {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    color: var(--glass-accent);
+}
+
+.headerTitle h2 {
+    font-family: var(--font-primary);
+    margin: 0;
+    color: var(--glass-text);
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    color: var(--glass-text-dim);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+    color: #ff4444;
+}
+
+.slotList {
+    flex: 1;
+    padding: var(--spacing-lg);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.slotItem {
+    display: flex;
+    align-items: stretch;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+
+.slotMain {
+    flex: 1;
+    padding: var(--spacing-md);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.slotItem:hover {
+    border-color: var(--glass-accent);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.slotHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.slotName {
+    font-family: var(--font-primary);
+    font-weight: bold;
+    color: var(--glass-text);
+    font-size: 1.1rem;
+}
+
+.charInfo {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--glass-accent);
+}
+
+.slotMeta {
+    display: flex;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+
+.metaItem {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--glass-text-dim);
+}
+
+.deleteButton {
+    width: 50px;
+    background: rgba(255, 0, 0, 0.1);
+    border: none;
+    border-left: 1px solid var(--glass-border);
+    color: #ff4444;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.deleteButton:hover {
+    background: #ff4444;
+    color: #000;
+}
+
+.newSaveSlot {
+    justify-content: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    color: var(--glass-accent);
+    font-family: var(--font-mono);
+    font-weight: bold;
+    border-style: dashed;
+}
+
+.emptyState {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    color: var(--glass-text-dim);
+}

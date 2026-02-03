@@ -12,6 +12,7 @@ function runSimulation() {
         level: 1,
         race: 'Elf',
         class: 'Wizard',
+        conditions: [],
         stats: { 'STR': 10, 'DEX': 14, 'CON': 12, 'INT': 16, 'WIS': 12, 'CHA': 10 },
         savingThrowProficiencies: ['INT', 'WIS'],
         skillProficiencies: ['Arcana', 'Investigation'],

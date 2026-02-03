@@ -1,0 +1,107 @@
+.container {
+    padding: var(--spacing-md);
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--glass-accent);
+    margin: 0 0 var(--spacing-md) 0;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: var(--spacing-xs);
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    overflow-y: auto;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.active {
+    background: rgba(var(--glass-accent-rgb), 0.1);
+    border-color: var(--glass-accent);
+    box-shadow: inset 0 0 10px rgba(var(--glass-accent-rgb), 0.2);
+}
+
+.indicator {
+    position: absolute;
+    left: -8px;
+    color: var(--glass-accent);
+    animation: pulse 1.5s infinite;
+}
+
+.name {
+    font-family: var(--font-primary);
+    font-size: 1rem;
+    flex: 1;
+    color: var(--glass-text);
+}
+
+.player .name {
+    font-weight: bold;
+}
+
+.enemy .name {
+    color: #ff9999;
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.init {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--glass-accent);
+}
+
+.miniHp {
+    width: 40px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.hpBar {
+    height: 100%;
+    background: #44ff44;
+}
+
+.enemy .hpBar {
+    background: #ff4444;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1) translateX(0);
+    }
+
+    50% {
+        transform: scale(1.2) translateX(-2px);
+    }
+
+    100% {
+        transform: scale(1) translateX(0);
+    }
+}

@@ -1,0 +1,112 @@
+.container {
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    height: 100%;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: var(--spacing-sm);
+}
+
+.title {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--glass-accent);
+    margin: 0;
+}
+
+.gold {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: #ffd700;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+    gap: var(--spacing-sm);
+    overflow-y: auto;
+    padding-right: var(--spacing-xs);
+}
+
+.itemSlot,
+.emptySlot {
+    aspect-ratio: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.itemSlot {
+    cursor: pointer;
+    color: var(--glass-text-dim);
+}
+
+.itemSlot:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--glass-accent);
+    color: var(--glass-text);
+    transform: translateY(-2px);
+}
+
+.equipped {
+    border-color: var(--glass-accent);
+    background: rgba(var(--glass-accent-rgb), 0.1);
+    color: var(--glass-accent);
+}
+
+.iconWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quantity {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 0 4px #000;
+}
+
+.equippedBadge {
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: bold;
+    color: var(--glass-accent);
+}
+
+.emptySlot {
+    opacity: 0.3;
+}
+
+.grid::-webkit-scrollbar {
+    width: 4px;
+}
+
+.grid::-webkit-scrollbar-thumb {
+    background: var(--glass-border);
+    border-radius: 2px;
+}

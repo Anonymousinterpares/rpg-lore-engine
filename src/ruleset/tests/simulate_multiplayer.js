@@ -23,6 +23,7 @@ async function verifyMultiplayer() {
             level: 1,
             race: "Human",
             class: "Fighter",
+            conditions: [],
             stats: { STR: 16, DEX: 12, CON: 14, INT: 10, WIS: 12, CHA: 10 },
             savingThrowProficiencies: ["STR", "CON"],
             skillProficiencies: ["Athletics"],

@@ -9,6 +9,7 @@ function runExpandedCombatSimulation() {
         level: 5,
         race: 'Human',
         class: 'Ranger',
+        conditions: [],
         stats: { 'STR': 16, 'DEX': 14, 'CON': 14, 'INT': 10, 'WIS': 12, 'CHA': 10 },
         savingThrowProficiencies: ['STR', 'DEX'],
         skillProficiencies: ['Athletics', 'Perception', 'Stealth'],

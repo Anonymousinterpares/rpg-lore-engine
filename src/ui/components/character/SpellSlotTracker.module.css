@@ -1,0 +1,54 @@
+.container {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-sm);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-sm);
+}
+
+.label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--glass-accent);
+    margin: 0 0 var(--spacing-sm) 0;
+    letter-spacing: 0.05em;
+}
+
+.grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.slotRow {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.level {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--glass-text-dim);
+    min-width: 2.5rem;
+}
+
+.dots {
+    display: flex;
+    gap: 4px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.2s ease;
+}
+
+.active {
+    background: var(--glass-accent);
+    box-shadow: 0 0 5px var(--glass-accent);
+    border-color: rgba(255, 255, 255, 0.5);
+}
