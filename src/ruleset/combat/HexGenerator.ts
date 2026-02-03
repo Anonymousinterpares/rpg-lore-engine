@@ -57,11 +57,12 @@ export class HexGenerator {
     }
 
     private static determineResourceType(itemId: string): any {
-        if (itemId.includes('ore')) return 'Ore';
-        if (itemId.includes('wood')) return 'Wood';
-        if (itemId.includes('herb')) return 'Herb';
-        if (itemId.includes('hide')) return 'Hide';
-        if (itemId.includes('gem')) return 'Gem';
-        return 'Arcane';
+        const id = itemId.toLowerCase();
+        if (id.includes('ore')) return 'Ore';
+        if (id.includes('wood') || id.includes('log') || id.includes('ironwood')) return 'Wood';
+        if (id.includes('herb') || id.includes('leaf') || id.includes('bean') || id.includes('bloom') || id.includes('shade') || id.includes('rose')) return 'Herb';
+        if (id.includes('hide') || id.includes('scale')) return 'Hide';
+        if (id.includes('gem')) return 'Gem';
+        return 'Misc';
     }
 }

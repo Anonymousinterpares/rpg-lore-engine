@@ -1,0 +1,12 @@
+{
+  "name": "Desert Rose",
+  "type": "Misc",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 50,
+    "pp": 0
+  },
+  "weight": 0.1
+}

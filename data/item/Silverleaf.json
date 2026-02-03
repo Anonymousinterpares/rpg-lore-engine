@@ -1,0 +1,12 @@
+{
+  "name": "Silverleaf",
+  "type": "Misc",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 2,
+    "pp": 0
+  },
+  "weight": 0.1
+}

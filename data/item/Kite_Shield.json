@@ -1,0 +1,10 @@
+{
+    "name": "Kite Shield",
+    "type": "Shield",
+    "cost": {
+        "gp": 15
+    },
+    "weight": 8,
+    "acBonus": 2,
+    "description": "A tall, tapered shield favored by mounted knights."
+}

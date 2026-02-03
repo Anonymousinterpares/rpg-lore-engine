@@ -1,21 +1,50 @@
 [
     {
+        "biome": "Plains",
+        "resources": [
+            {
+                "itemId": "Raw_Hide",
+                "weight": 40
+            },
+            {
+                "itemId": "Kingsbloom",
+                "weight": 30
+            },
+            {
+                "itemId": "Oak_Logs",
+                "weight": 10
+            },
+            {
+                "itemId": "Iron_Ore",
+                "weight": 5
+            }
+        ]
+    },
+    {
         "biome": "Forest",
         "resources": [
             {
-                "itemId": "wood_common",
-                "weight": 50
+                "itemId": "Pine_Logs",
+                "weight": 30
             },
             {
-                "itemId": "herb_silverleaf",
-                "weight": 20
+                "itemId": "Oak_Logs",
+                "weight": 30
             },
             {
-                "itemId": "hide_deer",
+                "itemId": "Raw_Hide",
                 "weight": 15
             },
             {
-                "itemId": "gem_amber",
+                "itemId": "Silverleaf",
+                "weight": 15
+            },
+            {
+                "itemId": "Bogbean",
+                "weight": 5
+            },
+            {
+                "itemId": "Iron_Ore",
                 "weight": 5
             }
         ]
@@ -24,37 +53,28 @@
         "biome": "Mountains",
         "resources": [
             {
-                "itemId": "ore_iron",
+                "itemId": "Iron_Ore",
                 "weight": 40
             },
             {
-                "itemId": "ore_silver",
+                "itemId": "Silver_Ore",
+                "weight": 20
+            },
+            {
+                "itemId": "Thick_Hide",
                 "weight": 15
             },
             {
-                "itemId": "gem_ruby",
-                "weight": 5
-            },
-            {
-                "itemId": "hide_goat",
-                "weight": 25
-            }
-        ]
-    },
-    {
-        "biome": "Plains",
-        "resources": [
-            {
-                "itemId": "food_berries",
-                "weight": 40
-            },
-            {
-                "itemId": "herb_kingsbloom",
+                "itemId": "Coal",
                 "weight": 10
             },
             {
-                "itemId": "hide_rabbit",
-                "weight": 30
+                "itemId": "Mithril_Ore",
+                "weight": 5
+            },
+            {
+                "itemId": "Gold_Ore",
+                "weight": 5
             }
         ]
     },
@@ -62,16 +82,83 @@
         "biome": "Swamp",
         "resources": [
             {
-                "itemId": "rare_swamp_gas",
-                "weight": 5
+                "itemId": "Bogbean",
+                "weight": 40
             },
             {
-                "itemId": "herb_bogbean",
+                "itemId": "Nightshade",
                 "weight": 30
             },
             {
-                "itemId": "wood_driftwood",
-                "weight": 40
+                "itemId": "Oak_Logs",
+                "weight": 10
+            },
+            {
+                "itemId": "Raw_Hide",
+                "weight": 5
+            }
+        ]
+    },
+    {
+        "biome": "Desert",
+        "resources": [
+            {
+                "itemId": "Gold_Ore",
+                "weight": 30
+            },
+            {
+                "itemId": "Desert_Rose",
+                "weight": 20
+            },
+            {
+                "itemId": "Coal",
+                "weight": 10
+            },
+            {
+                "itemId": "Iron_Ore",
+                "weight": 5
+            }
+        ]
+    },
+    {
+        "biome": "Tundra",
+        "resources": [
+            {
+                "itemId": "Thick_Hide",
+                "weight": 50
+            },
+            {
+                "itemId": "Pine_Logs",
+                "weight": 30
+            },
+            {
+                "itemId": "Iron_Ore",
+                "weight": 5
+            }
+        ]
+    },
+    {
+        "biome": "Jungle",
+        "resources": [
+            {
+                "itemId": "Ironwood",
+                "weight": 30
+            },
+            {
+                "itemId": "Silverleaf",
+                "weight": 20
+            },
+            {
+                "itemId": "Thick_Hide",
+                "weight": 20
+            },
+            {
+                "itemId": "Kingsbloom",
+                "weight": 10
+            },
+            {
+                "itemId": "Iron_Ore",
+                "weight": 5
             }
         ]
     }

@@ -1,15 +1,107 @@
 [
     {
-        "id": "recipe_potion_healing",
-        "name": "Potion of Healing",
-        "resultItemId": "potion_healing",
+        "id": "recipe_buckler",
+        "name": "Buckler",
+        "resultItemId": "Buckler",
         "ingredients": [
             {
-                "itemId": "herb_silverleaf",
+                "itemId": "Iron_Ore",
                 "quantity": 1
             },
             {
-                "itemId": "herb_bogbean",
+                "itemId": "Leather_Strips",
+                "quantity": 1
+            }
+        ],
+        "toolRequired": "Smith's Tools",
+        "skillCheck": {
+            "skill": "Athletics",
+            "dc": 10
+        },
+        "timeDays": 1
+    },
+    {
+        "id": "recipe_round_shield",
+        "name": "Round Shield",
+        "resultItemId": "Round_Shield",
+        "ingredients": [
+            {
+                "itemId": "Oak_Logs",
+                "quantity": 2
+            },
+            {
+                "itemId": "Iron_Ore",
+                "quantity": 1
+            }
+        ],
+        "toolRequired": "Smith's Tools",
+        "skillCheck": {
+            "skill": "Athletics",
+            "dc": 10
+        },
+        "timeDays": 2
+    },
+    {
+        "id": "recipe_kite_shield",
+        "name": "Kite Shield",
+        "resultItemId": "Kite_Shield",
+        "ingredients": [
+            {
+                "itemId": "Iron_Ore",
+                "quantity": 2
+            },
+            {
+                "itemId": "Oak_Logs",
+                "quantity": 1
+            }
+        ],
+        "toolRequired": "Smith's Tools",
+        "skillCheck": {
+            "skill": "Athletics",
+            "dc": 12
+        },
+        "timeDays": 2
+    },
+    {
+        "id": "recipe_tower_shield",
+        "name": "Tower Shield",
+        "resultItemId": "Tower_Shield",
+        "ingredients": [
+            {
+                "itemId": "Iron_Ore",
+                "quantity": 4
+            },
+            {
+                "itemId": "Oak_Logs",
+                "quantity": 2
+            },
+            {
+                "itemId": "Leather_Strips",
+                "quantity": 2
+            }
+        ],
+        "toolRequired": "Smith's Tools",
+        "skillCheck": {
+            "skill": "Athletics",
+            "dc": 15
+        },
+        "timeDays": 4
+    },
+    {
+        "id": "recipe_potion_healing",
+        "name": "Potion of Healing",
+        "resultItemId": "Potion_of_healing",
+        "ingredients": [
+            {
+                "itemId": "Silverleaf",
+                "quantity": 1
+            },
+            {
+                "itemId": "Bogbean",
+                "quantity": 1
+            },
+            {
+                "itemId": "Glass_Vial",
                 "quantity": 1
             }
         ],
@@ -18,35 +110,20 @@
             "skill": "Medicine",
             "dc": 12
         },
-        "timeDays": 1,
-        "description": "A standard potion of healing."
-    },
-    {
-        "id": "recipe_iron_shield",
-        "name": "Iron Shield",
-        "resultItemId": "shield_iron",
-        "ingredients": [
-            {
-                "itemId": "ore_iron",
-                "quantity": 3
-            }
-        ],
-        "toolRequired": "Smith's Tools",
-        "skillCheck": {
-            "skill": "Athletics",
-            "dc": 10
-        },
-        "timeDays": 2,
-        "description": "A sturdy iron shield."
+        "timeDays": 1
     },
     {
         "id": "recipe_leather_armor",
         "name": "Leather Armor",
-        "resultItemId": "armor_leather",
+        "resultItemId": "Leather",
         "ingredients": [
             {
-                "itemId": "hide_deer",
-                "quantity": 4
+                "itemId": "Raw_Hide",
+                "quantity": 3
+            },
+            {
+                "itemId": "Leather_Strips",
+                "quantity": 2
             }
         ],
         "toolRequired": "Leatherworker's Tools",
@@ -54,7 +131,6 @@
             "skill": "Sleight of Hand",
             "dc": 10
         },
-        "timeDays": 2,
-        "description": "Basic leather armor."
+        "timeDays": 2
     }
 ]

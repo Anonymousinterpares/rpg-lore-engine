@@ -1,0 +1,13 @@
+{
+    "name": "Buckler",
+    "type": "Shield",
+    "cost": {
+        "gp": 5
+    },
+    "weight": 2,
+    "acBonus": 1,
+    "description": "A small metal shield gripped in the hand. No stealth disadvantage; can be used with one-handed melee only.",
+    "tags": [
+        "Light"
+    ]
+}

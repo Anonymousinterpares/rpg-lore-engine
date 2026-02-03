@@ -1,0 +1,10 @@
+{
+    "name": "Round Shield",
+    "type": "Shield",
+    "cost": {
+        "gp": 10
+    },
+    "weight": 6,
+    "acBonus": 2,
+    "description": "A standard wooden shield with a metal boss."
+}

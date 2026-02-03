@@ -1,0 +1,12 @@
+{
+  "name": "Oak Logs",
+  "type": "Misc",
+  "cost": {
+    "cp": 0,
+    "sp": 1,
+    "ep": 0,
+    "gp": 0,
+    "pp": 0
+  },
+  "weight": 7
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Tower Shield",
+    "type": "Shield",
+    "cost": {
+        "gp": 30
+    },
+    "weight": 15,
+    "acBonus": 3,
+    "description": "A massive shield that provides superior protection but is heavy and cumbersome.",
+    "modifiers": [
+        {
+            "type": "StatBonus",
+            "target": "STR_REQ",
+            "value": 15
+        }
+    ],
+    "tags": [
+        "Heavy",
+        "Stealth_Disadvantage"
+    ]
+}
