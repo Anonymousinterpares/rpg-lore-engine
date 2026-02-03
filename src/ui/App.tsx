@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './App.module.css';
 import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
@@ -16,9 +16,29 @@ const App: React.FC = () => {
     const [showMenu, setShowMenu] = useState(false);
     const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
 
+    // Close modals on Escape key
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                setShowMenu(false);
+                setShowSettings(false);
+                setShowLobby(false);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+
+    const confirmAction = (message: string) => {
+        if (!isActive) return true;
+        return window.confirm(message);
+    };
+
     const handleNewGame = () => {
-        setIsCreatingCharacter(true);
-        setShowMenu(false);
+        if (confirmAction("Starting a new adventure will stop the current game without saving. Proceed?")) {
+            setIsCreatingCharacter(true);
+            setShowMenu(false);
+        }
     };
 
     const handleCharacterComplete = (state: any) => {
@@ -27,7 +47,9 @@ const App: React.FC = () => {
     };
 
     const handleLoadGame = () => {
-        console.log("Load Game not implemented yet - functionality coming in next update");
+        if (confirmAction("Loading a chronicle will stop the current game without saving (if not already saved). Proceed?")) {
+            console.log("Load Game not implemented yet - functionality coming in next update");
+        }
     };
 
     const handleQuit = () => {

@@ -1,5 +1,5 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './App.module.css';
 import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
@@ -15,16 +15,37 @@ const App = () => {
     const [showLobby, setShowLobby] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
     const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
+    // Close modals on Escape key
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Escape') {
+                setShowMenu(false);
+                setShowSettings(false);
+                setShowLobby(false);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
+    const confirmAction = (message) => {
+        if (!isActive)
+            return true;
+        return window.confirm(message);
+    };
     const handleNewGame = () => {
-        setIsCreatingCharacter(true);
-        setShowMenu(false);
+        if (confirmAction("Starting a new adventure will stop the current game without saving. Proceed?")) {
+            setIsCreatingCharacter(true);
+            setShowMenu(false);
+        }
     };
     const handleCharacterComplete = (state) => {
         setIsCreatingCharacter(false);
         startGame(state);
     };
     const handleLoadGame = () => {
-        console.log("Load Game not implemented yet - functionality coming in next update");
+        if (confirmAction("Loading a chronicle will stop the current game without saving (if not already saved). Proceed?")) {
+            console.log("Load Game not implemented yet - functionality coming in next update");
+        }
     };
     const handleQuit = () => {
         endGame();
