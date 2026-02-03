@@ -3,6 +3,7 @@ import { Race } from '../schemas/RaceSchema';
 import { Background } from '../schemas/BackgroundSchema';
 import { AbilityScore, SkillName } from '../schemas/BaseSchemas';
 import { MechanicsEngine } from './MechanicsEngine';
+import { DataManager } from '../data/DataManager';
 
 export interface CreationRequest {
     name: string;
@@ -84,13 +85,18 @@ export class CharacterCreationEngine {
 
         // 4. Equipment Assembly
         const finalItems = [
-            ...request.background.startingEquipment.map(i => ({
-                id: i.id,
-                name: i.id.replace(/_/g, ' '), // Placeholder name
-                weight: 1, // Default weight
-                quantity: i.quantity,
-                equipped: false
-            }))
+            ...request.background.startingEquipment.map(i => {
+                const itemData = DataManager.getItem(i.id);
+                return {
+                    id: i.id,
+                    instanceId: crypto.randomUUID(), // Unique ID
+                    name: itemData?.name || i.id.replace(/_/g, ' '),
+                    type: itemData?.type || 'Misc',
+                    weight: itemData?.weight || 1,
+                    quantity: i.quantity,
+                    equipped: false
+                };
+            })
             // Class equipment would go here
         ];
 

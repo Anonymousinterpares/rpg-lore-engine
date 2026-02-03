@@ -32,13 +32,15 @@ export class InventoryEngine {
     /**
      * Adds an item to the inventory
      */
-    public static addItem(pc: PlayerCharacter, item: { id: string, name: string, weight: number, quantity?: number }) {
+    public static addItem(pc: PlayerCharacter, item: { id: string, name: string, weight: number, type?: string, quantity?: number }) {
         const existing = pc.inventory.items.find(i => i.id === item.id);
-        if (existing) {
+        if (existing && !['weapon', 'armor', 'shield'].some(t => (item.type || '').toLowerCase().includes(t))) {
             existing.quantity += item.quantity || 1;
         } else {
             pc.inventory.items.push({
                 ...item,
+                instanceId: crypto.randomUUID(),
+                type: item.type || 'Misc',
                 quantity: item.quantity || 1,
                 equipped: false
             });

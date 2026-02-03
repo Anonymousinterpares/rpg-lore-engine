@@ -22,12 +22,14 @@ export class InventoryEngine {
      */
     static addItem(pc, item) {
         const existing = pc.inventory.items.find(i => i.id === item.id);
-        if (existing) {
+        if (existing && !['weapon', 'armor', 'shield'].some(t => (item.type || '').toLowerCase().includes(t))) {
             existing.quantity += item.quantity || 1;
         }
         else {
             pc.inventory.items.push({
                 ...item,
+                instanceId: crypto.randomUUID(),
+                type: item.type || 'Misc',
                 quantity: item.quantity || 1,
                 equipped: false
             });

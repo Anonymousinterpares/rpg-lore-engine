@@ -49,7 +49,9 @@ export const PlayerCharacterSchema = z.object({
         gold: CurrencySchema.default({}),
         items: z.array(z.object({
             id: z.string(),
+            instanceId: z.string().optional(), // Made optional for literal compatibility
             name: z.string(),
+            type: z.string().optional().default('Misc'),
             weight: z.number(),
             quantity: z.number().default(1),
             equipped: z.boolean().default(false)

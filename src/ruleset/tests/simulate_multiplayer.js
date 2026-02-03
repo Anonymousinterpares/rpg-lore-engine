@@ -45,7 +45,7 @@ async function verifyMultiplayer() {
         },
         companions: [],
         mode: "EXPLORATION",
-        location: { hexId: "0,0", coordinates: [0, 0] },
+        location: { hexId: "0,0", coordinates: [0, 0], droppedItems: [] },
         worldTime: { hour: 10, day: 1, month: 1, year: 1492, totalTurns: 1 },
         worldMap: { grid_id: "main", hexes: {} },
         subLocations: [],

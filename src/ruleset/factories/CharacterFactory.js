@@ -84,7 +84,8 @@ export class CharacterFactory {
             mode: 'EXPLORATION',
             location: {
                 hexId: '0,0',
-                coordinates: [0, 0]
+                coordinates: [0, 0],
+                droppedItems: []
             },
             worldTime: { day: 1, hour: 8, month: 1, year: 1489, totalTurns: 0 },
             worldMap: {

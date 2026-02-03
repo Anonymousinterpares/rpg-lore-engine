@@ -103,8 +103,10 @@ export class ShopEngine {
         if (newGold) {
             pc.inventory.gold = newGold;
             pc.inventory.items.push({
-                id: Math.random().toString(36).substr(2, 9),
+                id: item.name.toLowerCase().replace(/ /g, '_'),
+                instanceId: crypto.randomUUID(),
                 name: item.name,
+                type: item.type || 'Misc',
                 weight: item.weight,
                 quantity: 1,
                 equipped: false

@@ -1,5 +1,6 @@
 import { PlayerCharacterSchema } from '../schemas/PlayerCharacterSchema';
 import { MechanicsEngine } from './MechanicsEngine';
+import { DataManager } from '../data/DataManager';
 export class CharacterCreationEngine {
     static POINT_BUY_COSTS = {
         8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9
@@ -58,13 +59,18 @@ export class CharacterCreationEngine {
         ]));
         // 4. Equipment Assembly
         const finalItems = [
-            ...request.background.startingEquipment.map(i => ({
-                id: i.id,
-                name: i.id.replace(/_/g, ' '), // Placeholder name
-                weight: 1, // Default weight
-                quantity: i.quantity,
-                equipped: false
-            }))
+            ...request.background.startingEquipment.map(i => {
+                const itemData = DataManager.getItem(i.id);
+                return {
+                    id: i.id,
+                    instanceId: crypto.randomUUID(), // Unique ID
+                    name: itemData?.name || i.id.replace(/_/g, ' '),
+                    type: itemData?.type || 'Misc',
+                    weight: itemData?.weight || 1,
+                    quantity: i.quantity,
+                    equipped: false
+                };
+            })
             // Class equipment would go here
         ];
         // 5. Build the character object

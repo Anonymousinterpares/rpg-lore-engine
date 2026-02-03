@@ -49,7 +49,15 @@ async function runExpansionSimulation() {
     // 3. Crafting Test
     console.log('\n--- 3. Crafting Engine (Recipes) ---');
     // Give materials for a potion
-    pc.inventory.items.push({ id: 'herb_bogbean', name: 'herb bogbean', quantity: 1, weight: 0.1, equipped: false });
+    pc.inventory.items.push({
+        id: 'herb_bogbean',
+        instanceId: 'bog_01',
+        name: 'herb bogbean',
+        type: 'Misc',
+        quantity: 1,
+        weight: 0.1,
+        equipped: false
+    });
     console.log('Crafting Potion of Healing (needs silverleaf + bogbean)...');
     const craftResult = DowntimeEngine.craft(pc, 'recipe_potion_healing');
     console.log(craftResult.message);
@@ -60,7 +68,7 @@ async function runExpansionSimulation() {
         character: pc,
         activeQuests: [],
         factions: [],
-        location: { hexId: '0,0', coordinates: [0, 0] },
+        location: { hexId: '0,0', coordinates: [0, 0], droppedItems: [] },
         worldTime: { days: 1, hours: 12, minutes: 0 },
         worldMap: { grid_id: 'test', hexes: {} },
         settings: { difficulty: 'normal', ironman: false, adaptiveCombat: true, explorationDensity: 1.0, loreWeight: 1.0 },

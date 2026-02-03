@@ -98,6 +98,12 @@ export class GameLoop {
                 this.stateManager.saveGame(this.state);
                 return 'Game saved.';
             case 'move':
+                const char = this.state.character;
+                const currentWeight = char.inventory.items.reduce((sum, i) => sum + (i.weight * (i.quantity || 1)), 0);
+                const capacity = (char.stats.STR || 10) * 15;
+                if (currentWeight > capacity) {
+                    return "You are overencumbered and cannot move! Drop some items first.";
+                }
                 const direction = (intent.args?.[0]?.toUpperCase() || 'N');
                 const result = this.movementEngine.move(this.state.location.coordinates, direction);
                 if (result.success && result.newHex) {
@@ -120,6 +126,112 @@ export class GameLoop {
             default:
                 return `Unknown command: /${intent.command}`;
         }
+    }
+    pickupItem(instanceId) {
+        const char = this.state.character;
+        const droppedItems = this.state.location.droppedItems || [];
+        const itemIndex = droppedItems.findIndex(i => i.instanceId === instanceId);
+        if (itemIndex === -1)
+            return "Item not found on the ground.";
+        const item = droppedItems[itemIndex];
+        // Weight check
+        const currentWeight = char.inventory.items.reduce((sum, i) => sum + (i.weight * (i.quantity || 1)), 0);
+        if (currentWeight + (item.weight * (item.quantity || 1)) > (char.stats.STR || 10) * 15) {
+            return "You are carrying too much to pick this up.";
+        }
+        // Add to inventory (stack if possible, but for now just add)
+        // Check if item already exists in inventory to stack
+        const existingItem = char.inventory.items.find(i => i.id === item.id);
+        if (existingItem && !['weapon', 'armor', 'shield'].some(t => item.type.toLowerCase().includes(t))) {
+            existingItem.quantity = (existingItem.quantity || 1) + (item.quantity || 1);
+        }
+        else {
+            char.inventory.items.push({
+                ...item,
+                equipped: false
+            });
+        }
+        // Remove from dropped items
+        droppedItems.splice(itemIndex, 1);
+        this.stateManager.saveGame(this.state);
+        return `Picked up ${item.name}.`;
+    }
+    dropItem(instanceId) {
+        const char = this.state.character;
+        const itemIndex = char.inventory.items.findIndex(i => i.instanceId === instanceId);
+        if (itemIndex === -1)
+            return "Item not found in inventory.";
+        const item = char.inventory.items[itemIndex];
+        // Remove from inventory
+        char.inventory.items.splice(itemIndex, 1);
+        // Add to dropped items at current location
+        if (!this.state.location.droppedItems) {
+            this.state.location.droppedItems = [];
+        }
+        this.state.location.droppedItems.push({
+            ...item,
+            instanceId: item.instanceId || `${item.id}-${Date.now()}`
+        });
+        // If it was equipped, unequip it
+        Object.keys(char.equipmentSlots).forEach(slot => {
+            if (char.equipmentSlots[slot] === instanceId) {
+                char.equipmentSlots[slot] = undefined;
+            }
+        });
+        this.stateManager.saveGame(this.state);
+        return `Dropped ${item.name}.`;
+    }
+    equipItem(instanceId) {
+        const char = this.state.character;
+        const item = char.inventory.items.find(i => i.instanceId === instanceId);
+        if (!item)
+            return "Item not found.";
+        if (item.equipped) {
+            // Unequip
+            item.equipped = false;
+            Object.keys(char.equipmentSlots).forEach(slot => {
+                if (char.equipmentSlots[slot] === instanceId) {
+                    char.equipmentSlots[slot] = undefined;
+                }
+            });
+            this.stateManager.saveGame(this.state);
+            return `Unequipped ${item.name}.`;
+        }
+        else {
+            // Equip
+            const type = (item.type || '').toLowerCase();
+            let slot = '';
+            if (type.includes('weapon'))
+                slot = 'mainHand';
+            else if (type.includes('armor'))
+                slot = 'armor';
+            else if (type.includes('shield'))
+                slot = 'offHand';
+            if (!slot)
+                return `${item.name} cannot be equipped.`;
+            // Unequip current item in slot if any
+            const currentInSlotId = char.equipmentSlots[slot];
+            if (currentInSlotId) {
+                const currentItem = char.inventory.items.find(i => i.instanceId === currentInSlotId);
+                if (currentItem)
+                    currentItem.equipped = false;
+            }
+            char.equipmentSlots[slot] = instanceId;
+            item.equipped = true;
+            // Recalculate AC if armor or shield
+            if (slot === 'armor' || slot === 'offHand') {
+                this.recalculateAC();
+            }
+            this.stateManager.saveGame(this.state);
+            return `Equipped ${item.name}.`;
+        }
+    }
+    recalculateAC() {
+        const char = this.state.character;
+        let baseAC = 10 + Math.floor(((char.stats.DEX || 10) - 10) / 2);
+        // Add armor stats if we add AC to items later
+        // For now, let's keep it simple
+        this.state.character.ac = baseAC;
     }
     getState() {
         return this.state;

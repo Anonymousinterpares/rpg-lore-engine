@@ -28,7 +28,15 @@ export const FullSaveStateSchema = z.object({
         hexId: z.string(),
         coordinates: z.tuple([z.number(), z.number()]),
         subLocationId: z.string().optional(),
-        roomId: z.string().optional()
+        roomId: z.string().optional(),
+        droppedItems: z.array(z.object({
+            id: z.string(),
+            name: z.string(),
+            type: z.string(),
+            quantity: z.number(),
+            weight: z.number(),
+            instanceId: z.string()
+        })).optional().default([])
     }),
     worldTime: WorldClockSchema,
     worldMap: MapRegistrySchema,

@@ -27,7 +27,7 @@ function runSimulation() {
         inventory: {
             gold: { cp: 0, sp: 0, ep: 0, gp: 10, pp: 0 },
             items: [
-                { id: 'staff_01', name: 'Quarterstaff', weight: 4, quantity: 1, equipped: true }
+                { id: 'staff_01', instanceId: 'staff_01', name: 'Quarterstaff', type: 'Weapon', weight: 4, quantity: 1, equipped: true }
             ]
         },
         equipmentSlots: {},
