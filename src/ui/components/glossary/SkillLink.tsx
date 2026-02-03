@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import styles from './SkillLink.module.css';
 import skillsData from '../../../data/codex/skills.json';
 import { X, Info } from 'lucide-react';
@@ -37,7 +38,7 @@ const SkillLink: React.FC<SkillLinkProps> = ({ skillName, className, inheritColo
                 {skillName}
             </span>
 
-            {isOpen && (
+            {isOpen && ReactDOM.createPortal(
                 <div className={styles.overlay} onClick={() => setIsOpen(false)}>
                     <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
                         <div className={styles.header}>
@@ -66,7 +67,8 @@ const SkillLink: React.FC<SkillLinkProps> = ({ skillName, className, inheritColo
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </>
     );

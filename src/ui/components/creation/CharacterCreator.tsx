@@ -316,14 +316,14 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                                     <div className={styles.detailItem}>
                                         <div className={styles.detailName}>Proficiencies & Languages</div>
                                         <div className={styles.detailDesc}>
-                                            <p className={styles.smallInfo}>
+                                            <div className={styles.smallInfo}>
                                                 <strong>Proficiencies:</strong> {selectedBackground.skillProficiencies.map((s, i) => (
                                                     <React.Fragment key={s}>
                                                         <SkillLink skillName={s} />
                                                         {i < selectedBackground.skillProficiencies.length - 1 ? ', ' : ''}
                                                     </React.Fragment>
                                                 ))}
-                                            </p>
+                                            </div>
                                             {selectedBackground.toolProficiencies.length > 0 && <><strong>Tools:</strong> {selectedBackground.toolProficiencies.join(', ')}<br /></>}
                                             {selectedBackground.languages.length > 0 && <><strong>Languages:</strong> {selectedBackground.languages.join(', ')}</>}
                                         </div>
