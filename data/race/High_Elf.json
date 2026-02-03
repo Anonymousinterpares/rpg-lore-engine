@@ -9,12 +9,16 @@
   },
   "traits": [
     {
+      "name": "Keen Senses",
+      "description": "You have proficiency in the Perception skill."
+    },
+    {
       "name": "Fey Ancestry",
-      "description": "Advantage on saves vs charm, magic can't put you to sleep."
+      "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep."
     },
     {
       "name": "Trance",
-      "description": "Meditate for 4 hours instead of sleeping 8."
+      "description": "Elves don't need to sleep. Instead, they meditate deeply, remaining semiconscious, for 4 hours a day."
     },
     {
       "name": "Elf Weapon Training",

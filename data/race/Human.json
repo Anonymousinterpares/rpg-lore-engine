@@ -14,11 +14,12 @@
   "traits": [
     {
       "name": "Versatility",
-      "description": "Humans are the most adaptable and ambitious people among the common races."
+      "description": "Every one of your ability scores increases by 1. Humans are the most adaptable and ambitious people among the common races."
     }
   ],
   "languages": [
-    "Common"
+    "Common",
+    "One extra language"
   ],
   "optional": false
 }
