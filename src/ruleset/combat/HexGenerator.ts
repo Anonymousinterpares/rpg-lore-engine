@@ -1,24 +1,15 @@
 import { Hex, ResourceNode } from '../schemas/HexMapSchema';
 import { BiomeType } from '../schemas/BiomeSchema';
 import { BiomeGenerationEngine } from './BiomeGenerationEngine';
-import * as fs from 'fs';
-import * as path from 'path';
+import { BIOME_RESOURCES } from '../data/StaticData';
 
 export class HexGenerator {
-    private static resourceTables: any[] = [];
-
-    private static loadResourceTables() {
-        if (this.resourceTables.length > 0) return;
-        const dataPath = path.join(process.cwd(), 'data', 'biomes', 'biome_resources.json');
-        this.resourceTables = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-    }
+    private static resourceTables = BIOME_RESOURCES;
 
     /**
      * Generates a new hex at the given coordinates.
      */
     public static generateHex(coords: [number, number], neighbors: { biome: BiomeType }[], clusterSizes: Record<BiomeType, number>): Hex {
-        this.loadResourceTables();
-
         const biome = BiomeGenerationEngine.selectBiome(neighbors, clusterSizes);
 
         // Roll for resource nodes

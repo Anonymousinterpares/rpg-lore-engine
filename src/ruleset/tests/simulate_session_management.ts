@@ -142,9 +142,9 @@ async function verifySessionManagement() {
 
     // 5. Test Registry
     console.log("Testing Registry...");
-    const saves = gsm.listSaves();
-    console.log("Available saves:", saves.map(s => s.slotName));
-    if (saves.some(s => s.id === "test-save-1")) {
+    const saves = gsm.getSaveRegistry().slots;
+    console.log("Available saves:", saves.map((s: any) => s.slotName));
+    if (saves.some((s: any) => s.id === "test-save-1")) {
         console.log("✅ Registry correctly listed saves.");
     } else {
         console.error("❌ Registry failed to list saves.");

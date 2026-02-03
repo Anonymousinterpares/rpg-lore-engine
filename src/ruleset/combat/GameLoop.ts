@@ -1,5 +1,6 @@
 import { IntentRouter, ParsedIntent } from './IntentRouter';
 import { GameStateManager, GameState } from './GameStateManager';
+import { IStorageProvider } from './IStorageProvider';
 import { ContextManager } from '../agents/ContextManager';
 import { MechanicsEngine } from './MechanicsEngine';
 import { RestingEngine } from './RestingEngine';
@@ -25,10 +26,10 @@ export class GameLoop {
     private scribe: StoryScribe = new StoryScribe();
     private director: EncounterDirector = new EncounterDirector();
 
-    constructor(initialState: GameState, basePath: string = process.cwd()) {
+    constructor(initialState: GameState, basePath: string, storage?: IStorageProvider) {
         this.state = initialState;
-        this.stateManager = new GameStateManager(basePath);
-        this.hexMapManager = new HexMapManager(basePath);
+        this.stateManager = new GameStateManager(basePath, storage);
+        this.hexMapManager = new HexMapManager(basePath, 'world_01', storage);
         this.movementEngine = new MovementEngine(this.hexMapManager);
 
         // Initialize factions if empty

@@ -11,8 +11,10 @@ interface GameContextType {
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
+import { BrowserStorageProvider } from '../../ruleset/combat/BrowserStorageProvider';
+
 export const GameProvider: React.FC<{ children: React.ReactNode; initialGameState: GameState }> = ({ children, initialGameState }) => {
-    const [engine] = useState(() => new GameLoop(initialGameState));
+    const [engine] = useState(() => new GameLoop(initialGameState, '/', new BrowserStorageProvider()));
     const [state, setState] = useState<GameState>(initialGameState);
 
     const updateState = useCallback(() => {

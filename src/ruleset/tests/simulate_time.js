@@ -49,7 +49,7 @@ async function runTimeSimulation() {
         conversationHistory: [],
         triggeredEvents: []
     };
-    const loop = new GameLoop(initialState);
+    const loop = new GameLoop(initialState, '.');
     const reportTime = () => {
         const time = loop.getState().worldTime;
         console.log(`Current Time: ${WorldClockEngine.formatTime(time)}`);

@@ -1,31 +1,23 @@
+import { RECIPES } from '../data/StaticData';
 import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
 import { GameState } from './GameStateManager';
 import { WorldClockEngine } from './WorldClockEngine';
-import { Recipe } from '../schemas/RecipeSchema';
-import * as fs from 'fs';
-import * as path from 'path';
 import { MechanicsEngine } from './MechanicsEngine';
+import { Recipe } from '../schemas/RecipeSchema';
 
 export class DowntimeEngine {
-    private static recipes: Recipe[] = [];
-
-    private static loadRecipes() {
-        if (this.recipes.length > 0) return;
-        const dataPath = path.join(process.cwd(), 'data', 'crafting', 'recipes.json');
-        this.recipes = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-    }
+    private static recipes: Recipe[] = RECIPES;
 
     /**
      * Attempts to craft an item based on a recipe.
      */
     public static craft(pc: PlayerCharacter, recipeId: string): { success: boolean, message: string } {
-        this.loadRecipes();
         const recipe = this.recipes.find(r => r.id === recipeId);
         if (!recipe) return { success: false, message: 'Recipe not found.' };
 
         // 1. Check Ingredients
         for (const ing of recipe.ingredients) {
-            const item = pc.inventory.items.find(i => i.id === ing.itemId);
+            const item = pc.inventory.items.find((i: any) => i.id === ing.itemId);
             if (!item || item.quantity < ing.quantity) {
                 return { success: false, message: `Missing ingredient: ${ing.itemId} (${ing.quantity} required).` };
             }
@@ -41,13 +33,13 @@ export class DowntimeEngine {
 
         // 3. Consume Ingredients
         for (const ing of recipe.ingredients) {
-            const item = pc.inventory.items.find(i => i.id === ing.itemId)!;
+            const item = pc.inventory.items.find((i: any) => i.id === ing.itemId)!;
             item.quantity -= ing.quantity;
         }
-        pc.inventory.items = pc.inventory.items.filter(i => i.quantity > 0);
+        pc.inventory.items = pc.inventory.items.filter((i: any) => i.quantity > 0);
 
         // 4. Add Result
-        const existing = pc.inventory.items.find(i => i.id === recipe.resultItemId);
+        const existing = pc.inventory.items.find((i: any) => i.id === recipe.resultItemId);
         if (existing) {
             existing.quantity++;
         } else {

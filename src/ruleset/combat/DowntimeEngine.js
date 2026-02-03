@@ -1,26 +1,18 @@
+import { RECIPES } from '../data/StaticData';
 import { WorldClockEngine } from './WorldClockEngine';
-import * as fs from 'fs';
-import * as path from 'path';
 import { MechanicsEngine } from './MechanicsEngine';
 export class DowntimeEngine {
-    static recipes = [];
-    static loadRecipes() {
-        if (this.recipes.length > 0)
-            return;
-        const dataPath = path.join(process.cwd(), 'data', 'crafting', 'recipes.json');
-        this.recipes = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-    }
+    static recipes = RECIPES;
     /**
      * Attempts to craft an item based on a recipe.
      */
     static craft(pc, recipeId) {
-        this.loadRecipes();
         const recipe = this.recipes.find(r => r.id === recipeId);
         if (!recipe)
             return { success: false, message: 'Recipe not found.' };
         // 1. Check Ingredients
         for (const ing of recipe.ingredients) {
-            const item = pc.inventory.items.find(i => i.id === ing.itemId);
+            const item = pc.inventory.items.find((i) => i.id === ing.itemId);
             if (!item || item.quantity < ing.quantity) {
                 return { success: false, message: `Missing ingredient: ${ing.itemId} (${ing.quantity} required).` };
             }
@@ -34,12 +26,12 @@ export class DowntimeEngine {
         }
         // 3. Consume Ingredients
         for (const ing of recipe.ingredients) {
-            const item = pc.inventory.items.find(i => i.id === ing.itemId);
+            const item = pc.inventory.items.find((i) => i.id === ing.itemId);
             item.quantity -= ing.quantity;
         }
-        pc.inventory.items = pc.inventory.items.filter(i => i.quantity > 0);
+        pc.inventory.items = pc.inventory.items.filter((i) => i.quantity > 0);
         // 4. Add Result
-        const existing = pc.inventory.items.find(i => i.id === recipe.resultItemId);
+        const existing = pc.inventory.items.find((i) => i.id === recipe.resultItemId);
         if (existing) {
             existing.quantity++;
         }

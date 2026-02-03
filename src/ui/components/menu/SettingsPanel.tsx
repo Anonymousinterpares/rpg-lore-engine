@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './SettingsPanel.module.css';
 import glassStyles from '../../styles/glass.module.css';
-import { Settings, Volume2, Monitor, Gamepad, X } from 'lucide-react';
+import { Settings, Volume2, Monitor, Gamepad, X, Cpu } from 'lucide-react';
+import { LLM_PROVIDERS } from '../../../ruleset/data/StaticData';
+import { LLMClient, TestResult } from '../../../ruleset/combat/LLMClient';
+import { LLMProviderConfig } from '../../../ruleset/schemas/LLMProviderSchema';
 
 interface SettingsPanelProps {
     onClose: () => void;
@@ -12,7 +15,32 @@ interface SettingsPanelProps {
 
 const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, onSave, initialSettings, className = '' }) => {
     const [settings, setSettings] = useState(initialSettings);
-    const [activeTab, setActiveTab] = useState<'video' | 'audio' | 'gameplay'>('video');
+    const [activeTab, setActiveTab] = useState<'video' | 'audio' | 'gameplay' | 'ai'>('video');
+    const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
+    const [testResults, setTestResults] = useState<Record<string, TestResult>>({});
+
+    useEffect(() => {
+        const loadKeys = async () => {
+            const keys: Record<string, string> = {};
+            for (const p of LLM_PROVIDERS) {
+                const key = await LLMClient.getApiKey(p);
+                if (key) keys[p.id] = key;
+            }
+            setApiKeys(keys);
+        };
+        loadKeys();
+    }, []);
+
+    const updateApiKey = (id: string, value: string) => {
+        setApiKeys({ ...apiKeys, [id]: value });
+        LLMClient.setApiKey(id, value);
+    };
+
+    const testProvider = async (provider: LLMProviderConfig) => {
+        setTestResults(prev => ({ ...prev, [provider.id]: { success: false, message: 'Testing...' } }));
+        const result = await LLMClient.testConnection(provider, provider.models[0]);
+        setTestResults(prev => ({ ...prev, [provider.id]: result }));
+    };
 
     const handleToggle = (key: string, section: string) => {
         setSettings({
@@ -67,6 +95,13 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, onSave, initialS
                         >
                             <Gamepad size={18} />
                             <span>Gameplay</span>
+                        </button>
+                        <button
+                            className={`${styles.tabButton} ${activeTab === 'ai' ? styles.activeTab : ''}`}
+                            onClick={() => setActiveTab('ai')}
+                        >
+                            <Cpu size={18} />
+                            <span>AI Service</span>
                         </button>
                     </div>
 
@@ -134,6 +169,41 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, onSave, initialS
                                     <span>Tutorial Tips</span>
                                     <input type="checkbox" checked={settings.gameplay.tutorials} onChange={() => handleToggle('tutorials', 'gameplay')} />
                                 </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'ai' && (
+                            <div className={styles.section}>
+                                <h3>AI Service Configuration</h3>
+                                <p className={styles.hint}>Configure your LLM providers. Keys are stored locally.</p>
+                                {LLM_PROVIDERS.map(provider => (
+                                    <div key={provider.id} className={styles.apiBlock}>
+                                        <div className={styles.apiHeader}>
+                                            <strong>{provider.name}</strong>
+                                            <button
+                                                className={styles.testButton}
+                                                onClick={() => testProvider(provider)}
+                                            >
+                                                Test Connection
+                                            </button>
+                                        </div>
+                                        <div className={styles.settingRow}>
+                                            <span>API Key</span>
+                                            <input
+                                                type="password"
+                                                value={apiKeys[provider.id] || ''}
+                                                onChange={(e) => updateApiKey(provider.id, e.target.value)}
+                                                placeholder={`Enter ${provider.name} Key`}
+                                            />
+                                        </div>
+                                        {testResults[provider.id] && (
+                                            <div className={`${styles.testStatus} ${testResults[provider.id].success ? styles.success : styles.error}`}>
+                                                {testResults[provider.id].message}
+                                                {testResults[provider.id].latencyMs && ` (${testResults[provider.id].latencyMs}ms)`}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
                         )}
                     </div>

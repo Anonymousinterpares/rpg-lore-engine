@@ -19,10 +19,10 @@ export class GameLoop {
     movementEngine;
     scribe = new StoryScribe();
     director = new EncounterDirector();
-    constructor(initialState, basePath = process.cwd()) {
+    constructor(initialState, basePath, storage) {
         this.state = initialState;
-        this.stateManager = new GameStateManager(basePath);
-        this.hexMapManager = new HexMapManager(basePath);
+        this.stateManager = new GameStateManager(basePath, storage);
+        this.hexMapManager = new HexMapManager(basePath, 'world_01', storage);
         this.movementEngine = new MovementEngine(this.hexMapManager);
         // Initialize factions if empty
         if (!this.state.factions || this.state.factions.length === 0) {

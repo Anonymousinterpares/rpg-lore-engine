@@ -1,9 +1,11 @@
-import * as fs from 'fs';
+import { FileStorageProvider } from './FileStorageProvider';
 import * as path from 'path';
 import { SubLocationSchema, WorldNPCSchema } from '../schemas/WorldEnrichmentSchema';
 export class WorldEnrichmentManager {
     dataDir;
-    constructor(basePath) {
+    storage;
+    constructor(basePath, storage) {
+        this.storage = storage || new FileStorageProvider();
         this.dataDir = path.join(basePath, 'data');
     }
     /**
@@ -11,9 +13,9 @@ export class WorldEnrichmentManager {
      */
     loadSubLocation(id) {
         const filePath = path.join(this.dataDir, 'sub_locations', `${id}.json`);
-        if (!fs.existsSync(filePath))
+        if (!this.storage.exists(filePath))
             return null;
-        const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        const raw = JSON.parse(this.storage.read(filePath));
         return SubLocationSchema.parse(raw);
     }
     /**
@@ -21,19 +23,18 @@ export class WorldEnrichmentManager {
      */
     saveSubLocation(subLocation) {
         const dir = path.join(this.dataDir, 'sub_locations');
-        if (!fs.existsSync(dir))
-            fs.mkdirSync(dir, { recursive: true });
+        this.storage.mkdir(dir);
         const filePath = path.join(dir, `${subLocation.id}.json`);
-        fs.writeFileSync(filePath, JSON.stringify(subLocation, null, 2));
+        this.storage.write(filePath, JSON.stringify(subLocation, null, 2));
     }
     /**
      * Loads a WorldNPC by its ID
      */
     loadNPC(id) {
         const filePath = path.join(this.dataDir, 'npcs', `${id}.json`);
-        if (!fs.existsSync(filePath))
+        if (!this.storage.exists(filePath))
             return null;
-        const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        const raw = JSON.parse(this.storage.read(filePath));
         return WorldNPCSchema.parse(raw);
     }
     /**
@@ -41,9 +42,8 @@ export class WorldEnrichmentManager {
      */
     saveNPC(npc) {
         const dir = path.join(this.dataDir, 'npcs');
-        if (!fs.existsSync(dir))
-            fs.mkdirSync(dir, { recursive: true });
+        this.storage.mkdir(dir);
         const filePath = path.join(dir, `${npc.id}.json`);
-        fs.writeFileSync(filePath, JSON.stringify(npc, null, 2));
+        this.storage.write(filePath, JSON.stringify(npc, null, 2));
     }
 }

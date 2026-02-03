@@ -1,0 +1,6 @@
+﻿src/ruleset/tests/simulate_agents.ts(38,18): error TS2554: Expected 2-3 arguments, but got 1.
+src/ruleset/tests/simulate_full_loop.ts(58,18): error TS2554: Expected 2-3 arguments, but got 1.
+src/ruleset/tests/simulate_session_management.ts(145,23): error TS2339: Property 'listSaves' does not exist on type 'GameStateManager'.
+src/ruleset/tests/simulate_session_management.ts(146,47): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/ruleset/tests/simulate_session_management.ts(147,20): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/ruleset/tests/simulate_time.ts(56,18): error TS2554: Expected 2-3 arguments, but got 1.

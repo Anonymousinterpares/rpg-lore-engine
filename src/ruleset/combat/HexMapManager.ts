@@ -1,21 +1,20 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import { MapRegistry, Hex, HexSchema, MapRegistrySchema, HexDirection } from '../schemas/HexMapSchema';
+import { IStorageProvider } from './IStorageProvider';
+import { FileStorageProvider } from './FileStorageProvider';
+import * as path from 'path';
 
 export class HexMapManager {
     private mapPath: string;
     private registry: MapRegistry;
+    private storage: IStorageProvider;
 
-    constructor(basePath: string, gridId: string = 'world_01') {
+    constructor(basePath: string, gridId: string = 'world_01', storage?: IStorageProvider) {
+        this.storage = storage || new FileStorageProvider();
         this.mapPath = path.join(basePath, 'data', 'world', `${gridId}.json`);
 
-        const dir = path.dirname(this.mapPath);
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        }
-
-        if (fs.existsSync(this.mapPath)) {
-            this.registry = JSON.parse(fs.readFileSync(this.mapPath, 'utf-8'));
+        if (this.storage.exists(this.mapPath)) {
+            const data = this.storage.read(this.mapPath) as string;
+            this.registry = JSON.parse(data);
         } else {
             this.registry = { grid_id: gridId, hexes: {} };
             this.save();
@@ -67,7 +66,7 @@ export class HexMapManager {
      * Persists the current registry to disk
      */
     private save() {
-        fs.writeFileSync(this.mapPath, JSON.stringify(this.registry, null, 2));
+        this.storage.write(this.mapPath, JSON.stringify(this.registry, null, 2));
     }
 
     public getRegistry(): MapRegistry {

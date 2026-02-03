@@ -53,7 +53,7 @@ async function runTimeSimulation() {
         triggeredEvents: []
     } as any;
 
-    const loop = new GameLoop(initialState);
+    const loop = new GameLoop(initialState, '.');
 
     const reportTime = () => {
         const time = loop.getState().worldTime;

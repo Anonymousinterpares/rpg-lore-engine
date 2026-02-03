@@ -31,7 +31,7 @@ async function runAgentSimulation() {
         storySummary: 'Starting your holy quest.',
         factions: []
     };
-    const loop = new GameLoop(initialState);
+    const loop = new GameLoop(initialState, '.');
     const state = loop.getState();
     // 1. Initial Factions
     console.log('--- 1. Initial Factions ---');

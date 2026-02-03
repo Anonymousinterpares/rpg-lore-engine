@@ -1,11 +1,14 @@
-import * as fs from 'fs';
+import { IStorageProvider } from './IStorageProvider';
+import { FileStorageProvider } from './FileStorageProvider';
 import * as path from 'path';
-import { SubLocation, Room, WorldNPC, SubLocationSchema, WorldNPCSchema } from '../schemas/WorldEnrichmentSchema';
+import { SubLocation, SubLocationSchema, WorldNPC, WorldNPCSchema } from '../schemas/WorldEnrichmentSchema';
 
 export class WorldEnrichmentManager {
     private dataDir: string;
+    private storage: IStorageProvider;
 
-    constructor(basePath: string) {
+    constructor(basePath: string, storage?: IStorageProvider) {
+        this.storage = storage || new FileStorageProvider();
         this.dataDir = path.join(basePath, 'data');
     }
 
@@ -14,9 +17,9 @@ export class WorldEnrichmentManager {
      */
     public loadSubLocation(id: string): SubLocation | null {
         const filePath = path.join(this.dataDir, 'sub_locations', `${id}.json`);
-        if (!fs.existsSync(filePath)) return null;
+        if (!this.storage.exists(filePath)) return null;
 
-        const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        const raw = JSON.parse(this.storage.read(filePath) as string);
         return SubLocationSchema.parse(raw);
     }
 
@@ -25,10 +28,10 @@ export class WorldEnrichmentManager {
      */
     public saveSubLocation(subLocation: SubLocation) {
         const dir = path.join(this.dataDir, 'sub_locations');
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        this.storage.mkdir(dir);
 
         const filePath = path.join(dir, `${subLocation.id}.json`);
-        fs.writeFileSync(filePath, JSON.stringify(subLocation, null, 2));
+        this.storage.write(filePath, JSON.stringify(subLocation, null, 2));
     }
 
     /**
@@ -36,9 +39,9 @@ export class WorldEnrichmentManager {
      */
     public loadNPC(id: string): WorldNPC | null {
         const filePath = path.join(this.dataDir, 'npcs', `${id}.json`);
-        if (!fs.existsSync(filePath)) return null;
+        if (!this.storage.exists(filePath)) return null;
 
-        const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        const raw = JSON.parse(this.storage.read(filePath) as string);
         return WorldNPCSchema.parse(raw);
     }
 
@@ -47,9 +50,9 @@ export class WorldEnrichmentManager {
      */
     public saveNPC(npc: WorldNPC) {
         const dir = path.join(this.dataDir, 'npcs');
-        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        this.storage.mkdir(dir);
 
         const filePath = path.join(dir, `${npc.id}.json`);
-        fs.writeFileSync(filePath, JSON.stringify(npc, null, 2));
+        this.storage.write(filePath, JSON.stringify(npc, null, 2));
     }
 }

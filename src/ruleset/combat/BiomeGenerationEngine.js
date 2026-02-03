@@ -1,44 +1,35 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import { BIOME_DEFINITIONS } from '../data/StaticData';
 export class BiomeGenerationEngine {
-    static definitions = [];
-    static loadDefinitions() {
-        if (this.definitions.length > 0)
-            return;
-        const dataPath = path.join(process.cwd(), 'data', 'biomes', 'biome_definitions.json');
-        this.definitions = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-    }
+    static definitions = BIOME_DEFINITIONS;
     /**
      * Selects a biome for a new hex based on its neighbors.
      */
     static selectBiome(neighbors, clusterSizes) {
-        this.loadDefinitions();
         // 1. Calculate weights
         const finalWeights = {};
         for (const def of this.definitions) {
             let weight = def.baseAppearanceWeight;
-            // Apply adjacency modifiers
+            // Adjacency modifications
             for (const neighbor of neighbors) {
-                const modifier = def.adjacencyModifiers[neighbor.biome] || 0;
-                weight += modifier;
+                if (def.adjacencyModifiers && def.adjacencyModifiers[neighbor.biome]) {
+                    weight += def.adjacencyModifiers[neighbor.biome];
+                }
             }
-            // Apply cluster penalty (anti-clump)
+            // Cluster penalty
             const currentSize = clusterSizes[def.id] || 0;
             if (currentSize >= def.maxClusterSize) {
-                weight *= def.clusterPenaltyMultiplier;
+                weight *= (1 - def.clusterPenaltyMultiplier);
             }
             finalWeights[def.id] = Math.max(0, weight);
         }
-        // 2. Weighted Random Roll
-        const totalWeight = Object.values(finalWeights).reduce((a, b) => a + b, 0);
-        if (totalWeight === 0)
-            return 'Plains'; // Fallback
-        let roll = Math.random() * totalWeight;
+        // 2. Weighted random selection
+        const total = Object.values(finalWeights).reduce((a, b) => a + b, 0);
+        let roll = Math.random() * total;
         for (const [id, weight] of Object.entries(finalWeights)) {
-            if (roll < weight)
-                return id;
             roll -= weight;
+            if (roll <= 0)
+                return id;
         }
-        return 'Plains';
+        return 'Plains'; // Fallback
     }
 }

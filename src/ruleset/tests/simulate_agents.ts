@@ -35,7 +35,7 @@ async function runAgentSimulation() {
         factions: []
     } as any;
 
-    const loop = new GameLoop(initialState);
+    const loop = new GameLoop(initialState, '.');
     const state = loop.getState();
 
     // 1. Initial Factions

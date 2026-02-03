@@ -51,7 +51,7 @@ async function runFullLoopSimulation() {
         conversationHistory: [],
         triggeredEvents: []
     };
-    const loop = new GameLoop(initialState);
+    const loop = new GameLoop(initialState, '.');
     // 1. Narrative Turn
     console.log('\n[Turn 1] Narrative Input: "I cautiously enter the cave."');
     const out1 = await loop.processTurn('I cautiously enter the cave.');
