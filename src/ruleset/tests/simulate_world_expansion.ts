@@ -41,13 +41,14 @@ async function runExpansionSimulation() {
         hitDice: { current: 1, max: 1, dieType: '1d8' },
         skillProficiencies: ['Nature'],
         savingThrowProficiencies: ['WIS', 'INT'],
-        biography: { chronicles: [] }
+        biography: { chronicles: [] },
+        deathSaves: { successes: 0, failures: 0 }
     } as any;
 
     const hex = HexGenerator.generateHex([0, 0], neighbors, clusterSizes);
     hex.biome = 'Forest';
     hex.resourceNodes = [
-        { id: 'node_1', resourceType: 'Herb', itemId: 'herb_silverleaf', quantityRemaining: 2, skillCheck: { skill: 'Nature', dc: 5 } }
+        { id: 'node_1', resourceType: 'Herb', itemId: 'herb_silverleaf', quantityRemaining: 2, respawnDays: 7, skillCheck: { skill: 'Nature', dc: 5 } }
     ];
 
     console.log(`Hex biome: ${hex.biome}. Seeking node_1...`);
@@ -70,10 +71,21 @@ async function runExpansionSimulation() {
         character: pc,
         activeQuests: [],
         factions: [],
-        worldTime: { days: 1, hours: 12, minutes: 0 },
         location: { hexId: '0,0', coordinates: [0, 0] },
+        worldTime: { days: 1, hours: 12, minutes: 0 },
+        worldMap: { grid_id: 'test', hexes: {} },
+        settings: { difficulty: 'normal', ironman: false, adaptiveCombat: true, explorationDensity: 1.0, loreWeight: 1.0 },
+        saveId: 'test-expansion',
+        saveVersion: 1,
+        createdAt: new Date().toISOString(),
+        lastSavedAt: new Date().toISOString(),
+        playTimeSeconds: 0,
+        companions: [],
+        subLocations: [],
+        worldNpcs: [],
         storySummary: 'Grom is gathering herbs.',
-        mode: 'EXPLORATION'
+        conversationHistory: [],
+        triggeredEvents: []
     } as any;
 
     const narrativeOutput = `

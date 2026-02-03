@@ -1,0 +1,65 @@
+.inputContainer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    width: 100%;
+}
+
+.suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-xs);
+}
+
+.suggestionChip {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    color: var(--glass-text);
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.suggestionChip:hover {
+    background: rgba(78, 205, 196, 0.1);
+    border-color: var(--glass-accent);
+}
+
+.hintIcon {
+    font-size: 0.9rem;
+}
+
+.inputRow {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.textInput {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    color: var(--glass-text);
+    font-family: var(--font-ui);
+    outline: none;
+}
+
+.textInput:focus {
+    border-color: var(--glass-accent);
+    box-shadow: 0 0 8px var(--glass-accent-glow);
+}
+
+.submitButton {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 0 var(--spacing-lg);
+}

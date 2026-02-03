@@ -1,0 +1,26 @@
+.narrativeBox {
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.cursor {
+    display: inline-block;
+    width: 2px;
+    background-color: var(--parchment-text);
+    margin-left: 2px;
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+
+    from,
+    to {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}

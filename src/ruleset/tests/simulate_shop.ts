@@ -21,14 +21,23 @@ function testShop() {
         hp: { current: 10, max: 10, temp: 0 },
         hitDice: { current: 1, max: 1, dieType: "1d10" },
         ac: 10,
-        xp: 0
+        xp: 0,
+        deathSaves: { successes: 0, failures: 0 }
     } as any;
 
-    const shop: ShopState = {
+    const npc: any = {
+        id: "merchant_01",
+        name: "Old Barnaby",
         inventory: [],
-        markup: 1.0,
-        discount: 0.0,
-        isOpen: true
+        dialogue_triggers: [],
+        relationship: { standing: 0, interactionLog: [] },
+        isMerchant: true,
+        shopState: {
+            inventory: [],
+            markup: 1.0,
+            discount: 0.0,
+            isOpen: true
+        }
     };
 
     const sword: Item = {
@@ -41,20 +50,20 @@ function testShop() {
     } as any;
 
     console.log("Initial Gold:", CurrencyEngine.format(pc.inventory.gold));
-    console.log("Standard Longsword Price:", CurrencyEngine.format(ShopEngine.getBuyPrice(sword, shop)));
+    console.log("Standard Longsword Price:", CurrencyEngine.format(ShopEngine.getBuyPrice(sword, npc)));
 
     // Test Negotiation
     console.log("\nAttempting Negotiation (CHA +2)...");
-    const negResult = ShopEngine.negotiate(pc, 2, shop);
+    const negResult = ShopEngine.negotiate(pc, 2, npc);
     console.log(negResult.message);
 
-    if (shop.isOpen && shop.discount > 0) {
-        console.log("New Longsword Price:", CurrencyEngine.format(ShopEngine.getBuyPrice(sword, shop)));
+    if (npc.shopState.isOpen && npc.shopState.discount > 0) {
+        console.log("New Longsword Price:", CurrencyEngine.format(ShopEngine.getBuyPrice(sword, npc)));
     }
 
     // Test Buy
     console.log("\nBuying Longsword...");
-    const buyMsg = ShopEngine.buyItem(pc, sword, shop);
+    const buyMsg = ShopEngine.buyItem(pc, sword, npc);
     console.log(buyMsg);
     console.log("Remaining Gold:", CurrencyEngine.format(pc.inventory.gold));
     console.log("Inventory Items:", pc.inventory.items.length);
@@ -62,7 +71,7 @@ function testShop() {
     // Test Sell
     if (pc.inventory.items.length > 0) {
         console.log("\nSelling Longsword back...");
-        const sellMsg = ShopEngine.sellItem(pc, pc.inventory.items[0].id, shop, sword);
+        const sellMsg = ShopEngine.sellItem(pc, pc.inventory.items[0].id, npc, sword);
         console.log(sellMsg);
         console.log("Gold after sale:", CurrencyEngine.format(pc.inventory.gold));
     }

@@ -39,7 +39,17 @@ export class MovementEngine {
 
         if (!newHex) {
             // Hex doesn't exist, create a placeholder and flag for generation
-            newHex = { coordinates: newCoords, generated: false, visited: false, interest_points: [] };
+            newHex = {
+                coordinates: newCoords,
+                generated: false,
+                visited: false,
+                biome: 'Plains', // Default for placeholder
+                name: 'Uncharted Territory',
+                description: 'The mists of the unknown cling to this place.',
+                interest_points: [],
+                resourceNodes: [],
+                openedContainers: {}
+            };
             this.mapManager.setHex(newHex);
             requiresGeneration = true;
         } else if (!newHex.generated) {
@@ -66,13 +76,13 @@ export class MovementEngine {
         const key = `${coords[0]},${coords[1]}`;
         const existing = this.mapManager.getHex(key);
 
+        if (!existing) return;
+
         const updatedHex: Hex = {
-            coordinates: coords,
-            visited: existing?.visited ?? false,
-            interest_points: existing?.interest_points ?? [],
             ...existing,
             ...data,
-            generated: true // Ensure it's marked as generated
+            coordinates: coords, // Critical to keep original coords
+            generated: true
         };
         this.mapManager.setHex(updatedHex);
     }

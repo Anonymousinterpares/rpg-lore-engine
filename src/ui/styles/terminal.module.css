@@ -1,0 +1,39 @@
+.panel {
+    background-color: var(--terminal-bg);
+    border: 1px solid var(--terminal-border);
+    border-radius: var(--radius-md);
+    color: var(--terminal-text);
+    font-family: var(--font-mono);
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.text {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-bottom: var(--spacing-xs);
+}
+
+.system {
+    color: var(--terminal-dim);
+    font-size: 0.8rem;
+    font-style: italic;
+    margin-bottom: var(--spacing-xs);
+}
+
+.info {
+    color: #4ecdc4;
+    /* Cyan tint */
+}
+
+.warning {
+    color: #ffcf33;
+    /* Amber tint */
+}
+
+.error {
+    color: #ff5555;
+    /* Red tint */
+}

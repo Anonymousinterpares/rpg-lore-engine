@@ -36,6 +36,7 @@ function runSimulation() {
         attunedItems: [],
         xp: 0,
         inspiration: false,
+        deathSaves: { successes: 0, failures: 0 },
         biography: {
             background: 'Acolyte',
             traits: [],

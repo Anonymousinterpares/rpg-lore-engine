@@ -56,9 +56,10 @@ async function verifySessionManagement() {
             inspiration: false,
             attunedItems: []
         },
+        companions: [],
         mode: "EXPLORATION",
         location: { hexId: "0,0", coordinates: [0, 0] },
-        worldTime: { hour: 10, day: 1, month: 1, year: 1492, totalTurns: 1 },
+        worldTime: { days: 1, hours: 10, minutes: 0 },
         worldMap: {
             grid_id: "main",
             hexes: {
@@ -91,16 +92,13 @@ async function verifySessionManagement() {
         conversationHistory: [],
         triggeredEvents: [],
         settings: {
-            permadeath: false,
-            variantEncumbrance: true,
-            milestoneLeveling: false,
-            criticalFumbleEffects: false,
-            difficultyModifier: 1.0,
-            inspirationEnabled: true,
-            multiclassingAllowed: true,
-            maxConversationHistoryTurns: 50
+            difficulty: 'normal',
+            ironman: false,
+            adaptiveCombat: true,
+            explorationDensity: 1.0,
+            loreWeight: 1.0
         }
-    };
+    } as any;
 
     // 2. Test Saving
     console.log("Testing Save...");

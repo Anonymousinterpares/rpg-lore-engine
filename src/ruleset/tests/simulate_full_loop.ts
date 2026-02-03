@@ -24,8 +24,8 @@ async function runFullLoopSimulation() {
             inventory: { gold: { cp: 0, sp: 0, ep: 0, gp: 10, pp: 0 }, items: [] },
             equipmentSlots: {},
             attunedItems: [],
-            xp: 300,
             inspiration: false,
+            deathSaves: { successes: 0, failures: 0 },
             biography: {
                 background: 'Soldier',
                 traits: [],
@@ -37,9 +37,23 @@ async function runFullLoopSimulation() {
         },
         mode: 'EXPLORATION',
         location: { hexId: '0,0', coordinates: [0, 0] },
-        worldTime: { hour: 8, day: 1, month: 1, year: 1489, totalTurns: 0 },
-        storySummary: 'Starting a new adventure.'
-    };
+        worldTime: { days: 1, hours: 8, minutes: 0 },
+        worldMap: { grid_id: 'test', hexes: {} },
+        activeQuests: [],
+        factions: [],
+        settings: { difficulty: 'normal', ironman: false, adaptiveCombat: true, explorationDensity: 1.0, loreWeight: 1.0 },
+        saveId: 'test-save',
+        saveVersion: 1,
+        createdAt: new Date().toISOString(),
+        lastSavedAt: new Date().toISOString(),
+        playTimeSeconds: 0,
+        companions: [],
+        subLocations: [],
+        worldNpcs: [],
+        storySummary: 'Starting a new adventure.',
+        conversationHistory: [],
+        triggeredEvents: []
+    } as any;
 
     const loop = new GameLoop(initialState);
 

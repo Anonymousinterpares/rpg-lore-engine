@@ -13,7 +13,7 @@ function runWorldSimulation() {
     // 1. Test NPC Loading
     const npc = manager.loadNPC('elara_innkeeper');
     if (npc) {
-        console.log(`Loaded NPC: ${npc.name} (${npc.disposition})`);
+        console.log(`Loaded NPC: ${npc.name} (Standing: ${npc.relationship.standing})`);
         console.log(`Greeting: ${npc.dialogue_triggers[0]}`);
     } else {
         console.error('FAIL: Could not load NPC');

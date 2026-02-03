@@ -53,4 +53,5 @@ export const FullSaveStateSchema = z.object({
 });
 
 export type FullSaveState = z.infer<typeof FullSaveStateSchema>;
+export type GameState = FullSaveState; // Alias for backward compatibility
 export type ConversationTurn = z.infer<typeof ConversationTurnSchema>;

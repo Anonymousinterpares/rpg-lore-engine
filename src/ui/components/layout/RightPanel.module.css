@@ -1,0 +1,56 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.mapSection {
+    flex: 1;
+    /* Map takes less space than chat usually, but we can adjust */
+    min-height: 250px;
+}
+
+.chatSection {
+    flex: 2;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    opacity: 0.8;
+}
+
+.sectionHeader h2 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.mapPlaceholder {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-md);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--terminal-dim);
+    font-size: 0.8rem;
+}
+
+.log {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.timestamp {
+    color: var(--terminal-dim);
+    margin-right: var(--spacing-sm);
+}

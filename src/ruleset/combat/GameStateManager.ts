@@ -1,7 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { FullSaveState, FullSaveStateSchema } from '../schemas/FullSaveStateSchema';
+import { FullSaveState, FullSaveStateSchema, GameState } from '../schemas/FullSaveStateSchema';
 import { SaveRegistry, SaveRegistrySchema, SaveSlotMetadata } from '../schemas/SaveRegistrySchema';
+
+export type { FullSaveState, GameState };
 
 export class GameStateManager {
     private saveDir: string;
@@ -37,7 +39,7 @@ export class GameStateManager {
     /**
      * Saves the current game state to a JSON file and updates the registry
      */
-    public saveGame(state: FullSaveState, slotName: string) {
+    public saveGame(state: FullSaveState, slotName: string = 'Quick Save') {
         // 1. Validate state
         FullSaveStateSchema.parse(state);
 

@@ -24,8 +24,8 @@ async function runHexMapSimulation() {
             inventory: { gold: { cp: 0, sp: 0, ep: 0, gp: 50, pp: 0 }, items: [] },
             equipmentSlots: {},
             attunedItems: [],
-            xp: 0,
             inspiration: false,
+            deathSaves: { successes: 0, failures: 0 },
             biography: {
                 background: 'Sage',
                 traits: [],
@@ -37,9 +37,23 @@ async function runHexMapSimulation() {
         },
         mode: 'EXPLORATION',
         location: { hexId: '0,0', coordinates: [0, 0] },
-        worldTime: { hour: 8, day: 1, month: 1, year: 1489, totalTurns: 0 },
-        storySummary: ''
-    };
+        worldTime: { days: 1, hours: 8, minutes: 0 },
+        worldMap: { grid_id: 'test', hexes: {} },
+        activeQuests: [],
+        factions: [],
+        settings: { difficulty: 'normal', ironman: false, adaptiveCombat: true, explorationDensity: 1.0, loreWeight: 1.0 },
+        saveId: 'test-save-hex',
+        saveVersion: 1,
+        createdAt: new Date().toISOString(),
+        lastSavedAt: new Date().toISOString(),
+        playTimeSeconds: 0,
+        companions: [],
+        subLocations: [],
+        worldNpcs: [],
+        storySummary: '',
+        conversationHistory: [],
+        triggeredEvents: []
+    } as any;
 
     const loop = new GameLoop(initialState, process.cwd());
 

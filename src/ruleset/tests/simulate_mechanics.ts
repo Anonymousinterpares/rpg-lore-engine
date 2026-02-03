@@ -33,6 +33,7 @@ function runMechanicsSimulation() {
         attunedItems: [],
         xp: 900,
         inspiration: false,
+        deathSaves: { successes: 0, failures: 0 },
         biography: {
             background: 'Soldier',
             traits: [],

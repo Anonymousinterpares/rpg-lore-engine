@@ -47,10 +47,12 @@ export class GameLoop {
                 coordinates: this.state.location.coordinates,
                 generated: true,
                 visited: true,
-                biome: 'Grassland',
+                biome: 'Plains',
                 name: 'Starting Clearing',
                 description: 'A calm meadow where your adventure begins.',
-                interest_points: []
+                interest_points: [],
+                resourceNodes: [],
+                openedContainers: {}
             });
         }
     }

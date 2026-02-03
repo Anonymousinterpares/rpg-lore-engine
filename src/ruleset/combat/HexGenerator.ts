@@ -36,6 +36,7 @@ export class HexGenerator {
                         resourceType: this.determineResourceType(res.itemId),
                         itemId: res.itemId,
                         quantityRemaining: Math.floor(Math.random() * 3) + 1,
+                        respawnDays: 7,
                         skillCheck: { skill: 'Nature', dc: 10 }
                     });
                     break;
@@ -52,17 +53,18 @@ export class HexGenerator {
             traversable_sides: { 'N': true, 'S': true, 'E': true, 'W': true, 'NE': true, 'NW': true, 'SE': true, 'SW': true },
             interest_points: [],
             resourceNodes: nodes,
+            openedContainers: {},
             visited: false
         };
     }
 
-    private static determineResourceType(itemId: string): any {
+    private static determineResourceType(itemId: string): 'Ore' | 'Herb' | 'Wood' | 'Hide' | 'Gem' | 'Arcane' {
         const id = itemId.toLowerCase();
         if (id.includes('ore')) return 'Ore';
         if (id.includes('wood') || id.includes('log') || id.includes('ironwood')) return 'Wood';
         if (id.includes('herb') || id.includes('leaf') || id.includes('bean') || id.includes('bloom') || id.includes('shade') || id.includes('rose')) return 'Herb';
         if (id.includes('hide') || id.includes('scale')) return 'Hide';
         if (id.includes('gem')) return 'Gem';
-        return 'Misc';
+        return 'Arcane';
     }
 }

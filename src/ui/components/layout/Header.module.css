@@ -1,0 +1,38 @@
+.header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--spacing-lg);
+    background: rgba(10, 10, 15, 0.9);
+    border-bottom: 1px solid var(--glass-border);
+    z-index: 100;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.logoIcon {
+    color: var(--glass-accent);
+}
+
+.logo h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--glass-text);
+}
+
+.controls {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.controls button {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
