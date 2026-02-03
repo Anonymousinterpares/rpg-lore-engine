@@ -14,6 +14,11 @@ export const EquipmentSlotsSchema = z.object({
     ammunition: z.string().optional()
 }).default({});
 
+export const DeathSavesSchema = z.object({
+    successes: z.number().default(0),
+    failures: z.number().default(0)
+}).default({});
+
 export const PlayerCharacterSchema = z.object({
     name: z.string(),
     level: z.number().min(1).max(20),
@@ -27,6 +32,7 @@ export const PlayerCharacterSchema = z.object({
         max: z.number(),
         temp: z.number().default(0)
     }),
+    deathSaves: DeathSavesSchema,
     hitDice: z.object({
         current: z.number(),
         max: z.number(),

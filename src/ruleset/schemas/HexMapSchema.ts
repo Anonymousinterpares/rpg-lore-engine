@@ -10,6 +10,8 @@ export const ResourceNodeSchema = z.object({
     resourceType: z.enum(['Ore', 'Herb', 'Wood', 'Hide', 'Gem', 'Arcane']),
     itemId: z.string(),
     quantityRemaining: z.number(),
+    depletedAt: z.string().optional(), // ISO string from WorldClock
+    respawnDays: z.number().default(3),
     skillCheck: z.object({
         skill: SkillNameSchema,
         dc: z.number()
@@ -35,6 +37,10 @@ export const HexSchema = z.object({
     traversable_sides: z.record(HexDirectionSchema, z.boolean()).optional(),
     interest_points: z.array(PointOfInterestSchema).default([]),
     resourceNodes: z.array(ResourceNodeSchema).default([]),
+    openedContainers: z.record(z.string(), z.array(z.object({
+        itemId: z.string(),
+        quantity: z.number()
+    }))).default({}),
     visited: z.boolean().default(false)
 });
 

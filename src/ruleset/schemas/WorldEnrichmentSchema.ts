@@ -1,15 +1,25 @@
 import { z } from 'zod';
 import { AbilityScoreSchema, DamageTypeSchema, DiceRollSchema } from './BaseSchemas';
+import { RelationshipStateSchema } from './RelationshipSchema';
 
 export const DispositionSchema = z.enum(['Friendly', 'Neutral', 'Hostile']);
 export type Disposition = z.infer<typeof DispositionSchema>;
 
+export const ShopStateSchema = z.object({
+    inventory: z.array(z.string()).default([]), // Item IDs
+    markup: z.number().default(1.0),
+    discount: z.number().default(0.0),
+    isOpen: z.boolean().default(true)
+});
+
 export const WorldNPCSchema = z.object({
     id: z.string(),
     name: z.string(),
-    disposition: DispositionSchema.default('Neutral'),
+    relationship: RelationshipStateSchema.default({}),
     dialogue_triggers: z.array(z.string()).default([]),
     factionId: z.string().optional(),
+    isMerchant: z.boolean().default(false),
+    shopState: ShopStateSchema.optional(),
     inventory: z.array(z.object({
         id: z.string(),
         quantity: z.number().default(1)
