@@ -87,20 +87,20 @@ const DroppedItemsPanel = ({ items, onClose, onPickup, onAction }) => {
             setSelectedIds(new Set());
         }
     };
-    return (_jsxs("div", { className: styles.overlay, onClick: onClose, children: [_jsxs("div", { className: `${styles.panel} ${parchmentStyles.panel}`, onClick: e => e.stopPropagation(), children: [_jsxs("div", { className: styles.header, children: [_jsx("h3", { className: parchmentStyles.heading, children: "Items at Location" }), _jsx("button", { className: styles.closeBtn, onClick: onClose, children: _jsx(X, { size: 18 }) })] }), _jsxs("div", { className: styles.grid, onDragOver: (e) => e.preventDefault(), onDrop: (e) => {
-                            const data = e.dataTransfer.getData('item');
-                            const source = e.dataTransfer.getData('source');
-                            if (data && source === 'inventory') {
-                                const item = JSON.parse(data);
-                                onAction?.('drop', item);
-                            }
-                        }, children: [items.map((item) => {
-                                const id = item.instanceId || item.id;
-                                return (_jsxs("div", { className: `${styles.itemSlot} ${selectedIds.has(id) ? styles.selected : ''}`, onClick: (e) => handleItemClick(e, item), onContextMenu: (e) => handleContextMenu(e, item), title: `${item.name} (${item.weight} lb)`, draggable: true, onDragStart: (e) => {
-                                        e.dataTransfer.setData('item', JSON.stringify(item));
-                                        e.dataTransfer.setData('source', 'ground');
-                                    }, children: [_jsx("div", { className: styles.iconWrapper, children: getItemIcon(item.type) }), item.quantity > 1 && _jsx("span", { className: styles.quantity, children: item.quantity }), selectedIds.has(id) && _jsx("div", { className: styles.checkMark, children: _jsx(CheckSquare, { size: 10 }) })] }, id));
-                            }), items.length === 0 && _jsx("div", { className: styles.emptyText, children: "No items on the ground." })] }), _jsxs("div", { className: styles.footer, children: [_jsxs("div", { className: styles.multiSelectToggle, onClick: () => setMultiSelectActive(!multiSelectActive), children: [multiSelectActive ? _jsx(CheckSquare, { size: 16 }) : _jsx(Square, { size: 16 }), _jsx("span", { children: "Select Multiple" })] }), _jsxs("button", { className: styles.pickupBtn, disabled: selectedIds.size === 0, onClick: handleBatchPickup, children: ["Pick Up ", selectedIds.size > 0 ? `(${selectedIds.size})` : ''] })] })] }), contextMenu && (_jsx(ItemContextMenu, { x: contextMenu.x, y: contextMenu.y, itemName: contextMenu.item.name, isEquippable: false, onClose: () => setContextMenu(null), onAction: handleAction, 
+    return (_jsxs("div", { className: `${styles.panel} ${parchmentStyles.panel}`, children: [_jsxs("div", { className: styles.header, children: [_jsx("h3", { className: parchmentStyles.heading, children: "Items at Location" }), _jsx("button", { className: styles.closeBtn, onClick: onClose, children: _jsx(X, { size: 18 }) })] }), _jsxs("div", { className: styles.grid, onDragOver: (e) => e.preventDefault(), onDrop: (e) => {
+                    const data = e.dataTransfer.getData('item');
+                    const source = e.dataTransfer.getData('source');
+                    if (data && source === 'inventory') {
+                        const item = JSON.parse(data);
+                        onAction?.('drop', item);
+                    }
+                }, children: [items.map((item) => {
+                        const id = item.instanceId || item.id;
+                        return (_jsxs("div", { className: `${styles.itemSlot} ${selectedIds.has(id) ? styles.selected : ''}`, onClick: (e) => handleItemClick(e, item), onContextMenu: (e) => handleContextMenu(e, item), title: `${item.name} (${item.weight} lb)`, draggable: true, onDragStart: (e) => {
+                                e.dataTransfer.setData('item', JSON.stringify(item));
+                                e.dataTransfer.setData('source', 'ground');
+                            }, children: [_jsx("div", { className: styles.iconWrapper, children: getItemIcon(item.type) }), item.quantity > 1 && _jsx("span", { className: styles.quantity, children: item.quantity }), selectedIds.has(id) && _jsx("div", { className: styles.checkMark, children: _jsx(CheckSquare, { size: 10 }) })] }, id));
+                    }), items.length === 0 && _jsx("div", { className: styles.emptyText, children: "No items on the ground." })] }), _jsxs("div", { className: styles.footer, children: [_jsxs("div", { className: styles.multiSelectToggle, onClick: () => setMultiSelectActive(!multiSelectActive), children: [multiSelectActive ? _jsx(CheckSquare, { size: 16 }) : _jsx(Square, { size: 16 }), _jsx("span", { children: "Select Multiple" })] }), _jsxs("button", { className: styles.pickupBtn, disabled: selectedIds.size === 0, onClick: handleBatchPickup, children: ["Pick Up ", selectedIds.size > 0 ? `(${selectedIds.size})` : ''] })] }), contextMenu && (_jsx(ItemContextMenu, { x: contextMenu.x, y: contextMenu.y, itemName: contextMenu.item.name, isEquippable: false, onClose: () => setContextMenu(null), onAction: handleAction, 
                 // Custom actions for ground
                 customActions: [
                     { id: 'pickup', label: 'Pick Up', icon: 'Package' },

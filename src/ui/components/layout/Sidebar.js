@@ -27,6 +27,6 @@ const Sidebar = ({ className }) => {
             updateState();
         }
     };
-    return (_jsxs("aside", { className: `${styles.sidebar} ${parchmentStyles.panel} ${className}`, children: [_jsx(CharacterPanel, {}), _jsx(InventoryGrid, { items: items, gold: gold, capacity: capacity, droppedItems: state?.location?.droppedItems, maxSlots: 20, onItemAction: handleItemAction, className: styles.inventoryGrid })] }));
+    return (_jsxs("aside", { className: `${styles.sidebar} ${parchmentStyles.panel} ${parchmentStyles.overflowVisible} ${className}`, children: [_jsx(CharacterPanel, {}), _jsx(InventoryGrid, { items: items, gold: gold, capacity: capacity, droppedItems: state?.location?.droppedItems, maxSlots: 20, onItemAction: handleItemAction, className: styles.inventoryGrid })] }));
 };
 export default Sidebar;

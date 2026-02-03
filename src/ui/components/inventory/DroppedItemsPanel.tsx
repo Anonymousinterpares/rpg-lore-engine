@@ -111,68 +111,66 @@ const DroppedItemsPanel: React.FC<DroppedItemsPanelProps> = ({
     };
 
     return (
-        <div className={styles.overlay} onClick={onClose}>
-            <div className={`${styles.panel} ${parchmentStyles.panel}`} onClick={e => e.stopPropagation()}>
-                <div className={styles.header}>
-                    <h3 className={parchmentStyles.heading}>Items at Location</h3>
-                    <button className={styles.closeBtn} onClick={onClose}><X size={18} /></button>
-                </div>
+        <div className={`${styles.panel} ${parchmentStyles.panel}`}>
+            <div className={styles.header}>
+                <h3 className={parchmentStyles.heading}>Items at Location</h3>
+                <button className={styles.closeBtn} onClick={onClose}><X size={18} /></button>
+            </div>
 
-                <div
-                    className={styles.grid}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={(e) => {
-                        const data = e.dataTransfer.getData('item');
-                        const source = e.dataTransfer.getData('source');
-                        if (data && source === 'inventory') {
-                            const item = JSON.parse(data);
-                            onAction?.('drop', item);
-                        }
-                    }}
-                >
-                    {items.map((item) => {
-                        const id = item.instanceId || item.id;
-                        return (
-                            <div
-                                key={id}
-                                className={`${styles.itemSlot} ${selectedIds.has(id) ? styles.selected : ''}`}
-                                onClick={(e) => handleItemClick(e, item)}
-                                onContextMenu={(e) => handleContextMenu(e, item)}
-                                title={`${item.name} (${item.weight} lb)`}
-                                draggable
-                                onDragStart={(e) => {
-                                    e.dataTransfer.setData('item', JSON.stringify(item));
-                                    e.dataTransfer.setData('source', 'ground');
-                                }}
-                            >
-                                <div className={styles.iconWrapper}>
-                                    {getItemIcon(item.type)}
-                                </div>
-                                {item.quantity > 1 && <span className={styles.quantity}>{item.quantity}</span>}
-                                {selectedIds.has(id) && <div className={styles.checkMark}><CheckSquare size={10} /></div>}
+            <div
+                className={styles.grid}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                    const data = e.dataTransfer.getData('item');
+                    const source = e.dataTransfer.getData('source');
+                    if (data && source === 'inventory') {
+                        const item = JSON.parse(data);
+                        onAction?.('drop', item);
+                    }
+                }}
+            >
+                {items.map((item) => {
+                    const id = item.instanceId || item.id;
+                    return (
+                        <div
+                            key={id}
+                            className={`${styles.itemSlot} ${selectedIds.has(id) ? styles.selected : ''}`}
+                            onClick={(e) => handleItemClick(e, item)}
+                            onContextMenu={(e) => handleContextMenu(e, item)}
+                            title={`${item.name} (${item.weight} lb)`}
+                            draggable
+                            onDragStart={(e) => {
+                                e.dataTransfer.setData('item', JSON.stringify(item));
+                                e.dataTransfer.setData('source', 'ground');
+                            }}
+                        >
+                            <div className={styles.iconWrapper}>
+                                {getItemIcon(item.type)}
                             </div>
-                        );
-                    })}
-                    {items.length === 0 && <div className={styles.emptyText}>No items on the ground.</div>}
+                            {item.quantity > 1 && <span className={styles.quantity}>{item.quantity}</span>}
+                            {selectedIds.has(id) && <div className={styles.checkMark}><CheckSquare size={10} /></div>}
+                        </div>
+                    );
+                })}
+                {items.length === 0 && <div className={styles.emptyText}>No items on the ground.</div>}
+            </div>
+
+            <div className={styles.footer}>
+                <div
+                    className={styles.multiSelectToggle}
+                    onClick={() => setMultiSelectActive(!multiSelectActive)}
+                >
+                    {multiSelectActive ? <CheckSquare size={16} /> : <Square size={16} />}
+                    <span>Select Multiple</span>
                 </div>
 
-                <div className={styles.footer}>
-                    <div
-                        className={styles.multiSelectToggle}
-                        onClick={() => setMultiSelectActive(!multiSelectActive)}
-                    >
-                        {multiSelectActive ? <CheckSquare size={16} /> : <Square size={16} />}
-                        <span>Select Multiple</span>
-                    </div>
-
-                    <button
-                        className={styles.pickupBtn}
-                        disabled={selectedIds.size === 0}
-                        onClick={handleBatchPickup}
-                    >
-                        Pick Up {selectedIds.size > 0 ? `(${selectedIds.size})` : ''}
-                    </button>
-                </div>
+                <button
+                    className={styles.pickupBtn}
+                    disabled={selectedIds.size === 0}
+                    onClick={handleBatchPickup}
+                >
+                    Pick Up {selectedIds.size > 0 ? `(${selectedIds.size})` : ''}
+                </button>
             </div>
 
             {contextMenu && (

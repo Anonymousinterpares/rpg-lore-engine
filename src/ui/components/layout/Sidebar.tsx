@@ -36,7 +36,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
     };
 
     return (
-        <aside className={`${styles.sidebar} ${parchmentStyles.panel} ${className}`}>
+        <aside className={`${styles.sidebar} ${parchmentStyles.panel} ${parchmentStyles.overflowVisible} ${className}`}>
             <CharacterPanel />
             <InventoryGrid
                 items={items as any}

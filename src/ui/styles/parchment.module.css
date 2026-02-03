@@ -11,6 +11,10 @@
     overflow: hidden;
 }
 
+.overflowVisible {
+    overflow: visible !important;
+}
+
 .panel::before {
     content: '';
     position: absolute;
