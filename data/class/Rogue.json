@@ -13,9 +13,10 @@
   ],
   "weaponProficiencies": [
     "Simple weapons",
+    "Hand crossbows",
     "Longswords",
-    "Shortswords",
-    "Crossbows, hand"
+    "Rapiers",
+    "Shortswords"
   ],
   "skillChoices": {
     "count": 4,
@@ -32,5 +33,33 @@
       "Skill: Sleight of Hand",
       "Skill: Stealth"
     ]
-  }
+  },
+  "allFeatures": [
+    {
+      "level": 1,
+      "name": "Expertise",
+      "description": "Choose two of your skill proficiencies; your proficiency bonus is doubled for any ability check you make that uses either of them."
+    },
+    {
+      "level": 1,
+      "name": "Sneak Attack",
+      "description": "You know how to strike subtly and exploit a foe's distraction."
+    },
+    {
+      "level": 1,
+      "name": "Thieves' Cant",
+      "description": "During your rogue training you learned thieves' cant, a secret mix of dialect, jargon, and code."
+    }
+  ],
+  "progression": [
+    {
+      "level": 1,
+      "proficiencyBonus": 2,
+      "features": [
+        "Expertise",
+        "Sneak Attack",
+        "Thieves' Cant"
+      ]
+    }
+  ]
 }

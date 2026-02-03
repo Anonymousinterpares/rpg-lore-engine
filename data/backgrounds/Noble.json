@@ -1,55 +1,73 @@
 {
     "id": "noble",
     "name": "Noble",
-    "description": "You understand wealth, power, and privilege. You carry a noble title, and your family owns land, collects taxes, and wields significant political influence.",
+    "description": "You understand wealth, power, and privilege. You carry a noble title, and your family owns land, collects taxes, and wields significant political influence. You might be a pampered aristocrat unfamiliar with work or discomfort, a former merchant just elevated to the nobility, or a disinherited scion with a lingering sense of entitlement. Or you could be an honest, hard-working landowner who cares deeply about the people who live and work on your estate, keenly aware of your responsibility to them.",
     "skillProficiencies": [
         "History",
         "Persuasion"
     ],
     "toolProficiencies": [
-        "One type of gaming set"
+        "Dice set"
     ],
     "languages": [
         "One of your choice"
     ],
     "startingEquipment": [
         {
-            "id": "fine_clothes",
+            "id": "Clothes, fine",
             "quantity": 1
         },
         {
-            "id": "signet_ring",
+            "id": "Signet ring",
             "quantity": 1
         },
         {
-            "id": "scroll_of_pedigree",
+            "id": "Paper, one sheet",
             "quantity": 1
         },
         {
-            "id": "purse",
+            "id": "Pouch",
             "quantity": 1
         }
     ],
     "feature": {
         "name": "Position of Privilege",
-        "description": "Thanks to your noble birth, people are inclined to think the best of you. You are welcome in high society, and people assume you have the right to be wherever you are."
+        "description": "Thanks to your noble birth, people are inclined to think the best of you. You are welcome in high society, and people assume you have the right to be wherever you are. The common folk make every effort to accommodate you and avoid your displeasure, and other people of high birth treat you as a member of the same social sphere. You can secure an audience with a local noble if you need to."
     },
     "personalitySuggested": {
         "traits": [
             "My eloquent flattery makes everyone I talk to feel like the most wonderful and important person in the world.",
-            "The common folk love me for my kindness and generosity."
+            "The common folk love me for my kindness and generosity.",
+            "No one could doubt by looking at my regal bearing that I am a cut above the unwashed masses.",
+            "I take great pains to always look my best and follow the latest fashions.",
+            "I don't like to get my hands dirty, and I won't be caught dead in unsuitable accommodations.",
+            "Despite my noble birth, I do not place myself above other people. We all have the same blood.",
+            "My favor, once lost, is lost forever.",
+            "If you do me an injury, I will crush you, ruin your name, and salt your fields."
         ],
         "ideals": [
-            "Respect. Respect is due to me because of my position, but all people deserve to be treated with dignity.",
-            "Responsibility. It is my duty to protect and care for the people beneath me."
+            "Respect. Respect is due to me because of my position, but all people deserve to be treated with dignity. (Good)",
+            "Responsibility. It is my duty to protect and care for the people beneath me. (Lawful)",
+            "Independence. I must prove that I can handle myself without the coddling of my family. (Chaotic)",
+            "Power. If I can attain more power, no one will tell me what to do. (Evil)",
+            "Family. Blood runs thicker than water. (Any)",
+            "Noble Obligation. It is my duty to protect and care for the people beneath me. (Good)"
         ],
         "bonds": [
             "I will face any challenge to win the approval of my family.",
-            "My house's name is ancient and noble, and I must ensure its survival."
+            "My house's name is ancient and noble, and I must ensure its survival.",
+            "Nothing is more important than the other members of my family.",
+            "I am in love with the heir of a family that my family despises.",
+            "My loyalty to my sovereign is unwavering.",
+            "The common folk must see me as a hero of the people."
         ],
         "flaws": [
             "I have an inflated sense of self-importance.",
-            "I can't resist a pretty face and a silver tongue."
+            "I hide a truly scandalous secret that could ruin my family forever.",
+            "I too often hear veiled insults and threats in every word addressed to me, and I'm quick to anger.",
+            "I have an insatiable desire for carnal pleasures.",
+            "In fact, the world does revolve around me.",
+            "By my words and actions, I often bring shame to my family."
         ]
     }
 }

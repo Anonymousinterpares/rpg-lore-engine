@@ -27,5 +27,27 @@
       "Skill: Perception",
       "Skill: Survival"
     ]
-  }
+  },
+  "allFeatures": [
+    {
+      "level": 1,
+      "name": "Rage",
+      "description": "In battle, you fight with primal ferocity."
+    },
+    {
+      "level": 1,
+      "name": "Unarmored Defense",
+      "description": "While you are not wearing any armor, your Armor Class equals 10 + your Dexterity modifier + your Constitution modifier."
+    }
+  ],
+  "progression": [
+    {
+      "level": 1,
+      "proficiencyBonus": 2,
+      "features": [
+        "Rage",
+        "Unarmored Defense"
+      ]
+    }
+  ]
 }

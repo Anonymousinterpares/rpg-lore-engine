@@ -1,19 +1,27 @@
 {
   "name": "Dwarf",
-  "speed": 30,
+  "speed": 25,
   "size": "Medium",
+  "darkvision": 60,
   "abilityScoreIncreases": {
     "CON": 2
   },
   "traits": [
     {
-      "name": "Darkvision"
+      "name": "Dwarven Resilience",
+      "description": "You have advantage on saving throws against poison, and you have resistance against poison damage."
     },
     {
-      "name": "Dwarven Resilience"
+      "name": "Dwarven Combat Training",
+      "description": "You have proficiency with the battleaxe, handaxe, light hammer, and warhammer."
     },
     {
-      "name": "Stonecunning"
+      "name": "Tool Proficiency",
+      "description": "You gain proficiency with the artisan's tools of your choice: smith's tools, brewer's supplies, or mason's tools."
+    },
+    {
+      "name": "Stonecunning",
+      "description": "Whenever you make an Intelligence (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus to the check."
     }
   ],
   "languages": [

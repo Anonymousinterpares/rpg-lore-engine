@@ -2,19 +2,23 @@
   "name": "Dragonborn",
   "speed": 30,
   "size": "Medium",
+  "darkvision": 0,
   "abilityScoreIncreases": {
     "STR": 2,
     "CHA": 1
   },
   "traits": [
     {
-      "name": "Draconic Ancestry"
+      "name": "Draconic Ancestry",
+      "description": "You have draconic ancestry. Choose one type of dragon from the Draconic Ancestry table. Your breath weapon and damage resistance are determined by the dragon type."
     },
     {
-      "name": "Breath Weapon"
+      "name": "Breath Weapon",
+      "description": "You can use your action to exhale destructive energy. Your draconic ancestry determines the size, shape, and damage type of the exhalation."
     },
     {
-      "name": "Damage Resistance"
+      "name": "Damage Resistance",
+      "description": "You have resistance to the damage type associated with your draconic ancestry."
     }
   ],
   "languages": [

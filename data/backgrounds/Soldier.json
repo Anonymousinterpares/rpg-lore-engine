@@ -1,58 +1,72 @@
 {
     "id": "soldier",
     "name": "Soldier",
-    "description": "War has been your life for as long as you care to remember. You trained as a youth, studied the use of weapons and armor, learned basic survival techniques, including how to stay alive on the battlefield.",
+    "description": "War has been your life for as long as you care to remember. You trained as a youth, studied the use of weapons and armor, learned basic survival techniques, including how to stay alive on the battlefield. You might have been part of a standing national army or a mercenary company, or perhaps a member of a local militia who rose to prominence during a recent war.",
     "skillProficiencies": [
         "Athletics",
         "Intimidation"
     ],
     "toolProficiencies": [
-        "One type of gaming set",
+        "Dice set",
         "Vehicles (land)"
     ],
     "languages": [],
     "startingEquipment": [
         {
-            "id": "insignia_of_rank",
+            "id": "Insignia of rank",
             "quantity": 1
         },
         {
-            "id": "trophy_from_fallen_enemy",
+            "id": "Dice set",
             "quantity": 1
         },
         {
-            "id": "bone_dice",
+            "id": "Clothes, common",
             "quantity": 1
         },
         {
-            "id": "common_clothes",
-            "quantity": 1
-        },
-        {
-            "id": "pouch",
+            "id": "Pouch",
             "quantity": 1
         }
     ],
     "feature": {
         "name": "Military Rank",
-        "description": "You have a military rank from your career as a soldier. Soldiers loyal to your former military organization still recognize your authority and influence, and they defer to you if they are of a lower rank."
+        "description": "You have a military rank from your career as a soldier. Soldiers loyal to your former military organization still recognize your authority and influence, and they defer to you if they are of a lower rank. You can exert your influence to gain temporary access to friendly military encampments and fortresses where your rank is recognized. You can also usually gain access to a modest lifestyle for yourself (but only yourself) within military structures."
     },
     "personalitySuggested": {
         "traits": [
             "I'm always polite and respectful.",
-            "I'm full of inspiring and cautionary tales from my military experience relevant to almost every combat situation."
+            "I'm full of inspiring and cautionary tales from my military experience relevant to almost every combat situation.",
+            "I'm haunted by memories of war. I can't get the images of violence out of my mind.",
+            "I've lost too many friends, and I'm slow to make new ones.",
+            "I can stare down a hell hound without flinching.",
+            "I enjoy being strong and like breaking things.",
+            "I have a crude sense of humor.",
+            "I face problems head-on. A simple, direct solution is the best path to success."
         ],
         "ideals": [
-            "Greater Good. Our lot is to lay down our lives in defense of others.",
-            "Responsibility. I do what must be done and follow orders, even if I don't like them."
+            "Greater Good. Our lot is to lay down our lives in defense of others. (Good)",
+            "Responsibility. I do what must be done and follow orders, even if I don't like them. (Lawful)",
+            "Independence. When people follow orders blindly, they embrace a kind of tyranny. (Chaotic)",
+            "Might. In life as in war, the stronger force prevails. (Evil)",
+            "Live and Let Live. Ideals aren't worth killing over or going to war for. (Neutral)",
+            "Nation. My city, nation, or people are all that matter. (Any)"
         ],
         "bonds": [
             "I would still lay down my life for the people I served with.",
-            "Someone saved my life on the battlefield. To this day, I will never leave a friend behind."
+            "Someone saved my life on the battlefield. To this day, I will never leave a friend behind.",
+            "My honor is my life.",
+            "I'll never forget the crushing defeat my company suffered or the enemies who dealt it.",
+            "Those who fight beside me are those worth dying for.",
+            "I fight for those who cannot fight for themselves."
         ],
         "flaws": [
             "The monstrous enemy we faced in battle still leaves me quivering with fear.",
-            "I have little respect for anyone who is not a proven warrior."
+            "I have little respect for anyone who is not a proven warrior.",
+            "I made a terrible mistake in battle that cost many lives, and I would do anything to keep that mistake secret.",
+            "My hatred of my enemies is blind and unreasoning.",
+            "I obey the law, even if the law causes misery.",
+            "I'd rather eat my armor than admit when I'm wrong."
         ]
     }
 }

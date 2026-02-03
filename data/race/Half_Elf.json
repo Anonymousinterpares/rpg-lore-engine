@@ -2,23 +2,28 @@
   "name": "Half-Elf",
   "speed": 30,
   "size": "Medium",
+  "darkvision": 60,
   "abilityScoreIncreases": {
     "CHA": 2
   },
   "traits": [
     {
-      "name": "Darkvision"
+      "name": "Fey Ancestry",
+      "description": "You have advantage on saving throws against being charmed, and magic can't put you to sleep."
     },
     {
-      "name": "Fey Ancestry"
+      "name": "Skill Versatility",
+      "description": "You gain proficiency in two skills of your choice."
     },
     {
-      "name": "Skill Versatility"
+      "name": "Ability Score Increase",
+      "description": "Two other ability scores of your choice increase by 1."
     }
   ],
   "languages": [
     "Common",
-    "Elvish"
+    "Elvish",
+    "One extra language"
   ],
   "optional": false
 }

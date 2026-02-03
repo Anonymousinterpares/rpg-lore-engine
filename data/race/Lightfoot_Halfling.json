@@ -1,14 +1,29 @@
 {
   "name": "Lightfoot Halfling",
-  "speed": 30,
-  "size": "Medium",
+  "speed": 25,
+  "size": "Small",
+  "darkvision": 0,
   "abilityScoreIncreases": {
+    "DEX": 2,
     "CHA": 1
   },
   "traits": [
     {
-      "name": "Naturally Stealthy"
+      "name": "Lucky",
+      "description": "Reroll 1s on d20 for attacks, checks, or saves."
+    },
+    {
+      "name": "Brave",
+      "description": "Advantage on saves vs being frightened."
+    },
+    {
+      "name": "Naturally Stealthy",
+      "description": "You can attempt to hide even when you are obscured only by a creature that is at least one size larger than you."
     }
   ],
-  "languages": []
+  "languages": [
+    "Common",
+    "Halfling"
+  ],
+  "optional": false
 }

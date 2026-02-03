@@ -2,9 +2,36 @@
   "name": "High Elf",
   "speed": 30,
   "size": "Medium",
+  "darkvision": 60,
   "abilityScoreIncreases": {
+    "DEX": 2,
     "INT": 1
   },
-  "traits": [],
-  "languages": []
+  "traits": [
+    {
+      "name": "Fey Ancestry",
+      "description": "Advantage on saves vs charm, magic can't put you to sleep."
+    },
+    {
+      "name": "Trance",
+      "description": "Meditate for 4 hours instead of sleeping 8."
+    },
+    {
+      "name": "Elf Weapon Training",
+      "description": "Proficiency with longsword, shortsword, shortbow, and longbow."
+    },
+    {
+      "name": "Cantrip",
+      "description": "You know one cantrip of your choice from the wizard spell list. Intelligence is your spellcasting ability for it."
+    },
+    {
+      "name": "Extra Language",
+      "description": "You can speak, read, and write one extra language of your choice."
+    }
+  ],
+  "languages": [
+    "Common",
+    "Elvish"
+  ],
+  "optional": false
 }

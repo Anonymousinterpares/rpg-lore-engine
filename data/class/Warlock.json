@@ -25,5 +25,38 @@
       "Skill: Nature",
       "Skill: Religion"
     ]
-  }
+  },
+  "allFeatures": [
+    {
+      "level": 1,
+      "name": "Otherworldly Patron",
+      "description": "At 1st level, you have struck a bargain with an otherworldly being of your choice: the Archfey, the Fiend, or the Great Old One."
+    },
+    {
+      "level": 1,
+      "name": "Pact Magic",
+      "description": "Your arcane research and the magic bestowed on you by your patron have given you facility with spells."
+    }
+  ],
+  "progression": [
+    {
+      "level": 1,
+      "proficiencyBonus": 2,
+      "features": [
+        "Otherworldly Patron",
+        "Pact Magic"
+      ],
+      "spellSlots": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
 }

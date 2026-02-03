@@ -25,5 +25,38 @@
       "Skill: Persuasion",
       "Skill: Religion"
     ]
-  }
+  },
+  "allFeatures": [
+    {
+      "level": 1,
+      "name": "Spellcasting",
+      "description": "As a conduit for divine power, you can cast cleric spells."
+    },
+    {
+      "level": 1,
+      "name": "Divine Domain",
+      "description": "Choose one domain related to your deity: Life, Light, Nature, Tempest, Trickery, War, or Knowledge."
+    }
+  ],
+  "progression": [
+    {
+      "level": 1,
+      "proficiencyBonus": 2,
+      "features": [
+        "Spellcasting",
+        "Divine Domain"
+      ],
+      "spellSlots": [
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
 }

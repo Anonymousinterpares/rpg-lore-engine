@@ -1,58 +1,76 @@
 {
     "id": "folk_hero",
     "name": "Folk Hero",
-    "description": "You come from a humble social rank, but you are destined for so much more.",
+    "description": "You come from a humble social rank, but you are destined for so much more. Already the people of your home village regard you as their champion, and your destiny calls you to stand against the tyrants and monsters that threaten the common folk everywhere. You might have been a simple farmer or laborer, but you did something that changed everything.",
     "skillProficiencies": [
         "Animal Handling",
         "Survival"
     ],
     "toolProficiencies": [
-        "One type of artisan's tools",
+        "Carpenter's tools",
         "Vehicles (land)"
     ],
     "languages": [],
     "startingEquipment": [
         {
-            "id": "artisans_tools",
+            "id": "Carpenter's tools",
             "quantity": 1
         },
         {
-            "id": "shovel",
+            "id": "Shovel",
             "quantity": 1
         },
         {
-            "id": "iron_pot",
+            "id": "Pot, iron",
             "quantity": 1
         },
         {
-            "id": "common_clothes",
+            "id": "Clothes, common",
             "quantity": 1
         },
         {
-            "id": "pouch",
+            "id": "Pouch",
             "quantity": 1
         }
     ],
     "feature": {
         "name": "Rustic Hospitality",
-        "description": "Since you come from the ranks of the common folk, you fit in among them with ease. You can find a place to hide, rest, or recuperate among other commoners, unless you have shown yourself to be a danger to them."
+        "description": "Since you come from the ranks of the common folk, you fit in among them with ease. You can find a place to hide, rest, or recuperate among other commoners, unless you have shown yourself to be a danger to them. They will shield you from the law or anyone else searching for you, though they will not risk their lives for you."
     },
     "personalitySuggested": {
         "traits": [
             "I judge people by their actions, not their words.",
-            "If someone is in trouble, I'm always ready to lend help."
+            "If someone is in trouble, I'm always ready to lend help.",
+            "When I set my mind to something, I follow through no matter what gets in my way.",
+            "I have a strong sense of fair play and always try to find the most equitable solution to arguments.",
+            "I'm confident in my own abilities and do what I can to instill confidence in others.",
+            "Thinking is for other people. I prefer action.",
+            "I misuse long words in an attempt to sound smarter.",
+            "I get bored easily. When out of my home village, I'm always looking for a new adventure."
         ],
         "ideals": [
-            "Respect. People deserve to be treated with dignity and respect.",
-            "Fairness. No one should get preferential treatment before the law, and no one is above the law."
+            "Respect. People deserve to be treated with dignity and respect. (Good)",
+            "Fairness. No one should get preferential treatment before the law, and no one is above the law. (Lawful)",
+            "Freedom. Tyrants must not be allowed to oppress the people. (Chaotic)",
+            "Might. If I become strong, I can take what I want—what I deserve. (Evil)",
+            "Sincerity. There's no good in pretending to be something I'm not. (Neutral)",
+            "Destiny. Nothing and no one can steer me away from my higher calling. (Any)"
         ],
         "bonds": [
             "I have a family, but I have no idea where they are. One day, I hope to see them again.",
-            "I protect those who cannot protect themselves."
+            "I protect those who cannot protect themselves.",
+            "I wish my childhood sweetheart had come with me to pursue my destiny.",
+            "The common folk of my home village gave me a hero's welcome, and I will always protect them.",
+            "I work for my people, not for any personal glory.",
+            "A proud tyrant will learn a lesson of humility from me."
         ],
         "flaws": [
             "The tyrant who oppressed my people still sometimes haunts my dreams.",
-            "I'm quick to trust those who profess to be on the side of the people."
+            "I'm quick to trust those who profess to be on the side of the people.",
+            "I have a weakness for the vices of the city, especially hard drink.",
+            "Secretly, I believe that things would be better if I were a tyrant myself.",
+            "I have trouble trusting my allies when things look bad.",
+            "My confidence can sometimes be mistaken for arrogance."
         ]
     }
 }

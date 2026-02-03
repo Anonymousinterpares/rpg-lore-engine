@@ -2,19 +2,19 @@
   "name": "Tiefling",
   "speed": 30,
   "size": "Medium",
+  "darkvision": 60,
   "abilityScoreIncreases": {
     "INT": 1,
     "CHA": 2
   },
   "traits": [
     {
-      "name": "Darkvision"
+      "name": "Hellish Resistance",
+      "description": "You have resistance to fire damage."
     },
     {
-      "name": "Hellish Resistance"
-    },
-    {
-      "name": "Infernal Legacy"
+      "name": "Infernal Legacy",
+      "description": "You know the Thaumaturgy cantrip. At level 3, you can cast Hellish Rebuke once per long rest. At level 5, you can cast Darkness once per long rest."
     }
   ],
   "languages": [

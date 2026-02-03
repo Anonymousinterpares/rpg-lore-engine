@@ -1,7 +1,7 @@
 {
     "id": "sage",
     "name": "Sage",
-    "description": "You spent years learning the lore of the multiverse. You scoured manuscripts, studied scrolls, and listened to the greatest experts on the subjects that interest you.",
+    "description": "You spent years learning the lore of the multiverse. You scoured manuscripts, studied scrolls, and listened to the greatest experts on the subjects that interest you. Your efforts have made you a master in your fields of study, and you have come to realize that there is still much to learn. This knowledge may have come from a formal education in a university, or it could have been the result of years of self-taught research in a dusty library or laboratory.",
     "skillProficiencies": [
         "Arcana",
         "History"
@@ -12,50 +12,68 @@
     ],
     "startingEquipment": [
         {
-            "id": "ink_bottle",
+            "id": "Ink (1 ounce bottle)",
             "quantity": 1
         },
         {
-            "id": "quill",
+            "id": "Ink pen",
             "quantity": 1
         },
         {
-            "id": "small_knife",
+            "id": "Dagger",
             "quantity": 1
         },
         {
-            "id": "letter_from_dead_colleague",
+            "id": "Paper, one sheet",
             "quantity": 1
         },
         {
-            "id": "common_clothes",
+            "id": "Clothes, common",
             "quantity": 1
         },
         {
-            "id": "pouch",
+            "id": "Pouch",
             "quantity": 1
         }
     ],
     "feature": {
         "name": "Researcher",
-        "description": "When you attempt to learn or recall a piece of lore, if you do not know that information, you often know where and from whom you can obtain it."
+        "description": "When you attempt to learn or recall a piece of lore, if you do not know that information, you often know where and from whom you can obtain it. Usually, this information comes from a library, scriptorium, university, or a sage or other learned person or creature. Your GM might reveal that the information you seek is secreted away in an almost inaccessible archive, or that it simply cannot be found. Unearthing the deepest secrets of the multiverse can require an entire adventure or even a whole campaign."
     },
     "personalitySuggested": {
         "traits": [
             "I use polysyllabic words that convey the impression of great erudition.",
-            "I've read every book in the world's greatest libraries—or I like to boast that I have."
+            "I've read every book in the world's greatest libraries—or I like to boast that I have.",
+            "I'm used to helping out those who aren't as smart as I am, and I patiently explain anything and everything to others.",
+            "There's nothing I like more than a good mystery.",
+            "I'm willing to listen to every side of an argument before I make my own judgment.",
+            "I ... speak ... slowly ... when ... talking ... to ... idiots, ... which ... almost ... everyone ... is ... compared ... to ... me.",
+            "I am horribly, horribly awkward in social situations.",
+            "I'm convinced that people are always trying to steal my secrets."
         ],
         "ideals": [
-            "Knowledge. The path to power and self-improvement is through knowledge.",
-            "Beauty. What is beautiful points us beyond itself toward what is true."
+            "Knowledge. The path to power and self-improvement is through knowledge. (Neutral)",
+            "Beauty. What is beautiful points us beyond itself toward what is true. (Good)",
+            "Logic. Emotions must not cloud our logical thinking. (Lawful)",
+            "No Limits. Nothing should fetter the infinite possibility of experience. (Chaotic)",
+            "Power. Knowledge is the path to power and domination. (Evil)",
+            "Self-Improvement. The goal of a life of study is the betterment of oneself. (Any)"
         ],
         "bonds": [
             "It is my duty to protect my students.",
-            "I have an ancient text that holds a secret to the past, and I must protect it."
+            "I have an ancient text that holds a secret to the past, and I must protect it.",
+            "I work to preserve a library, university, or monastery.",
+            "My life's work is a series of tomes related to a specific field of lore.",
+            "I've been searching my whole life for the answer to a certain question.",
+            "I sold my soul for knowledge. I hope to do great deeds and win it back."
         ],
         "flaws": [
             "I am easily flustered when my knowledge is challenged.",
-            "I speak without thinking, often offending others."
+            "I speak without thinking, often offending others.",
+            "I can't keep a secret to save my life, or anyone else's.",
+            "Most people scream and run when they see a demon. I stop and take notes on its anatomy.",
+            "I am easily distracted by the promise of information.",
+            "I possess a self-destructive curiosity that sometimes gets me into trouble."
         ]
     }
 }

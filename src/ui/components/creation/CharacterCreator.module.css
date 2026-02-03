@@ -120,18 +120,24 @@
     outline: none;
 }
 
+.selectionLayout {
+    display: flex;
+    gap: var(--spacing-xl);
+    width: 100%;
+    align-items: flex-start;
+}
+
 .gridContainer {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    /* Wider cards */
-    gap: var(--spacing-lg);
-    width: 100%;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--spacing-md);
+    flex: 1;
 }
 
 .card {
     background: rgba(0, 0, 0, 0.02);
     border: 1px solid var(--parchment-border);
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
     border-radius: var(--radius-sm);
     cursor: pointer;
     transition: all 0.2s ease;
@@ -139,7 +145,7 @@
     flex-direction: column;
     gap: var(--spacing-xs);
     position: relative;
-    max-height: 200px;
+    max-height: 180px;
     overflow-y: auto;
 }
 
@@ -296,6 +302,66 @@
     font-family: var(--font-narrative);
     color: var(--parchment-text);
     font-weight: 700;
+}
+
+.detailsPanel {
+    width: 350px;
+    background: rgba(139, 115, 85, 0.05);
+    border-left: 2px solid var(--parchment-border);
+    padding: var(--spacing-lg);
+    height: 500px;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.detailsPanel h3 {
+    font-family: var(--font-narrative);
+    font-size: 1.5rem;
+    color: var(--parchment-accent);
+    margin-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--parchment-border);
+    padding-bottom: var(--spacing-xs);
+}
+
+.detailsContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.detailItem {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detailName {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--parchment-text);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detailDesc {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: var(--parchment-text);
+    opacity: 0.9;
 }
 
 .loader {

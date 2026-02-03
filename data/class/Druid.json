@@ -11,9 +11,20 @@
   "armorProficiencies": [
     "Light armor",
     "Medium armor",
-    "Shields"
+    "Shields (druids will not wear armor or use shields made of metal)"
   ],
-  "weaponProficiencies": [],
+  "weaponProficiencies": [
+    "Clubs",
+    "Daggers",
+    "Darts",
+    "Javelins",
+    "Maces",
+    "Quarterstaffs",
+    "Scimitars",
+    "Sickles",
+    "Slings",
+    "Spears"
+  ],
   "skillChoices": {
     "count": 2,
     "options": [
@@ -26,5 +37,38 @@
       "Skill: Religion",
       "Skill: Survival"
     ]
-  }
+  },
+  "allFeatures": [
+    {
+      "level": 1,
+      "name": "Druidic",
+      "description": "You know Druidic, the secret language of druids."
+    },
+    {
+      "level": 1,
+      "name": "Spellcasting",
+      "description": "Drawing on the divine essence of nature itself, you can cast spells to shape that essence to your will."
+    }
+  ],
+  "progression": [
+    {
+      "level": 1,
+      "proficiencyBonus": 2,
+      "features": [
+        "Druidic",
+        "Spellcasting"
+      ],
+      "spellSlots": [
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
 }

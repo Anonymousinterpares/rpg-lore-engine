@@ -107,48 +107,123 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                 );
             case 1: // Race
                 return (
-                    <div className={styles.gridContainer}>
-                        {races.map(r => (
-                            <div
-                                key={r.name}
-                                className={`${styles.card} ${selectedRace?.name === r.name ? styles.selected : ''}`}
-                                onClick={() => setSelectedRace(r)}
-                            >
-                                <h4>{r.name}</h4>
-                                <p className={styles.smallInfo}><strong>Speed:</strong> {r.speed}ft | <strong>Size:</strong> {r.size}</p>
-                                <p className={styles.smallInfo}>{r.traits.map(t => t.name).join(', ')}</p>
+                    <div className={styles.selectionLayout}>
+                        <div className={styles.gridContainer}>
+                            {races.map(r => (
+                                <div
+                                    key={r.name}
+                                    className={`${styles.card} ${selectedRace?.name === r.name ? styles.selected : ''}`}
+                                    onClick={() => setSelectedRace(r)}
+                                >
+                                    <h4>{r.name}</h4>
+                                    <p className={styles.smallInfo}><strong>Speed:</strong> {r.speed}ft | <strong>Size:</strong> {r.size}</p>
+                                    <p className={styles.smallInfo}>{r.traits.map(t => t.name).join(', ')}</p>
+                                </div>
+                            ))}
+                        </div>
+                        {selectedRace && (
+                            <div className={styles.detailsPanel}>
+                                <h3>{selectedRace.name} Traits</h3>
+                                <div className={styles.detailsContent}>
+                                    {selectedRace.traits.map(t => (
+                                        <div key={t.name} className={styles.detailItem}>
+                                            <div className={styles.detailName}>{t.name}</div>
+                                            <div className={styles.detailDesc}>{t.description}</div>
+                                        </div>
+                                    ))}
+                                    <div className={styles.detailItem}>
+                                        <div className={styles.detailName}>Ability Score Increases</div>
+                                        <div className={styles.detailDesc}>
+                                            {Object.entries(selectedRace.abilityScoreIncreases).map(([stat, bonus]) => `${stat} +${bonus}`).join(', ')}
+                                        </div>
+                                    </div>
+                                    <div className={styles.detailItem}>
+                                        <div className={styles.detailName}>Languages</div>
+                                        <div className={styles.detailDesc}>{selectedRace.languages.join(', ')}</div>
+                                    </div>
+                                </div>
                             </div>
-                        ))}
+                        )}
                     </div>
                 );
             case 2: // Class
                 return (
-                    <div className={styles.gridContainer}>
-                        {classes.map(c => (
-                            <div
-                                key={c.name}
-                                className={`${styles.card} ${selectedClass?.name === c.name ? styles.selected : ''}`}
-                                onClick={() => setSelectedClass(c)}
-                            >
-                                <h4>{c.name}</h4>
-                                <p className={styles.smallInfo}><strong>Hit Die:</strong> {c.hitDie} | <strong>Primary:</strong> {c.primaryAbility.join(', ')}</p>
+                    <div className={styles.selectionLayout}>
+                        <div className={styles.gridContainer}>
+                            {classes.map(c => (
+                                <div
+                                    key={c.name}
+                                    className={`${styles.card} ${selectedClass?.name === c.name ? styles.selected : ''}`}
+                                    onClick={() => setSelectedClass(c)}
+                                >
+                                    <h4>{c.name}</h4>
+                                    <p className={styles.smallInfo}><strong>Hit Die:</strong> {c.hitDie} | <strong>Primary:</strong> {c.primaryAbility.join(', ')}</p>
+                                </div>
+                            ))}
+                        </div>
+                        {selectedClass && (
+                            <div className={styles.detailsPanel}>
+                                <h3>{selectedClass.name} Features</h3>
+                                <div className={styles.detailsContent}>
+                                    {selectedClass.allFeatures.filter(f => f.level === 1).map(f => (
+                                        <div key={f.name} className={styles.detailItem}>
+                                            <div className={styles.detailName}>{f.name}</div>
+                                            <div className={styles.detailDesc}>{f.description}</div>
+                                        </div>
+                                    ))}
+                                    <div className={styles.detailItem}>
+                                        <div className={styles.detailName}>Proficiencies</div>
+                                        <div className={styles.detailDesc}>
+                                            <strong>Armor:</strong> {selectedClass.armorProficiencies.join(', ') || 'None'}<br />
+                                            <strong>Weapons:</strong> {selectedClass.weaponProficiencies.join(', ') || 'None'}<br />
+                                            <strong>Saves:</strong> {selectedClass.savingThrowProficiencies.join(', ')}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        ))}
+                        )}
                     </div>
                 );
             case 3: // Background
                 return (
-                    <div className={styles.gridContainer}>
-                        {backgrounds.map(b => (
-                            <div
-                                key={b.name}
-                                className={`${styles.card} ${selectedBackground?.name === b.name ? styles.selected : ''}`}
-                                onClick={() => setSelectedBackground(b)}
-                            >
-                                <h4>{b.name}</h4>
-                                <p className={styles.smallInfo}>{b.description}</p>
+                    <div className={styles.selectionLayout}>
+                        <div className={styles.gridContainer}>
+                            {backgrounds.map(b => (
+                                <div
+                                    key={b.name}
+                                    className={`${styles.card} ${selectedBackground?.name === b.name ? styles.selected : ''}`}
+                                    onClick={() => setSelectedBackground(b)}
+                                >
+                                    <h4>{b.name}</h4>
+                                    <p className={styles.smallInfo}>{b.description.length > 100 ? b.description.substring(0, 100) + '...' : b.description}</p>
+                                </div>
+                            ))}
+                        </div>
+                        {selectedBackground && (
+                            <div className={styles.detailsPanel}>
+                                <h3>{selectedBackground.name} Background</h3>
+                                <div className={styles.detailsContent}>
+                                    <div className={styles.detailItem}>
+                                        <div className={styles.detailName}>{selectedBackground.feature.name}</div>
+                                        <div className={styles.detailDesc}>{selectedBackground.feature.description}</div>
+                                    </div>
+                                    <div className={styles.detailItem}>
+                                        <div className={styles.detailName}>Proficiencies & Languages</div>
+                                        <div className={styles.detailDesc}>
+                                            <strong>Skills:</strong> {selectedBackground.skillProficiencies.join(', ')}<br />
+                                            {selectedBackground.toolProficiencies.length > 0 && <><strong>Tools:</strong> {selectedBackground.toolProficiencies.join(', ')}<br /></>}
+                                            {selectedBackground.languages.length > 0 && <><strong>Languages:</strong> {selectedBackground.languages.join(', ')}</>}
+                                        </div>
+                                    </div>
+                                    {selectedBackground.personalitySuggested && (
+                                        <div className={styles.detailItem}>
+                                            <div className={styles.detailName}>Sample Traits</div>
+                                            <div className={styles.detailDesc}>{selectedBackground.personalitySuggested.traits[0]}</div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        ))}
+                        )}
                     </div>
                 );
             case 4: // Abilities

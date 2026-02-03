@@ -27,5 +27,27 @@
       "Skill: Persuasion",
       "Skill: Religion"
     ]
-  }
+  },
+  "allFeatures": [
+    {
+      "level": 1,
+      "name": "Divine Sense",
+      "description": "The presence of strong evil registers on your senses like a noxious odor, and powerful good rings like heavenly music in your ears."
+    },
+    {
+      "level": 1,
+      "name": "Lay on Hands",
+      "description": "Your blessed touch can heal wounds."
+    }
+  ],
+  "progression": [
+    {
+      "level": 1,
+      "proficiencyBonus": 2,
+      "features": [
+        "Divine Sense",
+        "Lay on Hands"
+      ]
+    }
+  ]
 }

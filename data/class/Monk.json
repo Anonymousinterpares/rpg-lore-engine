@@ -15,27 +15,36 @@
     "Shortswords"
   ],
   "skillChoices": {
-    "count": 1,
+    "count": 2,
     "options": [
-      "Alchemist's supplies",
-      "Brewer's supplies",
-      "Calligrapher's supplies",
-      "Carpenter's tools",
-      "Cartographer's tools",
-      "Cobbler's tools",
-      "Cook's utensils",
-      "Glassblower's tools",
-      "Jeweler's tools",
-      "Leatherworker's tools",
-      "Mason's tools",
-      "Painter's supplies",
-      "Potter's tools",
-      "Smith's tools",
-      "Tinker's tools",
-      "Weaver's tools",
-      "Woodcarver's tools",
-      "Disguise kit",
-      "Forgery kit"
+      "Skill: Acrobatics",
+      "Skill: Athletics",
+      "Skill: History",
+      "Skill: Insight",
+      "Skill: Religion",
+      "Skill: Stealth"
     ]
-  }
+  },
+  "allFeatures": [
+    {
+      "level": 1,
+      "name": "Unarmored Defense",
+      "description": "While you are wearing no armor and not wielding a shield, your AC equals 10 + your Dexterity modifier + your Wisdom modifier."
+    },
+    {
+      "level": 1,
+      "name": "Martial Arts",
+      "description": "At 1st level, your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons."
+    }
+  ],
+  "progression": [
+    {
+      "level": 1,
+      "proficiencyBonus": 2,
+      "features": [
+        "Unarmored Defense",
+        "Martial Arts"
+      ]
+    }
+  ]
 }

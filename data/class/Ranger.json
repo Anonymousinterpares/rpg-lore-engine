@@ -30,5 +30,27 @@
       "Skill: Stealth",
       "Skill: Survival"
     ]
-  }
+  },
+  "allFeatures": [
+    {
+      "level": 1,
+      "name": "Favored Enemy",
+      "description": "You have significant experience studying, tracking, hunting, and even talking to a certain type of enemy."
+    },
+    {
+      "level": 1,
+      "name": "Natural Explorer",
+      "description": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions."
+    }
+  ],
+  "progression": [
+    {
+      "level": 1,
+      "proficiencyBonus": 2,
+      "features": [
+        "Favored Enemy",
+        "Natural Explorer"
+      ]
+    }
+  ]
 }

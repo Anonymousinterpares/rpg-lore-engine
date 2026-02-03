@@ -2,18 +2,22 @@
   "name": "Halfling",
   "speed": 25,
   "size": "Small",
+  "darkvision": 0,
   "abilityScoreIncreases": {
     "DEX": 2
   },
   "traits": [
     {
-      "name": "Brave"
+      "name": "Lucky",
+      "description": "When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll."
     },
     {
-      "name": "Halfling Nimbleness"
+      "name": "Brave",
+      "description": "You have advantage on saving throws against being frightened."
     },
     {
-      "name": "Lucky"
+      "name": "Halfling Nimbleness",
+      "description": "You can move through the space of any creature that is of a size larger than yours."
     }
   ],
   "languages": [

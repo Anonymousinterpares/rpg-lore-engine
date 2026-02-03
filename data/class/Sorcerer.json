@@ -9,7 +9,13 @@
     "CHA"
   ],
   "armorProficiencies": [],
-  "weaponProficiencies": [],
+  "weaponProficiencies": [
+    "Daggers",
+    "Darts",
+    "Slings",
+    "Quarterstaffs",
+    "Light crossbows"
+  ],
   "skillChoices": {
     "count": 2,
     "options": [
@@ -20,5 +26,38 @@
       "Skill: Persuasion",
       "Skill: Religion"
     ]
-  }
+  },
+  "allFeatures": [
+    {
+      "level": 1,
+      "name": "Spellcasting",
+      "description": "An event in your past, or in the life of an ancestor, left a indelible mark on you, infusing you with arcane magic."
+    },
+    {
+      "level": 1,
+      "name": "Sorcerous Origin",
+      "description": "Choose a sorcerous origin, which describes the source of your innate magical power: Draconic Bloodline or Wild Magic."
+    }
+  ],
+  "progression": [
+    {
+      "level": 1,
+      "proficiencyBonus": 2,
+      "features": [
+        "Spellcasting",
+        "Sorcerous Origin"
+      ],
+      "spellSlots": [
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
 }

@@ -9,7 +9,13 @@
     "WIS"
   ],
   "armorProficiencies": [],
-  "weaponProficiencies": [],
+  "weaponProficiencies": [
+    "Daggers",
+    "Darts",
+    "Slings",
+    "Quarterstaffs",
+    "Light crossbows"
+  ],
   "skillChoices": {
     "count": 2,
     "options": [
@@ -20,5 +26,38 @@
       "Skill: Medicine",
       "Skill: Religion"
     ]
-  }
+  },
+  "allFeatures": [
+    {
+      "level": 1,
+      "name": "Spellcasting",
+      "description": "You can cast wizard spells using Intelligence."
+    },
+    {
+      "level": 1,
+      "name": "Arcane Recovery",
+      "description": "You have learned to regain some of your magical energy by studying your spellbook."
+    }
+  ],
+  "progression": [
+    {
+      "level": 1,
+      "proficiencyBonus": 2,
+      "features": [
+        "Spellcasting",
+        "Arcane Recovery"
+      ],
+      "spellSlots": [
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
 }

@@ -2,6 +2,7 @@
   "name": "Human",
   "speed": 30,
   "size": "Medium",
+  "darkvision": 0,
   "abilityScoreIncreases": {
     "STR": 1,
     "DEX": 1,
@@ -10,7 +11,12 @@
     "WIS": 1,
     "CHA": 1
   },
-  "traits": [],
+  "traits": [
+    {
+      "name": "Versatility",
+      "description": "Humans are the most adaptable and ambitious people among the common races."
+    }
+  ],
   "languages": [
     "Common"
   ],

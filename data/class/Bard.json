@@ -13,9 +13,10 @@
   ],
   "weaponProficiencies": [
     "Simple weapons",
+    "Hand crossbows",
     "Longswords",
-    "Shortswords",
-    "Crossbows, hand"
+    "Rapiers",
+    "Shortswords"
   ],
   "skillChoices": {
     "count": 3,
@@ -39,5 +40,38 @@
       "Skill: Stealth",
       "Skill: Survival"
     ]
-  }
+  },
+  "allFeatures": [
+    {
+      "level": 1,
+      "name": "Spellcasting",
+      "description": "You have learned to untangle and reshape the fabric of reality in harmony with your wishes and music."
+    },
+    {
+      "level": 1,
+      "name": "Bardic Inspiration",
+      "description": "You can inspire others through stirring words or music."
+    }
+  ],
+  "progression": [
+    {
+      "level": 1,
+      "proficiencyBonus": 2,
+      "features": [
+        "Spellcasting",
+        "Bardic Inspiration"
+      ],
+      "spellSlots": [
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
 }
