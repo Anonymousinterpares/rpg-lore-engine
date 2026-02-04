@@ -62,7 +62,16 @@ const HexMapView = ({ hexes, onHexClick, onHexContextMenu, className = '', viewM
                             e.preventDefault();
                             e.stopPropagation();
                             onHexContextMenu?.(hex.id, e.clientX, e.clientY);
-                        }, children: _jsxs("div", { className: styles.hexInner, children: [hex.isCurrent && _jsx("div", { className: styles.playerMarker }), isZoomedIn && (_jsxs("div", { className: styles.details, children: [hex.resourceNodes?.map((node, i) => (_jsx("div", { className: styles.detailIcon, title: node.resourceType, children: node.resourceType === 'Ore' || node.resourceType === 'Gem' ? _jsx(Pickaxe, { size: 12 }) : _jsx(Leaf, { size: 12 }) }, `res-${i}`))), hex.interest_points?.map((poi, i) => (_jsx("div", { className: styles.detailIcon, title: poi.name, children: _jsx(MapPin, { size: 12 }) }, `poi-${i}`)))] }))] }) }, hex.id));
+                        }, children: _jsxs("div", { className: styles.hexInner, children: [hex.isVisited && hex.visualVariant && (_jsx("img", { src: `/assets/biomes/${biomeBase}_${hex.visualVariant}.png`, className: styles.biomeImage, alt: "", onError: (e) => {
+                                        const img = e.target;
+                                        // If we failed to find the specific variant, try variant 1 as a universal fallback
+                                        if (!img.src.endsWith('_1.png')) {
+                                            img.src = `/assets/biomes/${biomeBase}_1.png`;
+                                        }
+                                        else {
+                                            img.style.display = 'none';
+                                        }
+                                    } })), hex.isCurrent && _jsx("div", { className: styles.playerMarker }), isZoomedIn && (_jsxs("div", { className: styles.details, children: [hex.resourceNodes?.map((node, i) => (_jsx("div", { className: styles.detailIcon, title: node.resourceType, children: node.resourceType === 'Ore' || node.resourceType === 'Gem' ? _jsx(Pickaxe, { size: 12 }) : _jsx(Leaf, { size: 12 }) }, `res-${i}`))), hex.interest_points?.map((poi, i) => (_jsx("div", { className: styles.detailIcon, title: poi.name, children: _jsx(MapPin, { size: 12 }) }, `poi-${i}`)))] }))] }) }, hex.id));
                 }), hexes.length === 0 && (_jsx("div", { className: styles.emptyMap, children: "Exploring the unknown..." }))] }) }));
 };
 export default HexMapView;

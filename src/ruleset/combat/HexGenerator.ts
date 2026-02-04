@@ -2,6 +2,7 @@ import { Hex, ResourceNode } from '../schemas/HexMapSchema';
 import { BiomeType } from '../schemas/BiomeSchema';
 import { BiomeGenerationEngine } from './BiomeGenerationEngine';
 import { BIOME_RESOURCES } from '../data/StaticData';
+import { BiomePoolManager } from './BiomeRegistry';
 
 export class HexGenerator {
     private static resourceTables = BIOME_RESOURCES;
@@ -9,8 +10,11 @@ export class HexGenerator {
     /**
      * Generates a new hex at the given coordinates.
      */
-    public static generateHex(coords: [number, number], neighbors: { biome: BiomeType }[], clusterSizes: Record<BiomeType, number>): Hex {
+    public static generateHex(coords: [number, number], neighbors: { biome: BiomeType }[], clusterSizes: Record<BiomeType, number>, pool?: BiomePoolManager): Hex {
         const biome = BiomeGenerationEngine.selectBiome(neighbors, clusterSizes);
+        const hash = Math.abs(coords[0] * 31 + coords[1] * 17);
+        const activePool = pool || new BiomePoolManager();
+        const variant = activePool.getVariant(biome, hash);
 
         // Roll for resource nodes
         const nodes: ResourceNode[] = [];
@@ -47,7 +51,7 @@ export class HexGenerator {
             openedContainers: {},
             visited: false,
             namingSource: 'engine',
-            visualVariant: Math.floor(Math.random() * 5) + 1
+            visualVariant: variant
         };
     }
 

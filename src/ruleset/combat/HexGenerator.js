@@ -1,12 +1,16 @@
 import { BiomeGenerationEngine } from './BiomeGenerationEngine';
 import { BIOME_RESOURCES } from '../data/StaticData';
+import { BiomePoolManager } from './BiomeRegistry';
 export class HexGenerator {
     static resourceTables = BIOME_RESOURCES;
     /**
      * Generates a new hex at the given coordinates.
      */
-    static generateHex(coords, neighbors, clusterSizes) {
+    static generateHex(coords, neighbors, clusterSizes, pool) {
         const biome = BiomeGenerationEngine.selectBiome(neighbors, clusterSizes);
+        const hash = Math.abs(coords[0] * 31 + coords[1] * 17);
+        const activePool = pool || new BiomePoolManager();
+        const variant = activePool.getVariant(biome, hash);
         // Roll for resource nodes
         const nodes = [];
         const table = this.resourceTables.find(t => t.biome === biome);
@@ -40,7 +44,7 @@ export class HexGenerator {
             openedContainers: {},
             visited: false,
             namingSource: 'engine',
-            visualVariant: Math.floor(Math.random() * 5) + 1
+            visualVariant: variant
         };
     }
     static determineResourceType(itemId) {

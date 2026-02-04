@@ -126,6 +126,22 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                             }}
                         >
                             <div className={styles.hexInner}>
+                                {hex.isVisited && hex.visualVariant && (
+                                    <img
+                                        src={`/assets/biomes/${biomeBase}_${hex.visualVariant}.png`}
+                                        className={styles.biomeImage}
+                                        alt=""
+                                        onError={(e) => {
+                                            const img = e.target as HTMLImageElement;
+                                            // If we failed to find the specific variant, try variant 1 as a universal fallback
+                                            if (!img.src.endsWith('_1.png')) {
+                                                img.src = `/assets/biomes/${biomeBase}_1.png`;
+                                            } else {
+                                                img.style.display = 'none';
+                                            }
+                                        }}
+                                    />
+                                )}
                                 {hex.isCurrent && <div className={styles.playerMarker} />}
 
                                 {isZoomedIn && (

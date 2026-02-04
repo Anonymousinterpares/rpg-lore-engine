@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { DataManager } from '../data/DataManager';
 import { HexGenerator } from '../combat/HexGenerator';
 import { HexMapManager } from '../combat/HexMapManager';
+import { BiomePoolManager } from '../combat/BiomeRegistry';
 export class CharacterFactory {
     static createNewGameState(options) {
         const { name, race, characterClass, background, abilityScores, skillProficiencies } = options;
@@ -91,31 +92,28 @@ export class CharacterFactory {
             },
             worldTime: { day: 1, hour: 9, month: 1, year: 1489, totalTurns: 0 },
             worldMap: (() => {
-                const startHex = HexGenerator.generateHex([0, 0], [], {});
+                const pool = new BiomePoolManager();
+                const emptySizes = { 'Plains': 0, 'Forest': 0, 'Hills': 0, 'Mountains': 0, 'Swamp': 0, 'Desert': 0, 'Tundra': 0, 'Jungle': 0, 'Coast': 0, 'Ocean': 0, 'Volcanic': 0, 'Ruins': 0, 'Farmland': 0, 'Urban': 0 };
+                const startHex = HexGenerator.generateHex([0, 0], [], emptySizes, pool);
                 startHex.visited = true;
+                startHex.name = "Initial Landing Site";
+                startHex.biome = "Plains";
                 const hexes = { '0,0': startHex };
-                // Generate placeholders for surrounding hexes (6 directions)
+                // Generate real hexes for surrounding area (6 directions) using the pool
                 const directions = ['N', 'S', 'NE', 'NW', 'SE', 'SW'];
                 directions.forEach(dir => {
                     const coords = HexMapManager.getNewCoords([0, 0], dir);
                     const key = `${coords[0]},${coords[1]}`;
-                    hexes[key] = {
-                        coordinates: coords,
-                        generated: false,
-                        visited: false,
-                        biome: 'Plains', // Placeholder biome
-                        name: 'Uncharted Territory',
-                        description: 'The mists of the unknown cling to this place.',
-                        interest_points: [],
-                        resourceNodes: [],
-                        openedContainers: {},
-                        namingSource: 'engine',
-                        visualVariant: 1
-                    };
+                    const neighbor = HexGenerator.generateHex(coords, [{ biome: 'Plains' }], emptySizes, pool);
+                    neighbor.visited = false;
+                    neighbor.name = 'Uncharted Territory';
+                    hexes[key] = neighbor;
                 });
                 return {
                     grid_id: 'world_map',
-                    hexes
+                    hexes,
+                    discoveredHexIds: ['0,0'],
+                    lastGeneratedTurn: 0
                 };
             })(),
             subLocations: [],
