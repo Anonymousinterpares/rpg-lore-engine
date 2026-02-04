@@ -1,18 +1,20 @@
 .container {
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md);
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-md);
-    height: 100%;
+    gap: var(--spacing-sm);
+    flex: 1;
+    overflow: visible;
+    /* To allow dropped items panel to show */
     position: relative;
+    border-top: 1px solid rgba(139, 115, 85, 0.2);
 }
 
 .header {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xs);
-    border-bottom: 1px solid var(--glass-border);
-    padding-bottom: var(--spacing-sm);
+    gap: 4px;
+    padding-bottom: var(--spacing-xs);
 }
 
 .titleRow {
@@ -39,6 +41,8 @@
     font-size: 0.7rem;
     color: var(--glass-text-dim);
     letter-spacing: 0.02em;
+    white-space: nowrap;
+    gap: var(--spacing-sm);
 }
 
 .weightOver {
@@ -88,10 +92,43 @@
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-    gap: var(--spacing-sm);
+    grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+    gap: 4px;
     overflow-y: auto;
     padding-right: var(--spacing-xs);
+    transition: all 0.3s ease-in-out;
+    max-height: 500px;
+    opacity: 1;
+}
+
+.collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.toggleBtn {
+    background: none;
+    border: none;
+    color: var(--parchment-text);
+    opacity: 0.6;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    transition: transform 0.3s ease, opacity 0.2s ease;
+}
+
+.toggleBtn:hover {
+    opacity: 1;
+}
+
+.rotated {
+    transform: rotate(-180deg);
 }
 
 .itemSlot,

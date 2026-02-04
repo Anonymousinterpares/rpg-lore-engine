@@ -2,7 +2,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState } from 'react';
 import styles from './InventoryGrid.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
-import { Package, Sword, Shield, FlaskConical, Scroll, Coins } from 'lucide-react';
+import { Package, Sword, Shield, FlaskConical, Scroll, Coins, ChevronDown } from 'lucide-react';
 import ItemContextMenu from './ItemContextMenu';
 import ItemDatasheet from './ItemDatasheet';
 import { DataManager } from '../../../ruleset/data/DataManager';
@@ -11,6 +11,7 @@ const InventoryGrid = ({ items, gold, capacity, droppedItems = [], maxSlots = 20
     const [contextMenu, setContextMenu] = useState(null);
     const [datasheetItem, setDatasheetItem] = useState(null);
     const [showDropped, setShowDropped] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(false);
     const totalWeight = items.reduce((sum, item) => sum + (item.weight * (item.quantity || 1)), 0);
     const isOverweight = totalWeight > capacity;
     const hasDroppedItems = (droppedItems || []).length > 0;
@@ -43,7 +44,7 @@ const InventoryGrid = ({ items, gold, capacity, droppedItems = [], maxSlots = 20
             onItemAction(action, item);
         }
     };
-    return (_jsxs("div", { className: `${styles.container} ${parchmentStyles.panel} ${className}`, children: [_jsxs("div", { className: styles.header, children: [_jsxs("div", { className: styles.titleRow, children: [_jsx("h3", { className: parchmentStyles.heading, style: { margin: 0 }, children: "Inventory" }), _jsxs("div", { className: styles.gold, children: [_jsx(Coins, { size: 14, className: styles.goldIcon }), _jsxs("span", { children: [gold.gp, "g ", gold.sp, "s ", gold.cp, "c"] })] })] }), _jsxs("div", { className: styles.itemStats, children: [_jsxs("div", { className: isOverweight ? styles.weightOver : '', children: ["Wgt: ", totalWeight.toFixed(1), " / ", capacity, " lb"] }), _jsxs("div", { children: ["Slots: ", items.length, " / ", maxSlots] })] })] }), _jsxs("div", { className: styles.grid, onDragOver: (e) => e.preventDefault(), onDrop: (e) => {
+    return (_jsxs("div", { className: `${styles.container} ${className}`, children: [_jsxs("div", { className: styles.header, children: [_jsxs("div", { className: styles.titleRow, children: [_jsxs("div", { style: { display: 'flex', alignItems: 'center', gap: '8px' }, children: [_jsx("button", { className: `${styles.toggleBtn} ${isCollapsed ? '' : styles.rotated}`, onClick: () => setIsCollapsed(!isCollapsed), title: isCollapsed ? "Expand Inventory" : "Collapse Inventory", children: _jsx(ChevronDown, { size: 18 }) }), _jsx("h3", { className: parchmentStyles.heading, style: { margin: 0 }, children: "Inventory" })] }), _jsxs("div", { className: styles.gold, children: [_jsx(Coins, { size: 14, className: styles.goldIcon }), _jsxs("span", { children: [gold.gp, "g ", gold.sp, "s ", gold.cp, "c"] })] })] }), _jsxs("div", { className: styles.itemStats, children: [_jsxs("div", { className: isOverweight ? styles.weightOver : '', children: ["Wgt: ", totalWeight.toFixed(1), "/", capacity, "lb"] }), _jsxs("div", { children: ["Slots: ", items.length, "/", maxSlots] })] })] }), _jsxs("div", { className: `${styles.grid} ${isCollapsed ? styles.collapsed : ''}`, onDragOver: (e) => e.preventDefault(), onDrop: (e) => {
                     const data = e.dataTransfer.getData('item');
                     const source = e.dataTransfer.getData('source');
                     if (data && source === 'ground') {

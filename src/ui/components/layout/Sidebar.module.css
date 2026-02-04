@@ -2,6 +2,14 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-sm);
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-width: none;
+    /* Hide scrollbar for cleaner look */
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none;
 }
 
 .sectionHeader {

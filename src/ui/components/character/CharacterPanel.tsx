@@ -23,7 +23,7 @@ const CharacterPanel: React.FC = () => {
     const initiativeStr = (initiative >= 0 ? '+' : '') + initiative;
 
     return (
-        <div className={`${parchmentStyles.panel} ${styles.panel}`}>
+        <div className={styles.panel}>
             <div className={styles.header}>
                 <h2 className={styles.name}>{char.name}</h2>
                 <div className={styles.level}>Level {char.level} {char.class}</div>

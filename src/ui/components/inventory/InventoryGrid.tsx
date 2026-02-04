@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './InventoryGrid.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
-import { Package, Sword, Shield, FlaskConical, Scroll, Coins } from 'lucide-react';
+import { Package, Sword, Shield, FlaskConical, Scroll, Coins, ChevronDown } from 'lucide-react';
 import ItemContextMenu from './ItemContextMenu';
 import ItemDatasheet from './ItemDatasheet';
 import { DataManager } from '../../../ruleset/data/DataManager';
@@ -41,6 +41,7 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
     const [contextMenu, setContextMenu] = useState<{ x: number, y: number, item: Item } | null>(null);
     const [datasheetItem, setDatasheetItem] = useState<any>(null);
     const [showDropped, setShowDropped] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     const totalWeight = items.reduce((sum, item) => sum + (item.weight * (item.quantity || 1)), 0);
     const isOverweight = totalWeight > capacity;
@@ -74,10 +75,19 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
     };
 
     return (
-        <div className={`${styles.container} ${parchmentStyles.panel} ${className}`}>
+        <div className={`${styles.container} ${className}`}>
             <div className={styles.header}>
                 <div className={styles.titleRow}>
-                    <h3 className={parchmentStyles.heading} style={{ margin: 0 }}>Inventory</h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <button
+                            className={`${styles.toggleBtn} ${isCollapsed ? '' : styles.rotated}`}
+                            onClick={() => setIsCollapsed(!isCollapsed)}
+                            title={isCollapsed ? "Expand Inventory" : "Collapse Inventory"}
+                        >
+                            <ChevronDown size={18} />
+                        </button>
+                        <h3 className={parchmentStyles.heading} style={{ margin: 0 }}>Inventory</h3>
+                    </div>
                     <div className={styles.gold}>
                         <Coins size={14} className={styles.goldIcon} />
                         <span>{gold.gp}g {gold.sp}s {gold.cp}c</span>
@@ -86,16 +96,16 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
 
                 <div className={styles.itemStats}>
                     <div className={isOverweight ? styles.weightOver : ''}>
-                        Wgt: {totalWeight.toFixed(1)} / {capacity} lb
+                        Wgt: {totalWeight.toFixed(1)}/{capacity}lb
                     </div>
                     <div>
-                        Slots: {items.length} / {maxSlots}
+                        Slots: {items.length}/{maxSlots}
                     </div>
                 </div>
             </div>
 
             <div
-                className={styles.grid}
+                className={`${styles.grid} ${isCollapsed ? styles.collapsed : ''}`}
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => {
                     const data = e.dataTransfer.getData('item');
