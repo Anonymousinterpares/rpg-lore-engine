@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Codex.module.css';
-import { X, Book, Users, Shield, Map, Info, Swords } from 'lucide-react';
+import { X, Book, Users, Shield, Map, Info, Swords, Skull } from 'lucide-react';
 import { DataManager } from '../../../ruleset/data/DataManager';
 import skillsData from '../../../data/codex/skills.json';
 import conditionsData from '../../../data/codex/conditions.json';
@@ -19,6 +19,7 @@ const CATEGORIES = [
     { id: 'skills', label: 'Skills', icon: Info },
     { id: 'races', label: 'Races', icon: Users },
     { id: 'classes', label: 'Classes', icon: Swords },
+    { id: 'bestiary', label: 'Bestiary', icon: Skull },
     { id: 'conditions', label: 'Conditions', icon: Book },
     { id: 'items', label: 'Items', icon: Map }
 ];
@@ -44,6 +45,7 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                     case 'conditions': data = conditionsData; break;
                     case 'races': data = DataManager.getRaces(); break;
                     case 'classes': data = DataManager.getClasses(); break;
+                    case 'bestiary': data = []; break;
                 }
                 const entry = data.find(e => (e.id === initialDeepLink.entryId || e.name === initialDeepLink.entryId));
                 if (entry) {
@@ -152,6 +154,12 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                 return (
                     <div className={styles.entriesGrid}>
                         {DataManager.getRaces().length > 0 && <p className={styles.placeholder}>Items lore coming soon...</p>}
+                    </div>
+                );
+            case 'bestiary':
+                return (
+                    <div className={styles.entriesGrid}>
+                        <p className={styles.placeholder}>Monster knowledge being transcribed...</p>
                     </div>
                 );
             default:

@@ -1,7 +1,7 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import { useState, useEffect } from 'react';
 import styles from './Codex.module.css';
-import { X, Book, Users, Shield, Map, Info, Swords } from 'lucide-react';
+import { X, Book, Users, Shield, Map, Info, Swords, Skull } from 'lucide-react';
 import { DataManager } from '../../../ruleset/data/DataManager';
 import skillsData from '../../../data/codex/skills.json';
 import conditionsData from '../../../data/codex/conditions.json';
@@ -11,6 +11,7 @@ const CATEGORIES = [
     { id: 'skills', label: 'Skills', icon: Info },
     { id: 'races', label: 'Races', icon: Users },
     { id: 'classes', label: 'Classes', icon: Swords },
+    { id: 'bestiary', label: 'Bestiary', icon: Skull },
     { id: 'conditions', label: 'Conditions', icon: Book },
     { id: 'items', label: 'Items', icon: Map }
 ];
@@ -42,6 +43,9 @@ const Codex = ({ isOpen, onClose, initialDeepLink, isPage = false, seenItems = [
                         break;
                     case 'classes':
                         data = DataManager.getClasses();
+                        break;
+                    case 'bestiary':
+                        data = [];
                         break;
                 }
                 const entry = data.find(e => (e.id === initialDeepLink.entryId || e.name === initialDeepLink.entryId));
@@ -82,6 +86,8 @@ const Codex = ({ isOpen, onClose, initialDeepLink, isPage = false, seenItems = [
                 return (_jsx("div", { className: styles.entriesGrid, children: conditionsData.map(cond => (_jsx("div", { id: `entry-${cond.name}`, className: `${styles.entryCard} ${selectedEntry?.name === cond.name ? styles.active : ''}`, onClick: () => setSelectedEntry(cond), children: _jsx("h4", { children: cond.name }) }, cond.name))) }));
             case 'items':
                 return (_jsx("div", { className: styles.entriesGrid, children: DataManager.getRaces().length > 0 && _jsx("p", { className: styles.placeholder, children: "Items lore coming soon..." }) }));
+            case 'bestiary':
+                return (_jsx("div", { className: styles.entriesGrid, children: _jsx("p", { className: styles.placeholder, children: "Monster knowledge being transcribed..." }) }));
             default:
                 return _jsx("div", { className: styles.placeholder, children: "More lore coming soon..." });
         }
