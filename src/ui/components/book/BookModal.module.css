@@ -154,6 +154,26 @@
     }
 }
 
+@keyframes arrowHint {
+    0% {
+        transform: translateY(-50%) translateX(0) scale(1);
+        filter: drop-shadow(0 0 2px rgba(139, 0, 0, 0.3)) drop-shadow(1px 1px 0 #fff) drop-shadow(-1px -1px 0 #fff) drop-shadow(1px -1px 0 #fff) drop-shadow(-1px 1px 0 #fff);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: translateY(-50%) translateX(-15px) scale(1.1);
+        filter: drop-shadow(0 0 10px rgba(139, 0, 0, 0.6)) drop-shadow(2px 2px 0 #fff) drop-shadow(-2px -2px 0 #fff) drop-shadow(2px -2px 0 #fff) drop-shadow(-2px 2px 0 #fff);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-50%) translateX(0) scale(1);
+        filter: drop-shadow(0 0 2px rgba(139, 0, 0, 0.3)) drop-shadow(1px 1px 0 #fff) drop-shadow(-1px -1px 0 #fff) drop-shadow(1px -1px 0 #fff) drop-shadow(-1px 1px 0 #fff);
+        opacity: 0.8;
+    }
+}
+
 /* Navigation Arrow Overlay */
 .turnBackOverlay {
     position: absolute;
@@ -163,28 +183,39 @@
     z-index: 200;
     cursor: pointer;
     transition: all 0.3s ease;
-    opacity: 0.6;
-    color: #e6d3ba;
+    opacity: 0.7;
+    color: #8b0000;
+    /* Dark Red */
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
+    animation: arrowHint 3s infinite ease-in-out;
 }
 
 .turnBackOverlay:hover {
+    animation: none;
+    /* Stop pulsating when hovering */
     opacity: 1;
-    transform: translateY(-50%) translateX(-5px);
-    color: #fdf5e6;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    transform: translateY(-50%) translateX(-15px) scale(1.2);
+    /* Expanded and held */
+    color: #ffd700;
+    /* High contrast gold */
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4));
+    /* Clear gold glow, removes white outline */
 }
 
 .turnBackLabel {
     font-family: 'Cinzel', serif;
-    font-size: 0.8rem;
-    font-weight: bold;
+    font-size: 0.9rem;
+    /* Slightly larger */
+    font-weight: 900;
+    /* Extra bold */
     text-transform: uppercase;
     transform: rotate(-90deg);
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    letter-spacing: 1px;
 }
 
 /* Close button - override default if needed */
