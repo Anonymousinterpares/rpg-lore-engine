@@ -4,23 +4,27 @@ import { X, Book, Users, Shield, Map, Info, Swords } from 'lucide-react';
 import { DataManager } from '../../../ruleset/data/DataManager';
 import skillsData from '../../../data/codex/skills.json';
 import conditionsData from '../../../data/codex/conditions.json';
+import mechanicsData from '../../../data/codex/mechanics.json';
 
 interface CodexProps {
     isOpen: boolean;
     onClose: () => void;
     seenItems?: string[];
+    initialDeepLink?: { category: string; entryId?: string };
+    isPage?: boolean;
 }
 
 const CATEGORIES = [
+    { id: 'mechanics', label: 'Mechanics', icon: Shield },
     { id: 'skills', label: 'Skills', icon: Info },
     { id: 'races', label: 'Races', icon: Users },
     { id: 'classes', label: 'Classes', icon: Swords },
-    { id: 'conditions', label: 'Conditions', icon: Shield },
+    { id: 'conditions', label: 'Conditions', icon: Book },
     { id: 'items', label: 'Items', icon: Map }
 ];
 
-const Codex: React.FC<CodexProps> = ({ isOpen, onClose, seenItems = [] }) => {
-    const [activeCategory, setActiveCategory] = useState('skills');
+const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage = false, seenItems = [] }) => {
+    const [activeCategory, setActiveCategory] = useState(initialDeepLink?.category || 'mechanics');
     const [selectedEntry, setSelectedEntry] = useState<any>(null);
     const [races, setRaces] = useState<any[]>([]);
     const [classes, setClasses] = useState<any[]>([]);
@@ -30,20 +34,64 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, seenItems = [] }) => {
             await DataManager.initialize();
             setRaces(DataManager.getRaces());
             setClasses(DataManager.getClasses());
-        };
-        if (isOpen) init();
-    }, [isOpen]);
 
-    if (!isOpen) return null;
+            // Handle initial deep link entry selection
+            if (initialDeepLink?.entryId) {
+                let data: any[] = [];
+                switch (initialDeepLink.category) {
+                    case 'mechanics': data = mechanicsData; break;
+                    case 'skills': data = skillsData; break;
+                    case 'conditions': data = conditionsData; break;
+                    case 'races': data = DataManager.getRaces(); break;
+                    case 'classes': data = DataManager.getClasses(); break;
+                }
+                const entry = data.find(e => (e.id === initialDeepLink.entryId || e.name === initialDeepLink.entryId));
+                if (entry) {
+                    setSelectedEntry(entry);
+                    setActiveCategory(initialDeepLink.category);
+                }
+            } else if (!selectedEntry) {
+                setSelectedEntry(null);
+            }
+        };
+        if (isOpen || isPage) init();
+    }, [isOpen, initialDeepLink, isPage]);
+
+    // Internal scroll effect when entry is selected
+    useEffect(() => {
+        if (selectedEntry) {
+            const id = selectedEntry.id || selectedEntry.name;
+            const el = document.getElementById(`entry-${id}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }, [selectedEntry]);
+
+    if (!isPage && !isOpen) return null;
 
     const renderCategoryContent = () => {
         switch (activeCategory) {
+            case 'mechanics':
+                return (
+                    <div className={styles.entriesGrid}>
+                        {mechanicsData.map(item => (
+                            <div
+                                key={item.id}
+                                id={`entry-${item.id}`}
+                                className={`${styles.entryCard} ${selectedEntry?.id === item.id ? styles.active : ''}`}
+                                onClick={() => setSelectedEntry(item)}
+                            >
+                                <h4>{item.name}</h4>
+                            </div>
+                        ))}
+                    </div>
+                );
             case 'skills':
                 return (
                     <div className={styles.entriesGrid}>
                         {skillsData.map(skill => (
                             <div
                                 key={skill.name}
+                                id={`entry-${skill.name}`}
                                 className={`${styles.entryCard} ${selectedEntry?.name === skill.name ? styles.active : ''}`}
                                 onClick={() => setSelectedEntry(skill)}
                             >
@@ -59,6 +107,7 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, seenItems = [] }) => {
                         {races.map(race => (
                             <div
                                 key={race.name}
+                                id={`entry-${race.name}`}
                                 className={`${styles.entryCard} ${selectedEntry?.name === race.name ? styles.active : ''}`}
                                 onClick={() => setSelectedEntry(race)}
                             >
@@ -74,6 +123,7 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, seenItems = [] }) => {
                         {classes.map(cls => (
                             <div
                                 key={cls.name}
+                                id={`entry-${cls.name}`}
                                 className={`${styles.entryCard} ${selectedEntry?.name === cls.name ? styles.active : ''}`}
                                 onClick={() => setSelectedEntry(cls)}
                             >
@@ -89,6 +139,7 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, seenItems = [] }) => {
                         {conditionsData.map(cond => (
                             <div
                                 key={cond.name}
+                                id={`entry-${cond.name}`}
                                 className={`${styles.entryCard} ${selectedEntry?.name === cond.name ? styles.active : ''}`}
                                 onClick={() => setSelectedEntry(cond)}
                             >
@@ -97,114 +148,143 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, seenItems = [] }) => {
                         ))}
                     </div>
                 );
+            case 'items':
+                return (
+                    <div className={styles.entriesGrid}>
+                        {DataManager.getRaces().length > 0 && <p className={styles.placeholder}>Items lore coming soon...</p>}
+                    </div>
+                );
             default:
                 return <div className={styles.placeholder}>More lore coming soon...</div>;
         }
     };
 
-    return (
-        <div className={styles.overlay} onClick={onClose}>
-            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-                <div className={styles.sidebar}>
-                    <div className={styles.codexHeader}>
-                        <Book size={24} />
-                        <h2>Codex</h2>
-                    </div>
-                    <nav className={styles.nav}>
-                        {CATEGORIES.map(cat => (
-                            <button
-                                key={cat.id}
-                                className={`${styles.navItem} ${activeCategory === cat.id ? styles.active : ''}`}
-                                onClick={() => {
-                                    setActiveCategory(cat.id);
-                                    setSelectedEntry(null);
-                                }}
-                            >
-                                <cat.icon size={18} />
-                                {cat.label}
-                            </button>
-                        ))}
-                    </nav>
+    const modalContent = (
+        <div className={`${styles.modal} ${isPage ? styles.isPage : ''}`} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.sidebar}>
+                <div className={styles.codexHeader}>
+                    <Book size={24} />
+                    <h2>Codex</h2>
                 </div>
+                <nav className={styles.nav}>
+                    {CATEGORIES.map(cat => (
+                        <button
+                            key={cat.id}
+                            className={`${styles.navItem} ${activeCategory === cat.id ? styles.active : ''}`}
+                            onClick={() => {
+                                setActiveCategory(cat.id);
+                                setSelectedEntry(null);
+                            }}
+                        >
+                            <cat.icon size={18} />
+                            {cat.label}
+                        </button>
+                    ))}
+                </nav>
+            </div>
 
-                <div className={styles.main}>
+            <div className={styles.main}>
+                {!isPage && (
                     <button className={styles.closeBtn} onClick={onClose}>
                         <X size={24} />
                     </button>
+                )}
 
-                    <div className={styles.content}>
-                        <div className={styles.listSection}>
-                            {renderCategoryContent()}
-                        </div>
+                <div className={styles.content}>
+                    <div className={styles.listSection}>
+                        {renderCategoryContent()}
+                    </div>
 
-                        <div className={styles.detailSection}>
-                            {selectedEntry ? (
-                                <div className={styles.entryDetail}>
-                                    <h3>{selectedEntry.name}</h3>
-                                    <div className={styles.divider} />
-                                    <div className={styles.detailBody}>
-                                        {activeCategory === 'skills' && (
-                                            <>
-                                                <div className={styles.statLine}><strong>Ability:</strong> {selectedEntry.ability}</div>
-                                                <p>{selectedEntry.description}</p>
+                    <div className={styles.detailSection}>
+                        {selectedEntry ? (
+                            <div className={styles.entryDetail}>
+                                <h3>{selectedEntry.name}</h3>
+                                <div className={styles.divider} />
+                                <div className={styles.detailBody}>
+                                    {activeCategory === 'mechanics' && (
+                                        <>
+                                            <p>{selectedEntry.description}</p>
+                                            {selectedEntry.examples && (
                                                 <div className={styles.examples}>
-                                                    <h4>Example Uses:</h4>
+                                                    <h4>Details:</h4>
                                                     <ul>
                                                         {selectedEntry.examples.map((ex: string, i: number) => (
                                                             <li key={i}>{ex}</li>
                                                         ))}
                                                     </ul>
                                                 </div>
-                                            </>
-                                        )}
-                                        {activeCategory === 'races' && (
-                                            <>
-                                                <div className={styles.statLine}><strong>Size:</strong> {selectedEntry.size} | <strong>Speed:</strong> {selectedEntry.speed}ft</div>
-                                                <p>{selectedEntry.description || "A lineage of adventurers."}</p>
-                                                <div className={styles.examples}>
-                                                    <h4>Racial Traits:</h4>
-                                                    <ul>
-                                                        {selectedEntry.traits.map((t: any, i: number) => (
-                                                            <li key={i}><strong>{t.name}:</strong> {t.description}</li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            </>
-                                        )}
-                                        {activeCategory === 'classes' && (
-                                            <>
-                                                <div className={styles.statLine}><strong>Hit Die:</strong> d{selectedEntry.hitDie} | <strong>Primary:</strong> {selectedEntry.primaryAbility.join(', ')}</div>
-                                                <p>{selectedEntry.description || "A path of mastery."}</p>
-                                                <div className={styles.examples}>
-                                                    <h4>Key Features:</h4>
-                                                    <ul>
-                                                        {selectedEntry.allFeatures.filter((f: any) => f.level <= 3).map((f: any, i: number) => (
-                                                            <li key={i}><strong>{f.name} (Lvl {f.level}):</strong> {f.description}</li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            </>
-                                        )}
-                                        {activeCategory === 'conditions' && (
-                                            <>
-                                                <p style={{ fontStyle: 'italic', marginBottom: '1rem', opacity: 0.8 }}>
-                                                    Status effects and mechanical restrictions that can affect creatures during gameplay.
-                                                </p>
-                                                <p>{selectedEntry.description}</p>
-                                            </>
-                                        )}
-                                    </div>
+                                            )}
+                                        </>
+                                    )}
+                                    {activeCategory === 'skills' && (
+                                        <>
+                                            <div className={styles.statLine}><strong>Ability:</strong> {selectedEntry.ability}</div>
+                                            <p>{selectedEntry.description}</p>
+                                            <div className={styles.examples}>
+                                                <h4>Example Uses:</h4>
+                                                <ul>
+                                                    {selectedEntry.examples.map((ex: string, i: number) => (
+                                                        <li key={i}>{ex}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </>
+                                    )}
+                                    {activeCategory === 'races' && (
+                                        <>
+                                            <div className={styles.statLine}><strong>Size:</strong> {selectedEntry.size} | <strong>Speed:</strong> {selectedEntry.speed}ft</div>
+                                            <p>{selectedEntry.description || "A lineage of adventurers."}</p>
+                                            <div className={styles.examples}>
+                                                <h4>Racial Traits:</h4>
+                                                <ul>
+                                                    {selectedEntry.traits.map((t: any, i: number) => (
+                                                        <li key={i}><strong>{t.name}:</strong> {t.description}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </>
+                                    )}
+                                    {activeCategory === 'classes' && (
+                                        <>
+                                            <div className={styles.statLine}><strong>Hit Die:</strong> d{selectedEntry.hitDie} | <strong>Primary:</strong> {selectedEntry.primaryAbility.join(', ')}</div>
+                                            <p>{selectedEntry.description || "A path of mastery."}</p>
+                                            <div className={styles.examples}>
+                                                <h4>Key Features:</h4>
+                                                <ul>
+                                                    {selectedEntry.allFeatures?.filter((f: any) => f.level <= 3).map((f: any, i: number) => (
+                                                        <li key={i}><strong>{f.name} (Lvl {f.level}):</strong> {f.description}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </>
+                                    )}
+                                    {activeCategory === 'conditions' && (
+                                        <>
+                                            <p style={{ fontStyle: 'italic', marginBottom: '1rem', opacity: 0.8 }}>
+                                                Status effects and mechanical restrictions that can affect creatures during gameplay.
+                                            </p>
+                                            <p>{selectedEntry.description}</p>
+                                        </>
+                                    )}
                                 </div>
-                            ) : (
-                                <div className={styles.emptyDetail}>
-                                    <Book size={48} opacity={0.2} />
-                                    <p>Select an entry to view details</p>
-                                </div>
-                            )}
-                        </div>
+                            </div>
+                        ) : (
+                            <div className={styles.emptyDetail}>
+                                <Book size={48} opacity={0.2} />
+                                <p>Select an entry to view details</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
+        </div>
+    );
+
+    if (isPage) return modalContent;
+
+    return (
+        <div className={styles.overlay} onClick={onClose}>
+            {modalContent}
         </div>
     );
 };

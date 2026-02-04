@@ -10,6 +10,8 @@ import { useGameState } from './hooks/useGameState';
 import CharacterCreator from './components/creation/CharacterCreator';
 import Codex from './components/codex/Codex';
 import CharacterSheet from './components/character/CharacterSheet';
+import BookModal from './components/book/BookModal';
+import { BookPageData } from './context/BookContext';
 import { Book, User } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -17,8 +19,8 @@ const App: React.FC = () => {
     const [showSettings, setShowSettings] = useState(false);
     const [showLobby, setShowLobby] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
-    const [showCodex, setShowCodex] = useState(false);
-    const [showCharacterSheet, setShowCharacterSheet] = useState(false);
+    const [bookOpen, setBookOpen] = useState(false);
+    const [initialBookPage, setInitialBookPage] = useState<BookPageData | null>(null);
     const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
 
     // Close modals on Escape key
@@ -28,8 +30,7 @@ const App: React.FC = () => {
                 setShowMenu(false);
                 setShowSettings(false);
                 setShowLobby(false);
-                setShowCodex(false);
-                setShowCharacterSheet(false);
+                setBookOpen(false);
             }
         };
         window.addEventListener('keydown', handleKeyDown);
@@ -67,6 +68,39 @@ const App: React.FC = () => {
     const handleSettingsSave = (newSettings: any) => {
         console.log("Settings saved:", newSettings);
         setShowSettings(false);
+    };
+
+    const openCharacterSheet = () => {
+        setInitialBookPage({
+            id: 'character',
+            label: 'Character Sheet',
+            content: <CharacterSheet onClose={() => setBookOpen(false)} isPage={true} />
+        });
+        setBookOpen(true);
+    };
+
+    const openCodex = () => {
+        setInitialBookPage({
+            id: 'codex',
+            label: 'Codex',
+            content: <Codex isOpen={true} onClose={() => setBookOpen(false)} isPage={true} />
+        });
+        setBookOpen(true);
+    };
+
+    const openEquipment = () => {
+        setInitialBookPage({
+            id: 'equipment',
+            label: 'Equipment',
+            content: (
+                <div style={{ padding: '60px', textAlign: 'center' }}>
+                    <h2 style={{ fontFamily: 'Cinzel, serif', color: '#5d4037' }}>Equipment & Paperdoll</h2>
+                    <p style={{ fontStyle: 'italic', opacity: 0.6 }}>The Great Forge is still preparing your armory...</p>
+                    <Book size={80} style={{ marginTop: '40px', opacity: 0.2 }} />
+                </div>
+            )
+        });
+        setBookOpen(true);
     };
 
     // Default settings placeholder
@@ -115,14 +149,15 @@ const App: React.FC = () => {
                     <Header
                         onLobby={() => setShowLobby(true)}
                         onSettings={() => setShowSettings(true)}
-                        onCodex={() => setShowCodex(true)}
-                        onCharacter={() => setShowCharacterSheet(true)}
+                        onCodex={openCodex}
+                        onCharacter={openCharacterSheet}
                         onMenu={() => setShowMenu(true)}
+                        onEquipment={openEquipment}
                     />
                     <div className={styles.mainContent}>
                         <Sidebar
                             className={styles.sidebar}
-                            onCharacter={() => setShowCharacterSheet(true)}
+                            onCharacter={openCharacterSheet}
                         />
                         <MainViewport className={styles.viewport} />
                         <RightPanel className={styles.rightPanel} />
@@ -156,13 +191,11 @@ const App: React.FC = () => {
                             </div>
                         </div>
                     )}
-                    <Codex
-                        isOpen={showCodex}
-                        onClose={() => setShowCodex(false)}
-                    />
-                    {showCharacterSheet && (
-                        <CharacterSheet
-                            onClose={() => setShowCharacterSheet(false)}
+                    {bookOpen && initialBookPage && (
+                        <BookModal
+                            isOpen={bookOpen}
+                            onClose={() => setBookOpen(false)}
+                            initialPage={initialBookPage}
                         />
                     )}
                 </>
