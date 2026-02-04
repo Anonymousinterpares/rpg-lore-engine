@@ -98,6 +98,12 @@ const App = () => {
             permanent: true
         },
         {
+            id: 'world',
+            label: 'World',
+            content: _jsx(Codex, { isOpen: true, onClose: () => { }, isPage: true, initialDeepLink: { category: 'world' } }),
+            permanent: true
+        },
+        {
             id: 'codex',
             label: 'Codex',
             content: _jsx(Codex, { isOpen: true, onClose: () => { }, isPage: true }),

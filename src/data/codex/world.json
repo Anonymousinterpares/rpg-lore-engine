@@ -1,0 +1,13 @@
+[
+    {
+        "id": "time_and_calendar",
+        "name": "Time and the Harptos Calendar",
+        "category": "world",
+        "description": "In the Forgotten Realms, time is measured by the *Calendar of Harptos*.\n\n### The Year\nA year consists of 365 days, divided into twelve months of thirty days each. There are also five special holidays that fall between certain months, which are not part of any month itself.\n\n### The Months\n1. *Hammer* (Deepwinter)\n2. *Alturiak* (The Claw of Winter)\n3. *Ches* (The Claw of Sunsets)\n4. *Tarsakh* (The Garden)\n5. *Mirtul* (The Melting)\n6. *Kythorn* (The Time of Flowers)\n7. *Flamerule* (Summertide)\n8. *Eleasis* (Highsun)\n9. *Eleint* (The Fading)\n10. *Marpenoth* (Leafall)\n11. *Uktar* (The Rotting)\n12. *Nightal* (The Drawing Down)\n\n### The Week: Tendays\nInstead of a seven-day week, the Harptos calendar uses a *Tenday*. A month consists of exactly three tendays. This means every month starts on the first day of a tenday and ends on the last day of the third tenday.\n\n### Special Festivals\nBetween certain months, the world celebrates major festivals:\n- *Midwinter*: Between Hammer and Alturiak.\n- *Greengrass*: Between Tarsakh and Mirtul.\n- *Midsummer*: Between Flamerule and Eleasis.\n- *Higharvestide*: Between Eleint and Marpenoth.\n- *The Feast of the Moon*: Between Uktar and Nightal.",
+        "examples": [
+            "10 days make a Tenday",
+            "3 Tendays make a Month",
+            "12 Months + 5 Holidays make a Year"
+        ]
+    }
+]

@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { DataManager } from '../data/DataManager';
 import { HexGenerator } from '../combat/HexGenerator';
+import { HexMapManager } from '../combat/HexMapManager';
 export class CharacterFactory {
     static createNewGameState(options) {
         const { name, race, characterClass, background, abilityScores, skillProficiencies } = options;
@@ -88,13 +89,33 @@ export class CharacterFactory {
                 coordinates: [0, 0],
                 droppedItems: []
             },
-            worldTime: { day: 1, hour: 8, month: 1, year: 1489, totalTurns: 0 },
+            worldTime: { day: 1, hour: 9, month: 1, year: 1489, totalTurns: 0 },
             worldMap: (() => {
                 const startHex = HexGenerator.generateHex([0, 0], [], {});
                 startHex.visited = true;
+                const hexes = { '0,0': startHex };
+                // Generate placeholders for surrounding hexes (6 directions)
+                const directions = ['N', 'S', 'NE', 'NW', 'SE', 'SW'];
+                directions.forEach(dir => {
+                    const coords = HexMapManager.getNewCoords([0, 0], dir);
+                    const key = `${coords[0]},${coords[1]}`;
+                    hexes[key] = {
+                        coordinates: coords,
+                        generated: false,
+                        visited: false,
+                        biome: 'Plains', // Placeholder biome
+                        name: 'Uncharted Territory',
+                        description: 'The mists of the unknown cling to this place.',
+                        interest_points: [],
+                        resourceNodes: [],
+                        openedContainers: {},
+                        namingSource: 'engine',
+                        visualVariant: 1
+                    };
+                });
                 return {
                     grid_id: 'world_map',
-                    hexes: { '0,0': startHex }
+                    hexes
                 };
             })(),
             subLocations: [],

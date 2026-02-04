@@ -22,6 +22,7 @@ interface HexData {
 interface HexMapViewProps {
     hexes: HexData[];
     onHexClick?: (id: string) => void;
+    onHexContextMenu?: (id: string, x: number, y: number) => void;
     className?: string;
     viewMode?: 'normal' | 'zoomed-in' | 'zoomed-out';
     selectedHexId?: string;
@@ -32,6 +33,7 @@ interface HexMapViewProps {
 const HexMapView: React.FC<HexMapViewProps> = ({
     hexes,
     onHexClick,
+    onHexContextMenu,
     className = '',
     viewMode = 'normal',
     selectedHexId,
@@ -89,7 +91,7 @@ const HexMapView: React.FC<HexMapViewProps> = ({
             onMouseLeave={handleMouseUp}
         >
             <div className={styles.grid}>
-                {hexes.filter(h => h.isDiscovered).map((hex) => {
+                {hexes.map((hex) => {
                     const biomeBase = hex.biome.toLowerCase();
                     const variantClass = hex.visualVariant ? styles[`${biomeBase}_${hex.visualVariant}`] : styles[biomeBase];
                     const tooltip = hex.playerName
@@ -114,6 +116,11 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onHexClick?.(hex.id);
+                            }}
+                            onContextMenu={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onHexContextMenu?.(hex.id, e.clientX, e.clientY);
                             }}
                         >
                             <div className={styles.hexInner}>

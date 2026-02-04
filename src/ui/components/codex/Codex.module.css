@@ -264,3 +264,41 @@
     font-style: italic;
     opacity: 0.4;
 }
+
+.markdownContent {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.mdH3 {
+    font-family: var(--font-narrative);
+    color: var(--parchment-accent);
+    margin: 1.5rem 0 0.5rem 0;
+    font-size: 1.4rem;
+    border-bottom: 1px solid rgba(139, 115, 85, 0.2);
+    padding-bottom: 4px;
+}
+
+.mdLi {
+    margin-left: 1.5rem;
+    list-style-type: square;
+    color: var(--parchment-text);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

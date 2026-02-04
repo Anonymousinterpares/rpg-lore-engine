@@ -4,7 +4,7 @@ import styles from './BookModal.module.css';
 import { X, ArrowLeft } from 'lucide-react';
 import { BookProvider, useBook } from '../../context/BookContext';
 import { useGameState } from '../../hooks/useGameState';
-const TAB_ORDER = ['character', 'equipment', 'codex', 'world_map', 'quests', 'settings'];
+const TAB_ORDER = ['character', 'equipment', 'codex', 'world', 'world_map', 'quests', 'settings'];
 const BookModalContent = ({ onClose }) => {
     const { pages, activePageId, popPage, goToPage } = useBook();
     const { state, engine, updateState } = useGameState();

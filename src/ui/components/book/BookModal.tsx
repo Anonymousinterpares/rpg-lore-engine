@@ -12,7 +12,7 @@ interface BookModalProps {
     activePageId: string;
 }
 
-const TAB_ORDER = ['character', 'equipment', 'codex', 'world_map', 'quests', 'settings'];
+const TAB_ORDER = ['character', 'equipment', 'codex', 'world', 'world_map', 'quests', 'settings'];
 
 const BookModalContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const { pages, activePageId, popPage, goToPage } = useBook();

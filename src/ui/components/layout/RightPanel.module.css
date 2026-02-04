@@ -79,7 +79,7 @@
 .mapContainer {
     flex: 1;
     border: 1px solid rgba(93, 64, 55, 0.1);
-    background: rgba(0, 0, 0, 0.05);
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 1) 100%);
     border-radius: 4px;
     overflow: hidden;
     position: relative;
@@ -146,4 +146,51 @@
 .systemText {
     color: #60a5fa;
     font-style: italic;
+}
+
+.contextMenu {
+    position: fixed;
+    background: rgba(46, 32, 28, 0.98);
+    border: 1px solid #8b4513;
+    border-radius: 4px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 10000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 10px rgba(139, 69, 19, 0.3);
+    min-width: 140px;
+}
+
+.contextMenu button {
+    background: rgba(139, 69, 19, 0.2);
+    border: 1px solid rgba(139, 69, 19, 0.4);
+    color: #e6d3ba;
+    padding: 8px 12px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+    border-radius: 2px;
+}
+
+.contextMenu button:hover {
+    background: #8b4513;
+    color: #fff;
+}
+
+.contextMenu .cancelButton {
+    margin-top: 4px;
+    border-color: rgba(0, 0, 0, 0.3);
+    color: #999;
+}
+
+.contextMenuDisabled {
+    padding: 8px 12px;
+    color: #666;
+    font-size: 0.8rem;
+    font-style: italic;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
 }

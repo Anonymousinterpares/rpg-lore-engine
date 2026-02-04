@@ -12,8 +12,9 @@ interface RightPanelProps {
 }
 
 const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests }) => {
-    const { state, updateState } = useGameState();
+    const { state, engine, updateState } = useGameState();
     const [viewMode, setViewMode] = React.useState<'normal' | 'zoomed-in' | 'zoomed-out'>('normal');
+    const [contextMenu, setContextMenu] = React.useState<{ id: string, x: number, y: number } | null>(null);
 
     if (!state) return null;
 
@@ -23,6 +24,20 @@ const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests
         else setViewMode('normal');
     };
 
+    const handleHexContextMenu = (id: string, x: number, y: number) => {
+        setContextMenu({ id, x, y });
+    };
+
+    const handleMove = (direction: string) => {
+        if (engine) {
+            engine.processTurn(`move ${direction}`);
+            updateState();
+            setContextMenu(null);
+        }
+    };
+
+    const closeMenu = () => setContextMenu(null);
+
     // Map state.worldMap.hexes to HexMapView format
     const hexData = Object.entries(state.worldMap.hexes).map(([id, hex]) => ({
         id,
@@ -31,7 +46,7 @@ const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests
         biome: hex.biome,
         isVisited: hex.visited,
         isCurrent: state.location.hexId === id,
-        isDiscovered: hex.visited || hex.generated,
+        isDiscovered: true, // If it's in the registry, we show it (placeholders are greyed via unvisited style)
         name: hex.name,
         playerName: hex.playerName,
         namingSource: hex.namingSource,
@@ -51,7 +66,7 @@ const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests
         const dq = hex.q - currentHex.coordinates[0];
         const dr = hex.r - currentHex.coordinates[1];
         const distance = (Math.abs(dq) + Math.abs(dq + dr) + Math.abs(dr)) / 2;
-        return distance <= radius && hex.isDiscovered;
+        return distance <= radius;
     });
 
     // Format history for display
@@ -83,8 +98,45 @@ const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests
                         hexes={filteredHexes}
                         viewMode={viewMode}
                         isDraggable={false}
+                        onHexContextMenu={handleHexContextMenu}
                     />
                 </div>
+                {contextMenu && (() => {
+                    const targetHex = state.worldMap.hexes[contextMenu.id];
+                    const currentCoords = state.location.coordinates;
+                    const targetCoords = targetHex.coordinates;
+                    const dx = targetCoords[0] - currentCoords[0];
+                    const dy = targetCoords[1] - currentCoords[1];
+
+                    let direction = '';
+                    if (dx === 0 && dy === 1) direction = 'N';
+                    else if (dx === 0 && dy === -1) direction = 'S';
+                    else if (dx === 1 && dy === 0) direction = 'NE';
+                    else if (dx === 1 && dy === -1) direction = 'SE';
+                    else if (dx === -1 && dy === 1) direction = 'NW';
+                    else if (dx === -1 && dy === 0) direction = 'SW';
+
+                    const isAdjacent = direction !== '';
+
+                    return (
+                        <div
+                            className={styles.contextMenu}
+                            style={{ left: contextMenu.x, top: contextMenu.y }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {isAdjacent ? (
+                                <button onClick={() => handleMove(direction)}>
+                                    Move towards {direction}
+                                </button>
+                            ) : (
+                                <div className={styles.contextMenuDisabled}>
+                                    Too far to travel
+                                </div>
+                            )}
+                            <button onClick={closeMenu} className={styles.cancelButton}>Cancel</button>
+                        </div>
+                    );
+                })()}
             </div>
 
             <div className={`${styles.section} ${styles.questSection}`}>

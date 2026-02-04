@@ -2,6 +2,7 @@ import React from 'react';
 import parchmentStyles from '../../styles/parchment.module.css';
 import styles from './Header.module.css';
 import { Shield, Menu, Settings, Users, Book, User, Backpack } from 'lucide-react';
+import TimeDisplay from '../exploration/TimeDisplay';
 
 interface HeaderProps {
     onLobby?: () => void;
@@ -18,6 +19,9 @@ const Header: React.FC<HeaderProps> = ({ onLobby, onSettings, onCodex, onCharact
             <div className={styles.logo}>
                 <Shield className={styles.logoIcon} />
                 <h1>RPG Lore Engine</h1>
+            </div>
+            <div className={styles.timeContainer}>
+                <TimeDisplay />
             </div>
             <div className={styles.controls}>
                 <button className={parchmentStyles.button} onClick={onLobby}>

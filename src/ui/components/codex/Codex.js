@@ -6,7 +6,9 @@ import { DataManager } from '../../../ruleset/data/DataManager';
 import skillsData from '../../../data/codex/skills.json';
 import conditionsData from '../../../data/codex/conditions.json';
 import mechanicsData from '../../../data/codex/mechanics.json';
+import worldData from '../../../data/codex/world.json';
 const CATEGORIES = [
+    { id: 'world', label: 'World', icon: Map },
     { id: 'mechanics', label: 'Mechanics', icon: Shield },
     { id: 'skills', label: 'Skills', icon: Info },
     { id: 'races', label: 'Races', icon: Users },
@@ -20,6 +22,21 @@ const Codex = ({ isOpen, onClose, initialDeepLink, isPage = false, seenItems = [
     const [selectedEntry, setSelectedEntry] = useState(null);
     const [races, setRaces] = useState([]);
     const [classes, setClasses] = useState([]);
+    const parseInlines = (text) => {
+        if (!text)
+            return text;
+        // Split by ** (bold) or * (also bold for this game's theme)
+        const parts = text.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+        return parts.map((part, i) => {
+            if (part.startsWith('**') && part.endsWith('**')) {
+                return _jsx("strong", { children: part.slice(2, -2) }, i);
+            }
+            if (part.startsWith('*') && part.endsWith('*')) {
+                return _jsx("strong", { children: part.slice(1, -1) }, i);
+            }
+            return part;
+        });
+    };
     useEffect(() => {
         const init = async () => {
             await DataManager.initialize();
@@ -29,6 +46,9 @@ const Codex = ({ isOpen, onClose, initialDeepLink, isPage = false, seenItems = [
             if (initialDeepLink?.entryId) {
                 let data = [];
                 switch (initialDeepLink.category) {
+                    case 'world':
+                        data = worldData;
+                        break;
                     case 'mechanics':
                         data = mechanicsData;
                         break;
@@ -74,6 +94,8 @@ const Codex = ({ isOpen, onClose, initialDeepLink, isPage = false, seenItems = [
         return null;
     const renderCategoryContent = () => {
         switch (activeCategory) {
+            case 'world':
+                return (_jsx("div", { className: styles.entriesGrid, children: worldData.map((item) => (_jsx("div", { id: `entry-${item.id}`, className: `${styles.entryCard} ${selectedEntry?.id === item.id ? styles.active : ''}`, onClick: () => setSelectedEntry(item), children: _jsx("h4", { children: item.name }) }, item.id))) }));
             case 'mechanics':
                 return (_jsx("div", { className: styles.entriesGrid, children: mechanicsData.map(item => (_jsx("div", { id: `entry-${item.id}`, className: `${styles.entryCard} ${selectedEntry?.id === item.id ? styles.active : ''}`, onClick: () => setSelectedEntry(item), children: _jsx("h4", { children: item.name }) }, item.id))) }));
             case 'skills':
@@ -95,7 +117,13 @@ const Codex = ({ isOpen, onClose, initialDeepLink, isPage = false, seenItems = [
     const modalContent = (_jsxs("div", { className: `${styles.modal} ${isPage ? styles.isPage : ''}`, onClick: (e) => e.stopPropagation(), children: [_jsxs("div", { className: styles.sidebar, children: [_jsxs("div", { className: styles.codexHeader, children: [_jsx(Book, { size: 24 }), _jsx("h2", { children: "Codex" })] }), _jsx("nav", { className: styles.nav, children: CATEGORIES.map(cat => (_jsxs("button", { className: `${styles.navItem} ${activeCategory === cat.id ? styles.active : ''}`, onClick: () => {
                                 setActiveCategory(cat.id);
                                 setSelectedEntry(null);
-                            }, children: [_jsx(cat.icon, { size: 18 }), cat.label] }, cat.id))) })] }), _jsxs("div", { className: styles.main, children: [!isPage && (_jsx("button", { className: styles.closeBtn, onClick: onClose, children: _jsx(X, { size: 24 }) })), _jsxs("div", { className: styles.content, children: [_jsx("div", { className: styles.listSection, children: renderCategoryContent() }), _jsx("div", { className: styles.detailSection, children: selectedEntry ? (_jsxs("div", { className: styles.entryDetail, children: [_jsx("h3", { children: selectedEntry.name }), _jsx("div", { className: styles.divider }), _jsxs("div", { className: styles.detailBody, children: [activeCategory === 'mechanics' && (_jsxs(_Fragment, { children: [_jsx("p", { children: selectedEntry.description }), selectedEntry.examples && (_jsxs("div", { className: styles.examples, children: [_jsx("h4", { children: "Details:" }), _jsx("ul", { children: selectedEntry.examples.map((ex, i) => (_jsx("li", { children: ex }, i))) })] }))] })), activeCategory === 'skills' && (_jsxs(_Fragment, { children: [_jsxs("div", { className: styles.statLine, children: [_jsx("strong", { children: "Ability:" }), " ", selectedEntry.ability] }), _jsx("p", { children: selectedEntry.description }), _jsxs("div", { className: styles.examples, children: [_jsx("h4", { children: "Example Uses:" }), _jsx("ul", { children: selectedEntry.examples.map((ex, i) => (_jsx("li", { children: ex }, i))) })] })] })), activeCategory === 'races' && (_jsxs(_Fragment, { children: [_jsxs("div", { className: styles.statLine, children: [_jsx("strong", { children: "Size:" }), " ", selectedEntry.size, " | ", _jsx("strong", { children: "Speed:" }), " ", selectedEntry.speed, "ft"] }), _jsx("p", { children: selectedEntry.description || "A lineage of adventurers." }), _jsxs("div", { className: styles.examples, children: [_jsx("h4", { children: "Racial Traits:" }), _jsx("ul", { children: selectedEntry.traits.map((t, i) => (_jsxs("li", { children: [_jsxs("strong", { children: [t.name, ":"] }), " ", t.description] }, i))) })] })] })), activeCategory === 'classes' && (_jsxs(_Fragment, { children: [_jsxs("div", { className: styles.statLine, children: [_jsx("strong", { children: "Hit Die:" }), " d", selectedEntry.hitDie, " | ", _jsx("strong", { children: "Primary:" }), " ", selectedEntry.primaryAbility.join(', ')] }), _jsx("p", { children: selectedEntry.description || "A path of mastery." }), _jsxs("div", { className: styles.examples, children: [_jsx("h4", { children: "Key Features:" }), _jsx("ul", { children: selectedEntry.allFeatures?.filter((f) => f.level <= 3).map((f, i) => (_jsxs("li", { children: [_jsxs("strong", { children: [f.name, " (Lvl ", f.level, "):"] }), " ", f.description] }, i))) })] })] })), activeCategory === 'conditions' && (_jsxs(_Fragment, { children: [_jsx("p", { style: { fontStyle: 'italic', marginBottom: '1rem', opacity: 0.8 }, children: "Status effects and mechanical restrictions that can affect creatures during gameplay." }), _jsx("p", { children: selectedEntry.description })] }))] })] })) : (_jsxs("div", { className: styles.emptyDetail, children: [_jsx(Book, { size: 48, opacity: 0.2 }), _jsx("p", { children: "Select an entry to view details" })] })) })] })] })] }));
+                            }, children: [_jsx(cat.icon, { size: 18 }), cat.label] }, cat.id))) })] }), _jsxs("div", { className: styles.main, children: [!isPage && (_jsx("button", { className: styles.closeBtn, onClick: onClose, children: _jsx(X, { size: 24 }) })), _jsxs("div", { className: styles.content, children: [_jsx("div", { className: styles.listSection, children: renderCategoryContent() }), _jsx("div", { className: styles.detailSection, children: selectedEntry ? (_jsxs("div", { className: styles.entryDetail, children: [_jsx("h3", { children: selectedEntry.name }), _jsx("div", { className: styles.divider }), _jsxs("div", { className: styles.detailBody, children: [(activeCategory === 'mechanics' || activeCategory === 'world') && (_jsxs(_Fragment, { children: [_jsx("div", { className: styles.markdownContent, children: selectedEntry.description.split('\n').map((line, i) => {
+                                                                if (line.startsWith('###'))
+                                                                    return _jsx("h4", { className: styles.mdH3, children: parseInlines(line.replace('###', '').trim()) }, i);
+                                                                if (line.startsWith('-'))
+                                                                    return _jsx("li", { className: styles.mdLi, children: parseInlines(line.replace('-', '').trim()) }, i);
+                                                                return _jsx("p", { children: parseInlines(line) }, i);
+                                                            }) }), selectedEntry.examples && (_jsxs("div", { className: styles.examples, children: [_jsx("h4", { children: "Details:" }), _jsx("ul", { children: selectedEntry.examples.map((ex, i) => (_jsx("li", { children: parseInlines(ex) }, i))) })] }))] })), activeCategory === 'skills' && (_jsxs(_Fragment, { children: [_jsxs("div", { className: styles.statLine, children: [_jsx("strong", { children: "Ability:" }), " ", selectedEntry.ability] }), _jsx("p", { children: selectedEntry.description }), _jsxs("div", { className: styles.examples, children: [_jsx("h4", { children: "Example Uses:" }), _jsx("ul", { children: selectedEntry.examples.map((ex, i) => (_jsx("li", { children: ex }, i))) })] })] })), activeCategory === 'races' && (_jsxs(_Fragment, { children: [_jsxs("div", { className: styles.statLine, children: [_jsx("strong", { children: "Size:" }), " ", selectedEntry.size, " | ", _jsx("strong", { children: "Speed:" }), " ", selectedEntry.speed, "ft"] }), _jsx("p", { children: selectedEntry.description || "A lineage of adventurers." }), _jsxs("div", { className: styles.examples, children: [_jsx("h4", { children: "Racial Traits:" }), _jsx("ul", { children: selectedEntry.traits.map((t, i) => (_jsxs("li", { children: [_jsxs("strong", { children: [t.name, ":"] }), " ", t.description] }, i))) })] })] })), activeCategory === 'classes' && (_jsxs(_Fragment, { children: [_jsxs("div", { className: styles.statLine, children: [_jsx("strong", { children: "Hit Die:" }), " d", selectedEntry.hitDie, " | ", _jsx("strong", { children: "Primary:" }), " ", selectedEntry.primaryAbility.join(', ')] }), _jsx("p", { children: selectedEntry.description || "A path of mastery." }), _jsxs("div", { className: styles.examples, children: [_jsx("h4", { children: "Key Features:" }), _jsx("ul", { children: selectedEntry.allFeatures?.filter((f) => f.level <= 3).map((f, i) => (_jsxs("li", { children: [_jsxs("strong", { children: [f.name, " (Lvl ", f.level, "):"] }), " ", f.description] }, i))) })] })] })), activeCategory === 'conditions' && (_jsxs(_Fragment, { children: [_jsx("p", { style: { fontStyle: 'italic', marginBottom: '1rem', opacity: 0.8 }, children: "Status effects and mechanical restrictions that can affect creatures during gameplay." }), _jsx("p", { children: selectedEntry.description })] }))] })] })) : (_jsxs("div", { className: styles.emptyDetail, children: [_jsx(Book, { size: 48, opacity: 0.2 }), _jsx("p", { children: "Select an entry to view details" })] })) })] })] })] }));
     if (isPage)
         return modalContent;
     return (_jsx("div", { className: styles.overlay, onClick: onClose, children: modalContent }));

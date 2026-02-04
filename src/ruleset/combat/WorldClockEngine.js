@@ -1,10 +1,14 @@
 export class WorldClockEngine {
+    static MONTH_NAMES = [
+        'Hammer', 'Alturiak', 'Ches', 'Tarsakh', 'Mirtul', 'Kythorn',
+        'Flamerule', 'Eleasis', 'Eleint', 'Marpenoth', 'Uktar', 'Nightal'
+    ];
     /**
-     * Initializes a default starting time (Year 1489, 1st of Hammer/Month 1, 8 AM)
+     * Initializes a default starting time (Year 1489, 1st of Hammer/Month 1, 9 AM)
      */
     static createDefaultClock() {
         return {
-            hour: 8,
+            hour: 9,
             day: 1,
             month: 1,
             year: 1489,
@@ -48,6 +52,19 @@ export class WorldClockEngine {
      */
     static formatTime(clock) {
         const pad = (n) => n.toString().padStart(2, '0');
-        return `Day ${clock.day}, Month ${clock.month}, Year ${clock.year} | ${pad(clock.hour)}:00`;
+        const monthName = this.MONTH_NAMES[clock.month - 1] || `Month ${clock.month}`;
+        // D&D Tendays (10 days per week)
+        const tenday = Math.ceil(clock.day / 10);
+        const dayInTenday = ((clock.day - 1) % 10) + 1;
+        return `${dayInTenday} of ${monthName} (${tenday}${this.getOrdinal(tenday)} Tenday), Year ${clock.year} | ${pad(clock.hour)}:00`;
+    }
+    static getOrdinal(n) {
+        if (n === 1)
+            return 'st';
+        if (n === 2)
+            return 'nd';
+        if (n === 3)
+            return 'rd';
+        return 'th';
     }
 }

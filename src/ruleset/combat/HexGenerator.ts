@@ -41,7 +41,7 @@ export class HexGenerator {
             generated: true,
             biome: biome,
             description: `A vast expanse of ${biome.toLowerCase()}.`,
-            traversable_sides: { 'N': true, 'S': true, 'E': true, 'W': true, 'NE': true, 'NW': true, 'SE': true, 'SW': true },
+            traversable_sides: { 'N': true, 'S': true, 'NE': true, 'NW': true, 'SE': true, 'SW': true },
             interest_points: [],
             resourceNodes: nodes,
             openedContainers: {},

@@ -1,0 +1,28 @@
+.timeDisplay {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(26, 15, 10, 0.9);
+    border: 1px solid #b8860b;
+    border-radius: 4px;
+    padding: 8px 18px;
+    font-family: 'Cinzel', serif;
+    color: #ffd700;
+    white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+    border-bottom: 2px solid #ffd700;
+}
+
+.clockIcon {
+    color: #ffd700;
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+}
+
+.timeText {
+    font-size: 1.1rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+    color: #ffd700;
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4));
+}

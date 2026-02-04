@@ -2,7 +2,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import React from 'react';
 import styles from './HexMapView.module.css';
 import { Pickaxe, Leaf, MapPin } from 'lucide-react';
-const HexMapView = ({ hexes, onHexClick, className = '', viewMode = 'normal', selectedHexId, zoomScale = 1, isDraggable = true }) => {
+const HexMapView = ({ hexes, onHexClick, onHexContextMenu, className = '', viewMode = 'normal', selectedHexId, zoomScale = 1, isDraggable = true }) => {
     // Dynamic size based on view mode and zoom scale
     const baseSize = viewMode === 'zoomed-in' ? 60 : viewMode === 'zoomed-out' ? 15 : 30;
     const size = baseSize * zoomScale;
@@ -39,7 +39,7 @@ const HexMapView = ({ hexes, onHexClick, className = '', viewMode = 'normal', se
     const handleMouseUp = () => {
         setIsDragging(false);
     };
-    return (_jsx("div", { className: `${styles.container} ${className} ${isDragging ? styles.dragging : ''}`, onMouseDown: handleMouseDown, onMouseMove: handleMouseMove, onMouseUp: handleMouseUp, onMouseLeave: handleMouseUp, children: _jsxs("div", { className: styles.grid, children: [hexes.filter(h => h.isDiscovered).map((hex) => {
+    return (_jsx("div", { className: `${styles.container} ${className} ${isDragging ? styles.dragging : ''}`, onMouseDown: handleMouseDown, onMouseMove: handleMouseMove, onMouseUp: handleMouseUp, onMouseLeave: handleMouseUp, children: _jsxs("div", { className: styles.grid, children: [hexes.map((hex) => {
                     const biomeBase = hex.biome.toLowerCase();
                     const variantClass = hex.visualVariant ? styles[`${biomeBase}_${hex.visualVariant}`] : styles[biomeBase];
                     const tooltip = hex.playerName
@@ -56,6 +56,10 @@ const HexMapView = ({ hexes, onHexClick, className = '', viewMode = 'normal', se
                         }, onClick: (e) => {
                             e.stopPropagation();
                             onHexClick?.(hex.id);
+                        }, onContextMenu: (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onHexContextMenu?.(hex.id, e.clientX, e.clientY);
                         }, children: _jsxs("div", { className: styles.hexInner, children: [hex.isCurrent && _jsx("div", { className: styles.playerMarker }), isZoomedIn && (_jsxs("div", { className: styles.details, children: [hex.resourceNodes?.map((node, i) => (_jsx("div", { className: styles.detailIcon, title: node.resourceType, children: node.resourceType === 'Ore' || node.resourceType === 'Gem' ? _jsx(Pickaxe, { size: 12 }) : _jsx(Leaf, { size: 12 }) }, `res-${i}`))), hex.interest_points?.map((poi, i) => (_jsx("div", { className: styles.detailIcon, title: poi.name, children: _jsx(MapPin, { size: 12 }) }, `poi-${i}`)))] }))] }) }, hex.id));
                 }), hexes.length === 0 && (_jsx("div", { className: styles.emptyMap, children: "Exploring the unknown..." }))] }) }));
 };

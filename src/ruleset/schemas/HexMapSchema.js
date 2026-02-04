@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { BiomeTypeSchema } from './BiomeSchema';
 import { SkillNameSchema } from './BaseSchemas';
-export const HexDirectionSchema = z.enum(['N', 'S', 'E', 'W', 'NE', 'NW', 'SE', 'SW']);
+export const HexDirectionSchema = z.enum(['N', 'S', 'NE', 'NW', 'SE', 'SW']);
 export const ResourceNodeSchema = z.object({
     id: z.string(),
     resourceType: z.enum(['Ore', 'Herb', 'Wood', 'Hide', 'Gem', 'Arcane']),

@@ -113,6 +113,12 @@ const App: React.FC = () => {
             permanent: true
         },
         {
+            id: 'world',
+            label: 'World',
+            content: <Codex isOpen={true} onClose={() => { }} isPage={true} initialDeepLink={{ category: 'world' }} />,
+            permanent: true
+        },
+        {
             id: 'codex',
             label: 'Codex',
             content: <Codex isOpen={true} onClose={() => { }} isPage={true} />,

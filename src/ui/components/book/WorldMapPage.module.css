@@ -138,3 +138,45 @@
     gap: 20px;
     opacity: 0.6;
 }
+
+.contextMenu {
+    position: fixed;
+    background: #fdf6e3;
+    border: 2px solid #5d4037;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    min-width: 150px;
+    padding: 4px;
+}
+
+.contextMenu button {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(93, 64, 55, 0.1);
+    color: #5d4037;
+    padding: 10px 15px;
+    text-align: left;
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.contextMenu button:last-child {
+    border-bottom: none;
+}
+
+.contextMenu button:hover {
+    background: rgba(93, 64, 55, 0.1);
+}
+
+.contextMenuDisabled {
+    padding: 10px 15px;
+    color: #a38b7a;
+    font-size: 0.8rem;
+    font-style: italic;
+    border-bottom: 1px solid rgba(93, 64, 55, 0.1);
+}

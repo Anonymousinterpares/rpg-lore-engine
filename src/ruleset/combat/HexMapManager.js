@@ -34,16 +34,14 @@ export class HexMapManager {
      * Calculates the new coordinates based on direction
      */
     static getNewCoords(current, direction) {
-        const [x, y] = current;
+        const [q, r] = current;
         switch (direction) {
-            case 'N': return [x, y + 1];
-            case 'S': return [x, y - 1];
-            case 'E': return [x + 1, y];
-            case 'W': return [x - 1, y];
-            case 'NE': return [x + 1, y + 1];
-            case 'NW': return [x - 1, y + 1];
-            case 'SE': return [x + 1, y - 1];
-            case 'SW': return [x - 1, y - 1];
+            case 'N': return [q, r + 1];
+            case 'S': return [q, r - 1];
+            case 'NE': return [q + 1, r];
+            case 'NW': return [q - 1, r + 1];
+            case 'SE': return [q + 1, r - 1];
+            case 'SW': return [q - 1, r];
         }
     }
     /**
@@ -79,7 +77,7 @@ export class HexMapManager {
             if (hex && hex.biome === biome) {
                 visited.add(current);
                 // Check neighbors
-                const directions = ['N', 'S', 'E', 'W', 'NE', 'NW', 'SE', 'SW'];
+                const directions = ['N', 'S', 'NE', 'NW', 'SE', 'SW'];
                 for (const dir of directions) {
                     const nc = HexMapManager.getNewCoords([x, y], dir);
                     queue.push(`${nc[0]},${nc[1]}`);
@@ -92,7 +90,7 @@ export class HexMapManager {
      * Gets all existing non-null neighbors for a coordinate.
      */
     getNeighbors(coords) {
-        const directions = ['N', 'S', 'E', 'W', 'NE', 'NW', 'SE', 'SW'];
+        const directions = ['N', 'S', 'NE', 'NW', 'SE', 'SW'];
         return directions
             .map(dir => this.getHex(`${HexMapManager.getNewCoords(coords, dir)[0]},${HexMapManager.getNewCoords(coords, dir)[1]}`))
             .filter(h => h !== null);

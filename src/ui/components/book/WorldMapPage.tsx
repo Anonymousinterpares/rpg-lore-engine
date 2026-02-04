@@ -5,9 +5,10 @@ import { useGameState } from '../../hooks/useGameState';
 import { MapPin, Pickaxe, Leaf, Info } from 'lucide-react';
 
 const WorldMapPage: React.FC = () => {
-    const { state } = useGameState();
+    const { state, engine, updateState } = useGameState();
     const [selectedHexId, setSelectedHexId] = useState<string | null>(state?.location.hexId || null);
     const [zoomMultiplier, setZoomMultiplier] = useState(1);
+    const [contextMenu, setContextMenu] = useState<{ id: string, x: number, y: number } | null>(null);
 
     if (!state) return null;
 
@@ -18,7 +19,7 @@ const WorldMapPage: React.FC = () => {
         biome: hex.biome,
         isVisited: hex.visited,
         isCurrent: state.location.hexId === id,
-        isDiscovered: hex.visited || hex.generated,
+        isDiscovered: true,
         name: hex.name,
         playerName: hex.playerName,
         namingSource: hex.namingSource,
@@ -32,6 +33,21 @@ const WorldMapPage: React.FC = () => {
     const handleZoomIn = () => setZoomMultiplier(m => Math.min(m + 0.2, 3));
     const handleZoomOut = () => setZoomMultiplier(m => Math.max(m - 0.2, 0.5));
 
+    const handleHexContextMenu = (id: string, x: number, y: number) => {
+        setContextMenu({ id, x, y });
+    };
+
+    const handleMove = (direction: string) => {
+        if (engine) {
+            engine.processTurn(`move ${direction}`);
+            updateState();
+            setContextMenu(null);
+        }
+    };
+
+    // Close menu on click elsewhere
+    const closeMenu = () => setContextMenu(null);
+
     return (
         <div className={styles.container}>
             <div className={styles.mapArea}>
@@ -43,11 +59,49 @@ const WorldMapPage: React.FC = () => {
                 <HexMapView
                     hexes={hexData}
                     onHexClick={setSelectedHexId}
+                    onHexContextMenu={handleHexContextMenu}
                     className={styles.largeMap}
                     viewMode="normal"
                     selectedHexId={selectedHexId || undefined}
                     zoomScale={zoomMultiplier}
                 />
+
+                {contextMenu && (() => {
+                    const targetHex = state.worldMap.hexes[contextMenu.id];
+                    const currentCoords = state.location.coordinates;
+                    const targetCoords = targetHex.coordinates;
+                    const dx = targetCoords[0] - currentCoords[0];
+                    const dy = targetCoords[1] - currentCoords[1];
+
+                    let direction = '';
+                    if (dx === 0 && dy === 1) direction = 'N';
+                    else if (dx === 0 && dy === -1) direction = 'S';
+                    else if (dx === 1 && dy === 0) direction = 'NE';
+                    else if (dx === 1 && dy === -1) direction = 'SE';
+                    else if (dx === -1 && dy === 1) direction = 'NW';
+                    else if (dx === -1 && dy === 0) direction = 'SW';
+
+                    const isAdjacent = direction !== '';
+
+                    return (
+                        <div
+                            className={styles.contextMenu}
+                            style={{ left: contextMenu.x, top: contextMenu.y }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {isAdjacent ? (
+                                <button onClick={() => handleMove(direction)}>
+                                    Move towards {direction}
+                                </button>
+                            ) : (
+                                <div className={styles.contextMenuDisabled}>
+                                    Too far to travel
+                                </div>
+                            )}
+                            <button onClick={closeMenu}>Cancel</button>
+                        </div>
+                    );
+                })()}
             </div>
 
             <div className={styles.detailsPanel}>

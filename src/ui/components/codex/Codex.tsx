@@ -5,6 +5,7 @@ import { DataManager } from '../../../ruleset/data/DataManager';
 import skillsData from '../../../data/codex/skills.json';
 import conditionsData from '../../../data/codex/conditions.json';
 import mechanicsData from '../../../data/codex/mechanics.json';
+import worldData from '../../../data/codex/world.json';
 
 interface CodexProps {
     isOpen: boolean;
@@ -15,6 +16,7 @@ interface CodexProps {
 }
 
 const CATEGORIES = [
+    { id: 'world', label: 'World', icon: Map },
     { id: 'mechanics', label: 'Mechanics', icon: Shield },
     { id: 'skills', label: 'Skills', icon: Info },
     { id: 'races', label: 'Races', icon: Users },
@@ -30,6 +32,21 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
     const [races, setRaces] = useState<any[]>([]);
     const [classes, setClasses] = useState<any[]>([]);
 
+    const parseInlines = (text: string) => {
+        if (!text) return text;
+        // Split by ** (bold) or * (also bold for this game's theme)
+        const parts = text.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+        return parts.map((part, i) => {
+            if (part.startsWith('**') && part.endsWith('**')) {
+                return <strong key={i}>{part.slice(2, -2)}</strong>;
+            }
+            if (part.startsWith('*') && part.endsWith('*')) {
+                return <strong key={i}>{part.slice(1, -1)}</strong>;
+            }
+            return part;
+        });
+    };
+
     useEffect(() => {
         const init = async () => {
             await DataManager.initialize();
@@ -40,6 +57,7 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
             if (initialDeepLink?.entryId) {
                 let data: any[] = [];
                 switch (initialDeepLink.category) {
+                    case 'world': data = worldData; break;
                     case 'mechanics': data = mechanicsData; break;
                     case 'skills': data = skillsData; break;
                     case 'conditions': data = conditionsData; break;
@@ -72,6 +90,21 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
 
     const renderCategoryContent = () => {
         switch (activeCategory) {
+            case 'world':
+                return (
+                    <div className={styles.entriesGrid}>
+                        {worldData.map((item: any) => (
+                            <div
+                                key={item.id}
+                                id={`entry-${item.id}`}
+                                className={`${styles.entryCard} ${selectedEntry?.id === item.id ? styles.active : ''}`}
+                                onClick={() => setSelectedEntry(item)}
+                            >
+                                <h4>{item.name}</h4>
+                            </div>
+                        ))}
+                    </div>
+                );
             case 'mechanics':
                 return (
                     <div className={styles.entriesGrid}>
@@ -209,15 +242,21 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                                 <h3>{selectedEntry.name}</h3>
                                 <div className={styles.divider} />
                                 <div className={styles.detailBody}>
-                                    {activeCategory === 'mechanics' && (
+                                    {(activeCategory === 'mechanics' || activeCategory === 'world') && (
                                         <>
-                                            <p>{selectedEntry.description}</p>
+                                            <div className={styles.markdownContent}>
+                                                {selectedEntry.description.split('\n').map((line: string, i: number) => {
+                                                    if (line.startsWith('###')) return <h4 key={i} className={styles.mdH3}>{parseInlines(line.replace('###', '').trim())}</h4>;
+                                                    if (line.startsWith('-')) return <li key={i} className={styles.mdLi}>{parseInlines(line.replace('-', '').trim())}</li>;
+                                                    return <p key={i}>{parseInlines(line)}</p>;
+                                                })}
+                                            </div>
                                             {selectedEntry.examples && (
                                                 <div className={styles.examples}>
                                                     <h4>Details:</h4>
                                                     <ul>
                                                         {selectedEntry.examples.map((ex: string, i: number) => (
-                                                            <li key={i}>{ex}</li>
+                                                            <li key={i}>{parseInlines(ex)}</li>
                                                         ))}
                                                     </ul>
                                                 </div>
