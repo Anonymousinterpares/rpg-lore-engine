@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "Desert": 5,
+    "Forest": 1,
+    "Hills": 1,
+    "Mountains": 1,
+    "Plains": 4,
+    "Swamp": 0,
+    "Tundra": 0,
+    "Jungle": 0,
+    "Coast": 0,
+    "Ocean": 0,
+    "Volcanic": 0,
+    "Ruins": 0,
+    "Farmland": 0,
+    "Urban": 0
+  },
+  "lastUpdated": "2026-02-04T20:42:31.547Z"
+}

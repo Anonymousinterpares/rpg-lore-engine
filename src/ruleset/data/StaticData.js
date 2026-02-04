@@ -125,6 +125,66 @@ export const BIOME_DEFINITIONS = [
         "adjacencyModifiers": { "Ocean": 100, "Coast": 30 },
         "maxClusterSize": 1000,
         "clusterPenaltyMultiplier": 1.0
+    },
+    {
+        "id": "Tundra",
+        "displayName": "Tundra",
+        "travelSpeedModifier": 0.7,
+        "encounterRateModifier": 1.3,
+        "baseAppearanceWeight": 10,
+        "adjacencyModifiers": { "Tundra": 30, "Mountains": 10 },
+        "maxClusterSize": 7,
+        "clusterPenaltyMultiplier": 0.3
+    },
+    {
+        "id": "Jungle",
+        "displayName": "Jungle",
+        "travelSpeedModifier": 0.5,
+        "encounterRateModifier": 2.2,
+        "baseAppearanceWeight": 10,
+        "adjacencyModifiers": { "Jungle": 30, "Swamp": 10, "Coast": 5 },
+        "maxClusterSize": 6,
+        "clusterPenaltyMultiplier": 0.4
+    },
+    {
+        "id": "Volcanic",
+        "displayName": "Volcanic",
+        "travelSpeedModifier": 0.4,
+        "encounterRateModifier": 2.5,
+        "baseAppearanceWeight": 3,
+        "adjacencyModifiers": { "Volcanic": 50, "Mountains": 10 },
+        "maxClusterSize": 3,
+        "clusterPenaltyMultiplier": 0.6
+    },
+    {
+        "id": "Ruins",
+        "displayName": "Ruins",
+        "travelSpeedModifier": 0.8,
+        "encounterRateModifier": 1.8,
+        "baseAppearanceWeight": 5,
+        "adjacencyModifiers": { "Ruins": 5, "Plains": 5, "Forest": 5 },
+        "maxClusterSize": 2,
+        "clusterPenaltyMultiplier": 0.8
+    },
+    {
+        "id": "Farmland",
+        "displayName": "Farmland",
+        "travelSpeedModifier": 1.1,
+        "encounterRateModifier": 0.7,
+        "baseAppearanceWeight": 12,
+        "adjacencyModifiers": { "Farmland": 20, "Plains": 10, "Urban": 15 },
+        "maxClusterSize": 8,
+        "clusterPenaltyMultiplier": 0.3
+    },
+    {
+        "id": "Urban",
+        "displayName": "Urban",
+        "travelSpeedModifier": 1.2,
+        "encounterRateModifier": 1.2,
+        "baseAppearanceWeight": 5,
+        "adjacencyModifiers": { "Urban": 25, "Farmland": 15, "Coast": 5 },
+        "maxClusterSize": 4,
+        "clusterPenaltyMultiplier": 0.5
     }
 ];
 export const BIOME_RESOURCES = [
@@ -134,7 +194,13 @@ export const BIOME_RESOURCES = [
     { "biome": "Swamp", "resources": [{ "itemId": "Bogbean", "weight": 40 }, { "itemId": "Nightshade", "weight": 30 }, { "itemId": "Oak_Logs", "weight": 10 }, { "itemId": "Raw_Hide", "weight": 5 }] },
     { "biome": "Desert", "resources": [{ "itemId": "Gold_Ore", "weight": 30 }, { "itemId": "Desert_Rose", "weight": 20 }, { "itemId": "Coal", "weight": 10 }, { "itemId": "Iron_Ore", "weight": 5 }] },
     { "biome": "Tundra", "resources": [{ "itemId": "Thick_Hide", "weight": 50 }, { "itemId": "Pine_Logs", "weight": 30 }, { "itemId": "Iron_Ore", "weight": 5 }] },
-    { "biome": "Jungle", "resources": [{ "itemId": "Ironwood", "weight": 30 }, { "itemId": "Silverleaf", "weight": 20 }, { "itemId": "Thick_Hide", "weight": 20 }, { "itemId": "Kingsbloom", "weight": 10 }, { "itemId": "Iron_Ore", "weight": 5 }] }
+    { "biome": "Jungle", "resources": [{ "itemId": "Ironwood", "weight": 30 }, { "itemId": "Silverleaf", "weight": 20 }, { "itemId": "Thick_Hide", "weight": 20 }, { "itemId": "Kingsbloom", "weight": 10 }, { "itemId": "Iron_Ore", "weight": 5 }] },
+    { "biome": "Coast", "resources": [{ "itemId": "Glass_Vial", "weight": 20 }, { "itemId": "Raw_Hide", "weight": 10 }] },
+    { "biome": "Ocean", "resources": [] },
+    { "biome": "Volcanic", "resources": [{ "itemId": "Mithril_Ore", "weight": 20 }, { "itemId": "Coal", "weight": 40 }, { "itemId": "Gold_Ore", "weight": 10 }] },
+    { "biome": "Ruins", "resources": [{ "itemId": "Gold_Ore", "weight": 10 }, { "itemId": "Silver_Ore", "weight": 10 }] },
+    { "biome": "Farmland", "resources": [{ "itemId": "Hay", "weight": 50 }, { "itemId": "Raw_Hide", "weight": 10 }] },
+    { "biome": "Urban", "resources": [{ "itemId": "Glass_Vial", "weight": 30 }] }
 ];
 export const RECIPES = [
     {

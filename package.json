@@ -6,8 +6,9 @@
   "scripts": {
     "validate": "ts-node src/ruleset/scripts/validate.ts",
     "docs:gen": "ts-node src/ruleset/scripts/generateDocs.ts",
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "sync-biomes": "node scripts/sync-biomes.mjs",
+    "dev": "npm run sync-biomes && vite",
+    "build": "npm run sync-biomes && tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {

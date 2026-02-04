@@ -1,30 +1,32 @@
-export const BIOME_VARIANTS = {
-    'Plains': [1],
-    'Forest': [1],
-    'Mountains': [1],
-    'Swamp': [1],
-    'Hills': [1],
-    'Desert': [1, 2, 3, 4, 5]
-};
+import biomeManifest from '../data/biome-manifest.json';
+/**
+ * The system is designed to support any number of variants by discovering them
+ * on the fly via a build-time sync script.
+ */
+const BIOME_VARIANTS = biomeManifest.variants;
 /**
  * Utility to manage the pooling logic requested by the user.
  * It tracks used variants per biome type for a specific generation session.
+ *
+ * Supports an arbitrary number of variants per biome.
  */
 export class BiomePoolManager {
     pools = {};
     constructor() {
-        // Initialize pools with copies of the full registries
-        Object.entries(BIOME_VARIANTS).forEach(([biome, variants]) => {
-            this.pools[biome] = [...variants];
+        this.initializePools();
+    }
+    initializePools() {
+        Object.entries(BIOME_VARIANTS).forEach(([biome, count]) => {
+            // Generate array [1, 2, ..., count]
+            this.pools[biome] = Array.from({ length: count }, (_, i) => i + 1);
         });
     }
     getVariant(biome, targetHash) {
-        // If biome unknown or no variants, return 1 as a safety
-        if (!this.pools[biome] || BIOME_VARIANTS[biome].length === 0)
-            return 1;
-        // If pool is empty, refill it
-        if (this.pools[biome].length === 0) {
-            this.pools[biome] = [...BIOME_VARIANTS[biome]];
+        // Fallback if biome is unknown
+        const maxVariants = BIOME_VARIANTS[biome] || 1;
+        // If pool is missing or empty, refill it from the current registry state
+        if (!this.pools[biome] || this.pools[biome].length === 0) {
+            this.pools[biome] = Array.from({ length: maxVariants }, (_, i) => i + 1);
         }
         // Find the "closest" variant to the targetHash in the current pool
         let bestIndex = 0;
