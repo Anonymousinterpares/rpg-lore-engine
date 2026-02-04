@@ -57,11 +57,13 @@ const HexMapView: React.FC<HexMapViewProps> = ({
 
     const getX = (q: number, r: number) => {
         const offset = isDraggable ? panOffset.x : 0;
+        // Flat-top orientation
         return size * (3 / 2 * (q - centerQ)) + offset;
     };
     const getY = (q: number, r: number) => {
         const offset = isDraggable ? panOffset.y : 0;
-        return size * (Math.sqrt(3) / 2 * (q - centerQ) + Math.sqrt(3) * (r - centerR)) + offset;
+        // Flat-top orientation, North (r+) is visually Up (negative Y)
+        return -size * (Math.sqrt(3) / 2 * (q - centerQ) + Math.sqrt(3) * (r - centerR)) + offset;
     };
 
     const handleMouseDown = (e: React.MouseEvent) => {
@@ -110,7 +112,7 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                                 left: `calc(50% + ${getX(hex.q, hex.r)}px)`,
                                 top: `calc(50% + ${getY(hex.q, hex.r)}px)`,
                                 width: `${size * 2}px`,
-                                height: `${size * 2}px`,
+                                height: `${size * Math.sqrt(3)}px`,
                                 transform: 'translate(-50%, -50%)'
                             }}
                             onClick={(e) => {
