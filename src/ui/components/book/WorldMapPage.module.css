@@ -79,25 +79,40 @@
 .section h3 {
     font-family: 'Cinzel', serif;
     font-size: 0.8rem;
-    color: #a38b7a;
+    color: #704214;
+    /* Darker Umber for better contrast */
     text-transform: uppercase;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid rgba(112, 66, 20, 0.1);
 }
 
 .hexName {
     font-size: 1.2rem;
     font-weight: bold;
+    color: #5d4037;
+    margin-bottom: 4px;
 }
 
 .playerName {
-    color: #708090;
-    /* Silver-ish */
+    color: #4682b4;
+    /* Steel Blue for players - darker and more distinct */
     font-style: italic;
+    font-weight: 500;
 }
 
 .engineName {
-    color: #b8860b;
-    /* Gold-ish */
+    color: #a0522d;
+    /* Sienna - distinct from parchment but still thematic */
+    font-weight: 500;
+}
+
+/* Added specific color for the values like 'Plains' or resource names */
+.section p,
+.section li {
+    color: #2b1610;
+    /* Near black brown for maximum readability */
+    font-weight: 500;
 }
 
 .poiList,
@@ -109,22 +124,23 @@
 
 .poiList li,
 .resourceList li {
-    padding: 5px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    font-size: 0.9rem;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(93, 64, 55, 0.1);
+    font-size: 0.95rem;
 }
 
 .resourceItem {
     display: flex;
     align-items: center;
     gap: 8px;
+    color: #2b1610;
 }
 
 .description {
     font-style: italic;
-    font-size: 0.9rem;
-    line-height: 1.4;
-    color: #4a3728;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #3e2723;
 }
 
 .emptyState {
