@@ -1,12 +1,14 @@
 import { IntentRouter } from './IntentRouter';
 import { GameStateManager } from './GameStateManager';
 import { ContextManager } from '../agents/ContextManager';
+import { MechanicsEngine } from './MechanicsEngine';
 import { RestingEngine } from './RestingEngine';
 import { HexMapManager } from './HexMapManager';
 import { MovementEngine } from './MovementEngine';
 import { WorldClockEngine } from './WorldClockEngine';
 import { StoryScribe } from './StoryScribe';
 import { EncounterDirector } from './EncounterDirector';
+import { Dice } from './Dice';
 /**
  * The GameLoop is the central heart of the RPG engine.
  * It coordinates Intent, Logic, AI, and Persistence.
@@ -62,14 +64,14 @@ export class GameLoop {
             systemResponse = this.handleCommand(intent);
         }
         else if (intent.type === 'COMBAT_ACTION') {
-            systemResponse = 'Combat action logic not yet fully wired to loop.';
+            systemResponse = this.handleCombatAction(intent);
         }
         // 2. Agent Phase (Narrative & Pacing)
         const currentHex = this.hexMapManager.getHex(this.state.location.hexId);
         // Director check for encounter
         const encounter = this.director.checkEncounter(this.state, currentHex || {});
         if (encounter) {
-            this.state.mode = 'COMBAT';
+            this.initializeCombat(encounter);
             systemResponse = `[ENCOUNTER] ${encounter.name}: ${encounter.description}`;
         }
         const narratorContext = this.contextManager.getNarratorContext(this.state.character, currentHex || {});
@@ -121,10 +123,18 @@ export class GameLoop {
                     return 'You are in an unknown void.';
                 return `[${hex.name || 'Unnamed Hex'}] (${hex.biome || 'Unknown Biome'})\n${hex.description || 'No description.'}`;
             case 'attack':
-                this.state.mode = 'COMBAT';
-                return `[SYSTEM] Entering COMBAT mode! ${intent.args?.[0] || 'Target'} is being attacked.`;
+                const targetName = intent.args?.[0] || 'Unknown Foe';
+                const manualEncounter = {
+                    name: `Assault on ${targetName}`,
+                    description: `You initiate combat against ${targetName}!`,
+                    monsters: ['Goblin'], // Placeholder for manual attack
+                    difficulty: this.state.character.level
+                };
+                this.initializeCombat(manualEncounter);
+                return `[SYSTEM] Entering COMBAT mode! ${manualEncounter.description}`;
             case 'exit':
                 this.state.mode = 'EXPLORATION';
+                this.state.combat = undefined;
                 return `[SYSTEM] Exiting current mode. Returning to EXPLORATION.`;
             default:
                 return `Unknown command: /${intent.command}`;
@@ -277,6 +287,82 @@ export class GameLoop {
             }
         }
         this.stateManager.saveGame(this.state);
+    }
+    initializeCombat(encounter) {
+        this.state.mode = 'COMBAT';
+        const combatants = [];
+        // 1. Add Player
+        const playerInit = Dice.d20() + MechanicsEngine.getModifier(this.state.character.stats.DEX || 10);
+        combatants.push({
+            id: 'player',
+            name: this.state.character.name,
+            hp: { current: this.state.character.hp.current, max: this.state.character.hp.max },
+            initiative: playerInit,
+            isPlayer: true,
+            type: 'player'
+        });
+        // 2. Add Enemies
+        encounter.monsters.forEach((monsterName, index) => {
+            // Ideally we get stats from DataManager, but for now placeholders
+            const initRoll = Dice.d20() + 1; // Generic bonus for now
+            combatants.push({
+                id: `enemy_${index}`,
+                name: monsterName,
+                hp: { current: 15, max: 15 },
+                initiative: initRoll,
+                isPlayer: false,
+                type: 'enemy'
+            });
+        });
+        // 3. Sort by initiative
+        combatants.sort((a, b) => b.initiative - a.initiative);
+        this.state.combat = {
+            round: 1,
+            currentTurnIndex: 0,
+            combatants: combatants,
+            logs: [{
+                    id: `log-${Date.now()}`,
+                    type: 'info',
+                    message: `Combat started! ${combatants[0].name} takes the first turn.`,
+                    turn: 0
+                }]
+        };
+    }
+    handleCombatAction(intent) {
+        if (!this.state.combat)
+            return "Not in combat.";
+        const currentCombatant = this.state.combat.combatants[this.state.combat.currentTurnIndex];
+        let message = '';
+        if (intent.command === 'attack') {
+            message = `${currentCombatant.name} attacks! (Logic pending)`;
+        }
+        else if (intent.command === 'dodge') {
+            message = `${currentCombatant.name} is dodging.`;
+        }
+        this.state.combat.logs.push({
+            id: `log-${Date.now()}`,
+            type: 'info',
+            message: message,
+            turn: this.state.combat.round
+        });
+        this.advanceCombatTurn();
+        return message;
+    }
+    advanceCombatTurn() {
+        if (!this.state.combat)
+            return;
+        this.state.combat.currentTurnIndex++;
+        if (this.state.combat.currentTurnIndex >= this.state.combat.combatants.length) {
+            this.state.combat.currentTurnIndex = 0;
+            this.state.combat.round++;
+        }
+        const nextCombatant = this.state.combat.combatants[this.state.combat.currentTurnIndex];
+        this.state.combat.logs.push({
+            id: `log-${Date.now()}`,
+            type: 'info',
+            message: `Next turn: ${nextCombatant.name}`,
+            turn: this.state.combat.round
+        });
     }
     recalculateAC() {
         const char = this.state.character;

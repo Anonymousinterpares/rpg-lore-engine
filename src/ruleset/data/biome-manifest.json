@@ -1,19 +1,19 @@
 {
   "variants": {
+    "Coast": 5,
     "Desert": 5,
-    "Forest": 1,
-    "Hills": 1,
-    "Mountains": 1,
+    "Farmland": 5,
+    "Forest": 5,
+    "Hills": 5,
+    "Jungle": 5,
+    "Mountains": 5,
+    "Ocean": 5,
     "Plains": 4,
-    "Swamp": 0,
-    "Tundra": 0,
-    "Jungle": 0,
-    "Coast": 0,
-    "Ocean": 0,
-    "Volcanic": 0,
-    "Ruins": 0,
-    "Farmland": 0,
-    "Urban": 0
+    "Ruins": 20,
+    "Swamp": 5,
+    "Tundra": 5,
+    "Urban": 13,
+    "Volcanic": 5
   },
-  "lastUpdated": "2026-02-04T20:42:31.547Z"
+  "lastUpdated": "2026-02-04T21:53:44.978Z"
 }

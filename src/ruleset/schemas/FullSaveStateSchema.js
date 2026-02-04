@@ -11,6 +11,29 @@ export const ConversationTurnSchema = z.object({
     content: z.string(),
     turnNumber: z.number()
 });
+export const CombatantSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    hp: z.object({
+        current: z.number(),
+        max: z.number()
+    }),
+    initiative: z.number(),
+    isPlayer: z.boolean(),
+    type: z.enum(['player', 'companion', 'enemy'])
+});
+export const CombatLogEntrySchema = z.object({
+    id: z.string(),
+    type: z.enum(['info', 'warning', 'error', 'success']),
+    message: z.string(),
+    turn: z.number().optional()
+});
+export const CombatStateSchema = z.object({
+    round: z.number().default(1),
+    currentTurnIndex: z.number().default(0),
+    combatants: z.array(CombatantSchema),
+    logs: z.array(CombatLogEntrySchema).default([])
+});
 export const FullSaveStateSchema = z.object({
     // --- Meta ---
     saveId: z.string(),
@@ -24,6 +47,7 @@ export const FullSaveStateSchema = z.object({
     companions: z.array(PlayerCharacterSchema).default([]),
     // --- World State ---
     mode: z.string(), // Bridge to GameMode enum
+    combat: CombatStateSchema.optional(), // Combat State
     location: z.object({
         hexId: z.string(),
         coordinates: z.tuple([z.number(), z.number()]),
