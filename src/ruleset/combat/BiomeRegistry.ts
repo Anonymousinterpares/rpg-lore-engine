@@ -1,10 +1,18 @@
 export const BIOME_VARIANTS: Record<string, number[]> = {
-    'Plains': [1],
-    'Forest': [1],
-    'Mountains': [1],
-    'Swamp': [1],
-    'Hills': [1],
-    'Desert': [1, 2, 3, 4, 5]
+    'Plains': [1, 2, 3, 4, 5],
+    'Forest': [1, 2, 3, 4, 5],
+    'Mountains': [1, 2, 3, 4, 5],
+    'Swamp': [1, 2, 3, 4, 5],
+    'Hills': [1, 2, 3, 4, 5],
+    'Desert': [1, 2, 3, 4, 5],
+    'Tundra': [1, 2, 3, 4, 5],
+    'Jungle': [1, 2, 3, 4, 5],
+    'Coast': [1, 2, 3, 4, 5],
+    'Ocean': [1, 2, 3, 4, 5],
+    'Volcanic': [1, 2, 3, 4, 5],
+    'Ruins': [1, 2, 3, 4, 5],
+    'Farmland': [1, 2, 3, 4, 5],
+    'Urban': [1, 2, 3, 4, 5]
 };
 
 /**
