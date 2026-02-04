@@ -265,6 +265,87 @@
     background: rgba(244, 164, 96, 0.3);
 }
 
+/* New Biomes */
+.tundra_1 .hexInner,
+.tundra_2 .hexInner,
+.tundra_3 .hexInner,
+.tundra_4 .hexInner,
+.tundra_5 .hexInner,
+.tundra .hexInner {
+    background: rgba(224, 247, 250, 0.3);
+    /* Icy Blue */
+}
+
+.jungle_1 .hexInner,
+.jungle_2 .hexInner,
+.jungle_3 .hexInner,
+.jungle_4 .hexInner,
+.jungle_5 .hexInner,
+.jungle .hexInner {
+    background: rgba(0, 100, 0, 0.3);
+    /* Dark Tropical Green */
+}
+
+.coast_1 .hexInner,
+.coast_2 .hexInner,
+.coast_3 .hexInner,
+.coast_4 .hexInner,
+.coast_5 .hexInner,
+.coast .hexInner {
+    background: rgba(240, 230, 140, 0.4);
+    /* Sand/Khaki */
+}
+
+.ocean_1 .hexInner,
+.ocean_2 .hexInner,
+.ocean_3 .hexInner,
+.ocean_4 .hexInner,
+.ocean_5 .hexInner,
+.ocean .hexInner {
+    background: rgba(0, 105, 148, 0.4);
+    /* Deep Ocean Blue */
+}
+
+.volcanic_1 .hexInner,
+.volcanic_2 .hexInner,
+.volcanic_3 .hexInner,
+.volcanic_4 .hexInner,
+.volcanic_5 .hexInner,
+.volcanic .hexInner {
+    background: rgba(74, 13, 13, 0.5);
+    /* Deep Lava Red/Black */
+}
+
+.ruins_1 .hexInner,
+.ruins_2 .hexInner,
+.ruins_3 .hexInner,
+.ruins_4 .hexInner,
+.ruins_5 .hexInner,
+.ruins .hexInner {
+    background: rgba(112, 128, 144, 0.4);
+    /* Slate Stone */
+}
+
+.farmland_1 .hexInner,
+.farmland_2 .hexInner,
+.farmland_3 .hexInner,
+.farmland_4 .hexInner,
+.farmland_5 .hexInner,
+.farmland .hexInner {
+    background: rgba(218, 165, 32, 0.3);
+    /* Golden Fields */
+}
+
+.urban_1 .hexInner,
+.urban_2 .hexInner,
+.urban_3 .hexInner,
+.urban_4 .hexInner,
+.urban_5 .hexInner,
+.urban .hexInner {
+    background: rgba(105, 105, 105, 0.5);
+    /* Cobblestone Gray */
+}
+
 /* Fallback for old data or other biomes */
 .plains .hexInner {
     background: rgba(144, 238, 144, 0.3);
