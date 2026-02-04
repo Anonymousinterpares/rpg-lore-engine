@@ -20,7 +20,7 @@ const App: React.FC = () => {
     const [showLobby, setShowLobby] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
     const [bookOpen, setBookOpen] = useState(false);
-    const [initialBookPage, setInitialBookPage] = useState<BookPageData | null>(null);
+    const [activeBookPageId, setActiveBookPageId] = useState<string>('character');
     const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
 
     // Close modals on Escape key
@@ -65,31 +65,27 @@ const App: React.FC = () => {
         setShowMenu(false);
     };
 
+    // Default settings placeholder
+    const defaultSettings = {
+        video: { fullscreen: false, vsync: true, resolutionScale: 1.0 },
+        audio: { master: 0.8, music: 0.6 },
+        gameplay: { difficulty: 'normal', tutorials: true },
+        ai: {}
+    };
+
     const handleSettingsSave = (newSettings: any) => {
         console.log("Settings saved:", newSettings);
-        setShowSettings(false);
+        // In the future, this would persist to a store
     };
 
-    const openCharacterSheet = () => {
-        setInitialBookPage({
+    const bookPages: BookPageData[] = [
+        {
             id: 'character',
-            label: 'Character Sheet',
-            content: <CharacterSheet onClose={() => setBookOpen(false)} isPage={true} />
-        });
-        setBookOpen(true);
-    };
-
-    const openCodex = () => {
-        setInitialBookPage({
-            id: 'codex',
-            label: 'Codex',
-            content: <Codex isOpen={true} onClose={() => setBookOpen(false)} isPage={true} />
-        });
-        setBookOpen(true);
-    };
-
-    const openEquipment = () => {
-        setInitialBookPage({
+            label: 'Character',
+            content: <CharacterSheet onClose={() => setBookOpen(false)} isPage={true} />,
+            permanent: true
+        },
+        {
             id: 'equipment',
             label: 'Equipment',
             content: (
@@ -98,18 +94,50 @@ const App: React.FC = () => {
                     <p style={{ fontStyle: 'italic', opacity: 0.6 }}>The Great Forge is still preparing your armory...</p>
                     <Book size={80} style={{ marginTop: '40px', opacity: 0.2 }} />
                 </div>
-            )
-        });
+            ),
+            permanent: true
+        },
+        {
+            id: 'codex',
+            label: 'Codex',
+            content: <Codex isOpen={true} onClose={() => { }} isPage={true} />,
+            permanent: true
+        },
+        {
+            id: 'settings',
+            label: 'Settings',
+            content: (
+                <SettingsPanel
+                    onClose={() => setBookOpen(false)}
+                    onSave={handleSettingsSave}
+                    initialSettings={defaultSettings}
+                    isPage={true}
+                />
+            ),
+            permanent: true
+        }
+    ];
+
+    const openCharacterSheet = () => {
+        setActiveBookPageId('character');
         setBookOpen(true);
     };
 
-    // Default settings placeholder
-    const defaultSettings = {
-        video: { fullscreen: false, vsync: true, resolutionScale: 1.0 },
-        audio: { master: 0.8, music: 0.6 },
-        gameplay: { difficulty: 'normal', tutorials: true },
-        ai: {}
+    const openCodex = () => {
+        setActiveBookPageId('codex');
+        setBookOpen(true);
     };
+
+    const openEquipment = () => {
+        setActiveBookPageId('equipment');
+        setBookOpen(true);
+    };
+
+    const openSettings = () => {
+        setActiveBookPageId('settings');
+        setBookOpen(true);
+    };
+
 
     return (
         <div className={styles.appShell}>
@@ -124,7 +152,7 @@ const App: React.FC = () => {
                         onNewGame={handleNewGame}
                         onLoadGame={handleLoadGame}
                         onMultiplayer={() => setShowLobby(true)}
-                        onSettings={() => setShowSettings(true)}
+                        onSettings={openSettings}
                         onQuit={() => window.close()}
                     />
                     {showSettings && (
@@ -148,7 +176,7 @@ const App: React.FC = () => {
                 <>
                     <Header
                         onLobby={() => setShowLobby(true)}
-                        onSettings={() => setShowSettings(true)}
+                        onSettings={openSettings}
                         onCodex={openCodex}
                         onCharacter={openCharacterSheet}
                         onMenu={() => setShowMenu(true)}
@@ -176,7 +204,7 @@ const App: React.FC = () => {
                                 onNewGame={handleNewGame}
                                 onLoadGame={handleLoadGame}
                                 onMultiplayer={() => { setShowLobby(true); setShowMenu(false); }}
-                                onSettings={() => { setShowSettings(true); setShowMenu(false); }}
+                                onSettings={() => { openSettings(); setShowMenu(false); }}
                                 onQuit={handleQuit}
                             />
                             <button className={styles.closeOverlay} onClick={() => setShowMenu(false)}>Return to Game</button>
@@ -191,11 +219,12 @@ const App: React.FC = () => {
                             </div>
                         </div>
                     )}
-                    {bookOpen && initialBookPage && (
+                    {bookOpen && (
                         <BookModal
                             isOpen={bookOpen}
                             onClose={() => setBookOpen(false)}
-                            initialPage={initialBookPage}
+                            initialPages={bookPages}
+                            activePageId={activeBookPageId}
                         />
                     )}
                 </>

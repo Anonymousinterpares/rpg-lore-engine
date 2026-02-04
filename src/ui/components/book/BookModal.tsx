@@ -6,8 +6,11 @@ import { BookProvider, useBook, BookPageData } from '../../context/BookContext';
 interface BookModalProps {
     isOpen: boolean;
     onClose: () => void;
-    initialPage: BookPageData;
+    initialPages: BookPageData[];
+    activePageId: string;
 }
+
+const TAB_ORDER = ['character', 'equipment', 'codex', 'settings'];
 
 const BookModalContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const { pages, activePageId, popPage, goToPage } = useBook();
@@ -48,7 +51,14 @@ const BookModalContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             <div className={styles.bookContainer} onClick={e => e.stopPropagation()}>
                 {/* Tabs */}
                 <div className={styles.tabBar}>
-                    {pages.map(page => (
+                    {pages.slice().sort((a, b) => {
+                        const idxA = TAB_ORDER.indexOf(a.id);
+                        const idxB = TAB_ORDER.indexOf(b.id);
+                        if (idxA === -1 && idxB === -1) return 0;
+                        if (idxA === -1) return 1;
+                        if (idxB === -1) return -1;
+                        return idxA - idxB;
+                    }).map(page => (
                         <button
                             key={page.id}
                             className={`${styles.tab} ${activePageId === page.id ? styles.active : ''}`}
@@ -100,11 +110,11 @@ const BookModalContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     );
 };
 
-const BookModal: React.FC<BookModalProps> = ({ isOpen, onClose, initialPage }) => {
+const BookModal: React.FC<BookModalProps> = ({ isOpen, onClose, initialPages, activePageId }) => {
     if (!isOpen) return null;
 
     return (
-        <BookProvider initialPage={initialPage}>
+        <BookProvider initialPages={initialPages} initialActiveId={activePageId}>
             <BookModalContent onClose={onClose} />
         </BookProvider>
     );
