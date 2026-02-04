@@ -8,9 +8,10 @@ import { useGameState } from '../../hooks/useGameState';
 
 interface SidebarProps {
     className?: string;
+    onCharacter?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ className }) => {
+const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter }) => {
     const { state, engine, updateState } = useGameState();
 
     const items = state?.character?.inventory?.items || [];
@@ -37,7 +38,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
 
     return (
         <aside className={`${styles.sidebar} ${parchmentStyles.panel} ${parchmentStyles.overflowVisible} ${className}`}>
-            <CharacterPanel />
+            <CharacterPanel onCharacter={onCharacter} />
             <InventoryGrid
                 items={items as any}
                 gold={gold as any}

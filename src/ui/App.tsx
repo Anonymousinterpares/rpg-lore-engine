@@ -9,7 +9,8 @@ import SettingsPanel from './components/menu/SettingsPanel';
 import { useGameState } from './hooks/useGameState';
 import CharacterCreator from './components/creation/CharacterCreator';
 import Codex from './components/codex/Codex';
-import { Book } from 'lucide-react';
+import CharacterSheet from './components/character/CharacterSheet';
+import { Book, User } from 'lucide-react';
 
 const App: React.FC = () => {
     const { isActive, startGame, endGame } = useGameState();
@@ -17,6 +18,7 @@ const App: React.FC = () => {
     const [showLobby, setShowLobby] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
     const [showCodex, setShowCodex] = useState(false);
+    const [showCharacterSheet, setShowCharacterSheet] = useState(false);
     const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
 
     // Close modals on Escape key
@@ -27,6 +29,7 @@ const App: React.FC = () => {
                 setShowSettings(false);
                 setShowLobby(false);
                 setShowCodex(false);
+                setShowCharacterSheet(false);
             }
         };
         window.addEventListener('keydown', handleKeyDown);
@@ -113,10 +116,14 @@ const App: React.FC = () => {
                         onLobby={() => setShowLobby(true)}
                         onSettings={() => setShowSettings(true)}
                         onCodex={() => setShowCodex(true)}
+                        onCharacter={() => setShowCharacterSheet(true)}
                         onMenu={() => setShowMenu(true)}
                     />
                     <div className={styles.mainContent}>
-                        <Sidebar className={styles.sidebar} />
+                        <Sidebar
+                            className={styles.sidebar}
+                            onCharacter={() => setShowCharacterSheet(true)}
+                        />
                         <MainViewport className={styles.viewport} />
                         <RightPanel className={styles.rightPanel} />
                     </div>
@@ -153,6 +160,11 @@ const App: React.FC = () => {
                         isOpen={showCodex}
                         onClose={() => setShowCodex(false)}
                     />
+                    {showCharacterSheet && (
+                        <CharacterSheet
+                            onClose={() => setShowCharacterSheet(false)}
+                        />
+                    )}
                 </>
             )}
         </div>

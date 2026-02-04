@@ -4,7 +4,7 @@ import CharacterPanel from '../character/CharacterPanel';
 import InventoryGrid from '../inventory/InventoryGrid';
 import parchmentStyles from '../../styles/parchment.module.css';
 import { useGameState } from '../../hooks/useGameState';
-const Sidebar = ({ className }) => {
+const Sidebar = ({ className, onCharacter }) => {
     const { state, engine, updateState } = useGameState();
     const items = state?.character?.inventory?.items || [];
     const gold = state?.character?.inventory?.gold || { gp: 0, sp: 0, cp: 0 };
@@ -27,6 +27,6 @@ const Sidebar = ({ className }) => {
             updateState();
         }
     };
-    return (_jsxs("aside", { className: `${styles.sidebar} ${parchmentStyles.panel} ${parchmentStyles.overflowVisible} ${className}`, children: [_jsx(CharacterPanel, {}), _jsx(InventoryGrid, { items: items, gold: gold, capacity: capacity, droppedItems: state?.location?.droppedItems, maxSlots: 20, onItemAction: handleItemAction, className: styles.inventoryGrid })] }));
+    return (_jsxs("aside", { className: `${styles.sidebar} ${parchmentStyles.panel} ${parchmentStyles.overflowVisible} ${className}`, children: [_jsx(CharacterPanel, { onCharacter: onCharacter }), _jsx(InventoryGrid, { items: items, gold: gold, capacity: capacity, droppedItems: state?.location?.droppedItems, maxSlots: 20, onItemAction: handleItemAction, className: styles.inventoryGrid })] }));
 };
 export default Sidebar;

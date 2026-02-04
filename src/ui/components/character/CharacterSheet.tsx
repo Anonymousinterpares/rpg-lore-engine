@@ -1,0 +1,200 @@
+import React from 'react';
+import styles from './CharacterSheet.module.css';
+import parchmentStyles from '../../styles/parchment.module.css';
+import { X, Shield, Zap, Heart, Footprints, CheckCircle2 as Check } from 'lucide-react';
+import { useGameState } from '../../hooks/useGameState';
+
+const SKILLS = [
+    { name: 'Acrobatics', ability: 'DEX' },
+    { name: 'Animal Handling', ability: 'WIS' },
+    { name: 'Arcana', ability: 'INT' },
+    { name: 'Athletics', ability: 'STR' },
+    { name: 'Deception', ability: 'CHA' },
+    { name: 'History', ability: 'INT' },
+    { name: 'Insight', ability: 'WIS' },
+    { name: 'Intimidation', ability: 'CHA' },
+    { name: 'Investigation', ability: 'INT' },
+    { name: 'Medicine', ability: 'WIS' },
+    { name: 'Nature', ability: 'INT' },
+    { name: 'Perception', ability: 'WIS' },
+    { name: 'Performance', ability: 'CHA' },
+    { name: 'Persuasion', ability: 'CHA' },
+    { name: 'Religion', ability: 'INT' },
+    { name: 'Sleight of Hand', ability: 'DEX' },
+    { name: 'Stealth', ability: 'DEX' },
+    { name: 'Survival', ability: 'WIS' },
+];
+
+interface CharacterSheetProps {
+    onClose: () => void;
+}
+
+const CharacterSheet: React.FC<CharacterSheetProps> = ({ onClose }) => {
+    const { state } = useGameState();
+
+    if (!state || !state.character) return null;
+
+    const char = state.character;
+    const stats = char.stats;
+    const bio = char.biography;
+    const profBonus = Math.floor((char.level - 1) / 4) + 2;
+
+    const getMod = (score: number) => Math.floor((score - 10) / 2);
+    const formatMod = (mod: number) => (mod >= 0 ? `+${mod}` : mod.toString());
+
+    return (
+        <div className={styles.overlay} onClick={onClose}>
+            <div
+                className={`${parchmentStyles.panel} ${styles.modal} ${parchmentStyles.overflowVisible}`}
+                onClick={e => e.stopPropagation()}
+            >
+                <button className={styles.closeBtn} onClick={onClose}>
+                    <X size={28} />
+                </button>
+
+                <header className={styles.header}>
+                    <h1 className={styles.name}>{char.name}</h1>
+                    <div className={styles.subHeader}>
+                        Level {char.level} {char.race} {char.class} • {bio.background || 'Unknown Background'}
+                    </div>
+                </header>
+
+                <div className={styles.content}>
+                    {/* LEFT COLUMN */}
+                    <aside className={styles.leftCol}>
+                        {/* ABILITIES */}
+                        <section className={styles.section}>
+                            <h2 className={styles.sectionTitle}>Abilities</h2>
+                            <div className={styles.abilityGrid}>
+                                {Object.entries(stats).map(([name, score]) => {
+                                    const val = Number(score);
+                                    return (
+                                        <div key={name} className={styles.abilityRow}>
+                                            <span className={styles.statName}>{name}</span>
+                                            <span className={styles.statScore}>{val}</span>
+                                            <span className={styles.statMod}>{formatMod(getMod(val))}</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </section>
+
+                        {/* SAVING THROWS */}
+                        <section className={styles.section}>
+                            <h2 className={styles.sectionTitle}>Saving Throws</h2>
+                            <div className={styles.skillGrid}>
+                                {Object.entries(stats).map(([name, score]) => {
+                                    const isProf = char.savingThrowProficiencies?.includes(name as any);
+                                    const mod = getMod(Number(score)) + (isProf ? profBonus : 0);
+                                    return (
+                                        <div key={name} className={styles.skillRow}>
+                                            <div className={styles.skillInfo}>
+                                                <div className={styles.profMarker}>
+                                                    {isProf ? <Check size={14} /> : <div style={{ width: 14 }} />}
+                                                </div>
+                                                <span>{name}</span>
+                                            </div>
+                                            <span className={styles.skillBonus}>{formatMod(mod)}</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </section>
+
+                        {/* SKILLS */}
+                        <section className={styles.section}>
+                            <h2 className={styles.sectionTitle}>Skills</h2>
+                            <div className={styles.skillGrid}>
+                                {SKILLS.map(skill => {
+                                    const isProf = char.skillProficiencies?.includes(skill.name as any);
+                                    const abilityScore = (stats as any)[skill.ability] || 10;
+                                    const mod = getMod(abilityScore) + (isProf ? profBonus : 0);
+                                    return (
+                                        <div key={skill.name} className={styles.skillRow}>
+                                            <div className={styles.skillInfo}>
+                                                <div className={styles.profMarker}>
+                                                    {isProf ? <Check size={14} /> : <div style={{ width: 14 }} />}
+                                                </div>
+                                                <span>{skill.name} <small style={{ opacity: 0.5 }}>({skill.ability.toLowerCase()})</small></span>
+                                            </div>
+                                            <span className={styles.skillBonus}>{formatMod(mod)}</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </section>
+                    </aside>
+
+                    {/* RIGHT COLUMN */}
+                    <main className={styles.rightCol}>
+                        {/* COMBAT METRICS */}
+                        <div className={styles.combatMetrics}>
+                            <div className={styles.metricBox}>
+                                <div className={styles.metricValue}>{char.ac}</div>
+                                <div className={styles.metricLabel}>Armor Class</div>
+                                <Shield size={20} style={{ marginTop: 8, opacity: 0.3 }} />
+                            </div>
+                            <div className={styles.metricBox}>
+                                <div className={styles.metricValue}>{formatMod(getMod(stats.DEX || 10))}</div>
+                                <div className={styles.metricLabel}>Initiative</div>
+                                <Zap size={20} style={{ marginTop: 8, opacity: 0.3 }} />
+                            </div>
+                            <div className={styles.metricBox}>
+                                <div className={styles.metricValue}>30 ft</div>
+                                <div className={styles.metricLabel}>Speed</div>
+                                <Footprints size={20} style={{ marginTop: 8, opacity: 0.3 }} />
+                            </div>
+                        </div>
+
+                        {/* HIT POINTS */}
+                        <section className={styles.section}>
+                            <div className={styles.metricBox} style={{ width: '100%', flexDirection: 'row', gap: '20px' }}>
+                                <Heart size={32} color="#cc0000" />
+                                <div style={{ flex: 1 }}>
+                                    <div className={styles.metricLabel}>Hit Points</div>
+                                    <div style={{ fontSize: '2rem', fontWeight: 800 }}>
+                                        {char.hp.current} / {char.hp.max}
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* BACKGROUND & TRAITS */}
+                        <section className={styles.section}>
+                            <h2 className={styles.sectionTitle}>Personality & Traits</h2>
+                            <div className={styles.featuresGrid}>
+                                {bio.traits?.map((trait: string, i: number) => (
+                                    <div key={i} className={styles.featureCard}>
+                                        <h3 className={styles.featureName}>Trait {i + 1}</h3>
+                                        <p className={styles.featureDesc}>{trait}</p>
+                                    </div>
+                                ))}
+                                {bio.ideals?.map((ideal: string, i: number) => (
+                                    <div key={`ideal-${i}`} className={styles.featureCard} style={{ borderLeftColor: '#d4a017' }}>
+                                        <h3 className={styles.featureName}>Ideal</h3>
+                                        <p className={styles.featureDesc}>{ideal}</p>
+                                    </div>
+                                ))}
+                                {bio.bonds?.map((bond: string, i: number) => (
+                                    <div key={`bond-${i}`} className={styles.featureCard} style={{ borderLeftColor: '#a855f7' }}>
+                                        <h3 className={styles.featureName}>Bond</h3>
+                                        <p className={styles.featureDesc}>{bond}</p>
+                                    </div>
+                                ))}
+                                {bio.flaws?.map((flaw: string, i: number) => (
+                                    <div key={`flaw-${i}`} className={styles.featureCard} style={{ borderLeftColor: '#ff4d4d' }}>
+                                        <h3 className={styles.featureName}>Flaw</h3>
+                                        <p className={styles.featureDesc}>{flaw}</p>
+                                    </div>
+                                ))}
+                                {(!bio.traits?.length && !bio.ideals?.length) && <p style={{ opacity: 0.5 }}>No personality traits defined.</p>}
+                            </div>
+                        </section>
+                    </main>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default CharacterSheet;

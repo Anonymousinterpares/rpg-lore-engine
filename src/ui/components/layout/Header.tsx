@@ -7,10 +7,11 @@ interface HeaderProps {
     onLobby?: () => void;
     onSettings?: () => void;
     onCodex?: () => void;
+    onCharacter?: () => void;
     onMenu?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onLobby, onSettings, onCodex, onMenu }) => {
+const Header: React.FC<HeaderProps> = ({ onLobby, onSettings, onCodex, onCharacter, onMenu }) => {
     return (
         <header className={styles.header}>
             <div className={styles.logo}>
@@ -21,6 +22,9 @@ const Header: React.FC<HeaderProps> = ({ onLobby, onSettings, onCodex, onMenu })
                 <button className={parchmentStyles.button} onClick={onLobby}>
                     <Users size={18} />
                     <span>Lobby</span>
+                </button>
+                <button className={parchmentStyles.button} onClick={onCharacter} title="Character Sheet">
+                    <Users size={18} />
                 </button>
                 <button className={parchmentStyles.button} onClick={onCodex} title="Codex">
                     <Book size={18} />

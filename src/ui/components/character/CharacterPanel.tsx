@@ -8,7 +8,11 @@ import { Sword, Shield, Zap } from 'lucide-react';
 
 import { useGameState } from '../../hooks/useGameState';
 
-const CharacterPanel: React.FC = () => {
+interface CharacterPanelProps {
+    onCharacter?: () => void;
+}
+
+const CharacterPanel: React.FC<CharacterPanelProps> = ({ onCharacter }) => {
     const { state } = useGameState();
 
     if (!state || !state.character) {
@@ -24,7 +28,7 @@ const CharacterPanel: React.FC = () => {
 
     return (
         <div className={styles.panel}>
-            <div className={styles.header}>
+            <div className={styles.header} onClick={onCharacter} style={{ cursor: 'pointer' }} title="Open Character Sheet">
                 <h2 className={styles.name}>{char.name}</h2>
                 <div className={styles.level}>Level {char.level} {char.class}</div>
             </div>

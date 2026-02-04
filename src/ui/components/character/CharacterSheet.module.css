@@ -1,0 +1,278 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: var(--spacing-xl);
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal {
+    width: 100%;
+    max-width: 1000px;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-xl);
+    position: relative;
+    overflow: hidden;
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.closeBtn {
+    position: absolute;
+    top: var(--spacing-lg);
+    right: var(--spacing-lg);
+    background: none;
+    border: none;
+    color: var(--parchment-text);
+    cursor: pointer;
+    opacity: 0.6;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.closeBtn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.header {
+    margin-bottom: var(--spacing-xl);
+    border-bottom: 2px solid rgba(93, 64, 55, 0.2);
+    padding-bottom: var(--spacing-md);
+}
+
+.name {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #2a2015;
+}
+
+.subHeader {
+    font-size: 1.1rem;
+    font-style: italic;
+    color: #5d4037;
+    opacity: 0.9;
+}
+
+.content {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: var(--spacing-xl);
+    overflow-y: auto;
+    padding-right: var(--spacing-md);
+}
+
+/* Scrollbar styling */
+.content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.content::-webkit-scrollbar-track {
+    background: rgba(93, 64, 55, 0.05);
+}
+
+.content::-webkit-scrollbar-thumb {
+    background: rgba(93, 64, 55, 0.3);
+    border-radius: 3px;
+}
+
+.leftCol,
+.rightCol {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.sectionTitle {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    color: #5d4037;
+    border-bottom: 1px solid rgba(93, 64, 55, 0.15);
+    padding-bottom: 4px;
+}
+
+/* Ability Scores */
+.abilityGrid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.abilityRow {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(93, 64, 55, 0.1);
+    padding: var(--spacing-sm);
+    border-radius: 4px;
+}
+
+.statName {
+    width: 50px;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.statScore {
+    width: 40px;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.statMod {
+    flex: 1;
+    text-align: right;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #8b4513;
+}
+
+/* Skills & Saves */
+.skillGrid {
+    display: flex;
+    flex-direction: column;
+}
+
+.skillRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 0.95rem;
+    border-bottom: 1px dotted rgba(93, 64, 55, 0.1);
+}
+
+.skillRow:last-child {
+    border-bottom: none;
+}
+
+.skillInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.profMarker {
+    color: #a855f7;
+    display: flex;
+    align-items: center;
+}
+
+.skillBonus {
+    font-weight: 700;
+    font-family: var(--font-mono);
+}
+
+/* Combat Metrics Box */
+.combatMetrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+}
+
+.metricBox {
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(93, 64, 55, 0.2);
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.metricValue {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #2a2015;
+}
+
+.metricLabel {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    opacity: 0.7;
+    margin-top: 4px;
+}
+
+/* Feature Cards */
+.featuresGrid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.featureCard {
+    background: rgba(0, 0, 0, 0.03);
+    border-left: 3px solid #5d4037;
+    padding: var(--spacing-md);
+}
+
+.featureName {
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 4px;
+}
+
+.featureDesc {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    opacity: 0.85;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag {
+    background: rgba(93, 64, 55, 0.1);
+    color: #5d4037;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
