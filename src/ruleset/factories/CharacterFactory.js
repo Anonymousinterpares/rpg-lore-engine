@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { DataManager } from '../data/DataManager';
+import { HexGenerator } from '../combat/HexGenerator';
 export class CharacterFactory {
     static createNewGameState(options) {
         const { name, race, characterClass, background, abilityScores, skillProficiencies } = options;
@@ -88,13 +89,35 @@ export class CharacterFactory {
                 droppedItems: []
             },
             worldTime: { day: 1, hour: 8, month: 1, year: 1489, totalTurns: 0 },
-            worldMap: {
-                grid_id: 'world_map',
-                hexes: {}
-            },
+            worldMap: (() => {
+                const startHex = HexGenerator.generateHex([0, 0], [], {});
+                startHex.visited = true;
+                return {
+                    grid_id: 'world_map',
+                    hexes: { '0,0': startHex }
+                };
+            })(),
             subLocations: [],
             worldNpcs: [],
-            activeQuests: [],
+            activeQuests: [
+                {
+                    id: 'tutorial_01',
+                    title: 'The First Step',
+                    description: 'You awake in a strange clearing. The air is fresh, but the silence is heavy. You must get your bearings.',
+                    status: 'ACTIVE',
+                    isNew: true,
+                    objectives: [
+                        { id: 'obj_master_booklet', description: 'Master the Booklet: View all pages (Character, Map, Quests, Equipment, Codex)', isCompleted: false, currentProgress: 0, maxProgress: 5 },
+                        { id: 'obj_study_gear', description: 'Study Your Gear: Examine an item in your inventory', isCompleted: false, currentProgress: 0, maxProgress: 1 },
+                        { id: 'obj_begin_journey', description: 'Begin the Journey: Move to a neighboring hex', isCompleted: false, currentProgress: 0, maxProgress: 1 }
+                    ],
+                    rewards: {
+                        xp: 50,
+                        gold: { gp: 10, sp: 0, cp: 0, ep: 0, pp: 0 },
+                        items: []
+                    }
+                }
+            ],
             factions: [],
             storySummary: `started their journey as a ${race.name} ${characterClass.name} with the ${background.name} background.`,
             conversationHistory: [],

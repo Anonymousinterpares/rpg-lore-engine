@@ -65,6 +65,19 @@
     z-index: 11;
 }
 
+.tabDot {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 10px;
+    height: 10px;
+    background: #ef4444;
+    border-radius: 50%;
+    border: 2px solid #5d4037;
+    box-shadow: 0 0 5px rgba(239, 68, 68, 0.5);
+    z-index: 12;
+}
+
 /* Page Stack */
 .pageStack {
     position: relative;

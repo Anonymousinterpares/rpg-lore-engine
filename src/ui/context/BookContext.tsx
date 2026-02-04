@@ -5,6 +5,7 @@ export interface BookPageData {
     label: string;
     content: ReactNode;
     permanent?: boolean;
+    hasNotification?: boolean;
 }
 
 interface BookContextType {

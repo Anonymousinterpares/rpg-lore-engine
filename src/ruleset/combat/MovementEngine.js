@@ -31,7 +31,9 @@ export class MovementEngine {
                 description: 'The mists of the unknown cling to this place.',
                 interest_points: [],
                 resourceNodes: [],
-                openedContainers: {}
+                openedContainers: {},
+                namingSource: 'engine',
+                visualVariant: 1
             };
             this.mapManager.setHex(newHex);
             requiresGeneration = true;
@@ -39,9 +41,14 @@ export class MovementEngine {
         else if (!newHex.generated) {
             requiresGeneration = true;
         }
+        if (!newHex)
+            return { success: false, newHex: null, requiresGeneration: false, message: 'Failed to create movement destination.', timeCost: 0 };
         // Mark as visited
         newHex.visited = true;
         this.mapManager.setHex(newHex);
+        // Track movement for tutorial
+        const engine = this.engine; // Hack if needed, but let's check where MovementEngine is used.
+        // Actually, MovementEngine is a subsystem. I'll check GameLoop.ts.
         const message = requiresGeneration
             ? `You venture ${direction} into unexplored territory... [TRIGGER: HEX_GENERATION]`
             : `You travel ${direction} into ${newHex.name || 'the unknown'}.`;

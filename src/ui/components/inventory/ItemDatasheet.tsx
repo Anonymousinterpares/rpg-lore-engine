@@ -3,6 +3,7 @@ import styles from './ItemDatasheet.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
 import { X, Weight, Coins, Shield, Sword } from 'lucide-react';
 import ReactDOM from 'react-dom';
+import { useGameState } from '../../hooks/useGameState';
 
 interface Item {
     id: string;
@@ -22,6 +23,15 @@ interface ItemDatasheetProps {
 }
 
 const ItemDatasheet: React.FC<ItemDatasheetProps> = ({ item, onClose }) => {
+    const { engine, updateState } = useGameState();
+
+    React.useEffect(() => {
+        if (engine) {
+            engine.trackTutorialEvent(`examined_item:${item.name}`);
+            updateState();
+        }
+    }, [engine, item.name, updateState]);
+
     // Render into portal to document.body to avoid stacking issues
     return ReactDOM.createPortal(
         <div className={styles.overlay} onClick={onClose}>

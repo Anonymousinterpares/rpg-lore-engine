@@ -30,15 +30,17 @@ export class HexGenerator {
         }
         return {
             coordinates: coords,
+            name: `${biome} (Unknown)`,
             generated: true,
             biome: biome,
-            name: `${biome} Region`,
             description: `A vast expanse of ${biome.toLowerCase()}.`,
             traversable_sides: { 'N': true, 'S': true, 'E': true, 'W': true, 'NE': true, 'NW': true, 'SE': true, 'SW': true },
             interest_points: [],
             resourceNodes: nodes,
             openedContainers: {},
-            visited: false
+            visited: false,
+            namingSource: 'engine',
+            visualVariant: Math.floor(Math.random() * 5) + 1
         };
     }
     static determineResourceType(itemId) {

@@ -19,7 +19,8 @@ export const QuestSchema = z.object({
         xp: z.number().default(0),
         gold: CurrencySchema.optional(),
         items: z.array(z.string()).default([]) // Item IDs
-    }).optional()
+    }).optional(),
+    isNew: z.boolean().default(true)
 });
 
 export type Quest = z.infer<typeof QuestSchema>;

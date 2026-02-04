@@ -41,7 +41,10 @@ export const HexSchema = z.object({
         itemId: z.string(),
         quantity: z.number()
     }))).default({}),
-    visited: z.boolean().default(false)
+    visited: z.boolean().default(false),
+    playerName: z.string().optional(),
+    namingSource: z.enum(['engine', 'llm', 'player']).default('engine'),
+    visualVariant: z.number().int().min(1).max(5).default(1)
 });
 
 export type Hex = z.infer<typeof HexSchema>;

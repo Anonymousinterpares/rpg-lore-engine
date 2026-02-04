@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import styles from './BookModal.module.css';
 import { X, ArrowLeft } from 'lucide-react';
 import { BookProvider, useBook, BookPageData } from '../../context/BookContext';
+import { useGameState } from '../../hooks/useGameState';
+import { Quest, QuestObjective } from '../../../ruleset/schemas/QuestSchema';
 
 interface BookModalProps {
     isOpen: boolean;
@@ -10,15 +12,15 @@ interface BookModalProps {
     activePageId: string;
 }
 
-const TAB_ORDER = ['character', 'equipment', 'codex', 'settings'];
+const TAB_ORDER = ['character', 'equipment', 'codex', 'world_map', 'quests', 'settings'];
 
 const BookModalContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const { pages, activePageId, popPage, goToPage } = useBook();
+    const { state, engine, updateState } = useGameState();
     const [animating, setAnimating] = useState<string | null>(null);
 
     // Filter to last 4 pages for display stack
     const displayStack = pages.slice(-4);
-    const activePageIndex = displayStack.findIndex(p => p.id === activePageId);
 
     const handleBack = () => {
         setAnimating('out');
@@ -29,6 +31,9 @@ const BookModalContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     };
 
     const handleTabClick = (id: string) => {
+        if (engine) engine.trackTutorialEvent(`viewed_page:${id}`);
+        updateState();
+
         if (id === activePageId) return;
         setAnimating('in');
         setTimeout(() => {
@@ -36,6 +41,14 @@ const BookModalContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             setAnimating(null);
         }, 400);
     };
+
+    // Track initial page
+    useEffect(() => {
+        if (activePageId && engine) {
+            engine.trackTutorialEvent(`viewed_page:${activePageId}`);
+            updateState();
+        }
+    }, [activePageId, engine, updateState]);
 
     // Close on ESC
     useEffect(() => {
@@ -45,6 +58,9 @@ const BookModalContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [onClose]);
+
+    const isPageTracked = (id: string) => state?.triggeredEvents?.includes(`viewed_page:${id}`);
+    const isTutorialActive = state?.activeQuests?.some(q => q.id === 'tutorial_01' && !q.objectives.find(o => o.id === 'obj_master_booklet')?.isCompleted);
 
     return (
         <div className={styles.bookOverlay} onClick={onClose}>
@@ -58,15 +74,23 @@ const BookModalContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                         if (idxA === -1) return 1;
                         if (idxB === -1) return -1;
                         return idxA - idxB;
-                    }).map(page => (
-                        <button
-                            key={page.id}
-                            className={`${styles.tab} ${activePageId === page.id ? styles.active : ''}`}
-                            onClick={() => handleTabClick(page.id)}
-                        >
-                            {page.label}
-                        </button>
-                    ))}
+                    }).map(page => {
+                        const showRedDot = (page.id === 'quests' && page.hasNotification) ||
+                            (isTutorialActive && !isPageTracked(page.id));
+
+                        return (
+                            <button
+                                key={page.id}
+                                className={`${styles.tab} ${activePageId === page.id ? styles.active : ''}`}
+                                onClick={() => handleTabClick(page.id)}
+                            >
+                                {page.label}
+                                {showRedDot && (
+                                    <div className={styles.tabDot} />
+                                )}
+                            </button>
+                        );
+                    })}
                 </div>
 
                 {/* Page Stack */}

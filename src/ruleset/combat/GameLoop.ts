@@ -53,7 +53,9 @@ export class GameLoop {
                 description: 'A calm meadow where your adventure begins.',
                 interest_points: [],
                 resourceNodes: [],
-                openedContainers: {}
+                openedContainers: {},
+                namingSource: 'engine',
+                visualVariant: 1
             });
         }
     }
@@ -131,6 +133,7 @@ export class GameLoop {
                     this.state.location.coordinates = result.newHex.coordinates;
                     this.state.location.hexId = `${result.newHex.coordinates[0]},${result.newHex.coordinates[1]}`;
                     this.state.worldTime = WorldClockEngine.advanceTime(this.state.worldTime, result.timeCost);
+                    this.trackTutorialEvent('moved_hex');
                 }
                 return result.message;
             case 'look':
@@ -259,6 +262,62 @@ export class GameLoop {
             this.stateManager.saveGame(this.state);
             return `Equipped ${item.name}.`;
         }
+    }
+
+    public markQuestAsRead(questId: string) {
+        const quest = this.state.activeQuests?.find(q => q.id === questId);
+        if (quest && quest.isNew) {
+            quest.isNew = false;
+            this.stateManager.saveGame(this.state);
+        }
+    }
+
+    /**
+     * Tracks tutorial-related events and updates quest progress.
+     */
+    public trackTutorialEvent(eventId: string) {
+        if (!this.state.triggeredEvents) this.state.triggeredEvents = [];
+        if (this.state.triggeredEvents.includes(eventId)) return;
+
+        this.state.triggeredEvents.push(eventId);
+
+        const tutorialQuest = this.state.activeQuests?.find(q => q.id === 'tutorial_01');
+        if (!tutorialQuest) return;
+
+        // 1. Master the Booklet (view pages)
+        if (eventId.startsWith('viewed_page:')) {
+            const tutorialPages = ['character', 'world_map', 'quests', 'equipment', 'codex'];
+            const obj = tutorialQuest.objectives.find(o => o.id === 'obj_master_booklet');
+            if (obj && !obj.isCompleted) {
+                const viewedTutorialPages = this.state.triggeredEvents.filter(e =>
+                    e.startsWith('viewed_page:') && tutorialPages.includes(e.split(':')[1])
+                );
+                obj.currentProgress = viewedTutorialPages.length;
+                if (obj.currentProgress >= obj.maxProgress) {
+                    obj.isCompleted = true;
+                }
+            }
+        }
+
+        // 2. Study Your Gear (examine item)
+        if (eventId.startsWith('examined_item:')) {
+            const obj = tutorialQuest.objectives.find(o => o.id === 'obj_study_gear');
+            if (obj && !obj.isCompleted) {
+                obj.currentProgress = 1;
+                obj.isCompleted = true;
+            }
+        }
+
+        // 3. Begin the Journey (move hex)
+        if (eventId === 'moved_hex') {
+            const obj = tutorialQuest.objectives.find(o => o.id === 'obj_begin_journey');
+            if (obj && !obj.isCompleted) {
+                obj.currentProgress = 1;
+                obj.isCompleted = true;
+            }
+        }
+
+        this.stateManager.saveGame(this.state);
     }
 
     private recalculateAC() {

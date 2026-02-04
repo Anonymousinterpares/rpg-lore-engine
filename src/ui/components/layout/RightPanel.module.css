@@ -31,6 +31,51 @@
     gap: 8px;
 }
 
+.mapHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.headerLeft {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.viewToggleGroup {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.toggleLabel {
+    font-size: 0.7rem;
+    color: #5d4037;
+    opacity: 0.7;
+    text-transform: none;
+    letter-spacing: normal;
+    font-family: 'Cinzel', serif;
+}
+
+.viewToggle {
+    background: rgba(93, 64, 55, 0.1);
+    border: 1px solid rgba(93, 64, 55, 0.2);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    color: #5d4037;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.viewToggle:hover {
+    background: rgba(93, 64, 55, 0.2);
+    border-color: rgba(93, 64, 55, 0.4);
+}
+
 .mapContainer {
     flex: 1;
     border: 1px solid rgba(93, 64, 55, 0.1);

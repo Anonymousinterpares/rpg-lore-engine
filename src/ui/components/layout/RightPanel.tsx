@@ -7,12 +7,21 @@ import QuestList from '../exploration/QuestList';
 
 interface RightPanelProps {
     className?: string;
+    onWorldMap?: () => void;
+    onQuests?: () => void;
 }
 
-const RightPanel: React.FC<RightPanelProps> = ({ className }) => {
-    const { state } = useGameState();
+const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests }) => {
+    const { state, updateState } = useGameState();
+    const [viewMode, setViewMode] = React.useState<'normal' | 'zoomed-in' | 'zoomed-out'>('normal');
 
     if (!state) return null;
+
+    const toggleViewMode = () => {
+        if (viewMode === 'normal') setViewMode('zoomed-in');
+        else if (viewMode === 'zoomed-in') setViewMode('zoomed-out');
+        else setViewMode('normal');
+    };
 
     // Map state.worldMap.hexes to HexMapView format
     const hexData = Object.entries(state.worldMap.hexes).map(([id, hex]) => ({
@@ -22,8 +31,28 @@ const RightPanel: React.FC<RightPanelProps> = ({ className }) => {
         biome: hex.biome,
         isVisited: hex.visited,
         isCurrent: state.location.hexId === id,
-        isDiscovered: hex.visited || hex.generated
+        isDiscovered: hex.visited || hex.generated,
+        name: hex.name,
+        playerName: hex.playerName,
+        namingSource: hex.namingSource,
+        visualVariant: hex.visualVariant,
+        resourceNodes: hex.resourceNodes,
+        interest_points: hex.interest_points
     }));
+
+    // Filter based on viewMode
+    const currentHex = state.worldMap.hexes[state.location.hexId];
+    const filteredHexes = hexData.filter(hex => {
+        if (viewMode === 'zoomed-in') return hex.isCurrent;
+        const radius = viewMode === 'normal' ? 3 : 10;
+        if (!currentHex) return hex.isDiscovered;
+
+        // Simple cube/axial distance calculation
+        const dq = hex.q - currentHex.coordinates[0];
+        const dr = hex.r - currentHex.coordinates[1];
+        const distance = (Math.abs(dq) + Math.abs(dq + dr) + Math.abs(dr)) / 2;
+        return distance <= radius && hex.isDiscovered;
+    });
 
     // Format history for display
     const visibleHistory = state.conversationHistory.slice(-30);
@@ -31,17 +60,35 @@ const RightPanel: React.FC<RightPanelProps> = ({ className }) => {
     return (
         <aside className={`${styles.rightPanel} ${className}`}>
             <div className={styles.section}>
-                <h3>
-                    <MapIcon size={16} />
-                    World Map
+                <h3 className={styles.mapHeader} onClick={onWorldMap} style={{ cursor: 'pointer' }}>
+                    <div className={styles.headerLeft}>
+                        <MapIcon size={16} />
+                        World Map
+                    </div>
+                    <div className={styles.viewToggleGroup}>
+                        <span className={styles.toggleLabel}>Map view:</span>
+                        <button
+                            className={styles.viewToggle}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                toggleViewMode();
+                            }}
+                        >
+                            {viewMode.replace('-', ' ')}
+                        </button>
+                    </div>
                 </h3>
                 <div className={styles.mapContainer}>
-                    <HexMapView hexes={hexData} />
+                    <HexMapView
+                        hexes={filteredHexes}
+                        viewMode={viewMode}
+                        isDraggable={false}
+                    />
                 </div>
             </div>
 
             <div className={`${styles.section} ${styles.questSection}`}>
-                <h3>
+                <h3 onClick={onQuests} style={{ cursor: 'pointer' }}>
                     <Target size={16} />
                     Current Quests
                 </h3>

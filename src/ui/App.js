@@ -12,9 +12,11 @@ import CharacterCreator from './components/creation/CharacterCreator';
 import Codex from './components/codex/Codex';
 import CharacterSheet from './components/character/CharacterSheet';
 import BookModal from './components/book/BookModal';
+import WorldMapPage from './components/book/WorldMapPage';
+import QuestsPage from './components/book/QuestsPage';
 import { Book } from 'lucide-react';
 const App = () => {
-    const { isActive, startGame, endGame } = useGameState();
+    const { state, isActive, startGame, endGame } = useGameState();
     const [showSettings, setShowSettings] = useState(false);
     const [showLobby, setShowLobby] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
@@ -77,6 +79,19 @@ const App = () => {
             permanent: true
         },
         {
+            id: 'world_map',
+            label: 'World Map',
+            content: _jsx(WorldMapPage, {}),
+            permanent: true
+        },
+        {
+            id: 'quests',
+            label: 'Quests',
+            content: _jsx(QuestsPage, {}),
+            permanent: true,
+            hasNotification: state?.activeQuests?.some(q => q.isNew)
+        },
+        {
             id: 'equipment',
             label: 'Equipment',
             content: (_jsxs("div", { style: { padding: '60px', textAlign: 'center' }, children: [_jsx("h2", { style: { fontFamily: 'Cinzel, serif', color: '#5d4037' }, children: "Equipment & Paperdoll" }), _jsx("p", { style: { fontStyle: 'italic', opacity: 0.6 }, children: "The Great Forge is still preparing your armory..." }), _jsx(Book, { size: 80, style: { marginTop: '40px', opacity: 0.2 } })] })),
@@ -111,6 +126,14 @@ const App = () => {
         setActiveBookPageId('settings');
         setBookOpen(true);
     };
-    return (_jsx("div", { className: styles.appShell, children: isCreatingCharacter ? (_jsx(CharacterCreator, { onComplete: handleCharacterComplete, onCancel: () => setIsCreatingCharacter(false) })) : !isActive ? (_jsxs(_Fragment, { children: [_jsx(MainMenu, { onNewGame: handleNewGame, onLoadGame: handleLoadGame, onMultiplayer: () => setShowLobby(true), onSettings: openSettings, onQuit: () => window.close() }), showSettings && (_jsx(SettingsPanel, { onClose: () => setShowSettings(false), onSave: handleSettingsSave, initialSettings: defaultSettings })), showLobby && (_jsx("div", { className: styles.modalOverlay, children: _jsxs("div", { className: styles.placeholderModal, children: [_jsx("h2", { children: "Multiplayer Lobby" }), _jsx("p", { children: "Coming Soon!" }), _jsx("button", { onClick: () => setShowLobby(false), children: "Close" })] }) }))] })) : (_jsxs(_Fragment, { children: [_jsx(Header, { onLobby: () => setShowLobby(true), onSettings: openSettings, onCodex: openCodex, onCharacter: openCharacterSheet, onMenu: () => setShowMenu(true), onEquipment: openEquipment }), _jsxs("div", { className: styles.mainContent, children: [_jsx(Sidebar, { className: styles.sidebar, onCharacter: openCharacterSheet }), _jsx(MainViewport, { className: styles.viewport }), _jsx(RightPanel, { className: styles.rightPanel })] }), showSettings && (_jsx(SettingsPanel, { onClose: () => setShowSettings(false), onSave: handleSettingsSave, initialSettings: defaultSettings })), showMenu && (_jsxs("div", { className: styles.modalOverlay, children: [_jsx(MainMenu, { onNewGame: handleNewGame, onLoadGame: handleLoadGame, onMultiplayer: () => { setShowLobby(true); setShowMenu(false); }, onSettings: () => { openSettings(); setShowMenu(false); }, onQuit: handleQuit }), _jsx("button", { className: styles.closeOverlay, onClick: () => setShowMenu(false), children: "Return to Game" })] })), showLobby && (_jsx("div", { className: styles.modalOverlay, children: _jsxs("div", { className: styles.placeholderModal, children: [_jsx("h2", { children: "Multiplayer Lobby" }), _jsx("p", { children: "Coming Soon!" }), _jsx("button", { onClick: () => setShowLobby(false), children: "Close" })] }) })), bookOpen && (_jsx(BookModal, { isOpen: bookOpen, onClose: () => setBookOpen(false), initialPages: bookPages, activePageId: activeBookPageId }))] })) }));
+    const openWorldMap = () => {
+        setActiveBookPageId('world_map');
+        setBookOpen(true);
+    };
+    const openQuests = () => {
+        setActiveBookPageId('quests');
+        setBookOpen(true);
+    };
+    return (_jsx("div", { className: styles.appShell, children: isCreatingCharacter ? (_jsx(CharacterCreator, { onComplete: handleCharacterComplete, onCancel: () => setIsCreatingCharacter(false) })) : !isActive ? (_jsxs(_Fragment, { children: [_jsx(MainMenu, { onNewGame: handleNewGame, onLoadGame: handleLoadGame, onMultiplayer: () => setShowLobby(true), onSettings: openSettings, onQuit: () => window.close() }), showSettings && (_jsx(SettingsPanel, { onClose: () => setShowSettings(false), onSave: handleSettingsSave, initialSettings: defaultSettings })), showLobby && (_jsx("div", { className: styles.modalOverlay, children: _jsxs("div", { className: styles.placeholderModal, children: [_jsx("h2", { children: "Multiplayer Lobby" }), _jsx("p", { children: "Coming Soon!" }), _jsx("button", { onClick: () => setShowLobby(false), children: "Close" })] }) }))] })) : (_jsxs(_Fragment, { children: [_jsx(Header, { onLobby: () => setShowLobby(true), onSettings: openSettings, onCodex: openCodex, onCharacter: openCharacterSheet, onMenu: () => setShowMenu(true), onEquipment: openEquipment }), _jsxs("div", { className: styles.mainContent, children: [_jsx(Sidebar, { className: styles.sidebar, onCharacter: openCharacterSheet }), _jsx(MainViewport, { className: styles.viewport }), _jsx(RightPanel, { className: styles.rightPanel, onWorldMap: openWorldMap, onQuests: openQuests })] }), showSettings && (_jsx(SettingsPanel, { onClose: () => setShowSettings(false), onSave: handleSettingsSave, initialSettings: defaultSettings })), showMenu && (_jsxs("div", { className: styles.modalOverlay, children: [_jsx(MainMenu, { onNewGame: handleNewGame, onLoadGame: handleLoadGame, onMultiplayer: () => { setShowLobby(true); setShowMenu(false); }, onSettings: () => { openSettings(); setShowMenu(false); }, onQuit: handleQuit }), _jsx("button", { className: styles.closeOverlay, onClick: () => setShowMenu(false), children: "Return to Game" })] })), showLobby && (_jsx("div", { className: styles.modalOverlay, children: _jsxs("div", { className: styles.placeholderModal, children: [_jsx("h2", { children: "Multiplayer Lobby" }), _jsx("p", { children: "Coming Soon!" }), _jsx("button", { onClick: () => setShowLobby(false), children: "Close" })] }) })), bookOpen && (_jsx(BookModal, { isOpen: bookOpen, onClose: () => setBookOpen(false), initialPages: bookPages, activePageId: activeBookPageId }))] })) }));
 };
 export default App;

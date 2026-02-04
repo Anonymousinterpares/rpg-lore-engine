@@ -11,11 +11,13 @@ import CharacterCreator from './components/creation/CharacterCreator';
 import Codex from './components/codex/Codex';
 import CharacterSheet from './components/character/CharacterSheet';
 import BookModal from './components/book/BookModal';
+import WorldMapPage from './components/book/WorldMapPage';
+import QuestsPage from './components/book/QuestsPage';
 import { BookPageData } from './context/BookContext';
 import { Book, User } from 'lucide-react';
 
 const App: React.FC = () => {
-    const { isActive, startGame, endGame } = useGameState();
+    const { state, isActive, startGame, endGame } = useGameState();
     const [showSettings, setShowSettings] = useState(false);
     const [showLobby, setShowLobby] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
@@ -86,6 +88,19 @@ const App: React.FC = () => {
             permanent: true
         },
         {
+            id: 'world_map',
+            label: 'World Map',
+            content: <WorldMapPage />,
+            permanent: true
+        },
+        {
+            id: 'quests',
+            label: 'Quests',
+            content: <QuestsPage />,
+            permanent: true,
+            hasNotification: state?.activeQuests?.some(q => q.isNew)
+        },
+        {
             id: 'equipment',
             label: 'Equipment',
             content: (
@@ -135,6 +150,16 @@ const App: React.FC = () => {
 
     const openSettings = () => {
         setActiveBookPageId('settings');
+        setBookOpen(true);
+    };
+
+    const openWorldMap = () => {
+        setActiveBookPageId('world_map');
+        setBookOpen(true);
+    };
+
+    const openQuests = () => {
+        setActiveBookPageId('quests');
         setBookOpen(true);
     };
 
@@ -188,7 +213,11 @@ const App: React.FC = () => {
                             onCharacter={openCharacterSheet}
                         />
                         <MainViewport className={styles.viewport} />
-                        <RightPanel className={styles.rightPanel} />
+                        <RightPanel
+                            className={styles.rightPanel}
+                            onWorldMap={openWorldMap}
+                            onQuests={openQuests}
+                        />
                     </div>
                     {/* In-game Modals */}
                     {showSettings && (

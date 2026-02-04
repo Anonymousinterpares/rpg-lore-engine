@@ -1,0 +1,190 @@
+.container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.sidebar {
+    width: 200px;
+    height: 100%;
+    background: rgba(93, 64, 55, 0.05);
+    border-right: 1px solid rgba(93, 64, 55, 0.1);
+    padding: 30px 15px;
+}
+
+.title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    color: #5d4037;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    border: none;
+    background: transparent;
+    color: #a38b7a;
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    position: relative;
+    text-align: left;
+}
+
+.tab:hover {
+    background: rgba(93, 64, 55, 0.1);
+    color: #5d4037;
+}
+
+.tab.active {
+    background: #5d4037;
+    color: #fdf6e3;
+}
+
+.redDot {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 8px;
+    height: 8px;
+    background: #b91c1c;
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(185, 28, 28, 0.5);
+}
+
+.content {
+    flex: 1;
+    height: 100%;
+    padding: 40px;
+    overflow-y: auto;
+    background: #fdf6e3;
+}
+
+.questList {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.questCard {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(93, 64, 55, 0.1);
+    transition: all 0.2s ease;
+}
+
+.questCard.isNew {
+    border-left: 4px solid #b91c1c;
+}
+
+.questHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.questHeader h3 {
+    font-family: 'Cinzel', serif;
+    color: #5d4037;
+    margin: 0;
+}
+
+.newBadge {
+    background: #b91c1c;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.description {
+    font-size: 0.95rem;
+    color: #4a3728;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.objectives h4,
+.rewards h4 {
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    color: #a38b7a;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.objectives {
+    margin-bottom: 20px;
+}
+
+.objective {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    color: #4a3728;
+}
+
+.objective.completed {
+    opacity: 0.5;
+    text-decoration: line-through;
+}
+
+.objCheck {
+    color: #10b981;
+}
+
+.circle {
+    width: 14px;
+    height: 14px;
+    border: 1px solid #a38b7a;
+    border-radius: 50%;
+}
+
+.progress {
+    margin-left: auto;
+    font-size: 0.8rem;
+    color: #a38b7a;
+}
+
+.rewardTags {
+    display: flex;
+    gap: 10px;
+}
+
+.rewardTag {
+    background: rgba(93, 64, 55, 0.05);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: #5d4037;
+    border: 1px solid rgba(93, 64, 55, 0.1);
+}
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80%;
+    color: #a38b7a;
+    opacity: 0.5;
+    gap: 20px;
+}

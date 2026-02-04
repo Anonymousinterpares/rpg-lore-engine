@@ -26,19 +26,47 @@
 }
 
 .hex:hover {
-    transform: scale(1.1);
+    transform: translate(-50%, -50%) scale(1.1);
     z-index: 10;
     filter: brightness(1.2) drop-shadow(0 0 10px rgba(var(--glass-accent-rgb), 0.5));
 }
 
 .hexInner {
-    width: 90%;
-    height: 90%;
+    width: 96%;
+    /* Increased to make border thinner */
+    height: 96%;
     clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
     background: rgba(255, 255, 255, 0.05);
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: background 0.3s ease;
+}
+
+/* Hex Contour (using the parent .hex background) */
+.hex {
+    background: rgba(93, 64, 55, 0.4);
+    /* Brownish contour */
+    transition: all 0.2s ease;
+}
+
+.hex.selected {
+    background: #5d4037;
+    /* Solid red-brown contour */
+    transform: scale(1.05);
+    z-index: 15;
+    box-shadow: 0 0 15px rgba(93, 64, 55, 0.6);
+}
+
+.hex.selected .hexInner {
+    height: 92%;
+    /* Thicker contour */
+    width: 92%;
+}
+
+.hex.current {
+    filter: brightness(1.5) drop-shadow(0 0 15px var(--glass-accent));
+    z-index: 5;
 }
 
 .unvisited {
@@ -50,20 +78,166 @@
     opacity: 1;
 }
 
-.current {
-    filter: drop-shadow(0 0 15px var(--glass-accent));
+.dragging {
+    cursor: grabbing !important;
+}
+
+.dragging .hex {
+    cursor: grabbing !important;
 }
 
 .playerMarker {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     background: var(--glass-accent);
     border-radius: 50%;
-    box-shadow: 0 0 10px var(--glass-accent);
+    box-shadow: 0 0 15px var(--glass-accent);
     animation: pulse 2s infinite;
+    z-index: 5;
+}
+
+.details {
+    position: absolute;
+    bottom: 10px;
+    display: flex;
+    gap: 4px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 2px 4px;
+    border-radius: 4px;
+    pointer-events: none;
+}
+
+.detailIcon {
+    color: #ffd700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Biome Colors */
+/* Biome Variants */
+.plains_1 .hexInner {
+    background: rgba(144, 238, 144, 0.2);
+}
+
+.plains_2 .hexInner {
+    background: rgba(144, 238, 144, 0.3);
+}
+
+.plains_3 .hexInner {
+    background: rgba(144, 238, 144, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.plains_4 .hexInner {
+    background: linear-gradient(135deg, rgba(144, 238, 144, 0.2), rgba(144, 238, 144, 0.4));
+}
+
+.plains_5 .hexInner {
+    background: rgba(144, 238, 144, 0.35);
+}
+
+.forest_1 .hexInner {
+    background: rgba(34, 139, 34, 0.2);
+}
+
+.forest_2 .hexInner {
+    background: rgba(34, 139, 34, 0.35);
+}
+
+.forest_3 .hexInner {
+    background: rgba(34, 139, 34, 0.25);
+}
+
+.forest_4 .hexInner {
+    background: linear-gradient(to bottom, rgba(34, 139, 34, 0.2), rgba(34, 139, 34, 0.4));
+}
+
+.forest_5 .hexInner {
+    background: rgba(34, 139, 34, 0.45);
+}
+
+.mountains_1 .hexInner {
+    background: rgba(128, 128, 128, 0.2);
+}
+
+.mountains_2 .hexInner {
+    background: rgba(169, 169, 169, 0.3);
+}
+
+.mountains_3 .hexInner {
+    background: rgba(105, 105, 105, 0.4);
+}
+
+.mountains_4 .hexInner {
+    background: linear-gradient(45deg, rgba(128, 128, 128, 0.2), rgba(169, 169, 169, 0.4));
+}
+
+.mountains_5 .hexInner {
+    background: rgba(169, 169, 169, 0.25);
+}
+
+.swamp_1 .hexInner {
+    background: rgba(47, 79, 79, 0.2);
+}
+
+.swamp_2 .hexInner {
+    background: rgba(47, 79, 79, 0.4);
+}
+
+.swamp_3 .hexInner {
+    background: rgba(85, 107, 47, 0.3);
+}
+
+.swamp_4 .hexInner {
+    background: rgba(47, 79, 79, 0.3);
+}
+
+.swamp_5 .hexInner {
+    background: linear-gradient(to top, rgba(47, 79, 79, 0.2), rgba(85, 107, 47, 0.4));
+}
+
+.hills_1 .hexInner {
+    background: rgba(107, 142, 35, 0.2);
+}
+
+.hills_2 .hexInner {
+    background: rgba(107, 142, 35, 0.35);
+}
+
+.hills_3 .hexInner {
+    background: rgba(154, 205, 50, 0.2);
+}
+
+.hills_4 .hexInner {
+    background: rgba(107, 142, 35, 0.25);
+}
+
+.hills_5 .hexInner {
+    background: rgba(107, 142, 35, 0.4);
+}
+
+.desert_1 .hexInner {
+    background: rgba(244, 164, 96, 0.2);
+}
+
+.desert_2 .hexInner {
+    background: rgba(244, 164, 96, 0.4);
+}
+
+.desert_3 .hexInner {
+    background: rgba(210, 180, 140, 0.3);
+}
+
+.desert_4 .hexInner {
+    background: linear-gradient(135deg, rgba(244, 164, 96, 0.2), rgba(210, 180, 140, 0.4));
+}
+
+.desert_5 .hexInner {
+    background: rgba(244, 164, 96, 0.3);
+}
+
+/* Fallback for old data or other biomes */
 .plains .hexInner {
     background: rgba(144, 238, 144, 0.3);
 }

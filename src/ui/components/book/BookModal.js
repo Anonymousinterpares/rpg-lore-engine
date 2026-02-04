@@ -3,13 +3,14 @@ import { useState, useEffect } from 'react';
 import styles from './BookModal.module.css';
 import { X, ArrowLeft } from 'lucide-react';
 import { BookProvider, useBook } from '../../context/BookContext';
-const TAB_ORDER = ['character', 'equipment', 'codex', 'settings'];
+import { useGameState } from '../../hooks/useGameState';
+const TAB_ORDER = ['character', 'equipment', 'codex', 'world_map', 'quests', 'settings'];
 const BookModalContent = ({ onClose }) => {
     const { pages, activePageId, popPage, goToPage } = useBook();
+    const { state, engine, updateState } = useGameState();
     const [animating, setAnimating] = useState(null);
     // Filter to last 4 pages for display stack
     const displayStack = pages.slice(-4);
-    const activePageIndex = displayStack.findIndex(p => p.id === activePageId);
     const handleBack = () => {
         setAnimating('out');
         setTimeout(() => {
@@ -18,6 +19,9 @@ const BookModalContent = ({ onClose }) => {
         }, 400); // Match CSS transition
     };
     const handleTabClick = (id) => {
+        if (engine)
+            engine.trackTutorialEvent(`viewed_page:${id}`);
+        updateState();
         if (id === activePageId)
             return;
         setAnimating('in');
@@ -26,6 +30,13 @@ const BookModalContent = ({ onClose }) => {
             setAnimating(null);
         }, 400);
     };
+    // Track initial page
+    useEffect(() => {
+        if (activePageId && engine) {
+            engine.trackTutorialEvent(`viewed_page:${activePageId}`);
+            updateState();
+        }
+    }, [activePageId, engine, updateState]);
     // Close on ESC
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -35,6 +46,8 @@ const BookModalContent = ({ onClose }) => {
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [onClose]);
+    const isPageTracked = (id) => state?.triggeredEvents?.includes(`viewed_page:${id}`);
+    const isTutorialActive = state?.activeQuests?.some(q => q.id === 'tutorial_01' && !q.objectives.find(o => o.id === 'obj_master_booklet')?.isCompleted);
     return (_jsx("div", { className: styles.bookOverlay, onClick: onClose, children: _jsxs("div", { className: styles.bookContainer, onClick: e => e.stopPropagation(), children: [_jsx("div", { className: styles.tabBar, children: pages.slice().sort((a, b) => {
                         const idxA = TAB_ORDER.indexOf(a.id);
                         const idxB = TAB_ORDER.indexOf(b.id);
@@ -45,7 +58,11 @@ const BookModalContent = ({ onClose }) => {
                         if (idxB === -1)
                             return -1;
                         return idxA - idxB;
-                    }).map(page => (_jsx("button", { className: `${styles.tab} ${activePageId === page.id ? styles.active : ''}`, onClick: () => handleTabClick(page.id), children: page.label }, page.id))) }), _jsxs("div", { className: styles.pageStack, children: [displayStack.map((page, index) => {
+                    }).map(page => {
+                        const showRedDot = (page.id === 'quests' && page.hasNotification) ||
+                            (isTutorialActive && !isPageTracked(page.id));
+                        return (_jsxs("button", { className: `${styles.tab} ${activePageId === page.id ? styles.active : ''}`, onClick: () => handleTabClick(page.id), children: [page.label, showRedDot && (_jsx("div", { className: styles.tabDot }))] }, page.id));
+                    }) }), _jsxs("div", { className: styles.pageStack, children: [displayStack.map((page, index) => {
                             const position = displayStack.length - 1 - index;
                             const isActive = page.id === activePageId;
                             return (_jsx("div", { className: `
