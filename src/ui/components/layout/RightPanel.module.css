@@ -1,13 +1,48 @@
-.container {
+.rightPanel {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
+    height: 100%;
+    overflow: hidden;
+    background: var(--parchment-bg);
+    padding: 15px;
+    box-sizing: border-box;
 }
 
-.mapSection {
+.section {
     flex: 1;
-    /* Map takes less space than chat usually, but we can adjust */
-    min-height: 250px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.section h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    color: #5d4037;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border-bottom: 2px solid rgba(93, 64, 55, 0.2);
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mapContainer {
+    flex: 1;
+    border: 1px solid rgba(93, 64, 55, 0.1);
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.questSection {
+    flex: 1.5;
+    overflow-y: auto;
 }
 
 .chatSection {
@@ -15,32 +50,26 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    border-radius: 4px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.85);
+    /* Dark terminal background */
 }
 
 .sectionHeader {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-md);
-    opacity: 0.8;
+    gap: 8px;
+    margin-bottom: 10px;
+    color: #b91c1c;
+    /* Thematic deep red */
 }
 
 .sectionHeader h2 {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-}
-
-.mapPlaceholder {
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: var(--radius-md);
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--terminal-dim);
-    font-size: 0.8rem;
+    margin: 0;
 }
 
 .log {
@@ -48,9 +77,28 @@
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    gap: 8px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85rem;
+    word-break: break-word;
+    /* Wrap long lines */
 }
 
 .timestamp {
-    color: var(--terminal-dim);
-    margin-right: var(--spacing-sm);
+    color: #666;
+    margin-right: 8px;
+    font-size: 0.75rem;
+}
+
+.narratorText {
+    color: #e2e8f0;
+}
+
+.userText {
+    color: #fbbf24;
+}
+
+.systemText {
+    color: #60a5fa;
+    font-style: italic;
 }
