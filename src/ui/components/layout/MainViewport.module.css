@@ -63,11 +63,7 @@
 }
 
 .actionBar {
-    height: 100px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-lg);
+    padding: var(--spacing-sm) 0;
     display: flex;
     align-items: center;
     justify-content: center;

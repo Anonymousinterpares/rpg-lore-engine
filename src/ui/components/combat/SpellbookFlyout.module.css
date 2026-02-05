@@ -1,0 +1,166 @@
+.flyout {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 550px;
+    max-height: 450px;
+    z-index: 1000;
+    animation: slideUp 0.2s ease-out;
+
+    /* Fantasy RPG Parchment Style */
+    background-color: var(--parchment-bg);
+    background-image: var(--parchment-bg-image);
+    border: 2px solid var(--parchment-border);
+    border-style: double;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-md);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translate(-50%, 20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--parchment-border);
+    padding-bottom: var(--spacing-xs);
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.title h3 {
+    margin: 0;
+    font-family: var(--font-narrative);
+    color: var(--parchment-text);
+}
+
+.titleIcon {
+    color: var(--parchment-accent);
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    color: var(--parchment-border);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.closeButton:hover {
+    color: var(--parchment-text);
+}
+
+.tabs {
+    display: flex;
+    gap: var(--spacing-xs);
+    overflow-x: auto;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: 4px;
+}
+
+.tab {
+    padding: 4px var(--spacing-sm);
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--parchment-border);
+    font-size: 0.8rem;
+    font-family: var(--font-narrative);
+    cursor: pointer;
+    white-space: nowrap;
+    color: var(--parchment-text);
+}
+
+.activeTab {
+    background: var(--parchment-accent);
+    border-color: var(--parchment-accent);
+    color: white;
+    font-weight: bold;
+}
+
+.slotInfo {
+    font-size: 0.7rem;
+    margin-left: 4px;
+    opacity: 0.8;
+}
+
+.spellGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+    overflow-y: auto;
+    padding-right: var(--spacing-xs);
+}
+
+.spellItem {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-sm);
+    text-align: left;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--parchment-border);
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.spellItem:hover:not(:disabled) {
+    background: rgba(201, 162, 39, 0.1);
+    border-color: var(--parchment-accent);
+}
+
+.spellItem:disabled {
+    opacity: 0.5;
+    filter: grayscale(1);
+    cursor: not-allowed;
+}
+
+.spellHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2px;
+}
+
+.spellName {
+    font-weight: bold;
+    font-family: var(--font-narrative);
+    font-size: 0.95rem;
+    color: var(--parchment-text);
+}
+
+.spellSchool {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    color: var(--parchment-border);
+}
+
+.spellMeta {
+    display: flex;
+    gap: var(--spacing-md);
+    font-size: 0.7rem;
+    color: var(--parchment-border);
+}
+
+.emptyState {
+    grid-column: span 2;
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--parchment-border);
+    font-style: italic;
+}

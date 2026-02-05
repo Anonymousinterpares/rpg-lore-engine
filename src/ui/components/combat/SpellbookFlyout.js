@@ -1,0 +1,17 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useState } from 'react';
+import styles from './SpellbookFlyout.module.css';
+import parchmentStyles from '../../styles/parchment.module.css';
+import { X, Sparkles } from 'lucide-react';
+export const SpellbookFlyout = ({ spells, spellSlots = {}, onCast, onClose }) => {
+    const [selectedLevel, setSelectedLevel] = useState('all');
+    const filteredSpells = selectedLevel === 'all'
+        ? spells
+        : spells.filter(s => s.level === selectedLevel);
+    const levels = Array.from(new Set(spells.map(s => s.level))).sort((a, b) => a - b);
+    return (_jsxs("div", { className: `${styles.flyout} ${parchmentStyles.container}`, children: [_jsxs("div", { className: styles.header, children: [_jsxs("div", { className: styles.title, children: [_jsx(Sparkles, { size: 18, className: styles.titleIcon }), _jsx("h3", { children: "Spellbook" })] }), _jsx("button", { className: styles.closeButton, onClick: onClose, children: _jsx(X, { size: 20 }) })] }), _jsxs("div", { className: styles.tabs, children: [_jsx("button", { className: `${styles.tab} ${selectedLevel === 'all' ? styles.activeTab : ''}`, onClick: () => setSelectedLevel('all'), children: "All" }), levels.map(lv => (_jsxs("button", { className: `${styles.tab} ${selectedLevel === lv ? styles.activeTab : ''}`, onClick: () => setSelectedLevel(lv), children: [lv === 0 ? 'Cantrips' : `Lvl ${lv}`, lv > 0 && spellSlots[lv] && (_jsxs("span", { className: styles.slotInfo, children: ["(", spellSlots[lv].current, "/", spellSlots[lv].max, ")"] }))] }, lv)))] }), _jsxs("div", { className: styles.spellGrid, children: [filteredSpells.map(spell => {
+                        const canCast = spell.level === 0 || (spellSlots[spell.level]?.current || 0) > 0;
+                        return (_jsxs("button", { className: `${styles.spellItem} ${parchmentStyles.button}`, onClick: () => canCast && onCast(spell), disabled: !canCast, title: spell.description, children: [_jsxs("div", { className: styles.spellHeader, children: [_jsx("span", { className: styles.spellName, children: spell.name }), _jsx("span", { className: styles.spellSchool, children: spell.school })] }), _jsxs("div", { className: styles.spellMeta, children: [_jsx("span", { children: spell.time }), _jsx("span", { children: spell.range })] })] }, spell.name));
+                    }), filteredSpells.length === 0 && (_jsx("div", { className: styles.emptyState, children: "No spells available in this category." }))] })] }));
+};
+export default SpellbookFlyout;

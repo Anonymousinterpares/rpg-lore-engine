@@ -5,6 +5,7 @@ import PlayerInputField from '../actions/PlayerInputField';
 import InitiativeTracker from '../combat/InitiativeTracker';
 import CombatLog from '../combat/CombatLog';
 import DiceRoller from '../combat/DiceRoller';
+import CombatActionBar from '../combat/CombatActionBar';
 import { useGameState } from '../../hooks/useGameState';
 const MainViewport = ({ className }) => {
     const { state, processCommand } = useGameState();
@@ -29,6 +30,6 @@ const MainViewport = ({ className }) => {
     const handlePlayerInput = (input) => {
         processCommand(input);
     };
-    return (_jsxs("main", { className: `${styles.viewport} ${className} ${isCombat ? styles.combatMode : ''}`, children: [isCombat && state.combat && (_jsx("div", { className: styles.combatTopBar, children: _jsx(InitiativeTracker, { combatants: state.combat.combatants, currentTurnId: state.combat.combatants[state.combat.currentTurnIndex]?.id || '' }) })), _jsxs("div", { className: styles.centerArea, children: [_jsx("div", { className: styles.narrativeContainer, children: _jsx(NarrativeBox, { title: locationTitle, text: narrativeText }) }), isCombat && state.combat && (_jsxs("div", { className: styles.combatSidePanel, children: [_jsx(CombatLog, { logs: state.combat.logs, className: styles.combatLog }), _jsx(DiceRoller, { className: styles.combatDice, sides: 20 })] }))] }), _jsx("div", { className: styles.actionBar, children: _jsx(PlayerInputField, { suggestedActions: suggestedActions, onSubmit: handlePlayerInput }) })] }));
+    return (_jsxs("main", { className: `${styles.viewport} ${className} ${isCombat ? styles.combatMode : ''}`, children: [isCombat && state.combat && (_jsx("div", { className: styles.combatTopBar, children: _jsx(InitiativeTracker, { combatants: state.combat.combatants, currentTurnId: state.combat.combatants[state.combat.currentTurnIndex]?.id || '' }) })), _jsxs("div", { className: styles.centerArea, children: [_jsx("div", { className: styles.narrativeContainer, children: _jsx(NarrativeBox, { title: locationTitle, text: narrativeText }) }), isCombat && state.combat && (_jsxs("div", { className: styles.combatSidePanel, children: [_jsx(CombatLog, { logs: state.combat.logs, className: styles.combatLog }), _jsx(DiceRoller, { className: styles.combatDice, sides: 20 })] }))] }), _jsx("div", { className: styles.actionBar, children: isCombat ? (_jsx(CombatActionBar, {})) : (_jsx(PlayerInputField, { suggestedActions: suggestedActions, onSubmit: handlePlayerInput })) })] }));
 };
 export default MainViewport;

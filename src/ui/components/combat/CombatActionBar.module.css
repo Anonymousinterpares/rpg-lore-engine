@@ -1,0 +1,40 @@
+.actionBar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-lg);
+
+    /* Fantasy RPG Parchment Style */
+    background-color: var(--parchment-bg);
+    background-image: var(--parchment-bg-image);
+    border: 2px solid var(--parchment-border);
+    border-style: double;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    position: relative;
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.group {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.divider {
+    width: 2px;
+    height: 50px;
+    background: var(--parchment-border);
+    opacity: 0.5;
+    margin: 0 var(--spacing-xs);
+}
+
+.endTurnButton {
+    border-color: var(--parchment-accent);
+}
+
+.endTurnButton:hover:not(:disabled) {
+    background-color: #fbf0d5;
+    border-color: var(--parchment-accent);
+    box-shadow: 0 0 15px rgba(201, 162, 39, 0.5);
+}

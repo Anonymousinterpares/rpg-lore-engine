@@ -1,0 +1,80 @@
+.actionButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    padding: var(--spacing-xs);
+    position: relative;
+    transition: all 0.2s ease;
+
+    /* Fantasy RPG Parchment Style */
+    background-color: var(--parchment-bg);
+    background-image: var(--parchment-bg-image);
+    border: 2px solid var(--parchment-border);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+}
+
+.actionButton:hover:not(:disabled) {
+    transform: translateY(-3px);
+    border-color: var(--parchment-accent);
+    /* Gold accent like the game clock */
+    box-shadow: 0 0 12px rgba(201, 162, 39, 0.4), 0 5px 12px rgba(0, 0, 0, 0.4);
+}
+
+.actionButton:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.active {
+    border-color: var(--parchment-accent);
+    box-shadow: 0 0 15px rgba(201, 162, 39, 0.5);
+}
+
+.iconWrapper {
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+    color: var(--parchment-accent);
+    /* Gold icon color like the game clock */
+}
+
+.label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    font-family: var(--font-narrative);
+    color: var(--parchment-text);
+    text-align: center;
+    white-space: nowrap;
+}
+
+.hotkey {
+    position: absolute;
+    top: 3px;
+    right: 5px;
+    font-size: 0.55rem;
+    color: var(--parchment-accent);
+    font-weight: 900;
+}
+
+.disabledOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.25);
+    pointer-events: none;
+}
+
+.actionButton:disabled {
+    filter: grayscale(0.8);
+    opacity: 0.6;
+    cursor: not-allowed;
+}

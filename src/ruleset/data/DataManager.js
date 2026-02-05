@@ -93,4 +93,24 @@ export class DataManager {
             return this.items[key.replace(/_/g, ' ')];
         return undefined;
     }
+    static spells = {};
+    static async loadSpells() {
+        if (Object.keys(this.spells).length > 0)
+            return;
+        const spellModules = import.meta.glob('../../../data/spell/*.json');
+        for (const path in spellModules) {
+            const mod = await spellModules[path]();
+            const spell = mod.default || mod;
+            if (spell.name) {
+                this.spells[spell.name] = spell;
+                this.spells[spell.name.toLowerCase()] = spell;
+            }
+        }
+    }
+    static getSpell(name) {
+        return this.spells[name] || this.spells[name.toLowerCase()];
+    }
+    static getSpells() {
+        return Object.values(this.spells);
+    }
 }

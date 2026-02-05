@@ -2,6 +2,7 @@ import { Race } from '../schemas/RaceSchema';
 import { CharacterClass } from '../schemas/ClassSchema';
 import { Background } from '../schemas/BackgroundSchema';
 import { Item } from '../schemas/ItemSchema';
+import { Spell } from '../schemas/SpellSchema';
 
 /**
  * DataManager
@@ -107,5 +108,28 @@ export class DataManager {
         if (this.items[key.replace(/_/g, ' ')]) return this.items[key.replace(/_/g, ' ')];
 
         return undefined;
+    }
+
+    private static spells: Record<string, Spell> = {};
+
+    public static async loadSpells() {
+        if (Object.keys(this.spells).length > 0) return;
+        const spellModules = import.meta.glob('../../../data/spell/*.json');
+        for (const path in spellModules) {
+            const mod: any = await spellModules[path]();
+            const spell = mod.default || mod;
+            if (spell.name) {
+                this.spells[spell.name] = spell;
+                this.spells[spell.name.toLowerCase()] = spell;
+            }
+        }
+    }
+
+    public static getSpell(name: string): Spell | undefined {
+        return this.spells[name] || this.spells[name.toLowerCase()];
+    }
+
+    public static getSpells(): Spell[] {
+        return Object.values(this.spells);
     }
 }

@@ -5,6 +5,7 @@ import PlayerInputField from '../actions/PlayerInputField';
 import InitiativeTracker from '../combat/InitiativeTracker';
 import CombatLog from '../combat/CombatLog';
 import DiceRoller from '../combat/DiceRoller';
+import CombatActionBar from '../combat/CombatActionBar';
 
 interface MainViewportProps {
     className?: string;
@@ -75,10 +76,14 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
             </div>
 
             <div className={styles.actionBar}>
-                <PlayerInputField
-                    suggestedActions={suggestedActions}
-                    onSubmit={handlePlayerInput}
-                />
+                {isCombat ? (
+                    <CombatActionBar />
+                ) : (
+                    <PlayerInputField
+                        suggestedActions={suggestedActions}
+                        onSubmit={handlePlayerInput}
+                    />
+                )}
             </div>
         </main>
     );
