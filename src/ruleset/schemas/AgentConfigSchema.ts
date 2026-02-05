@@ -1,0 +1,25 @@
+import { z } from 'zod';
+
+export const AgentTypeSchema = z.enum([
+    'NARRATOR',
+    'DIRECTOR',
+    'NPC_CONTROLLER',
+    'LORE_KEEPER'
+]);
+
+export type AgentType = z.infer<typeof AgentTypeSchema>;
+
+export const AgentProfileSchema = z.object({
+    id: AgentTypeSchema,
+    name: z.string(),
+    providerId: z.string(),
+    modelId: z.string(),
+    temperature: z.number().min(0).max(2).default(0.7),
+    maxTokens: z.number().min(1).max(32000).default(1000)
+});
+
+export type AgentProfile = z.infer<typeof AgentProfileSchema>;
+
+export const SwarmConfigSchema = z.record(AgentTypeSchema, AgentProfileSchema);
+
+export type SwarmConfig = z.infer<typeof SwarmConfigSchema>;

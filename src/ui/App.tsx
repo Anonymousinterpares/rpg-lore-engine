@@ -261,15 +261,15 @@ const App: React.FC = () => {
                             </div>
                         </div>
                     )}
-                    {bookOpen && (
-                        <BookModal
-                            isOpen={bookOpen}
-                            onClose={() => setBookOpen(false)}
-                            initialPages={bookPages}
-                            activePageId={activeBookPageId}
-                        />
-                    )}
                 </>
+            )}
+            {bookOpen && (
+                <BookModal
+                    isOpen={bookOpen}
+                    onClose={() => setBookOpen(false)}
+                    initialPages={bookPages}
+                    activePageId={activeBookPageId}
+                />
             )}
         </div>
     );

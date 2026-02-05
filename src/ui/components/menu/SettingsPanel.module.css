@@ -346,6 +346,115 @@
     font-size: 0.9rem;
 }
 
+/* AI Agents Styles */
+
+.agentList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.agentName {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.roleTag {
+    font-size: 0.75rem;
+    background: rgba(139, 115, 85, 0.1);
+    color: #8b7355;
+    padding: 2px 8px;
+    border: 1px solid rgba(139, 115, 85, 0.3);
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-family: var(--font-mono);
+}
+
+.resetButton {
+    background: none;
+    border: none;
+    color: var(--parchment-text);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    opacity: 0.4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.resetButton:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.05);
+    color: #a3332a;
+}
+
+.agentParameters {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xs);
+}
+
+.sliderGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sliderGroup label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+    font-family: var(--font-narrative);
+    font-weight: 600;
+}
+
+.sliderGroup label span {
+    color: var(--parchment-accent);
+    font-weight: bold;
+}
+
+.sliderGroup input[type="range"] {
+    width: 100%;
+    accent-color: var(--parchment-accent);
+    cursor: pointer;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+}
+
+.actionGroup {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.iconButton {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--parchment-border);
+    border-radius: var(--radius-sm);
+    color: var(--parchment-text);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-family: var(--font-narrative);
+    transition: all 0.2s ease;
+}
+
+.iconButton:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
 .spin {
     animation: spin 1s linear infinite;
 }
