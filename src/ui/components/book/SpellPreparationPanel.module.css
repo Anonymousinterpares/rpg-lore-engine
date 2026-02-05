@@ -175,9 +175,34 @@
     flex-direction: column;
 }
 
+.spellHeaderRow {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
 .spellName {
     font-weight: bold;
     font-family: var(--font-narrative);
+    font-size: 1rem;
+}
+
+.infoBtn {
+    background: none;
+    border: none;
+    color: var(--parchment-accent);
+    cursor: pointer;
+    opacity: 0.4;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.infoBtn:hover {
+    opacity: 1;
+    background: rgba(139, 115, 85, 0.1);
 }
 
 .spellMeta {

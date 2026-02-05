@@ -14,13 +14,9 @@
   "description": "This spell gives a maximum of ten willing creatures within range and you can see, the ability to breathe underwater until the end of its term. Affected creatures also retain their normal breathing pattern.",
   "ritual": true,
   "classes": [
-    "Wizard",
-    "Cleric",
     "Druid",
-    "Paladin",
-    "Bard",
+    "Ranger",
     "Sorcerer",
-    "Warlock",
-    "Ranger"
+    "Wizard"
   ]
 }

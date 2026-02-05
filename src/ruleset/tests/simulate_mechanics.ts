@@ -22,6 +22,7 @@ function runMechanicsSimulation() {
         knownSpells: [],
         preparedSpells: [],
         spellbook: [],
+        unseenSpells: [],
         ac: 18,
         inventory: {
             gold: { cp: 0, sp: 0, ep: 0, gp: 50, pp: 0 },

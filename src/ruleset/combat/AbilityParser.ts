@@ -29,12 +29,13 @@ export class AbilityParser {
 
         unlockedFeatures.forEach(feature => {
             const isPassive = !feature.usage || feature.usage.type === 'PASSIVE';
-            const usageState = pc.featureUsages[feature.name];
+            const usageState = pc.featureUsages ? pc.featureUsages[feature.name] : undefined;
+            const actionCost = feature.actionCost || 'NONE';
 
             abilities.push({
                 name: feature.name,
                 description: feature.description,
-                actionCost: feature.actionCost as any,
+                actionCost: actionCost as any,
                 isPassive: isPassive,
                 usage: usageState ? {
                     current: usageState.current,

@@ -45,29 +45,41 @@ export class CharacterFactory {
             spells = []; // Wizards don't have "Known Spells" beyond cantrips
         }
         // Fallback for hardcoded classes if no selection was made (though UI should prevent this)
-        if (cantrips.length === 0 && spells.length === 0 && spellbook.length === 0) {
-            if (characterClass.name === 'Wizard') {
+        if (cantrips.length === 0) {
+            if (characterClass.name === 'Wizard')
                 cantrips = ['Fire Bolt', 'Mage Hand', 'Light'];
+            else if (characterClass.name === 'Sorcerer')
+                cantrips = ['Fire Bolt', 'Light', 'Ray of Frost', 'Shocking Grasp'];
+            else if (characterClass.name === 'Warlock')
+                cantrips = ['Eldritch Blast', 'Mage Hand'];
+            else if (characterClass.name === 'Cleric')
+                cantrips = ['Sacred Flame', 'Guidance', 'Light'];
+            else if (characterClass.name === 'Druid')
+                cantrips = ['Druidcraft', 'Guidance', 'Produce Flame'];
+            else if (characterClass.name === 'Bard')
+                cantrips = ['Vicious Mockery', 'Light'];
+        }
+        if (spells.length === 0 && spellbook.length === 0) {
+            if (characterClass.name === 'Wizard') {
                 spellbook = ['Magic Missile', 'Shield', 'Sleep', 'Mage Armor', 'Burning Hands', 'Detect Magic'];
             }
             else if (characterClass.name === 'Sorcerer') {
-                cantrips = ['Fire Bolt', 'Light', 'Ray of Frost', 'Shocking Grasp'];
                 spells = ['Magic Missile', 'Shield'];
             }
             else if (characterClass.name === 'Warlock') {
-                cantrips = ['Eldritch Blast', 'Mage Hand'];
                 spells = ['Hellish Rebuke', 'Charm Person'];
             }
-            else if (characterClass.name === 'Cleric' || characterClass.name === 'Druid') {
-                if (characterClass.name === 'Cleric')
-                    cantrips = ['Sacred Flame', 'Guidance', 'Light'];
-                if (characterClass.name === 'Druid')
-                    cantrips = ['Druidcraft', 'Guidance', 'Produce Flame'];
+            else if (characterClass.name === 'Bard') {
+                spells = ['Cure Wounds', 'Healing Word', 'Thunderwave', 'Charm Person'];
             }
         }
         // Always-Prepared classes: Synchronize preparedSpells with knownSpells
+        // Cantrips are ALWAYS "prepared" (available to cast)
         const knownCasters = ['Sorcerer', 'Warlock', 'Bard', 'Ranger'];
-        const preparedSpells = (knownCasters.includes(characterClass.name)) ? [...spells] : [];
+        const preparedSpells = [...cantrips];
+        if (knownCasters.includes(characterClass.name)) {
+            preparedSpells.push(...spells);
+        }
         const now = new Date().toISOString();
         return {
             saveId: uuidv4(),
@@ -105,6 +117,7 @@ export class CharacterFactory {
                 knownSpells: spells,
                 preparedSpells: preparedSpells,
                 spellbook: spellbook,
+                unseenSpells: DataManager.getSpellsByClass(characterClass.name, 1).map(s => s.name),
                 ac: 10 + Math.floor((finalStats['DEX'] - 10) / 2),
                 inventory: {
                     gold: { cp: 0, sp: 0, ep: 0, gp: background.startingGold || 0, pp: 0 },

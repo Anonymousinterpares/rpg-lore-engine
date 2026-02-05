@@ -35,6 +35,7 @@ async function verifyMultiplayer() {
             knownSpells: [],
             preparedSpells: [],
             spellbook: [],
+            unseenSpells: [],
             ac: 16,
             inventory: { gold: { cp: 0, sp: 0, ep: 0, gp: 10, pp: 0 }, items: [] },
             equipmentSlots: {},

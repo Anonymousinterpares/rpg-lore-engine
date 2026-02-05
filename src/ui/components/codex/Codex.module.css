@@ -95,6 +95,7 @@
 .navItem {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: var(--spacing-md);
     padding: var(--spacing-md) var(--spacing-lg);
     background: transparent;
@@ -106,6 +107,21 @@
     cursor: pointer;
     border-radius: var(--radius-sm);
     transition: all 0.2s;
+    width: 100%;
+}
+
+.navLabel {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.indicatorDot {
+    width: 8px;
+    height: 8px;
+    background: #e74c3c;
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(231, 76, 60, 0.6);
 }
 
 .navItem:hover {
@@ -168,8 +184,27 @@
     cursor: pointer;
     transition: all 0.2s;
     display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.entryHeader {
+    display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
+}
+
+.newLabel {
+    background: #e74c3c;
+    color: white;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
 }
 
 .entryCard:hover {

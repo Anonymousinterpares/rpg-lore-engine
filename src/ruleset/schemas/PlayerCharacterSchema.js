@@ -44,6 +44,7 @@ export const PlayerCharacterSchema = z.object({
     knownSpells: z.array(z.string()).default([]),
     preparedSpells: z.array(z.string()).default([]),
     spellbook: z.array(z.string()).default([]),
+    unseenSpells: z.array(z.string()).default([]),
     ac: z.number(),
     featureUsages: z.record(z.string(), z.object({
         current: z.number(),

@@ -12,13 +12,6 @@
   "concentration": false,
   "description": "Up to six creatures of your choice that you can see within range each regain hit points equal to 2d8 + your spellcasting ability modifier. This spell has no effect on undead or constructs.",
   "classes": [
-    "Wizard",
-    "Cleric",
-    "Druid",
-    "Paladin",
-    "Bard",
-    "Sorcerer",
-    "Warlock",
-    "Ranger"
+    "Cleric"
   ]
 }

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Codex.module.css';
-import { X, Book, Users, Shield, Map, Info, Swords, Skull } from 'lucide-react';
+import { X, Book, Users, Shield, Map, Info, Swords, Skull, Sparkles } from 'lucide-react';
+import { useGameState } from '../../hooks/useGameState';
 import { DataManager } from '../../../ruleset/data/DataManager';
+import { Spell } from '../../../ruleset/schemas/SpellSchema';
 import skillsData from '../../../data/codex/skills.json';
 import conditionsData from '../../../data/codex/conditions.json';
 import mechanicsData from '../../../data/codex/mechanics.json';
@@ -17,6 +19,7 @@ interface CodexProps {
 
 const CATEGORIES = [
     { id: 'world', label: 'World', icon: Map },
+    { id: 'magic', label: 'Magic & Abilities', icon: Sparkles },
     { id: 'mechanics', label: 'Mechanics', icon: Shield },
     { id: 'skills', label: 'Skills', icon: Info },
     { id: 'races', label: 'Races', icon: Users },
@@ -27,10 +30,12 @@ const CATEGORIES = [
 ];
 
 const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage = false, seenItems = [] }) => {
+    const { state, updateState } = useGameState();
     const [activeCategory, setActiveCategory] = useState(initialDeepLink?.category || 'mechanics');
     const [selectedEntry, setSelectedEntry] = useState<any>(null);
     const [races, setRaces] = useState<any[]>([]);
     const [classes, setClasses] = useState<any[]>([]);
+    const [spells, setSpells] = useState<Spell[]>([]);
 
     const parseInlines = (text: string) => {
         if (!text) return text;
@@ -52,6 +57,11 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
             await DataManager.initialize();
             setRaces(DataManager.getRaces());
             setClasses(DataManager.getClasses());
+
+            if (state?.character) {
+                const classSpells = DataManager.getSpellsByClass(state.character.class, 9);
+                setSpells(classSpells.sort((a, b) => a.level - b.level || a.name.localeCompare(b.name)));
+            }
 
             // Handle initial deep link entry selection
             if (initialDeepLink?.entryId) {
@@ -83,6 +93,12 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
             const id = selectedEntry.id || selectedEntry.name;
             const el = document.getElementById(`entry-${id}`);
             if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            // Mark as seen if it's a spell
+            if (activeCategory === 'magic' && state?.character?.unseenSpells?.includes(selectedEntry.name)) {
+                state.character.unseenSpells = state.character.unseenSpells.filter(s => s !== selectedEntry.name);
+                updateState();
+            }
         }
     }, [selectedEntry]);
 
@@ -195,6 +211,28 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                         <p className={styles.placeholder}>Monster knowledge being transcribed...</p>
                     </div>
                 );
+            case 'magic':
+                return (
+                    <div className={styles.entriesGrid}>
+                        {spells.map(spell => {
+                            const isNew = state?.character?.unseenSpells?.includes(spell.name);
+                            return (
+                                <div
+                                    key={spell.name}
+                                    id={`entry-${spell.name}`}
+                                    className={`${styles.entryCard} ${selectedEntry?.name === spell.name ? styles.active : ''}`}
+                                    onClick={() => setSelectedEntry(spell)}
+                                >
+                                    <div className={styles.entryHeader}>
+                                        <h4>{spell.name}</h4>
+                                        {isNew && <span className={styles.newLabel}>NEW</span>}
+                                    </div>
+                                    <span className={styles.entryType}>Lvl {spell.level} • {spell.school}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                );
             default:
                 return <div className={styles.placeholder}>More lore coming soon...</div>;
         }
@@ -208,19 +246,25 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                     <h2>Codex</h2>
                 </div>
                 <nav className={styles.nav}>
-                    {CATEGORIES.map(cat => (
-                        <button
-                            key={cat.id}
-                            className={`${styles.navItem} ${activeCategory === cat.id ? styles.active : ''}`}
-                            onClick={() => {
-                                setActiveCategory(cat.id);
-                                setSelectedEntry(null);
-                            }}
-                        >
-                            <cat.icon size={18} />
-                            {cat.label}
-                        </button>
-                    ))}
+                    {CATEGORIES.map(cat => {
+                        const hasNew = cat.id === 'magic' && (state?.character?.unseenSpells?.length ?? 0) > 0;
+                        return (
+                            <button
+                                key={cat.id}
+                                className={`${styles.navItem} ${activeCategory === cat.id ? styles.active : ''}`}
+                                onClick={() => {
+                                    setActiveCategory(cat.id);
+                                    setSelectedEntry(null);
+                                }}
+                            >
+                                <div className={styles.navLabel}>
+                                    <cat.icon size={18} />
+                                    {cat.label}
+                                </div>
+                                {hasNew && <div className={styles.indicatorDot} />}
+                            </button>
+                        );
+                    })}
                 </nav>
             </div>
 
@@ -311,6 +355,24 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                                                 Status effects and mechanical restrictions that can affect creatures during gameplay.
                                             </p>
                                             <p>{selectedEntry.description}</p>
+                                        </>
+                                    )}
+                                    {activeCategory === 'magic' && (
+                                        <>
+                                            <div className={styles.statLine}>
+                                                <strong>Level:</strong> {selectedEntry.level === 0 ? 'Cantrip' : selectedEntry.level} |
+                                                <strong> School:</strong> {selectedEntry.school} |
+                                                <strong> Range:</strong> {selectedEntry.range}
+                                            </div>
+                                            <div className={styles.statLine}>
+                                                <strong>Casting Time:</strong> {selectedEntry.time} |
+                                                <strong> Duration:</strong> {selectedEntry.duration}
+                                            </div>
+                                            <div className={styles.statLine}>
+                                                <strong>Components:</strong> {Object.entries(selectedEntry.components || {}).filter(([_, v]) => v).map(([k]) => k.toUpperCase()).join(', ')}
+                                                {selectedEntry.concentration ? ' (Concentration)' : ''}
+                                            </div>
+                                            <p className={styles.spellDescription}>{selectedEntry.description}</p>
                                         </>
                                     )}
                                 </div>

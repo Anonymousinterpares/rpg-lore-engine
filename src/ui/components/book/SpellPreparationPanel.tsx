@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import styles from './SpellPreparationPanel.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
 import { useGameState } from '../../hooks/useGameState';
+import { useBook } from '../../context/BookContext';
 import { DataManager } from '../../../ruleset/data/DataManager';
 import { SpellbookEngine } from '../../../ruleset/combat/SpellbookEngine';
 import { Spell } from '../../../ruleset/schemas/SpellSchema';
-import { Sparkles, Book as BookIcon, Plus, Minus, Search, X } from 'lucide-react';
+import Codex from '../codex/Codex';
+import { Sparkles, Book, Plus, Minus, Search, X, Info } from 'lucide-react';
 
 const SpellIcon: React.FC<{ spellName: string }> = ({ spellName }) => {
     const [iconPath, setIconPath] = useState<string | null>(null);
@@ -35,6 +37,7 @@ const SpellIcon: React.FC<{ spellName: string }> = ({ spellName }) => {
 
 const SpellPreparationPanel: React.FC = () => {
     const { state, updateState } = useGameState();
+    const { pushPage } = useBook();
     const [availableSpells, setAvailableSpells] = useState<Spell[]>([]);
     const [filterLevel, setFilterLevel] = useState<number | 'all'>('all');
     const [searchTerm, setSearchTerm] = useState('');
@@ -80,6 +83,8 @@ const SpellPreparationPanel: React.FC = () => {
     const isPrepared = (name: string) => pc.preparedSpells.includes(name);
 
     const handleToggleSpell = (spell: Spell) => {
+        if (!state?.character) return;
+        // ... (rest of the function omitted for brevity, but I need to make sure I don't break it)
         if (isAlwaysPrepared) return; // Cannot unprepare known spells
         const currentPrepared = [...pc.preparedSpells];
         const index = currentPrepared.indexOf(spell.name);
@@ -162,11 +167,27 @@ const SpellPreparationPanel: React.FC = () => {
                                         <div className={styles.spellInfoRow}>
                                             <SpellIcon spellName={spell.name} />
                                             <div className={styles.spellInfo}>
-                                                <span className={styles.spellName}>{spell.name}</span>
+                                                <div className={styles.spellHeaderRow}>
+                                                    <span className={styles.spellName}>{spell.name}</span>
+                                                    <button
+                                                        className={styles.infoBtn}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            pushPage({
+                                                                id: 'codex',
+                                                                label: 'Codex',
+                                                                content: <Codex isOpen={true} onClose={() => { }} initialDeepLink={{ category: 'magic', entryId: spell.name }} isPage={true} />
+                                                            });
+                                                        }}
+                                                        title="View in Codex"
+                                                    >
+                                                        <Info size={14} />
+                                                    </button>
+                                                </div>
                                                 <span className={styles.spellMeta}>Lvl {spell.level} • {spell.school}</span>
                                             </div>
                                         </div>
-                                        {!isAlwaysPrepared && (
+                                        {!isAlwaysPrepared && spell.level > 0 && (
                                             <button
                                                 className={`${styles.actionBtn} ${isPrepared(spell.name) ? styles.btnRemove : styles.btnAdd}`}
                                                 onClick={() => handleToggleSpell(spell)}
@@ -188,7 +209,7 @@ const SpellPreparationPanel: React.FC = () => {
                             <div className={styles.spellList}>
                                 {pc.preparedSpells.length === 0 ? (
                                     <div className={styles.emptyState}>
-                                        <BookIcon size={32} opacity={0.3} />
+                                        <Book size={32} opacity={0.3} />
                                         <p>No spells prepared for the day.</p>
                                     </div>
                                 ) : (

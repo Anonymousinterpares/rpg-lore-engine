@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import styles from './SpellbookFlyout.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
-import { X, Sparkles } from 'lucide-react';
+import { X, Sparkles, Info } from 'lucide-react';
+import { useBook } from '../../context/BookContext';
 import { Spell } from '../../../ruleset/schemas/SpellSchema';
+import Codex from '../codex/Codex';
 
 interface SpellbookFlyoutProps {
     spells: Spell[];
@@ -36,6 +38,7 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
     onCast,
     onClose
 }) => {
+    const { pushPage } = useBook();
     const [selectedLevel, setSelectedLevel] = useState<number | 'all'>('all');
 
     const filteredSpells = selectedLevel === 'all'
@@ -96,6 +99,20 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
                                 <div className={styles.spellContent}>
                                     <div className={styles.spellHeader}>
                                         <span className={styles.spellName}>{spell.name}</span>
+                                        <button
+                                            className={styles.infoBtn}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                pushPage({
+                                                    id: 'codex',
+                                                    label: 'Codex',
+                                                    content: <Codex isOpen={true} onClose={() => { }} initialDeepLink={{ category: 'magic', entryId: spell.name }} isPage={true} />
+                                                });
+                                            }}
+                                            title="View in Codex"
+                                        >
+                                            <Info size={14} />
+                                        </button>
                                         <span className={styles.spellSchool}>{spell.school}</span>
                                     </div>
                                     <div className={styles.spellMeta}>

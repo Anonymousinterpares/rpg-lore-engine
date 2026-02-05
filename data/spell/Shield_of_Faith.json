@@ -13,13 +13,7 @@
   "concentration": true,
   "description": "A shimmering field appears and surrounds a creature of your choice within range, granting it a +2 bonus to AC for the duration.",
   "classes": [
-    "Wizard",
     "Cleric",
-    "Druid",
-    "Paladin",
-    "Bard",
-    "Sorcerer",
-    "Warlock",
-    "Ranger"
+    "Paladin"
   ]
 }

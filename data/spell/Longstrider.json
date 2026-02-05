@@ -13,13 +13,9 @@
   "concentration": false,
   "description": "You touch a creature. The target's speed increases by 10 feet until the spell ends.",
   "classes": [
-    "Wizard",
-    "Cleric",
-    "Druid",
-    "Paladin",
     "Bard",
-    "Sorcerer",
-    "Warlock",
-    "Ranger"
+    "Druid",
+    "Ranger",
+    "Wizard"
   ]
 }

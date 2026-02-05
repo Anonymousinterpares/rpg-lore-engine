@@ -125,6 +125,7 @@ export class CharacterCreationEngine {
             knownSpells: [],
             preparedSpells: [],
             spellbook: [],
+            unseenSpells: DataManager.getSpellsByClass(request.className, 1).map(s => s.name),
             ac: 10 + MechanicsEngine.getModifier(finalStats['DEX']),
             inventory: {
                 gold: { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 }, // Background/Class might provide gold

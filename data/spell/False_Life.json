@@ -13,13 +13,7 @@
   "concentration": false,
   "description": "Bolstering yourself with a necromantic facsimile of life, you gain 1d4 + 4 temporary hit points for the duration.",
   "classes": [
-    "Wizard",
-    "Cleric",
-    "Druid",
-    "Paladin",
-    "Bard",
     "Sorcerer",
-    "Warlock",
-    "Ranger"
+    "Wizard"
   ]
 }

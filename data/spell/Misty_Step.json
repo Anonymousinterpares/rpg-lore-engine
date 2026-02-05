@@ -12,13 +12,8 @@
   "concentration": false,
   "description": "Briefly surrounded by silvery mist, you teleport up to 30 feet to an unoccupied space that you can see.",
   "classes": [
-    "Wizard",
-    "Cleric",
-    "Druid",
-    "Paladin",
-    "Bard",
     "Sorcerer",
     "Warlock",
-    "Ranger"
+    "Wizard"
   ]
 }

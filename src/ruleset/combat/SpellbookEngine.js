@@ -50,6 +50,17 @@ export class SpellbookEngine {
             if (pc.level >= 2)
                 return 1;
         }
+        if (pc.class === 'Warlock') {
+            if (pc.level >= 9)
+                return 5; // Pact Magic maxes at 5th level
+            if (pc.level >= 7)
+                return 4;
+            if (pc.level >= 5)
+                return 3;
+            if (pc.level >= 3)
+                return 2;
+            return 1;
+        }
         return 0;
     }
     /**

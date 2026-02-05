@@ -13,13 +13,8 @@
   "concentration": false,
   "description": "A sphere of negative energy ripples out in a 60-foot radius sphere from a point within range. Each creature in that area must make a constitution saving throw. A target takes 8d6 necrotic damage on a failed save, or half as much damage on a successful one.",
   "classes": [
-    "Wizard",
-    "Cleric",
-    "Druid",
-    "Paladin",
-    "Bard",
     "Sorcerer",
     "Warlock",
-    "Ranger"
+    "Wizard"
   ]
 }

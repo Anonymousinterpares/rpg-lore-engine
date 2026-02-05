@@ -13,13 +13,9 @@
   "concentration": false,
   "description": "You touch a creature. The creature's jump distance is tripled until the spell ends.",
   "classes": [
-    "Wizard",
-    "Cleric",
     "Druid",
-    "Paladin",
-    "Bard",
+    "Ranger",
     "Sorcerer",
-    "Warlock",
-    "Ranger"
+    "Wizard"
   ]
 }
