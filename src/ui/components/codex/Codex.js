@@ -1,9 +1,10 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 import { useState, useEffect } from 'react';
 import styles from './Codex.module.css';
-import { X, Book, Users, Shield, Map, Info, Swords, Skull, Sparkles } from 'lucide-react';
+import { X, Book, Users, Shield, Map, Info, Swords, Skull, Sparkles, Search } from 'lucide-react';
 import { useGameState } from '../../hooks/useGameState';
 import { DataManager } from '../../../ruleset/data/DataManager';
+import { SpellbookEngine } from '../../../ruleset/combat/SpellbookEngine';
 import skillsData from '../../../data/codex/skills.json';
 import conditionsData from '../../../data/codex/conditions.json';
 import mechanicsData from '../../../data/codex/mechanics.json';
@@ -23,6 +24,7 @@ const Codex = ({ isOpen, onClose, initialDeepLink, isPage = false, seenItems = [
     const { state, updateState } = useGameState();
     const [activeCategory, setActiveCategory] = useState(initialDeepLink?.category || 'mechanics');
     const [selectedEntry, setSelectedEntry] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
     const [races, setRaces] = useState([]);
     const [classes, setClasses] = useState([]);
     const [spells, setSpells] = useState([]);
@@ -47,7 +49,8 @@ const Codex = ({ isOpen, onClose, initialDeepLink, isPage = false, seenItems = [
             setRaces(DataManager.getRaces());
             setClasses(DataManager.getClasses());
             if (state?.character) {
-                const classSpells = DataManager.getSpellsByClass(state.character.class, 9);
+                const maxLevel = SpellbookEngine.getMaxSpellLevel(state.character);
+                const classSpells = DataManager.getSpellsByClass(state.character.class, maxLevel);
                 setSpells(classSpells.sort((a, b) => a.level - b.level || a.name.localeCompare(b.name)));
             }
             // Handle initial deep link entry selection
@@ -59,6 +62,9 @@ const Codex = ({ isOpen, onClose, initialDeepLink, isPage = false, seenItems = [
                         break;
                     case 'mechanics':
                         data = mechanicsData;
+                        break;
+                    case 'magic':
+                        data = DataManager.getSpells();
                         break;
                     case 'skills':
                         data = skillsData;
@@ -124,10 +130,11 @@ const Codex = ({ isOpen, onClose, initialDeepLink, isPage = false, seenItems = [
             case 'bestiary':
                 return (_jsx("div", { className: styles.entriesGrid, children: _jsx("p", { className: styles.placeholder, children: "Monster knowledge being transcribed..." }) }));
             case 'magic':
-                return (_jsx("div", { className: styles.entriesGrid, children: spells.map(spell => {
-                        const isNew = state?.character?.unseenSpells?.includes(spell.name);
-                        return (_jsxs("div", { id: `entry-${spell.name}`, className: `${styles.entryCard} ${selectedEntry?.name === spell.name ? styles.active : ''}`, onClick: () => setSelectedEntry(spell), children: [_jsxs("div", { className: styles.entryHeader, children: [_jsx("h4", { children: spell.name }), isNew && _jsx("span", { className: styles.newLabel, children: "NEW" })] }), _jsxs("span", { className: styles.entryType, children: ["Lvl ", spell.level, " \u2022 ", spell.school] })] }, spell.name));
-                    }) }));
+                const filteredSpells = spells.filter(s => s.name.toLowerCase().includes(searchTerm.toLowerCase()));
+                return (_jsxs(_Fragment, { children: [_jsxs("div", { className: styles.searchBar, children: [_jsx(Search, { size: 16 }), _jsx("input", { type: "text", placeholder: "Search spells & abilities...", value: searchTerm, onChange: (e) => setSearchTerm(e.target.value) })] }), _jsx("div", { className: styles.entriesGrid, children: filteredSpells.map(spell => {
+                                const isNew = state?.character?.unseenSpells?.includes(spell.name);
+                                return (_jsxs("div", { id: `entry-${spell.name}`, className: `${styles.entryCard} ${selectedEntry?.name === spell.name ? styles.active : ''}`, onClick: () => setSelectedEntry(spell), children: [_jsxs("div", { className: styles.entryHeader, children: [_jsx("h4", { children: spell.name }), isNew && _jsx("span", { className: styles.newLabel, children: "NEW" })] }), _jsxs("span", { className: styles.entryType, children: ["Lvl ", spell.level === 0 ? 'Cantrip' : spell.level, " \u2022 ", spell.school] })] }, spell.name));
+                            }) })] }));
             default:
                 return _jsx("div", { className: styles.placeholder, children: "More lore coming soon..." });
         }

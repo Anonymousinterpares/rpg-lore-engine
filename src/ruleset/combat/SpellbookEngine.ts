@@ -1,5 +1,6 @@
 import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
 import { Spell } from '../schemas/SpellSchema';
+import { DataManager } from '../data/DataManager';
 import { CurrencyEngine } from './CurrencyEngine';
 import { Item } from '../schemas/ItemSchema';
 
@@ -139,8 +140,12 @@ export class SpellbookEngine {
      */
     public static prepareSpells(pc: PlayerCharacter, spellNames: string[]): { success: boolean, message: string } {
         const max = this.getMaxPreparedCount(pc);
+        const l1PlusSpells = spellNames.filter(name => {
+            const s = DataManager.getSpell(name);
+            return s && s.level > 0;
+        });
 
-        if (spellNames.length > max) {
+        if (l1PlusSpells.length > max) {
             return { success: false, message: `Too many spells! You can only prepare ${max}.` };
         }
 

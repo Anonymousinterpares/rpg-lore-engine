@@ -118,5 +118,11 @@
         "name": "Hit Points",
         "category": "mechanics",
         "description": "Hit points represent a combination of physical and mental durability, the will to live, and luck. Creatures with more hit points are more difficult to kill. Those with fewer hit points are more fragile."
+    },
+    {
+        "id": "magic_overview",
+        "name": "Understanding Magic",
+        "category": "mechanics",
+        "description": "Magic is a pervasive force in the world, channeled through prayer, study, or innate talent. Spells are the primary way this power is manifested.\n\n### Cantrips\nCantrips are simple but powerful spells that you can cast at will. While they are weak compared to higher-level magic, they don't require spell slots and are always available for use.\n\n### Spell Slots\nMost spells require a burst of focused energy to manifest. This energy is represented by spell slots. You have a limited number of slots for each spell level you can cast. When you cast a spell, you expend a slot of that level or higher.\n\n### Preparation & Known Spells\nSome classes, like Wizards and Clerics, must choose a selection of spells from their wider library to have ready each day (Preparation). Others, like Sorcerers, have a fixed set of spells they always have active (Known Spells)."
     }
 ]

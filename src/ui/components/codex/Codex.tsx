@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Codex.module.css';
-import { X, Book, Users, Shield, Map, Info, Swords, Skull, Sparkles } from 'lucide-react';
+import { X, Book, Users, Shield, Map, Info, Swords, Skull, Sparkles, Search } from 'lucide-react';
 import { useGameState } from '../../hooks/useGameState';
 import { DataManager } from '../../../ruleset/data/DataManager';
+import { SpellbookEngine } from '../../../ruleset/combat/SpellbookEngine';
 import { Spell } from '../../../ruleset/schemas/SpellSchema';
 import skillsData from '../../../data/codex/skills.json';
 import conditionsData from '../../../data/codex/conditions.json';
@@ -33,6 +34,7 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
     const { state, updateState } = useGameState();
     const [activeCategory, setActiveCategory] = useState(initialDeepLink?.category || 'mechanics');
     const [selectedEntry, setSelectedEntry] = useState<any>(null);
+    const [searchTerm, setSearchTerm] = useState('');
     const [races, setRaces] = useState<any[]>([]);
     const [classes, setClasses] = useState<any[]>([]);
     const [spells, setSpells] = useState<Spell[]>([]);
@@ -59,7 +61,8 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
             setClasses(DataManager.getClasses());
 
             if (state?.character) {
-                const classSpells = DataManager.getSpellsByClass(state.character.class, 9);
+                const maxLevel = SpellbookEngine.getMaxSpellLevel(state.character);
+                const classSpells = DataManager.getSpellsByClass(state.character.class, maxLevel);
                 setSpells(classSpells.sort((a, b) => a.level - b.level || a.name.localeCompare(b.name)));
             }
 
@@ -69,6 +72,7 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                 switch (initialDeepLink.category) {
                     case 'world': data = worldData; break;
                     case 'mechanics': data = mechanicsData; break;
+                    case 'magic': data = DataManager.getSpells(); break;
                     case 'skills': data = skillsData; break;
                     case 'conditions': data = conditionsData; break;
                     case 'races': data = DataManager.getRaces(); break;
@@ -212,26 +216,40 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                     </div>
                 );
             case 'magic':
+                const filteredSpells = spells.filter(s =>
+                    s.name.toLowerCase().includes(searchTerm.toLowerCase())
+                );
                 return (
-                    <div className={styles.entriesGrid}>
-                        {spells.map(spell => {
-                            const isNew = state?.character?.unseenSpells?.includes(spell.name);
-                            return (
-                                <div
-                                    key={spell.name}
-                                    id={`entry-${spell.name}`}
-                                    className={`${styles.entryCard} ${selectedEntry?.name === spell.name ? styles.active : ''}`}
-                                    onClick={() => setSelectedEntry(spell)}
-                                >
-                                    <div className={styles.entryHeader}>
-                                        <h4>{spell.name}</h4>
-                                        {isNew && <span className={styles.newLabel}>NEW</span>}
+                    <>
+                        <div className={styles.searchBar}>
+                            <Search size={16} />
+                            <input
+                                type="text"
+                                placeholder="Search spells & abilities..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                        <div className={styles.entriesGrid}>
+                            {filteredSpells.map(spell => {
+                                const isNew = state?.character?.unseenSpells?.includes(spell.name);
+                                return (
+                                    <div
+                                        key={spell.name}
+                                        id={`entry-${spell.name}`}
+                                        className={`${styles.entryCard} ${selectedEntry?.name === spell.name ? styles.active : ''}`}
+                                        onClick={() => setSelectedEntry(spell)}
+                                    >
+                                        <div className={styles.entryHeader}>
+                                            <h4>{spell.name}</h4>
+                                            {isNew && <span className={styles.newLabel}>NEW</span>}
+                                        </div>
+                                        <span className={styles.entryType}>Lvl {spell.level === 0 ? 'Cantrip' : spell.level} • {spell.school}</span>
                                     </div>
-                                    <span className={styles.entryType}>Lvl {spell.level} • {spell.school}</span>
-                                </div>
-                            );
-                        })}
-                    </div>
+                                );
+                            })}
+                        </div>
+                    </>
                 );
             default:
                 return <div className={styles.placeholder}>More lore coming soon...</div>;

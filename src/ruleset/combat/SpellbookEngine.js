@@ -1,3 +1,4 @@
+import { DataManager } from '../data/DataManager';
 import { CurrencyEngine } from './CurrencyEngine';
 export class SpellbookEngine {
     /**
@@ -135,7 +136,11 @@ export class SpellbookEngine {
      */
     static prepareSpells(pc, spellNames) {
         const max = this.getMaxPreparedCount(pc);
-        if (spellNames.length > max) {
+        const l1PlusSpells = spellNames.filter(name => {
+            const s = DataManager.getSpell(name);
+            return s && s.level > 0;
+        });
+        if (l1PlusSpells.length > max) {
             return { success: false, message: `Too many spells! You can only prepare ${max}.` };
         }
         // Validate all spells are known or in spellbook

@@ -53,14 +53,16 @@ const SpellPreparationPanel: React.FC = () => {
                 let spells: Spell[] = [];
 
                 if (pc.class === 'Wizard') {
-                    for (const name of pc.spellbook) {
+                    const allSourceNames = [...(pc.cantripsKnown || []), ...pc.spellbook];
+                    for (const name of allSourceNames) {
                         const spell = DataManager.getSpell(name);
                         if (spell) spells.push(spell);
                     }
                 } else if (pc.class === 'Cleric' || pc.class === 'Druid') {
                     spells = DataManager.getSpells().filter(s => s.classes?.includes(pc.class));
                 } else {
-                    for (const name of pc.knownSpells) {
+                    const allSourceNames = [...(pc.cantripsKnown || []), ...pc.knownSpells];
+                    for (const name of allSourceNames) {
                         const spell = DataManager.getSpell(name);
                         if (spell) spells.push(spell);
                     }
@@ -76,7 +78,10 @@ const SpellPreparationPanel: React.FC = () => {
     if (!state?.character) return null;
     const pc = state.character;
     const maxPrepared = SpellbookEngine.getMaxPreparedCount(pc);
-    const preparedCount = pc.preparedSpells.length;
+    const preparedCount = pc.preparedSpells.filter(name => {
+        const s = DataManager.getSpell(name);
+        return s && s.level > 0;
+    }).length;
     const isAlwaysPrepared = SpellbookEngine.isKnownSpellsCaster(pc.class);
     const maxSpellLevel = SpellbookEngine.getMaxSpellLevel(pc);
 

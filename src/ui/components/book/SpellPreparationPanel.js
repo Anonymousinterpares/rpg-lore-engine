@@ -38,7 +38,8 @@ const SpellPreparationPanel = () => {
                 const pc = state.character;
                 let spells = [];
                 if (pc.class === 'Wizard') {
-                    for (const name of pc.spellbook) {
+                    const allSourceNames = [...(pc.cantripsKnown || []), ...pc.spellbook];
+                    for (const name of allSourceNames) {
                         const spell = DataManager.getSpell(name);
                         if (spell)
                             spells.push(spell);
@@ -48,7 +49,8 @@ const SpellPreparationPanel = () => {
                     spells = DataManager.getSpells().filter(s => s.classes?.includes(pc.class));
                 }
                 else {
-                    for (const name of pc.knownSpells) {
+                    const allSourceNames = [...(pc.cantripsKnown || []), ...pc.knownSpells];
+                    for (const name of allSourceNames) {
                         const spell = DataManager.getSpell(name);
                         if (spell)
                             spells.push(spell);
@@ -64,7 +66,10 @@ const SpellPreparationPanel = () => {
         return null;
     const pc = state.character;
     const maxPrepared = SpellbookEngine.getMaxPreparedCount(pc);
-    const preparedCount = pc.preparedSpells.length;
+    const preparedCount = pc.preparedSpells.filter(name => {
+        const s = DataManager.getSpell(name);
+        return s && s.level > 0;
+    }).length;
     const isAlwaysPrepared = SpellbookEngine.isKnownSpellsCaster(pc.class);
     const maxSpellLevel = SpellbookEngine.getMaxSpellLevel(pc);
     const isPrepared = (name) => pc.preparedSpells.includes(name);
