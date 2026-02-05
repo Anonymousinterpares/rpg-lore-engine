@@ -32,12 +32,21 @@
     {
       "level": 1,
       "name": "Rage",
-      "description": "In battle, you fight with primal ferocity."
+      "description": "In battle, you fight with primal ferocity.",
+      "actionCost": "BONUS_ACTION",
+      "usage": {
+        "type": "LONG_REST",
+        "limit": 2
+      }
     },
     {
       "level": 1,
       "name": "Unarmored Defense",
-      "description": "While you are not wearing any armor, your Armor Class equals 10 + your Dexterity modifier + your Constitution modifier."
+      "description": "While you are not wearing any armor, your Armor Class equals 10 + your Dexterity modifier + your Constitution modifier.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     }
   ],
   "progression": [

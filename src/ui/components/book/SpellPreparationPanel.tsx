@@ -15,7 +15,7 @@ const SpellIcon: React.FC<{ spellName: string }> = ({ spellName }) => {
         if (failed) return;
         const name = spellName.toLowerCase().replace(/ /g, '_');
         // Standard asset path
-        const tryPath = `/assets/spells/spell_${name}.png`;
+        const tryPath = `/assets/spells/${name}.png`;
         setIconPath(tryPath);
     }, [spellName, failed]);
 
@@ -49,18 +49,14 @@ const SpellPreparationPanel: React.FC = () => {
                 const pc = state.character;
                 let spells: Spell[] = [];
 
-                // Logic based on class
                 if (pc.class === 'Wizard') {
-                    // Wizards can only prepare from their spellbook
                     for (const name of pc.spellbook) {
                         const spell = DataManager.getSpell(name);
                         if (spell) spells.push(spell);
                     }
                 } else if (pc.class === 'Cleric' || pc.class === 'Druid') {
-                    // These classes have access to their entire list (filtered by class metadata)
                     spells = DataManager.getSpells().filter(s => s.classes?.includes(pc.class));
                 } else {
-                    // For Sorcerers, Bards, etc., use knownSpells
                     for (const name of pc.knownSpells) {
                         const spell = DataManager.getSpell(name);
                         if (spell) spells.push(spell);
@@ -78,18 +74,19 @@ const SpellPreparationPanel: React.FC = () => {
     const pc = state.character;
     const maxPrepared = SpellbookEngine.getMaxPreparedCount(pc);
     const preparedCount = pc.preparedSpells.length;
+    const isAlwaysPrepared = SpellbookEngine.isKnownSpellsCaster(pc.class);
+    const maxSpellLevel = SpellbookEngine.getMaxSpellLevel(pc);
 
     const isPrepared = (name: string) => pc.preparedSpells.includes(name);
 
     const handleToggleSpell = (spell: Spell) => {
+        if (isAlwaysPrepared) return; // Cannot unprepare known spells
         const currentPrepared = [...pc.preparedSpells];
         const index = currentPrepared.indexOf(spell.name);
 
         if (index !== -1) {
-            // Unprepare
             currentPrepared.splice(index, 1);
         } else {
-            // Prepare
             if (preparedCount >= maxPrepared) return;
             currentPrepared.push(spell.name);
         }
@@ -104,7 +101,8 @@ const SpellPreparationPanel: React.FC = () => {
     const filteredSpells = availableSpells.filter(s => {
         const matchesLevel = filterLevel === 'all' || s.level === Number(filterLevel);
         const matchesSearch = s.name.toLowerCase().includes(searchTerm.toLowerCase());
-        return matchesLevel && matchesSearch;
+        const withinMaxLevel = s.level <= maxSpellLevel || s.level === 0; // Cantrips are always level 0
+        return matchesLevel && matchesSearch && withinMaxLevel;
     });
 
     if (loading) return <div className={styles.loading}>Opening Spellbook...</div>;
@@ -114,11 +112,13 @@ const SpellPreparationPanel: React.FC = () => {
             <header className={styles.header}>
                 <div className={styles.titleInfo}>
                     <Sparkles className={styles.headerIcon} />
-                    <h2 className={parchmentStyles.heading}>Spell Selection</h2>
+                    <h2 className={parchmentStyles.heading}>{isAlwaysPrepared ? 'Known Spells' : 'Spell Selection'}</h2>
                 </div>
-                <div className={`${styles.counter} ${preparedCount >= maxPrepared ? styles.atLimit : ''}`}>
-                    Prepared: {preparedCount} / {maxPrepared}
-                </div>
+                {!isAlwaysPrepared && (
+                    <div className={`${styles.counter} ${preparedCount >= maxPrepared ? styles.atLimit : ''}`}>
+                        Prepared: {preparedCount} / {maxPrepared}
+                    </div>
+                )}
             </header>
 
             <div className={styles.mainLayout}>
@@ -147,9 +147,9 @@ const SpellPreparationPanel: React.FC = () => {
                 </div>
 
                 <div className={styles.panes}>
-                    {/* Source List */}
+                    {/* Source/Known List */}
                     <div className={`${parchmentStyles.panel} ${styles.sourcePane}`}>
-                        <h3 className={styles.paneTitle}>Available Spells</h3>
+                        <h3 className={styles.paneTitle}>{isAlwaysPrepared ? 'Known Spells' : 'Available Spells'}</h3>
                         <div className={styles.spellList}>
                             {filteredSpells.length === 0 ? (
                                 <p className={styles.empty}>No spells found.</p>
@@ -157,7 +157,7 @@ const SpellPreparationPanel: React.FC = () => {
                                 filteredSpells.map(spell => (
                                     <div
                                         key={spell.name}
-                                        className={`${styles.spellItem} ${isPrepared(spell.name) ? styles.isPrepared : ''}`}
+                                        className={`${styles.spellItem} ${(!isAlwaysPrepared && isPrepared(spell.name)) ? styles.isPrepared : ''}`}
                                     >
                                         <div className={styles.spellInfoRow}>
                                             <SpellIcon spellName={spell.name} />
@@ -166,49 +166,53 @@ const SpellPreparationPanel: React.FC = () => {
                                                 <span className={styles.spellMeta}>Lvl {spell.level} • {spell.school}</span>
                                             </div>
                                         </div>
-                                        <button
-                                            className={`${styles.actionBtn} ${isPrepared(spell.name) ? styles.btnRemove : styles.btnAdd}`}
-                                            onClick={() => handleToggleSpell(spell)}
-                                            disabled={!isPrepared(spell.name) && preparedCount >= maxPrepared}
-                                        >
-                                            {isPrepared(spell.name) ? <Minus size={16} /> : <Plus size={16} />}
-                                        </button>
+                                        {!isAlwaysPrepared && (
+                                            <button
+                                                className={`${styles.actionBtn} ${isPrepared(spell.name) ? styles.btnRemove : styles.btnAdd}`}
+                                                onClick={() => handleToggleSpell(spell)}
+                                                disabled={!isPrepared(spell.name) && preparedCount >= maxPrepared}
+                                            >
+                                                {isPrepared(spell.name) ? <Minus size={16} /> : <Plus size={16} />}
+                                            </button>
+                                        )}
                                     </div>
                                 ))
                             )}
                         </div>
                     </div>
 
-                    {/* Prepared List */}
-                    <div className={`${parchmentStyles.panel} ${styles.preparedPane}`}>
-                        <h3 className={styles.paneTitle}>Current Preparation</h3>
-                        <div className={styles.spellList}>
-                            {pc.preparedSpells.length === 0 ? (
-                                <div className={styles.emptyState}>
-                                    <BookIcon size={32} opacity={0.3} />
-                                    <p>No spells prepared for the day.</p>
-                                </div>
-                            ) : (
-                                pc.preparedSpells.map(name => {
-                                    const spell = DataManager.getSpell(name);
-                                    return (
-                                        <div key={name} className={styles.preparedItem}>
-                                            <div className={styles.preparedInfoRow}>
-                                                <SpellIcon spellName={name} />
-                                                <span className={styles.preparedName}>{name}</span>
+                    {/* Prepared List - Only for Prepare-casters */}
+                    {!isAlwaysPrepared && (
+                        <div className={`${parchmentStyles.panel} ${styles.preparedPane}`}>
+                            <h3 className={styles.paneTitle}>Current Preparation</h3>
+                            <div className={styles.spellList}>
+                                {pc.preparedSpells.length === 0 ? (
+                                    <div className={styles.emptyState}>
+                                        <BookIcon size={32} opacity={0.3} />
+                                        <p>No spells prepared for the day.</p>
+                                    </div>
+                                ) : (
+                                    pc.preparedSpells.map(name => {
+                                        const spell = DataManager.getSpell(name);
+                                        return (
+                                            <div key={name} className={styles.preparedItem}>
+                                                <div className={styles.preparedInfoRow}>
+                                                    <SpellIcon spellName={name} />
+                                                    <span className={styles.preparedName}>{name}</span>
+                                                </div>
+                                                <button
+                                                    className={styles.unprepareBtn}
+                                                    onClick={() => spell && handleToggleSpell(spell)}
+                                                >
+                                                    <X size={14} />
+                                                </button>
                                             </div>
-                                            <button
-                                                className={styles.unprepareBtn}
-                                                onClick={() => spell && handleToggleSpell(spell)}
-                                            >
-                                                <X size={14} />
-                                            </button>
-                                        </div>
-                                    );
-                                })
-                            )}
+                                        );
+                                    })
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </div>

@@ -27,6 +27,7 @@ function runExpandedCombatSimulation() {
         xp: 0,
         inspiration: false,
         deathSaves: { successes: 0, failures: 0 },
+        featureUsages: {},
         biography: {
             background: 'Outlander',
             traits: [],

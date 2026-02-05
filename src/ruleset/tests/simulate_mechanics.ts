@@ -35,6 +35,7 @@ function runMechanicsSimulation() {
         xp: 900,
         inspiration: false,
         deathSaves: { successes: 0, failures: 0 },
+        featureUsages: {},
         biography: {
             background: 'Soldier',
             traits: [],

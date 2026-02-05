@@ -130,30 +130,82 @@
     cursor: not-allowed;
 }
 
+.spellMain {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+}
+
+.spellContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.spellIconContainer {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    border: 1px solid var(--parchment-border);
+}
+
+.spellIcon {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.iconPlaceholder {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--parchment-accent);
+    opacity: 0.5;
+}
+
 .spellHeader {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
     margin-bottom: 2px;
+    gap: var(--spacing-xs);
 }
 
 .spellName {
     font-weight: bold;
     font-family: var(--font-narrative);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: var(--parchment-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .spellSchool {
-    font-size: 0.6rem;
+    font-size: 0.55rem;
     text-transform: uppercase;
-    color: var(--parchment-border);
+    color: var(--parchment-accent);
+    opacity: 0.8;
+    white-space: nowrap;
 }
 
 .spellMeta {
     display: flex;
-    gap: var(--spacing-md);
-    font-size: 0.7rem;
+    justify-content: space-between;
+    font-size: 0.65rem;
     color: var(--parchment-border);
 }
 

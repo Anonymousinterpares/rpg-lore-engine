@@ -45,6 +45,11 @@ export const PlayerCharacterSchema = z.object({
     preparedSpells: z.array(z.string()).default([]),
     spellbook: z.array(z.string()).default([]),
     ac: z.number(),
+    featureUsages: z.record(z.string(), z.object({
+        current: z.number(),
+        max: z.number(),
+        usageType: z.enum(['SHORT_REST', 'LONG_REST', 'PER_ROUND'])
+    })).default({}),
     inventory: z.object({
         gold: CurrencySchema.default({}),
         items: z.array(z.object({

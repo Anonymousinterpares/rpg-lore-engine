@@ -48,7 +48,8 @@ async function verifyMultiplayer() {
             biography: { traits: [], ideals: [], bonds: [], flaws: [], chronicles: [] },
             xp: 0,
             inspiration: false,
-            attunedItems: []
+            attunedItems: [],
+            featureUsages: {}
         },
         companions: [],
         mode: "EXPLORATION",

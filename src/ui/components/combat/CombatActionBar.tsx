@@ -2,15 +2,19 @@ import React, { useState, useEffect } from 'react';
 import styles from './CombatActionBar.module.css';
 import { ActionButton } from './ActionButton';
 import { SpellbookFlyout } from './SpellbookFlyout';
-import { Sword, Sparkles, Shield, Zap, Package, ChevronRight, FastForward } from 'lucide-react';
+import { AbilitiesFlyout } from './AbilitiesFlyout';
+import { Sword, Sparkles, Shield, Zap, Package, ChevronRight, FastForward, Star } from 'lucide-react';
 import { useGameState } from '../../hooks/useGameState';
+import { AbilityParser, CombatAbility } from '../../../ruleset/combat/AbilityParser';
 import { DataManager } from '../../../ruleset/data/DataManager';
 import { Spell } from '../../../ruleset/schemas/SpellSchema';
 
 export const CombatActionBar: React.FC = () => {
     const { state, processCommand } = useGameState();
     const [showSpells, setShowSpells] = useState(false);
+    const [showAbilities, setShowAbilities] = useState(false);
     const [availableSpells, setAvailableSpells] = useState<Spell[]>([]);
+    const [availableAbilities, setAvailableAbilities] = useState<CombatAbility[]>([]);
 
     useEffect(() => {
         const loadSpells = async () => {
@@ -30,6 +34,10 @@ export const CombatActionBar: React.FC = () => {
                     .filter((s): s is Spell => s !== undefined);
 
                 setAvailableSpells(spells);
+
+                // Fetch Class Abilities
+                const abilities = AbilityParser.getActiveAbilities(state.character);
+                setAvailableAbilities(abilities);
             }
         };
         loadSpells();
@@ -46,6 +54,11 @@ export const CombatActionBar: React.FC = () => {
         setShowSpells(false);
     };
 
+    const handleUseAbility = (ability: CombatAbility) => {
+        processCommand(`/use ${ability.name}`);
+        setShowAbilities(false);
+    };
+
     return (
         <div className={styles.actionBar}>
             <div className={styles.group}>
@@ -60,11 +73,21 @@ export const CombatActionBar: React.FC = () => {
                     icon={<Sparkles size={24} />}
                     label="Spells"
                     hotkey="2"
-                    onClick={() => setShowSpells(!showSpells)}
+                    onClick={() => { setShowSpells(!showSpells); setShowAbilities(false); }}
                     active={showSpells}
                     disabled={availableSpells.length === 0}
                     disabledReason="No spells prepared"
                     tooltip="Open spellbook"
+                />
+                <ActionButton
+                    icon={<Star size={24} />}
+                    label="Abilities"
+                    hotkey="3"
+                    onClick={() => { setShowAbilities(!showAbilities); setShowSpells(false); }}
+                    active={showAbilities}
+                    disabled={availableAbilities.length === 0}
+                    disabledReason="No class abilities"
+                    tooltip="Use class features"
                 />
             </div>
 
@@ -74,21 +97,21 @@ export const CombatActionBar: React.FC = () => {
                 <ActionButton
                     icon={<Shield size={24} />}
                     label="Dodge"
-                    hotkey="3"
+                    hotkey="4"
                     onClick={() => handleAction('dodge')}
                     tooltip="Take a defensive stance"
                 />
                 <ActionButton
                     icon={<Zap size={24} />}
                     label="Dash"
-                    hotkey="4"
+                    hotkey="5"
                     onClick={() => handleAction('dash')}
                     tooltip="Move double your speed"
                 />
                 <ActionButton
                     icon={<ChevronRight size={24} />}
                     label="Disengage"
-                    hotkey="5"
+                    hotkey="6"
                     onClick={() => handleAction('disengage')}
                     tooltip="Move without provoking opportunity attacks"
                 />
@@ -113,6 +136,13 @@ export const CombatActionBar: React.FC = () => {
                     spellSlots={state.character.spellSlots}
                     onCast={handleCastSpell}
                     onClose={() => setShowSpells(false)}
+                />
+            )}
+            {showAbilities && (
+                <AbilitiesFlyout
+                    abilities={availableAbilities}
+                    onUse={handleUseAbility}
+                    onClose={() => setShowAbilities(false)}
                 />
             )}
         </div>

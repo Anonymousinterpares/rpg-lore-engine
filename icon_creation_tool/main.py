@@ -2,6 +2,7 @@ import os
 import json
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
+from tkinter.scrolledtext import ScrolledText
 from PIL import Image, ImageTk
 import threading
 import google.generativeai as genai
@@ -85,6 +86,23 @@ class IconCreationTool:
         
         self.status_label = ttk.Label(preview_frame, text="Ready")
         self.status_label.pack(anchor=tk.W)
+
+        # Log Area at the bottom of Right Panel
+        log_frame = ttk.LabelFrame(preview_frame, text="Activity Log", padding=5)
+        log_frame.pack(fill=tk.BOTH, expand=True, pady=(20, 0))
+        
+        self.log_area = ScrolledText(log_frame, height=10, font=("Consolas", 9), state='disabled', bg="#1e1e1e", fg="#d4d4d4")
+        self.log_area.pack(fill=tk.BOTH, expand=True)
+
+    def log(self, message):
+        """Append a message to the internal log area and print to console."""
+        print(f"[LOG] {message}")
+        def append():
+            self.log_area.config(state='normal')
+            self.log_area.insert(tk.END, f"{message}\n")
+            self.log_area.see(tk.END)
+            self.log_area.config(state='disabled')
+        self.root.after(0, append)
 
     def browse_save_path(self):
         path = filedialog.askdirectory()
@@ -196,52 +214,80 @@ class IconCreationTool:
     def generation_thread(self, indices):
         output_dir = self.save_path.get()
         os.makedirs(output_dir, exist_ok=True)
+        self.log(f"Starting bulk generation for {len(indices)} items using gemini-2.5-flash-image...")
         
+        try:
+            # Configure Model
+            model = genai.GenerativeModel('gemini-2.5-flash-image')
+        except Exception as e:
+            self.log(f"Model initialization failed: {str(e)}")
+            return
+
         for idx in indices:
             item = self.items[idx]
+            self.log(f"Generating Icon: {item['name']}...")
             self.root.after(0, lambda: self.status_label.config(text=f"Generating: {item['name']}..."))
             
             try:
-                # Real API Call (Simplified for SDK 2.0)
-                # Note: 'gemini-2.0-flash' content generation is text-based.
-                # If the user wants Imagen, they typically use generativeai.ImageGenerationModel
-                # For this tool, we'll try to use the provided model for a prompt-to-image flow if supported,
-                # otherwise we provide clear feedback.
-                
-                # We'll use a safer approach for the tool to not crash if model is not found
                 if not self.api_key:
+                    self.log("CRITICAL: API Key is missing. Check .env file.")
                     raise Exception("API Key missing")
 
-                # Mocking the wait and result for the demo as I cannot run live API here,
-                # but making the code ready for the user's key.
-                import time
-                time.sleep(2) # Simulate network lag
+                # Actual API Call with aspect ratio and quality hints in prompt if standard SDK doesn't have a direct arg
+                # Usually Imagen-type models use specialized methods, but for Flash multimodal:
+                prompt_enhancement = " (Aspect Ratio 1:1, game icon style, high quality, png format)"
+                full_prompt = item['prompt'] + prompt_enhancement
                 
-                # Check for naming convention spell_n
-                n = 1
-                while os.path.exists(os.path.join(output_dir, f"spell_{n}.png")):
-                    n += 1
+                self.log(f"Sending prompt to Gemini...")
+                response = model.generate_content(full_prompt)
                 
-                # Save path
-                save_to = os.path.join(output_dir, f"spell_{n}.png")
+                # Check for image data in parts
+                image_data = None
+                if response.candidates and response.candidates[0].content.parts:
+                    for part in response.candidates[0].content.parts:
+                        # Extract image blob/inline_data
+                        if hasattr(part, 'inline_data'):
+                            image_data = part.inline_data.data
+                            break
+                        elif hasattr(part, 'file_data'):
+                             # If it returns a file reference
+                             # This is less common for direct response
+                             pass
                 
-                # Placeholder image for the tool's logic flow
-                img = Image.new('RGB', (256, 256), color = (idx*20 % 255, idx*40 % 255, idx*60 % 255))
-                img.save(save_to)
+                if not image_data:
+                    # In some SDK versions/regions, the image might be accessible differently
+                    # or the model might have returned text instead of an image
+                    self.log(f"WARNING: No image data found in response for {item['name']}. Response might be text: {response.text[:50]}...")
+                    raise Exception("No image in response")
+
+                # Handle naming convention {spell_name}.png
+                safe_name = item['name'].lower().replace(' ', '_')
+                save_to = os.path.join(output_dir, f"{safe_name}.png")
+                
+                # Save the image data
+                with open(save_to, 'wb') as f:
+                    f.write(image_data)
+                
+                # Load for preview
+                img = Image.open(BytesIO(image_data))
+                img = img.resize((256, 256), Image.Resampling.LANCZOS)
                 
                 item['image'] = img
                 item['selected'] = False
                 item['generated_status'] = "Success"
+                self.log(f"SUCCESS: Generated {os.path.basename(save_to)}")
                 
                 self.root.after(0, lambda m=f"Saved to {os.path.basename(save_to)}": self.status_label.config(text=m))
                 
             except Exception as e:
+                self.log(f"FAILED: {item['name']} - {str(e)}")
                 item['generated_status'] = f"Error: {str(e)}"
                 self.root.after(0, lambda m=str(e): self.status_label.config(text=f"Error: {m}"))
             
             self.root.after(0, lambda i=idx: self.update_after_gen(i))
             self.root.after(0, lambda: self.progress.step(1))
             
+        self.log("Bulk generation work complete.")
         self.root.after(0, lambda: self.status_label.config(text="Bulk Generation Complete"))
 
     def update_after_gen(self, idx):

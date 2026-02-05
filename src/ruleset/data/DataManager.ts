@@ -133,4 +133,14 @@ export class DataManager {
     public static getSpells(): Spell[] {
         return Object.values(this.spells);
     }
+
+    /**
+     * Filters spells by class and maximum level.
+     * Useful for character creation and preparation filtering.
+     */
+    public static getSpellsByClass(className: string, maxLevel: number = 9): Spell[] {
+        return Object.values(this.spells).filter(s =>
+            s.classes?.includes(className) && s.level <= maxLevel
+        );
+    }
 }

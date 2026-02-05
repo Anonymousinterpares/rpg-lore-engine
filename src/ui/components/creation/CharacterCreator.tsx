@@ -8,13 +8,14 @@ import { Background } from '../../../ruleset/schemas/BackgroundSchema';
 import { GameState } from '../../../ruleset/schemas/FullSaveStateSchema';
 import { ArrowRight, ArrowLeft, Check, Dice5 } from 'lucide-react';
 import SkillLink from '../glossary/SkillLink';
+import SpellSelectionStep from './SpellSelectionStep';
 
 interface CharacterCreatorProps {
     onComplete: (state: GameState) => void;
     onCancel: () => void;
 }
 
-const STEPS = ['Identity', 'Race', 'Class', 'Background', 'Abilities', 'Skills', 'Review'];
+const STEPS = ['Identity', 'Race', 'Class', 'Background', 'Abilities', 'Skills', 'Spells', 'Review'];
 
 const ALL_SKILLS = [
     "Acrobatics", "Animal Handling", "Arcana", "Athletics", "Deception", "History",
@@ -39,6 +40,8 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
         STR: 10, DEX: 10, CON: 10, INT: 10, WIS: 10, CHA: 10
     });
     const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+    const [selectedCantrips, setSelectedCantrips] = useState<string[]>([]);
+    const [selectedSpells, setSelectedSpells] = useState<string[]>([]);
 
     useEffect(() => {
         const init = async () => {
@@ -79,11 +82,25 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
     }, [selectedRace, selectedClass, selectedBackground]);
 
     const handleNext = () => {
-        if (step < STEPS.length - 1) setStep(step + 1);
+        if (step < STEPS.length - 1) {
+            // Skip Spells step if class doesn't have at level 1
+            if (step === 5 && !hasSpellsAtLevel1(selectedClass?.name || '')) {
+                setStep(step + 2);
+            } else {
+                setStep(step + 1);
+            }
+        }
     };
 
     const handleBack = () => {
-        if (step > 0) setStep(step - 1);
+        if (step > 0) {
+            // Skip Spells step backwards
+            if (step === 7 && !hasSpellsAtLevel1(selectedClass?.name || '')) {
+                setStep(step - 2);
+            } else {
+                setStep(step - 1);
+            }
+        }
     };
 
     const handleFinish = () => {
@@ -95,11 +112,15 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
             characterClass: selectedClass,
             background: selectedBackground,
             abilityScores: abilities,
-            skillProficiencies: getFinalSkills()
+            skillProficiencies: getFinalSkills(),
+            selectedCantrips,
+            selectedSpells
         });
 
         onComplete(newState);
     };
+
+    const isSpellsStep = step === 6;
 
     const rollStats = () => {
         // Simple 4d6 drop lowest generator
@@ -188,6 +209,22 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
 
     const getFinalSkills = () => {
         return Array.from(new Set([...getAutoSkills(), ...selectedSkills]));
+    };
+
+    const hasSpellsAtLevel1 = (className: string) => {
+        return ['Wizard', 'Sorcerer', 'Warlock', 'Bard', 'Cleric', 'Druid'].includes(className);
+    };
+
+    const getSpellLimits = (className: string) => {
+        const limits: Record<string, { cantrips: number; spells: number }> = {
+            'Wizard': { cantrips: 3, spells: 6 },
+            'Sorcerer': { cantrips: 4, spells: 2 },
+            'Warlock': { cantrips: 2, spells: 2 },
+            'Bard': { cantrips: 2, spells: 4 },
+            'Cleric': { cantrips: 3, spells: 0 },
+            'Druid': { cantrips: 2, spells: 0 }
+        };
+        return limits[className] || { cantrips: 0, spells: 0 };
     };
 
     if (loading) return <div className={styles.overlay}><div className={styles.loader}>Opening the Rulebooks...</div></div>;
@@ -466,7 +503,31 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                         </div>
                     </div>
                 );
-            case 6: // Review
+            case 6: // Spells
+                return (
+                    <SpellSelectionStep
+                        characterClass={selectedClass?.name || ''}
+                        selectedCantrips={selectedCantrips}
+                        selectedSpells={selectedSpells}
+                        onToggleCantrip={(spell) => {
+                            const limit = getSpellLimits(selectedClass?.name || '').cantrips;
+                            if (selectedCantrips.includes(spell)) {
+                                setSelectedCantrips(selectedCantrips.filter(s => s !== spell));
+                            } else if (selectedCantrips.length < limit) {
+                                setSelectedCantrips([...selectedCantrips, spell]);
+                            }
+                        }}
+                        onToggleSpell={(spell) => {
+                            const limit = getSpellLimits(selectedClass?.name || '').spells;
+                            if (selectedSpells.includes(spell)) {
+                                setSelectedSpells(selectedSpells.filter(s => s !== spell));
+                            } else if (selectedSpells.length < limit) {
+                                setSelectedSpells([...selectedSpells, spell]);
+                            }
+                        }}
+                    />
+                );
+            case 7: // Review
                 const finalSkills = getFinalSkills();
                 return (
                     <div className={styles.selectionLayout}>
@@ -537,6 +598,19 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                                         </div>
                                     </div>
                                 </div>
+                                {hasSpellsAtLevel1(selectedClass?.name || '') && (
+                                    <div className={styles.summarySection}>
+                                        <div className={styles.summarySectionTitle}>STARTING MAGIC</div>
+                                        <div className={styles.summaryItem}>
+                                            <div className={styles.summaryItemName}>Cantrips</div>
+                                            <div className={styles.summaryItemDesc}>{selectedCantrips.join(', ') || 'None'}</div>
+                                        </div>
+                                        <div className={styles.summaryItem}>
+                                            <div className={styles.summaryItemName}>1st-Level Spells</div>
+                                            <div className={styles.summaryItemDesc}>{selectedSpells.join(', ') || 'None'}</div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -555,6 +629,10 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
             const classCount = selectedClass?.skillChoices.count || 0;
             const raceCount = getRaceSkillChoiceCount();
             return selectedSkills.length < (classCount + raceCount);
+        }
+        if (step === 6) { // Spells
+            const limits = getSpellLimits(selectedClass?.name || '');
+            return selectedCantrips.length < limits.cantrips || selectedSpells.length < limits.spells;
         }
         return false;
     };

@@ -32,12 +32,22 @@
     {
       "level": 1,
       "name": "Divine Sense",
-      "description": "The presence of strong evil registers on your senses like a noxious odor, and powerful good rings like heavenly music in your ears."
+      "description": "The presence of strong evil registers on your senses like a noxious odor, and powerful good rings like heavenly music in your ears.",
+      "actionCost": "ACTION",
+      "usage": {
+        "type": "LONG_REST",
+        "limit": 1
+      }
     },
     {
       "level": 1,
       "name": "Lay on Hands",
-      "description": "Your blessed touch can heal wounds."
+      "description": "Your blessed touch can heal wounds.",
+      "actionCost": "ACTION",
+      "usage": {
+        "type": "LONG_REST",
+        "limit": 5
+      }
     }
   ],
   "progression": [

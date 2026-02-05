@@ -35,6 +35,39 @@ export class CharacterFactory {
                 instanceId: uuidv4()
             };
         });
+        // Initialize Spellcasting Defaults
+        let cantrips = options.selectedCantrips || [];
+        let spells = options.selectedSpells || [];
+        let spellbook = [];
+        // Special logic for Wizard Spellbook (they choose 6 for spellbook, but don't "know" them)
+        if (options.characterClass.name === 'Wizard') {
+            spellbook = [...spells];
+            spells = []; // Wizards don't have "Known Spells" beyond cantrips
+        }
+        // Fallback for hardcoded classes if no selection was made (though UI should prevent this)
+        if (cantrips.length === 0 && spells.length === 0 && spellbook.length === 0) {
+            if (characterClass.name === 'Wizard') {
+                cantrips = ['Fire Bolt', 'Mage Hand', 'Light'];
+                spellbook = ['Magic Missile', 'Shield', 'Sleep', 'Mage Armor', 'Burning Hands', 'Detect Magic'];
+            }
+            else if (characterClass.name === 'Sorcerer') {
+                cantrips = ['Fire Bolt', 'Light', 'Ray of Frost', 'Shocking Grasp'];
+                spells = ['Magic Missile', 'Shield'];
+            }
+            else if (characterClass.name === 'Warlock') {
+                cantrips = ['Eldritch Blast', 'Mage Hand'];
+                spells = ['Hellish Rebuke', 'Charm Person'];
+            }
+            else if (characterClass.name === 'Cleric' || characterClass.name === 'Druid') {
+                if (characterClass.name === 'Cleric')
+                    cantrips = ['Sacred Flame', 'Guidance', 'Light'];
+                if (characterClass.name === 'Druid')
+                    cantrips = ['Druidcraft', 'Guidance', 'Produce Flame'];
+            }
+        }
+        // Always-Prepared classes: Synchronize preparedSpells with knownSpells
+        const knownCasters = ['Sorcerer', 'Warlock', 'Bard', 'Ranger'];
+        const preparedSpells = (knownCasters.includes(characterClass.name)) ? [...spells] : [];
         const now = new Date().toISOString();
         return {
             saveId: uuidv4(),
@@ -50,20 +83,29 @@ export class CharacterFactory {
                 conditions: [],
                 stats: finalStats,
                 savingThrowProficiencies: characterClass.savingThrowProficiencies,
-                // Combine skill proficiencies from Class (would need user selection, simplified here to take first 2 for automation or need UI pass-in)
-                // For this factory, we assume the UI handles specific skill choices, 
-                // BUT if we are simplifying, we'll take Background skills + 2 random class skills?
-                // Let's take Background skills for sure.
                 skillProficiencies: skillProficiencies,
                 hp: { current: maxHp, max: maxHp, temp: 0 },
                 deathSaves: { successes: 0, failures: 0 },
                 hitDice: { current: 1, max: 1, dieType: characterClass.hitDie },
-                spellSlots: {}, // To be calculated based on class
-                cantripsKnown: [],
-                knownSpells: [],
-                preparedSpells: [],
-                spellbook: [],
-                ac: 10 + Math.floor((finalStats['DEX'] - 10) / 2), // Basic AC, armor needs equipping logic
+                spellSlots: {},
+                featureUsages: (() => {
+                    const usages = {};
+                    characterClass.allFeatures.forEach(feat => {
+                        if (feat.level <= 1 && feat.usage && feat.usage.type !== 'PASSIVE') {
+                            usages[feat.name] = {
+                                current: feat.usage.limit || 0,
+                                max: feat.usage.limit || 0,
+                                usageType: feat.usage.type
+                            };
+                        }
+                    });
+                    return usages;
+                })(),
+                cantripsKnown: cantrips,
+                knownSpells: spells,
+                preparedSpells: preparedSpells,
+                spellbook: spellbook,
+                ac: 10 + Math.floor((finalStats['DEX'] - 10) / 2),
                 inventory: {
                     gold: { cp: 0, sp: 0, ep: 0, gp: background.startingGold || 0, pp: 0 },
                     items: inventoryItems
@@ -99,7 +141,6 @@ export class CharacterFactory {
                 startHex.name = "Initial Landing Site";
                 startHex.biome = "Plains";
                 const hexes = { '0,0': startHex };
-                // Generate real hexes for surrounding area (6 directions) using the pool
                 const directions = ['N', 'S', 'NE', 'NW', 'SE', 'SW'];
                 directions.forEach(dir => {
                     const coords = HexMapManager.getNewCoords([0, 0], dir);

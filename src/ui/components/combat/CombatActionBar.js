@@ -3,13 +3,17 @@ import { useState, useEffect } from 'react';
 import styles from './CombatActionBar.module.css';
 import { ActionButton } from './ActionButton';
 import { SpellbookFlyout } from './SpellbookFlyout';
-import { Sword, Sparkles, Shield, Zap, ChevronRight, FastForward } from 'lucide-react';
+import { AbilitiesFlyout } from './AbilitiesFlyout';
+import { Sword, Sparkles, Shield, Zap, ChevronRight, FastForward, Star } from 'lucide-react';
 import { useGameState } from '../../hooks/useGameState';
+import { AbilityParser } from '../../../ruleset/combat/AbilityParser';
 import { DataManager } from '../../../ruleset/data/DataManager';
 export const CombatActionBar = () => {
     const { state, processCommand } = useGameState();
     const [showSpells, setShowSpells] = useState(false);
+    const [showAbilities, setShowAbilities] = useState(false);
     const [availableSpells, setAvailableSpells] = useState([]);
+    const [availableAbilities, setAvailableAbilities] = useState([]);
     useEffect(() => {
         const loadSpells = async () => {
             if (!state?.combat)
@@ -26,6 +30,9 @@ export const CombatActionBar = () => {
                     .map(name => DataManager.getSpell(name))
                     .filter((s) => s !== undefined);
                 setAvailableSpells(spells);
+                // Fetch Class Abilities
+                const abilities = AbilityParser.getActiveAbilities(state.character);
+                setAvailableAbilities(abilities);
             }
         };
         loadSpells();
@@ -39,6 +46,10 @@ export const CombatActionBar = () => {
         processCommand(`/cast ${spell.name}`);
         setShowSpells(false);
     };
-    return (_jsxs("div", { className: styles.actionBar, children: [_jsxs("div", { className: styles.group, children: [_jsx(ActionButton, { icon: _jsx(Sword, { size: 24 }), label: "Attack", hotkey: "1", onClick: () => handleAction('attack'), tooltip: "Perform a weapon attack" }), _jsx(ActionButton, { icon: _jsx(Sparkles, { size: 24 }), label: "Spells", hotkey: "2", onClick: () => setShowSpells(!showSpells), active: showSpells, disabled: availableSpells.length === 0, disabledReason: "No spells prepared", tooltip: "Open spellbook" })] }), _jsx("div", { className: styles.divider }), _jsxs("div", { className: styles.group, children: [_jsx(ActionButton, { icon: _jsx(Shield, { size: 24 }), label: "Dodge", hotkey: "3", onClick: () => handleAction('dodge'), tooltip: "Take a defensive stance" }), _jsx(ActionButton, { icon: _jsx(Zap, { size: 24 }), label: "Dash", hotkey: "4", onClick: () => handleAction('dash'), tooltip: "Move double your speed" }), _jsx(ActionButton, { icon: _jsx(ChevronRight, { size: 24 }), label: "Disengage", hotkey: "5", onClick: () => handleAction('disengage'), tooltip: "Move without provoking opportunity attacks" })] }), _jsx("div", { className: styles.divider }), _jsx("div", { className: styles.group, children: _jsx(ActionButton, { icon: _jsx(FastForward, { size: 24 }), label: "End Turn", hotkey: "SPACE", className: styles.endTurnButton, onClick: () => handleAction('end turn'), tooltip: "Finish your turn" }) }), showSpells && (_jsx(SpellbookFlyout, { spells: availableSpells, spellSlots: state.character.spellSlots, onCast: handleCastSpell, onClose: () => setShowSpells(false) }))] }));
+    const handleUseAbility = (ability) => {
+        processCommand(`/use ${ability.name}`);
+        setShowAbilities(false);
+    };
+    return (_jsxs("div", { className: styles.actionBar, children: [_jsxs("div", { className: styles.group, children: [_jsx(ActionButton, { icon: _jsx(Sword, { size: 24 }), label: "Attack", hotkey: "1", onClick: () => handleAction('attack'), tooltip: "Perform a weapon attack" }), _jsx(ActionButton, { icon: _jsx(Sparkles, { size: 24 }), label: "Spells", hotkey: "2", onClick: () => { setShowSpells(!showSpells); setShowAbilities(false); }, active: showSpells, disabled: availableSpells.length === 0, disabledReason: "No spells prepared", tooltip: "Open spellbook" }), _jsx(ActionButton, { icon: _jsx(Star, { size: 24 }), label: "Abilities", hotkey: "3", onClick: () => { setShowAbilities(!showAbilities); setShowSpells(false); }, active: showAbilities, disabled: availableAbilities.length === 0, disabledReason: "No class abilities", tooltip: "Use class features" })] }), _jsx("div", { className: styles.divider }), _jsxs("div", { className: styles.group, children: [_jsx(ActionButton, { icon: _jsx(Shield, { size: 24 }), label: "Dodge", hotkey: "4", onClick: () => handleAction('dodge'), tooltip: "Take a defensive stance" }), _jsx(ActionButton, { icon: _jsx(Zap, { size: 24 }), label: "Dash", hotkey: "5", onClick: () => handleAction('dash'), tooltip: "Move double your speed" }), _jsx(ActionButton, { icon: _jsx(ChevronRight, { size: 24 }), label: "Disengage", hotkey: "6", onClick: () => handleAction('disengage'), tooltip: "Move without provoking opportunity attacks" })] }), _jsx("div", { className: styles.divider }), _jsx("div", { className: styles.group, children: _jsx(ActionButton, { icon: _jsx(FastForward, { size: 24 }), label: "End Turn", hotkey: "SPACE", className: styles.endTurnButton, onClick: () => handleAction('end turn'), tooltip: "Finish your turn" }) }), showSpells && (_jsx(SpellbookFlyout, { spells: availableSpells, spellSlots: state.character.spellSlots, onCast: handleCastSpell, onClose: () => setShowSpells(false) })), showAbilities && (_jsx(AbilitiesFlyout, { abilities: availableAbilities, onUse: handleUseAbility, onClose: () => setShowAbilities(false) }))] }));
 };
 export default CombatActionBar;

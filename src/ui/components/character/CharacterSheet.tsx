@@ -4,6 +4,7 @@ import parchmentStyles from '../../styles/parchment.module.css';
 import { X, Shield, Zap, Heart, Footprints, CheckCircle2 as Check } from 'lucide-react';
 import { useGameState } from '../../hooks/useGameState';
 import { useBook } from '../../context/BookContext';
+import { AbilityParser } from '../../../ruleset/combat/AbilityParser';
 import Codex from '../codex/Codex';
 
 const SKILLS = [
@@ -190,6 +191,42 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ onClose, isPage = false
                                     {char.hp.current} / {char.hp.max}
                                 </div>
                             </div>
+                        </div>
+                    </section>
+
+                    {/* CLASS FEATURES */}
+                    <section className={styles.section}>
+                        <h2 className={styles.sectionTitle}>Class Features</h2>
+                        <div className={styles.featuresGrid}>
+                            {AbilityParser.getCombatAbilities(char).map((ability, i) => (
+                                <div key={i} className={styles.featureCard}>
+                                    <div className={styles.featureHeader}>
+                                        <h3 className={styles.featureName}>{ability.name}</h3>
+                                        {ability.actionCost !== 'NONE' && (
+                                            <span className={styles.featureTag}>{ability.actionCost.replace('_', ' ')}</span>
+                                        )}
+                                    </div>
+                                    <p className={styles.featureDesc}>{ability.description}</p>
+                                    {ability.usage && (
+                                        <div className={styles.usageTracker}>
+                                            <span className={styles.usageText}>
+                                                Uses ({ability.usage.usageType.replace('_', ' ')}): {ability.usage.current} / {ability.usage.max}
+                                            </span>
+                                            <div className={styles.usageDots}>
+                                                {Array.from({ length: ability.usage.max }).map((_, dotIdx) => (
+                                                    <div
+                                                        key={dotIdx}
+                                                        className={`${styles.dot} ${dotIdx < (ability.usage?.current || 0) ? styles.dotFilled : ''}`}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                            {AbilityParser.getCombatAbilities(char).length === 0 && (
+                                <p style={{ opacity: 0.5 }}>No class features unlocked yet.</p>
+                            )}
                         </div>
                     </section>
 

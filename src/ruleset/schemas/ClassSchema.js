@@ -4,7 +4,12 @@ export const ClassFeatureSchema = z.object({
     level: z.number(),
     name: z.string(),
     description: z.string(),
-    grantsSpell: z.string().optional() // Cross-reference to Spell data
+    grantsSpell: z.string().optional(), // Cross-reference to Spell data
+    actionCost: z.enum(['NONE', 'ACTION', 'BONUS_ACTION', 'REACTION']).default('NONE'),
+    usage: z.object({
+        type: z.enum(['PASSIVE', 'SHORT_REST', 'LONG_REST', 'PER_ROUND']),
+        limit: z.number().optional()
+    }).optional()
 });
 export const ClassProgressionSchema = z.object({
     level: z.number(),

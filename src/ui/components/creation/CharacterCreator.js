@@ -5,7 +5,8 @@ import { DataManager } from '../../../ruleset/data/DataManager';
 import { CharacterFactory } from '../../../ruleset/factories/CharacterFactory';
 import { ArrowRight, ArrowLeft, Check } from 'lucide-react';
 import SkillLink from '../glossary/SkillLink';
-const STEPS = ['Identity', 'Race', 'Class', 'Background', 'Abilities', 'Skills', 'Review'];
+import SpellSelectionStep from './SpellSelectionStep';
+const STEPS = ['Identity', 'Race', 'Class', 'Background', 'Abilities', 'Skills', 'Spells', 'Review'];
 const ALL_SKILLS = [
     "Acrobatics", "Animal Handling", "Arcana", "Athletics", "Deception", "History",
     "Insight", "Intimidation", "Investigation", "Medicine", "Nature", "Perception",
@@ -26,6 +27,8 @@ const CharacterCreator = ({ onComplete, onCancel }) => {
         STR: 10, DEX: 10, CON: 10, INT: 10, WIS: 10, CHA: 10
     });
     const [selectedSkills, setSelectedSkills] = useState([]);
+    const [selectedCantrips, setSelectedCantrips] = useState([]);
+    const [selectedSpells, setSelectedSpells] = useState([]);
     useEffect(() => {
         const init = async () => {
             await DataManager.initialize();
@@ -63,12 +66,26 @@ const CharacterCreator = ({ onComplete, onCancel }) => {
         }
     }, [selectedRace, selectedClass, selectedBackground]);
     const handleNext = () => {
-        if (step < STEPS.length - 1)
-            setStep(step + 1);
+        if (step < STEPS.length - 1) {
+            // Skip Spells step if class doesn't have at level 1
+            if (step === 5 && !hasSpellsAtLevel1(selectedClass?.name || '')) {
+                setStep(step + 2);
+            }
+            else {
+                setStep(step + 1);
+            }
+        }
     };
     const handleBack = () => {
-        if (step > 0)
-            setStep(step - 1);
+        if (step > 0) {
+            // Skip Spells step backwards
+            if (step === 7 && !hasSpellsAtLevel1(selectedClass?.name || '')) {
+                setStep(step - 2);
+            }
+            else {
+                setStep(step - 1);
+            }
+        }
     };
     const handleFinish = () => {
         if (!selectedRace || !selectedClass || !selectedBackground)
@@ -79,10 +96,13 @@ const CharacterCreator = ({ onComplete, onCancel }) => {
             characterClass: selectedClass,
             background: selectedBackground,
             abilityScores: abilities,
-            skillProficiencies: getFinalSkills()
+            skillProficiencies: getFinalSkills(),
+            selectedCantrips,
+            selectedSpells
         });
         onComplete(newState);
     };
+    const isSpellsStep = step === 6;
     const rollStats = () => {
         // Simple 4d6 drop lowest generator
         const roll = () => {
@@ -163,6 +183,20 @@ const CharacterCreator = ({ onComplete, onCancel }) => {
     const getFinalSkills = () => {
         return Array.from(new Set([...getAutoSkills(), ...selectedSkills]));
     };
+    const hasSpellsAtLevel1 = (className) => {
+        return ['Wizard', 'Sorcerer', 'Warlock', 'Bard', 'Cleric', 'Druid'].includes(className);
+    };
+    const getSpellLimits = (className) => {
+        const limits = {
+            'Wizard': { cantrips: 3, spells: 6 },
+            'Sorcerer': { cantrips: 4, spells: 2 },
+            'Warlock': { cantrips: 2, spells: 2 },
+            'Bard': { cantrips: 2, spells: 4 },
+            'Cleric': { cantrips: 3, spells: 0 },
+            'Druid': { cantrips: 2, spells: 0 }
+        };
+        return limits[className] || { cantrips: 0, spells: 0 };
+    };
     if (loading)
         return _jsx("div", { className: styles.overlay, children: _jsx("div", { className: styles.loader, children: "Opening the Rulebooks..." }) });
     const renderStepContent = () => {
@@ -202,13 +236,31 @@ const CharacterCreator = ({ onComplete, onCancel }) => {
                                             ALL_SKILLS.filter(s => !autoSkills.includes(s)).map(s => (_jsx("button", { className: `${styles.skillBtn} ${selectedSkills.includes(s) ? styles.selected : ''}`, onClick: () => toggleSkill(s), disabled: !selectedSkills.includes(s) && selectedSkills.length >= totalChoicesNeeded, children: _jsx(SkillLink, { skillName: s, inheritColor: selectedSkills.includes(s) }) }, s)))) : (
                                             // Others pick from class list
                                             classOptions.map(s => (_jsx("button", { className: `${styles.skillBtn} ${selectedSkills.includes(s) ? styles.selected : ''}`, onClick: () => toggleSkill(s), disabled: !selectedSkills.includes(s) && selectedSkills.length >= totalChoicesNeeded, children: _jsx(SkillLink, { skillName: s, inheritColor: selectedSkills.includes(s) }) }, s)))) })] })] }), _jsxs("div", { className: styles.detailsPanel, children: [_jsx("h3", { children: "About Skills" }), _jsxs("div", { className: styles.detailsContent, children: [_jsxs("div", { className: styles.detailItem, children: [_jsx("div", { className: styles.detailName, children: "What are Proficiencies?" }), _jsx("div", { className: styles.detailDesc, children: "Proficiency represents your training in a specific area. When you make an ability check with a proficient skill, you add your Proficiency Bonus (+2 at level 1) to the roll." })] }), _jsxs("div", { className: styles.detailItem, children: [_jsx("div", { className: styles.detailName, children: "Background Skills" }), _jsxs("div", { className: styles.detailDesc, children: ["Your background as a ", _jsx("strong", { children: selectedBackground?.name }), " provides specialized training from your past life."] })] }), _jsxs("div", { className: styles.detailItem, children: [_jsx("div", { className: styles.detailName, children: "Class Skills" }), _jsxs("div", { className: styles.detailDesc, children: ["Your life as a ", _jsx("strong", { children: selectedClass?.name }), " has taught you specific skills necessary for survival and excellence in your field."] })] })] })] })] }));
-            case 6: // Review
+            case 6: // Spells
+                return (_jsx(SpellSelectionStep, { characterClass: selectedClass?.name || '', selectedCantrips: selectedCantrips, selectedSpells: selectedSpells, onToggleCantrip: (spell) => {
+                        const limit = getSpellLimits(selectedClass?.name || '').cantrips;
+                        if (selectedCantrips.includes(spell)) {
+                            setSelectedCantrips(selectedCantrips.filter(s => s !== spell));
+                        }
+                        else if (selectedCantrips.length < limit) {
+                            setSelectedCantrips([...selectedCantrips, spell]);
+                        }
+                    }, onToggleSpell: (spell) => {
+                        const limit = getSpellLimits(selectedClass?.name || '').spells;
+                        if (selectedSpells.includes(spell)) {
+                            setSelectedSpells(selectedSpells.filter(s => s !== spell));
+                        }
+                        else if (selectedSpells.length < limit) {
+                            setSelectedSpells([...selectedSpells, spell]);
+                        }
+                    } }));
+            case 7: // Review
                 const finalSkills = getFinalSkills();
                 return (_jsxs("div", { className: styles.selectionLayout, children: [_jsxs("div", { className: styles.summaryScroll, children: [_jsx("h3", { children: "Review Character" }), _jsxs("div", { className: styles.reviewMain, children: [_jsxs("div", { className: styles.reviewIdentity, children: [_jsxs("p", { children: [_jsx("strong", { children: "Name:" }), " ", name || 'Traveler'] }), _jsxs("p", { children: [_jsx("strong", { children: "Race:" }), " ", selectedRace?.name] }), _jsxs("p", { children: [_jsx("strong", { children: "Class:" }), " ", selectedClass?.name] }), _jsxs("p", { children: [_jsx("strong", { children: "Background:" }), " ", selectedBackground?.name] })] }), _jsx("h4", { className: styles.reviewSubhead, children: "Final Stats" }), _jsx("div", { className: styles.statsSummary, children: Object.entries(abilities).map(([k, v]) => {
                                                 const total = getTotalStat(k);
                                                 const mod = Math.floor((total - 10) / 2);
                                                 return (_jsxs("div", { className: styles.reviewStat, children: [_jsx("span", { className: styles.reviewStatName, children: k }), _jsx("span", { className: styles.reviewStatVal, children: total }), _jsxs("span", { className: styles.reviewStatMod, children: ["(", mod >= 0 ? '+' : '', mod, ")"] })] }, k));
-                                            }) }), _jsx("h4", { className: styles.reviewSubhead, children: "Proficiencies" }), _jsx("div", { className: styles.skillBadges, children: finalSkills.sort().map(s => (_jsx("span", { className: styles.skillBadgeFinal, children: _jsx(SkillLink, { skillName: s }) }, s))) })] })] }), _jsxs("div", { className: styles.detailsPanel, children: [_jsx("h3", { children: "Detailed Summary" }), _jsxs("div", { className: styles.detailsContent, children: [_jsxs("div", { className: styles.summarySection, children: [_jsx("div", { className: styles.summarySectionTitle, children: "RACIAL TRAITS" }), selectedRace?.traits.map(t => (_jsxs("div", { className: styles.summaryItem, children: [_jsx("div", { className: styles.summaryItemName, children: t.name }), _jsx("div", { className: styles.summaryItemDesc, children: t.description })] }, t.name)))] }), _jsxs("div", { className: styles.summarySection, children: [_jsx("div", { className: styles.summarySectionTitle, children: "CLASS FEATURES" }), selectedClass?.allFeatures.filter(f => f.level === 1).map(f => (_jsxs("div", { className: styles.summaryItem, children: [_jsx("div", { className: styles.summaryItemName, children: f.name }), _jsx("div", { className: styles.summaryItemDesc, children: f.description })] }, f.name)))] }), _jsxs("div", { className: styles.summarySection, children: [_jsxs("div", { className: styles.summarySectionTitle, children: ["BACKGROUND: ", selectedBackground?.name] }), _jsxs("div", { className: styles.summaryItem, children: [_jsx("div", { className: styles.summaryItemName, children: selectedBackground?.feature.name }), _jsx("div", { className: styles.summaryItemDesc, children: selectedBackground?.feature.description })] }), _jsxs("div", { className: styles.summaryItem, children: [_jsx("div", { className: styles.summaryItemName, children: "Starting Gear" }), _jsx("div", { className: styles.summaryItemDesc, children: selectedBackground?.startingEquipment.map(e => `${e.quantity}x ${e.id}`).join(', ') })] })] })] })] })] }));
+                                            }) }), _jsx("h4", { className: styles.reviewSubhead, children: "Proficiencies" }), _jsx("div", { className: styles.skillBadges, children: finalSkills.sort().map(s => (_jsx("span", { className: styles.skillBadgeFinal, children: _jsx(SkillLink, { skillName: s }) }, s))) })] })] }), _jsxs("div", { className: styles.detailsPanel, children: [_jsx("h3", { children: "Detailed Summary" }), _jsxs("div", { className: styles.detailsContent, children: [_jsxs("div", { className: styles.summarySection, children: [_jsx("div", { className: styles.summarySectionTitle, children: "RACIAL TRAITS" }), selectedRace?.traits.map(t => (_jsxs("div", { className: styles.summaryItem, children: [_jsx("div", { className: styles.summaryItemName, children: t.name }), _jsx("div", { className: styles.summaryItemDesc, children: t.description })] }, t.name)))] }), _jsxs("div", { className: styles.summarySection, children: [_jsx("div", { className: styles.summarySectionTitle, children: "CLASS FEATURES" }), selectedClass?.allFeatures.filter(f => f.level === 1).map(f => (_jsxs("div", { className: styles.summaryItem, children: [_jsx("div", { className: styles.summaryItemName, children: f.name }), _jsx("div", { className: styles.summaryItemDesc, children: f.description })] }, f.name)))] }), _jsxs("div", { className: styles.summarySection, children: [_jsxs("div", { className: styles.summarySectionTitle, children: ["BACKGROUND: ", selectedBackground?.name] }), _jsxs("div", { className: styles.summaryItem, children: [_jsx("div", { className: styles.summaryItemName, children: selectedBackground?.feature.name }), _jsx("div", { className: styles.summaryItemDesc, children: selectedBackground?.feature.description })] }), _jsxs("div", { className: styles.summaryItem, children: [_jsx("div", { className: styles.summaryItemName, children: "Starting Gear" }), _jsx("div", { className: styles.summaryItemDesc, children: selectedBackground?.startingEquipment.map(e => `${e.quantity}x ${e.id}`).join(', ') })] })] }), hasSpellsAtLevel1(selectedClass?.name || '') && (_jsxs("div", { className: styles.summarySection, children: [_jsx("div", { className: styles.summarySectionTitle, children: "STARTING MAGIC" }), _jsxs("div", { className: styles.summaryItem, children: [_jsx("div", { className: styles.summaryItemName, children: "Cantrips" }), _jsx("div", { className: styles.summaryItemDesc, children: selectedCantrips.join(', ') || 'None' })] }), _jsxs("div", { className: styles.summaryItem, children: [_jsx("div", { className: styles.summaryItemName, children: "1st-Level Spells" }), _jsx("div", { className: styles.summaryItemDesc, children: selectedSpells.join(', ') || 'None' })] })] }))] })] })] }));
             default:
                 return null;
         }
@@ -226,6 +278,10 @@ const CharacterCreator = ({ onComplete, onCancel }) => {
             const classCount = selectedClass?.skillChoices.count || 0;
             const raceCount = getRaceSkillChoiceCount();
             return selectedSkills.length < (classCount + raceCount);
+        }
+        if (step === 6) { // Spells
+            const limits = getSpellLimits(selectedClass?.name || '');
+            return selectedCantrips.length < limits.cantrips || selectedSpells.length < limits.spells;
         }
         return false;
     };

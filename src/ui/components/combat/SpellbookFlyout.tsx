@@ -11,6 +11,25 @@ interface SpellbookFlyoutProps {
     onClose: () => void;
 }
 
+const SpellIcon: React.FC<{ spellName: string }> = ({ spellName }) => {
+    const [failed, setFailed] = React.useState(false);
+    const name = spellName.toLowerCase().replace(/ /g, '_');
+    const path = `/assets/spells/${name}.png`;
+
+    if (failed) return <div className={styles.iconPlaceholder}><Sparkles size={16} /></div>;
+
+    return (
+        <div className={styles.spellIconContainer}>
+            <img
+                src={path}
+                alt=""
+                className={styles.spellIcon}
+                onError={() => setFailed(true)}
+            />
+        </div>
+    );
+};
+
 export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
     spells,
     spellSlots = {},
@@ -72,13 +91,18 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
                             disabled={!canCast}
                             title={spell.description}
                         >
-                            <div className={styles.spellHeader}>
-                                <span className={styles.spellName}>{spell.name}</span>
-                                <span className={styles.spellSchool}>{spell.school}</span>
-                            </div>
-                            <div className={styles.spellMeta}>
-                                <span>{spell.time}</span>
-                                <span>{spell.range}</span>
+                            <div className={styles.spellMain}>
+                                <SpellIcon spellName={spell.name} />
+                                <div className={styles.spellContent}>
+                                    <div className={styles.spellHeader}>
+                                        <span className={styles.spellName}>{spell.name}</span>
+                                        <span className={styles.spellSchool}>{spell.school}</span>
+                                    </div>
+                                    <div className={styles.spellMeta}>
+                                        <span>{spell.time}</span>
+                                        <span>{spell.range}</span>
+                                    </div>
+                                </div>
                             </div>
                         </button>
                     );

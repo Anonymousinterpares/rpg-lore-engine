@@ -34,17 +34,31 @@
     {
       "level": 1,
       "name": "Fighting Style",
-      "description": "You adopt a particular style of fighting as your specialty."
+      "description": "You adopt a particular style of fighting as your specialty.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     },
     {
       "level": 1,
       "name": "Second Wind",
-      "description": "You have a limited well of stamina that you can draw on to protect yourself from harm."
+      "description": "You have a limited well of stamina that you can draw on to protect yourself from harm.",
+      "actionCost": "BONUS_ACTION",
+      "usage": {
+        "type": "SHORT_REST",
+        "limit": 1
+      }
     },
     {
       "level": 2,
       "name": "Action Surge",
-      "description": "You can push yourself beyond your normal limits for a moment."
+      "description": "You can push yourself beyond your normal limits for a moment.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "SHORT_REST",
+        "limit": 1
+      }
     }
   ],
   "progression": [
