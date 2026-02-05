@@ -31,5 +31,6 @@ export const SpellSchema = z.object({
         effect: z.string() // e.g., "half", "none"
     }).optional(),
     ritual: z.boolean().default(false),
+    classes: z.array(z.string()).default([]),
     tags: z.array(z.string()).default([])
 });

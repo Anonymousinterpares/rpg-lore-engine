@@ -10,5 +10,15 @@
   },
   "duration": "Instantaneous",
   "concentration": false,
-  "description": "You touch a living creature that has 0 hit points. The creature becomes stable. This spell has no effect on undead or constructs."
+  "description": "You touch a living creature that has 0 hit points. The creature becomes stable. This spell has no effect on undead or constructs.",
+  "classes": [
+    "Wizard",
+    "Cleric",
+    "Druid",
+    "Paladin",
+    "Bard",
+    "Sorcerer",
+    "Warlock",
+    "Ranger"
+  ]
 }

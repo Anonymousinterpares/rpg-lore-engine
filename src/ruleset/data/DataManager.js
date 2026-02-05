@@ -94,6 +94,7 @@ export class DataManager {
         return undefined;
     }
     static spells = {};
+    static spellLookup = {};
     static async loadSpells() {
         if (Object.keys(this.spells).length > 0)
             return;
@@ -103,12 +104,12 @@ export class DataManager {
             const spell = mod.default || mod;
             if (spell.name) {
                 this.spells[spell.name] = spell;
-                this.spells[spell.name.toLowerCase()] = spell;
+                this.spellLookup[spell.name.toLowerCase()] = spell;
             }
         }
     }
     static getSpell(name) {
-        return this.spells[name] || this.spells[name.toLowerCase()];
+        return this.spells[name] || this.spellLookup[name.toLowerCase()];
     }
     static getSpells() {
         return Object.values(this.spells);

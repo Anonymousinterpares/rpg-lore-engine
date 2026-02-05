@@ -11,5 +11,15 @@
   },
   "duration": "1 hour",
   "concentration": false,
-  "description": "For the duration of the spell, you see invisible creatures and objects as if they were visible, and you can see through Ethereal. The ethereal objects and creatures appear ghostly translucent."
+  "description": "For the duration of the spell, you see invisible creatures and objects as if they were visible, and you can see through Ethereal. The ethereal objects and creatures appear ghostly translucent.",
+  "classes": [
+    "Wizard",
+    "Cleric",
+    "Druid",
+    "Paladin",
+    "Bard",
+    "Sorcerer",
+    "Warlock",
+    "Ranger"
+  ]
 }

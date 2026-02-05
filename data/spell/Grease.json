@@ -11,5 +11,15 @@
   },
   "duration": "1 minute",
   "concentration": false,
-  "description": "Slick grease covers the ground in a 10-foot square centered on a point within range and turns it into difficult terrain for the duration.\nWhen the grease appears, each creature standing in its area must succeed on a dexterity saving throw or fall prone. A creature that enters the area or ends its turn there must also succeed on a dexterity saving throw or fall prone."
+  "description": "Slick grease covers the ground in a 10-foot square centered on a point within range and turns it into difficult terrain for the duration.\nWhen the grease appears, each creature standing in its area must succeed on a dexterity saving throw or fall prone. A creature that enters the area or ends its turn there must also succeed on a dexterity saving throw or fall prone.",
+  "classes": [
+    "Wizard",
+    "Cleric",
+    "Druid",
+    "Paladin",
+    "Bard",
+    "Sorcerer",
+    "Warlock",
+    "Ranger"
+  ]
 }

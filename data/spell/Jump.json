@@ -11,5 +11,15 @@
   },
   "duration": "1 minute",
   "concentration": false,
-  "description": "You touch a creature. The creature's jump distance is tripled until the spell ends."
+  "description": "You touch a creature. The creature's jump distance is tripled until the spell ends.",
+  "classes": [
+    "Wizard",
+    "Cleric",
+    "Druid",
+    "Paladin",
+    "Bard",
+    "Sorcerer",
+    "Warlock",
+    "Ranger"
+  ]
 }

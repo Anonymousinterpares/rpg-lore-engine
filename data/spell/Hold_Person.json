@@ -11,5 +11,15 @@
   },
   "duration": "Up to 1 minute",
   "concentration": true,
-  "description": "Choose a humanoid that you can see within range. The target must succeed on a wisdom saving throw or be paralyzed for the duration. At the end of each of its turns, the target can make another wisdom saving throw. On a success, the spell ends on the target."
+  "description": "Choose a humanoid that you can see within range. The target must succeed on a wisdom saving throw or be paralyzed for the duration. At the end of each of its turns, the target can make another wisdom saving throw. On a success, the spell ends on the target.",
+  "classes": [
+    "Wizard",
+    "Cleric",
+    "Druid",
+    "Paladin",
+    "Bard",
+    "Sorcerer",
+    "Warlock",
+    "Ranger"
+  ]
 }

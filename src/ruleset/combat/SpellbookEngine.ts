@@ -46,14 +46,52 @@ export class SpellbookEngine {
     }
 
     /**
+     * Calculates the maximum number of spells a character can prepare.
+     * Formula: max(1, AbilityModifier + Level)
+     */
+    public static getMaxPreparedCount(pc: PlayerCharacter): number {
+        // Casting abilities by class
+        const castingAbilities: Record<string, string> = {
+            'Wizard': 'INT',
+            'Cleric': 'WIS',
+            'Druid': 'WIS',
+            'Paladin': 'CHA',
+            'Bard': 'CHA',
+            'Sorcerer': 'CHA',
+            'Warlock': 'CHA',
+            'Ranger': 'WIS'
+        };
+
+        const ability = castingAbilities[pc.class];
+        if (!ability) return 0; // Not a preparation-based caster or non-caster
+
+        const stats = pc.stats as Record<string, number>;
+        const score = stats[ability] || 10;
+        const mod = Math.floor((score - 10) / 2);
+
+        return Math.max(1, mod + pc.level);
+    }
+
+    /**
      * Prepares spells for the day.
      */
-    public static prepareSpells(pc: PlayerCharacter, spellNames: string[]): string {
-        // Logic for max prepared spells based on class/level/stat
-        // Simplified for now: allow any from known/spellbook
-        pc.preparedSpells = spellNames.filter(name =>
-            pc.knownSpells.includes(name) || pc.spellbook.includes(name)
+    public static prepareSpells(pc: PlayerCharacter, spellNames: string[]): { success: boolean, message: string } {
+        const max = this.getMaxPreparedCount(pc);
+
+        if (spellNames.length > max) {
+            return { success: false, message: `Too many spells! You can only prepare ${max}.` };
+        }
+
+        // Validate all spells are known or in spellbook
+        const invalid = spellNames.filter(name =>
+            !pc.knownSpells.includes(name) && !pc.spellbook.includes(name)
         );
-        return `Prepared ${pc.preparedSpells.length} spells.`;
+
+        if (invalid.length > 0) {
+            return { success: false, message: `You don't know: ${invalid.join(', ')}` };
+        }
+
+        pc.preparedSpells = [...spellNames];
+        return { success: true, message: `Prepared ${pc.preparedSpells.length} spells.` };
     }
 }

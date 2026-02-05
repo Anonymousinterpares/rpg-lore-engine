@@ -11,10 +11,11 @@ import CharacterCreator from './components/creation/CharacterCreator';
 import Codex from './components/codex/Codex';
 import CharacterSheet from './components/character/CharacterSheet';
 import BookModal from './components/book/BookModal';
+import SpellPreparationPanel from './components/book/SpellPreparationPanel';
 import WorldMapPage from './components/book/WorldMapPage';
 import QuestsPage from './components/book/QuestsPage';
 import { BookPageData } from './context/BookContext';
-import { Book, User } from 'lucide-react';
+import { Book, Sparkles } from 'lucide-react';
 
 const App: React.FC = () => {
     const { state, isActive, startGame, endGame } = useGameState();
@@ -135,6 +136,12 @@ const App: React.FC = () => {
                     isPage={true}
                 />
             ),
+            permanent: true
+        },
+        {
+            id: 'spellbook',
+            label: 'Spellbook',
+            content: <SpellPreparationPanel />,
             permanent: true
         }
     ];

@@ -12,6 +12,7 @@ import CharacterCreator from './components/creation/CharacterCreator';
 import Codex from './components/codex/Codex';
 import CharacterSheet from './components/character/CharacterSheet';
 import BookModal from './components/book/BookModal';
+import SpellPreparationPanel from './components/book/SpellPreparationPanel';
 import WorldMapPage from './components/book/WorldMapPage';
 import QuestsPage from './components/book/QuestsPage';
 import { Book } from 'lucide-react';
@@ -113,6 +114,12 @@ const App = () => {
             id: 'settings',
             label: 'Settings',
             content: (_jsx(SettingsPanel, { onClose: () => setBookOpen(false), onSave: handleSettingsSave, initialSettings: defaultSettings, isPage: true })),
+            permanent: true
+        },
+        {
+            id: 'spellbook',
+            label: 'Spellbook',
+            content: _jsx(SpellPreparationPanel, {}),
             permanent: true
         }
     ];

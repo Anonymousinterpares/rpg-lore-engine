@@ -111,6 +111,7 @@ export class DataManager {
     }
 
     private static spells: Record<string, Spell> = {};
+    private static spellLookup: Record<string, Spell> = {};
 
     public static async loadSpells() {
         if (Object.keys(this.spells).length > 0) return;
@@ -120,13 +121,13 @@ export class DataManager {
             const spell = mod.default || mod;
             if (spell.name) {
                 this.spells[spell.name] = spell;
-                this.spells[spell.name.toLowerCase()] = spell;
+                this.spellLookup[spell.name.toLowerCase()] = spell;
             }
         }
     }
 
     public static getSpell(name: string): Spell | undefined {
-        return this.spells[name] || this.spells[name.toLowerCase()];
+        return this.spells[name] || this.spellLookup[name.toLowerCase()];
     }
 
     public static getSpells(): Spell[] {
