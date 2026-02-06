@@ -32,15 +32,21 @@ const SpellSelectionStep: React.FC<SpellSelectionStepProps> = ({
 }) => {
     const [availableCantrips, setAvailableCantrips] = useState<Spell[]>([]);
     const [availableSpells, setAvailableSpells] = useState<Spell[]>([]);
-    const [hoveredSpell, setHoveredSpell] = useState<Spell | null>(null);
+    const [selectedDetailSpell, setSelectedDetailSpell] = useState<Spell | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         const load = async () => {
             await DataManager.loadSpells();
             const classSpells = DataManager.getSpellsByClass(characterClass, 1);
-            setAvailableCantrips(classSpells.filter(s => s.level === 0));
-            setAvailableSpells(classSpells.filter(s => s.level === 1));
+            const cantrips = classSpells.filter(s => s.level === 0);
+            const spells = classSpells.filter(s => s.level === 1);
+            setAvailableCantrips(cantrips);
+            setAvailableSpells(spells);
+
+            // Auto-select first spell if none selected for details
+            if (cantrips.length > 0) setSelectedDetailSpell(cantrips[0]);
+            else if (spells.length > 0) setSelectedDetailSpell(spells[0]);
         };
         load();
     }, [characterClass]);
@@ -81,16 +87,18 @@ const SpellSelectionStep: React.FC<SpellSelectionStepProps> = ({
                             {filteredCantrips.map(spell => (
                                 <div
                                     key={spell.name}
-                                    className={`${styles.spellCard} ${selectedCantrips.includes(spell.name) ? styles.selected : ''} ${!selectedCantrips.includes(spell.name) && isCantripLimitReached ? styles.disabled : ''}`}
-                                    onClick={() => onToggleCantrip(spell.name)}
-                                    onMouseEnter={() => setHoveredSpell(spell)}
+                                    className={`${styles.spellCard} ${selectedCantrips.includes(spell.name) ? styles.selected : ''} ${selectedDetailSpell?.name === spell.name ? styles.detailSelected : ''} ${!selectedCantrips.includes(spell.name) && isCantripLimitReached ? styles.disabled : ''}`}
+                                    onClick={() => {
+                                        onToggleCantrip(spell.name);
+                                        setSelectedDetailSpell(spell);
+                                    }}
                                 >
                                     <div className={styles.spellMeta}>
                                         <span className={styles.spellName}>{spell.name}</span>
                                         <span className={styles.spellInfo}>{spell.school}</span>
                                     </div>
                                     <img
-                                        src={`/assets/spells/${spell.name.toLowerCase().replace(/ /g, '_')}.png`}
+                                        src={`/assets/spells/${spell.name.trim().toLowerCase().replace(/ /g, '_')}.png`}
                                         alt=""
                                         className={styles.spellIcon}
                                         onError={(e) => (e.currentTarget.style.display = 'none')}
@@ -107,16 +115,18 @@ const SpellSelectionStep: React.FC<SpellSelectionStepProps> = ({
                                 {filteredSpells.map(spell => (
                                     <div
                                         key={spell.name}
-                                        className={`${styles.spellCard} ${selectedSpells.includes(spell.name) ? styles.selected : ''} ${!selectedSpells.includes(spell.name) && isSpellLimitReached ? styles.disabled : ''}`}
-                                        onClick={() => onToggleSpell(spell.name)}
-                                        onMouseEnter={() => setHoveredSpell(spell)}
+                                        className={`${styles.spellCard} ${selectedSpells.includes(spell.name) ? styles.selected : ''} ${selectedDetailSpell?.name === spell.name ? styles.detailSelected : ''} ${!selectedSpells.includes(spell.name) && isSpellLimitReached ? styles.disabled : ''}`}
+                                        onClick={() => {
+                                            onToggleSpell(spell.name);
+                                            setSelectedDetailSpell(spell);
+                                        }}
                                     >
                                         <div className={styles.spellMeta}>
                                             <span className={styles.spellName}>{spell.name}</span>
                                             <span className={styles.spellInfo}>{spell.school}</span>
                                         </div>
                                         <img
-                                            src={`/assets/spells/${spell.name.toLowerCase().replace(/ /g, '_')}.png`}
+                                            src={`/assets/spells/${spell.name.trim().toLowerCase().replace(/ /g, '_')}.png`}
                                             alt=""
                                             className={styles.spellIcon}
                                             onError={(e) => (e.currentTarget.style.display = 'none')}
@@ -129,57 +139,62 @@ const SpellSelectionStep: React.FC<SpellSelectionStepProps> = ({
                 </div>
 
                 <div className={styles.detailsPanel}>
-                    {hoveredSpell ? (
+                    {selectedDetailSpell ? (
                         <>
                             <div className={styles.detailTitle}>
-                                <h4>{hoveredSpell.name}</h4>
-                                <img
-                                    src={`/assets/spells/${hoveredSpell.name.toLowerCase().replace(/ /g, '_')}.png`}
-                                    alt=""
-                                    className={styles.detailIcon}
-                                    onError={(e) => (e.currentTarget.style.display = 'none')}
-                                />
+                                <h4>{selectedDetailSpell.name}</h4>
                             </div>
-                            <div className={styles.detailRow}>
-                                <span className={styles.detailLabel}>Level / School</span>
-                                <span className={styles.detailValue}>{hoveredSpell.level === 0 ? 'Cantrip' : `${hoveredSpell.level} Level`} {hoveredSpell.school}</span>
+
+                            <div className={styles.statsContainer}>
+                                <div className={styles.statsColumn}>
+                                    <div className={styles.detailRow}>
+                                        <span className={styles.detailLabel}>Level / School</span>
+                                        <span className={styles.detailValue}>{selectedDetailSpell.level === 0 ? 'Cantrip' : `${selectedDetailSpell.level} Level`} {selectedDetailSpell.school}</span>
+                                    </div>
+                                    <div className={styles.detailRow}>
+                                        <span className={styles.detailLabel}>Casting Time</span>
+                                        <span className={styles.detailValue}>{selectedDetailSpell.time}</span>
+                                    </div>
+                                    <div className={styles.detailRow}>
+                                        <span className={styles.detailLabel}>Range</span>
+                                        <span className={styles.detailValue}>{selectedDetailSpell.range}</span>
+                                    </div>
+                                    <div className={styles.detailRow}>
+                                        <span className={styles.detailLabel}>Components</span>
+                                        <span className={styles.detailValue}>
+                                            {[
+                                                selectedDetailSpell.components.v && 'V',
+                                                selectedDetailSpell.components.s && 'S',
+                                                selectedDetailSpell.components.m && `M (${selectedDetailSpell.components.m})`
+                                            ].filter(Boolean).join(', ')}
+                                        </span>
+                                    </div>
+                                    <div className={styles.detailRow}>
+                                        <span className={styles.detailLabel}>Duration</span>
+                                        <span className={styles.detailValue}>{selectedDetailSpell.duration}</span>
+                                    </div>
+                                </div>
+
+                                <div className={styles.imageColumn}>
+                                    <img
+                                        key={selectedDetailSpell.name}
+                                        src={`/assets/spells/${selectedDetailSpell.name.trim().toLowerCase().replace(/ /g, '_')}.png`}
+                                        alt={selectedDetailSpell.name}
+                                        className={styles.detailImage}
+                                        onError={(e) => {
+                                            e.currentTarget.style.display = 'none';
+                                        }}
+                                    />
+                                </div>
                             </div>
-                            <div className={styles.detailRow}>
-                                <span className={styles.detailLabel}>Casting Time</span>
-                                <span className={styles.detailValue}>{hoveredSpell.time}</span>
-                            </div>
-                            <div className={styles.detailRow}>
-                                <span className={styles.detailLabel}>Range</span>
-                                <span className={styles.detailValue}>{hoveredSpell.range}</span>
-                            </div>
-                            <div className={styles.detailRow}>
-                                <span className={styles.detailLabel}>Components</span>
-                                <span className={styles.detailValue}>
-                                    {[
-                                        hoveredSpell.components.v && 'V',
-                                        hoveredSpell.components.s && 'S',
-                                        hoveredSpell.components.m && `M (${hoveredSpell.components.m})`
-                                    ].filter(Boolean).join(', ')}
-                                </span>
-                            </div>
-                            <div className={styles.detailRow}>
-                                <span className={styles.detailLabel}>Duration</span>
-                                <span className={styles.detailValue}>{hoveredSpell.duration}</span>
-                            </div>
+
                             <div className={styles.detailDesc}>
-                                {hoveredSpell.description}
-                            </div>
-                            <div className={styles.largeIllustration}>
-                                <img
-                                    src={`/assets/spells/${hoveredSpell.name.toLowerCase().replace(/ /g, '_')}.png`}
-                                    alt=""
-                                    onError={(e) => (e.currentTarget.style.display = 'none')}
-                                />
+                                {selectedDetailSpell.description}
                             </div>
                         </>
                     ) : (
                         <div className={styles.nothingSelected}>
-                            Hover over a spell to see its details and properties.
+                            Select a spell to see its details and properties.
                         </div>
                     )}
                 </div>
