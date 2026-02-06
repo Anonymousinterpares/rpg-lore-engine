@@ -2,6 +2,7 @@ import { jsx as _jsx } from "react/jsx-runtime";
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { GameLoop } from '../../ruleset/combat/GameLoop';
 import { BrowserStorageProvider } from '../../ruleset/combat/BrowserStorageProvider';
+import { DataManager } from '../../ruleset/data/DataManager';
 const GameContext = createContext(undefined);
 export const GameProvider = ({ children }) => {
     const [engine, setEngine] = useState(null);
@@ -13,6 +14,7 @@ export const GameProvider = ({ children }) => {
         }
     }, [engine]);
     const startGame = useCallback((initialState) => {
+        DataManager.initialize();
         const newEngine = new GameLoop(initialState, '/', new BrowserStorageProvider());
         setEngine(newEngine);
         setState(initialState);

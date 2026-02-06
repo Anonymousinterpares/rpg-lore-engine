@@ -9,7 +9,19 @@ export const EngineCallSchema = z.object({
         'add_item',
         'trigger_trap',
         'modify_hp',
-        'level_up'
+        'level_up',
+        'start_combat',
+        'end_combat',
+        'skill_check',
+        'saving_throw',
+        'remove_item',
+        'modify_gold',
+        'discover_poi',
+        'update_quest',
+        'set_faction_standing',
+        'advance_time',
+        'spawn_npc',
+        'set_npc_disposition'
     ]),
     args: z.record(z.any())
 });

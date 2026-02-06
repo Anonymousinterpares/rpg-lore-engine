@@ -58,6 +58,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, onSave, initialS
             name: currentProfile.name,
             providerId,
             modelId,
+            basePrompt: currentProfile.basePrompt,
             temperature: currentProfile.temperature,
             maxTokens: currentProfile.maxTokens
         };

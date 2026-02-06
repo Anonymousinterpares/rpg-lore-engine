@@ -44,6 +44,7 @@ const SettingsPanel = ({ onClose, onSave, initialSettings, className = '', isPag
             name: currentProfile.name,
             providerId,
             modelId,
+            basePrompt: currentProfile.basePrompt,
             temperature: currentProfile.temperature,
             maxTokens: currentProfile.maxTokens
         };

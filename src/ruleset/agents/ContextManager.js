@@ -1,5 +1,6 @@
 import { BaseAgent } from './AgentSwarm';
 import { HistoryManager } from './HistoryManager';
+import { ContextBuilder } from './ContextBuilder';
 export class ScribeAgent extends BaseAgent {
     constructor() {
         super('Scribe', 'Summarizer');
@@ -16,20 +17,8 @@ export class ContextManager {
     /**
      * Constructs the full context for a Narrator call.
      */
-    getNarratorContext(pc, hex) {
-        return {
-            character: {
-                name: pc.name,
-                class: pc.class,
-                level: pc.level,
-                hp: pc.hp,
-                stats: pc.stats
-            },
-            location: hex.name || (hex.coordinates ? `Hex ${hex.coordinates.join(',')}` : 'Unknown Location'),
-            recentHistory: this.history.getRecent(10),
-            summary: this.currentSummary,
-            partyNames: pc.name // Could expand to include NPCs
-        };
+    getNarratorContext(state, hexManager) {
+        return ContextBuilder.build(state, hexManager, this.history.getRecent(10));
     }
     addEvent(role, content) {
         this.history.addMessage(role, content);
@@ -39,5 +28,8 @@ export class ContextManager {
     }
     getSummary() {
         return this.currentSummary;
+    }
+    getRecentHistory(n = 10) {
+        return this.history.getRecent(n);
     }
 }

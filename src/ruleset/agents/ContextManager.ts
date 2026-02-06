@@ -43,4 +43,8 @@ export class ContextManager {
     public getSummary(): string {
         return this.currentSummary;
     }
+
+    public getRecentHistory(n: number = 10): any[] {
+        return this.history.getRecent(n);
+    }
 }

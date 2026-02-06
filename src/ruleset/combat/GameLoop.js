@@ -9,6 +9,8 @@ import { WorldClockEngine } from './WorldClockEngine';
 import { StoryScribe } from './StoryScribe';
 import { EncounterDirector } from './EncounterDirector';
 import { Dice } from './Dice';
+import { DataManager } from '../data/DataManager';
+import { NarratorService } from '../agents/NarratorService';
 /**
  * The GameLoop is the central heart of the RPG engine.
  * It coordinates Intent, Logic, AI, and Persistence.
@@ -74,14 +76,15 @@ export class GameLoop {
             this.initializeCombat(encounter);
             systemResponse = `[ENCOUNTER] ${encounter.name}: ${encounter.description}`;
         }
-        const narratorContext = this.contextManager.getNarratorContext(this.state.character, currentHex || {});
-        const narratorOutput = `[SIMULATED NARRATOR] You said: "${input}". 
-        Location: ${currentHex?.name || 'Unknown'}. The world reacts to your ${intent.type.toLowerCase()}...`;
+        const narratorResponse = await NarratorService.generate(this.state, this.hexMapManager, input, this.contextManager.getRecentHistory(10));
+        const narratorOutput = narratorResponse.narrative_output;
         // 3. State Update & Persistence Phase
         this.contextManager.addEvent('player', input);
         this.contextManager.addEvent('narrator', narratorOutput);
+        // Execute narrator suggested effects
+        this.applyNarratorEffects(narratorResponse);
         // Scribe processing (summarization)
-        await this.scribe.processTurn(this.state, this.contextManager.getNarratorContext(this.state.character, {}).recentHistory);
+        await this.scribe.processTurn(this.state, this.contextManager.getRecentHistory(10));
         this.stateManager.saveGame(this.state);
         return systemResponse ? `${systemResponse}\n\n${narratorOutput}` : narratorOutput;
     }
@@ -373,5 +376,66 @@ export class GameLoop {
     }
     getState() {
         return this.state;
+    }
+    loadSession(saveId) {
+        const loaded = this.stateManager.loadGame(saveId);
+        if (loaded) {
+            this.state = loaded;
+            NarratorService.setFirstTurnAfterLoad(true);
+            return true;
+        }
+        return false;
+    }
+    applyNarratorEffects(output) {
+        if (!output.engine_calls)
+            return;
+        for (const call of output.engine_calls) {
+            console.log(`[NarratorService] Executing Engine Call: ${call.function}`, call.args);
+            switch (call.function) {
+                case 'add_xp':
+                    this.state.character.xp += (call.args.amount || 0);
+                    break;
+                case 'add_item':
+                    const itemData = DataManager.getItem(call.args.itemId);
+                    if (itemData) {
+                        this.state.character.inventory.items.push({
+                            id: call.args.itemId,
+                            name: itemData.name,
+                            type: itemData.type,
+                            weight: itemData.weight,
+                            instanceId: Dice.roll('1d1000').toString(),
+                            quantity: call.args.quantity || 1,
+                            equipped: false
+                        });
+                    }
+                    break;
+                case 'modify_hp':
+                    const amount = call.args.amount || 0;
+                    this.state.character.hp.current = Math.min(this.state.character.hp.max, Math.max(0, this.state.character.hp.current + amount));
+                    break;
+                case 'set_condition':
+                    if (call.args.condition && !this.state.character.conditions.includes(call.args.condition)) {
+                        this.state.character.conditions.push(call.args.condition);
+                    }
+                    break;
+                case 'discover_poi':
+                    const currentHex = this.hexMapManager.getHex(this.state.location.hexId);
+                    if (currentHex && call.args.poiId) {
+                        const poi = currentHex.interest_points.find(p => p.id === call.args.poiId);
+                        if (poi)
+                            poi.discovered = true;
+                    }
+                    break;
+                case 'start_combat':
+                    const manualEncounter = {
+                        name: call.args.encounterName || 'Sudden Skirmish',
+                        description: call.args.description || 'Hostilities break out!',
+                        monsters: call.args.monsters || ['Goblin'],
+                        difficulty: call.args.difficulty || this.state.character.level
+                    };
+                    this.initializeCombat(manualEncounter);
+                    break;
+            }
+        }
     }
 }

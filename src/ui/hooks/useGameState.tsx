@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { GameLoop } from '../../ruleset/combat/GameLoop';
 import { GameState } from '../../ruleset/combat/GameStateManager';
 import { BrowserStorageProvider } from '../../ruleset/combat/BrowserStorageProvider';
+import { DataManager } from '../../ruleset/data/DataManager';
 
 interface GameContextType {
     state: GameState | null;
@@ -27,6 +28,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [engine]);
 
     const startGame = useCallback((initialState: GameState) => {
+        DataManager.initialize();
         const newEngine = new GameLoop(initialState, '/', new BrowserStorageProvider());
         setEngine(newEngine);
         setState(initialState);

@@ -94,4 +94,95 @@ export class LLMClient {
             return { success: false, message: `Network Error: ${e.message}` };
         }
     }
+
+    /**
+     * Generates a completion from the LLM provider.
+     */
+    public static async generateCompletion(
+        provider: LLMProviderConfig,
+        model: ModelConfig,
+        options: {
+            systemPrompt: string;
+            userMessage: string;
+            temperature?: number;
+            maxTokens?: number;
+            responseFormat?: 'json' | 'text';
+        }
+    ): Promise<string> {
+        const apiKey = await this.getApiKey(provider);
+        if (!apiKey) throw new Error(`API key for ${provider.id} not found.`);
+
+        let url = provider.baseUrl;
+        let headers: any = { 'Content-Type': 'application/json' };
+        let body: any = {};
+
+        const { systemPrompt, userMessage, temperature = 0.7, maxTokens = 1000, responseFormat = 'text' } = options;
+
+        if (provider.id === 'gemini') {
+            url = `${provider.baseUrl}/models/${model.apiName}:generateContent?key=${apiKey}`;
+            body = {
+                system_instruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+                contents: [{ role: 'user', parts: [{ text: userMessage }] }],
+                generationConfig: {
+                    temperature,
+                    maxOutputTokens: maxTokens,
+                }
+            };
+            if (responseFormat === 'json') {
+                body.generationConfig.responseMimeType = 'application/json';
+            }
+        } else if (provider.id === 'anthropic') {
+            url = `${provider.baseUrl}/messages`;
+            headers['x-api-key'] = apiKey;
+            headers['anthropic-version'] = '2023-06-01';
+            body = {
+                model: model.apiName,
+                system: systemPrompt,
+                messages: [{ role: 'user', content: userMessage }],
+                max_tokens: maxTokens,
+                temperature
+            };
+        } else {
+            // OpenAI and OpenRouter (OpenAI compatible)
+            url = provider.id === 'openai' ? `${provider.baseUrl}/chat/completions` : provider.baseUrl;
+            headers['Authorization'] = `Bearer ${apiKey}`;
+            body = {
+                model: model.apiName,
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: userMessage }
+                ],
+                temperature,
+                max_tokens: maxTokens
+            };
+            if (responseFormat === 'json') {
+                body.response_format = { type: 'json_object' };
+            }
+        }
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(body)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(`LLM API Error (${response.status}): ${errorData.error?.message || response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        // Extract text based on provider
+        if (provider.id === 'gemini') {
+            return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        } else if (provider.id === 'anthropic') {
+            return data.content?.[0]?.text || '';
+        } else {
+            // OpenAI / OpenRouter
+            return data.choices?.[0]?.message?.content || '';
+        }
+    }
 }

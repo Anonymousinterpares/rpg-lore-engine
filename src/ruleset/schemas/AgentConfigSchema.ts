@@ -14,6 +14,7 @@ export const AgentProfileSchema = z.object({
     name: z.string(),
     providerId: z.string(),
     modelId: z.string(),
+    basePrompt: z.string().default(''),
     temperature: z.number().min(0).max(2).default(0.7),
     maxTokens: z.number().min(1).max(32000).default(1000)
 });
