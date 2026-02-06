@@ -8,6 +8,7 @@ interface GameContextType {
     state: GameState | null;
     engine: GameLoop | null;
     isActive: boolean;
+    isLoading: boolean;
     startGame: (initialState: GameState) => void;
     endGame: () => void;
     processCommand: (command: string) => Promise<void>;
@@ -20,6 +21,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [engine, setEngine] = useState<GameLoop | null>(null);
     const [state, setState] = useState<GameState | null>(null);
     const [isActive, setIsActive] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const updateState = useCallback(() => {
         if (engine) {
@@ -37,6 +39,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Auto-trigger opening narration for new games (turn 0)
         if (initialState.worldTime.totalTurns === 0 && initialState.conversationHistory.length === 0) {
             console.log('[GameProvider] New game detected, triggering opening narration...');
+            setIsLoading(true);
             // Use setTimeout to ensure state is set before processing
             setTimeout(async () => {
                 try {
@@ -44,6 +47,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     setState({ ...newEngine.getState() });
                 } catch (e) {
                     console.error('[GameProvider] Failed to generate opening narration:', e);
+                } finally {
+                    setIsLoading(false);
                 }
             }, 100);
         }
@@ -53,12 +58,18 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsActive(false);
         setEngine(null);
         setState(null);
+        setIsLoading(false);
     }, []);
 
     const processCommand = useCallback(async (command: string) => {
         if (!engine) return;
-        await engine.processTurn(command);
-        updateState();
+        setIsLoading(true);
+        try {
+            await engine.processTurn(command);
+            updateState();
+        } finally {
+            setIsLoading(false);
+        }
     }, [engine, updateState]);
 
     useEffect(() => {
@@ -72,6 +83,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
             state,
             engine,
             isActive,
+            isLoading,
             startGame,
             endGame,
             processCommand,

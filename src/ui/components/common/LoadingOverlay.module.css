@@ -1,0 +1,103 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(59, 42, 42, 0.95) 0%, rgba(26, 20, 20, 0.98) 55%, rgba(11, 8, 8, 0.99) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+}
+
+.content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.glowRing {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212, 147, 82, 0.15) 0%, transparent 70%);
+    filter: blur(30px);
+    pointer-events: none;
+    animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+}
+
+.gear {
+    animation: spin 60s linear infinite;
+    transform-origin: 50% 50%;
+    filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.8));
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.gearTeeth {
+    fill: #8a5831;
+    stroke: #2b1710;
+    stroke-width: 1.2;
+}
+
+.loadingText {
+    font-family: var(--font-narrative, 'Cinzel', serif);
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #d49352;
+    text-shadow:
+        0 0 10px rgba(212, 147, 82, 0.5),
+        0 2px 4px rgba(0, 0, 0, 0.8);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    animation: textGlow 2s ease-in-out infinite;
+}
+
+@keyframes textGlow {
+
+    0%,
+    100% {
+        text-shadow:
+            0 0 10px rgba(212, 147, 82, 0.5),
+            0 2px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    50% {
+        text-shadow:
+            0 0 20px rgba(212, 147, 82, 0.8),
+            0 0 40px rgba(212, 147, 82, 0.4),
+            0 2px 4px rgba(0, 0, 0, 0.8);
+    }
+}

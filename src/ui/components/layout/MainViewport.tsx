@@ -6,6 +6,7 @@ import InitiativeTracker from '../combat/InitiativeTracker';
 import CombatLog from '../combat/CombatLog';
 import DiceRoller from '../combat/DiceRoller';
 import CombatActionBar from '../combat/CombatActionBar';
+import LoadingOverlay from '../common/LoadingOverlay';
 
 interface MainViewportProps {
     className?: string;
@@ -14,7 +15,7 @@ interface MainViewportProps {
 import { useGameState } from '../../hooks/useGameState';
 
 const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
-    const { state, processCommand } = useGameState();
+    const { state, processCommand, isLoading } = useGameState();
 
     const isCombat = state?.mode === 'COMBAT';
 
@@ -44,6 +45,9 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
 
     return (
         <main className={`${styles.viewport} ${className} ${isCombat ? styles.combatMode : ''}`}>
+            {/* Loading Overlay */}
+            {isLoading && <LoadingOverlay message="Loading..." />}
+
             {isCombat && state.combat && (
                 <div className={styles.combatTopBar}>
                     <InitiativeTracker

@@ -8,6 +8,7 @@ export const GameProvider = ({ children }) => {
     const [engine, setEngine] = useState(null);
     const [state, setState] = useState(null);
     const [isActive, setIsActive] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const updateState = useCallback(() => {
         if (engine) {
             setState({ ...engine.getState() });
@@ -22,6 +23,7 @@ export const GameProvider = ({ children }) => {
         // Auto-trigger opening narration for new games (turn 0)
         if (initialState.worldTime.totalTurns === 0 && initialState.conversationHistory.length === 0) {
             console.log('[GameProvider] New game detected, triggering opening narration...');
+            setIsLoading(true);
             // Use setTimeout to ensure state is set before processing
             setTimeout(async () => {
                 try {
@@ -31,6 +33,9 @@ export const GameProvider = ({ children }) => {
                 catch (e) {
                     console.error('[GameProvider] Failed to generate opening narration:', e);
                 }
+                finally {
+                    setIsLoading(false);
+                }
             }, 100);
         }
     }, []);
@@ -38,12 +43,19 @@ export const GameProvider = ({ children }) => {
         setIsActive(false);
         setEngine(null);
         setState(null);
+        setIsLoading(false);
     }, []);
     const processCommand = useCallback(async (command) => {
         if (!engine)
             return;
-        await engine.processTurn(command);
-        updateState();
+        setIsLoading(true);
+        try {
+            await engine.processTurn(command);
+            updateState();
+        }
+        finally {
+            setIsLoading(false);
+        }
     }, [engine, updateState]);
     useEffect(() => {
         if (isActive && engine) {
@@ -54,6 +66,7 @@ export const GameProvider = ({ children }) => {
             state,
             engine,
             isActive,
+            isLoading,
             startGame,
             endGame,
             processCommand,
