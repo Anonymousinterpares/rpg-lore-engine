@@ -269,6 +269,17 @@
     font-size: 2.5rem;
     margin: 0 0 var(--spacing-md) 0;
     color: var(--parchment-text);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.spellTitleIcon {
+    height: 4.5rem;
+    width: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(139, 115, 85, 0.3);
 }
 
 .divider {

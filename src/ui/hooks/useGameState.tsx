@@ -63,12 +63,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const processCommand = useCallback(async (command: string) => {
         if (!engine) return;
-        setIsLoading(true);
         try {
             await engine.processTurn(command);
             updateState();
         } finally {
-            setIsLoading(false);
+            // No global loading screen for regular commands
         }
     }, [engine, updateState]);
 

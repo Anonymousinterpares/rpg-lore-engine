@@ -83,15 +83,14 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
             </div>
 
             <div className={styles.spellGrid}>
-                {filteredSpells.map(spell => {
+                {filteredSpells.map((spell, index) => {
                     const canCast = spell.level === 0 || (spellSlots[spell.level]?.current || 0) > 0;
 
                     return (
-                        <button
-                            key={spell.name}
-                            className={`${styles.spellItem} ${parchmentStyles.button}`}
+                        <div
+                            key={`${spell.name}-${index}`}
+                            className={`${styles.spellItem} ${parchmentStyles.button} ${!canCast ? styles.disabled : ''}`}
                             onClick={() => canCast && onCast(spell)}
-                            disabled={!canCast}
                             title={spell.description}
                         >
                             <div className={styles.spellMain}>
@@ -121,7 +120,7 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
                                     </div>
                                 </div>
                             </div>
-                        </button>
+                        </div>
                     );
                 })}
                 {filteredSpells.length === 0 && (

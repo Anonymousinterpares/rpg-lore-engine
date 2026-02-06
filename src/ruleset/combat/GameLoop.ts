@@ -410,7 +410,7 @@ export class GameLoop {
             currentTurnIndex: 0,
             combatants: combatants,
             logs: [{
-                id: `log-${Date.now()}`,
+                id: `log-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
                 type: 'info',
                 message: `Combat started! ${combatants[0].name} takes the first turn.`,
                 turn: 0
@@ -431,7 +431,7 @@ export class GameLoop {
         }
 
         this.state.combat.logs.push({
-            id: `log-${Date.now()}`,
+            id: `log-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
             type: 'info',
             message: message,
             turn: this.state.combat.round
@@ -452,7 +452,7 @@ export class GameLoop {
 
         const nextCombatant = this.state.combat.combatants[this.state.combat.currentTurnIndex];
         this.state.combat.logs.push({
-            id: `log-${Date.now()}`,
+            id: `log-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
             type: 'info',
             message: `Next turn: ${nextCombatant.name}`,
             turn: this.state.combat.round

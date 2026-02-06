@@ -85,8 +85,16 @@ const SpellSelectionStep: React.FC<SpellSelectionStepProps> = ({
                                     onClick={() => onToggleCantrip(spell.name)}
                                     onMouseEnter={() => setHoveredSpell(spell)}
                                 >
-                                    <span className={styles.spellName}>{spell.name}</span>
-                                    <span className={styles.spellInfo}>{spell.school}</span>
+                                    <div className={styles.spellMeta}>
+                                        <span className={styles.spellName}>{spell.name}</span>
+                                        <span className={styles.spellInfo}>{spell.school}</span>
+                                    </div>
+                                    <img
+                                        src={`/assets/spells/${spell.name.toLowerCase().replace(/ /g, '_')}.png`}
+                                        alt=""
+                                        className={styles.spellIcon}
+                                        onError={(e) => (e.currentTarget.style.display = 'none')}
+                                    />
                                 </div>
                             ))}
                         </div>
@@ -103,8 +111,16 @@ const SpellSelectionStep: React.FC<SpellSelectionStepProps> = ({
                                         onClick={() => onToggleSpell(spell.name)}
                                         onMouseEnter={() => setHoveredSpell(spell)}
                                     >
-                                        <span className={styles.spellName}>{spell.name}</span>
-                                        <span className={styles.spellInfo}>{spell.school}</span>
+                                        <div className={styles.spellMeta}>
+                                            <span className={styles.spellName}>{spell.name}</span>
+                                            <span className={styles.spellInfo}>{spell.school}</span>
+                                        </div>
+                                        <img
+                                            src={`/assets/spells/${spell.name.toLowerCase().replace(/ /g, '_')}.png`}
+                                            alt=""
+                                            className={styles.spellIcon}
+                                            onError={(e) => (e.currentTarget.style.display = 'none')}
+                                        />
                                     </div>
                                 ))}
                             </div>
@@ -115,7 +131,15 @@ const SpellSelectionStep: React.FC<SpellSelectionStepProps> = ({
                 <div className={styles.detailsPanel}>
                     {hoveredSpell ? (
                         <>
-                            <h4>{hoveredSpell.name}</h4>
+                            <div className={styles.detailTitle}>
+                                <h4>{hoveredSpell.name}</h4>
+                                <img
+                                    src={`/assets/spells/${hoveredSpell.name.toLowerCase().replace(/ /g, '_')}.png`}
+                                    alt=""
+                                    className={styles.detailIcon}
+                                    onError={(e) => (e.currentTarget.style.display = 'none')}
+                                />
+                            </div>
                             <div className={styles.detailRow}>
                                 <span className={styles.detailLabel}>Level / School</span>
                                 <span className={styles.detailValue}>{hoveredSpell.level === 0 ? 'Cantrip' : `${hoveredSpell.level} Level`} {hoveredSpell.school}</span>

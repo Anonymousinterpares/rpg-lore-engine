@@ -111,20 +111,20 @@
 .spellItem {
     display: flex;
     flex-direction: column;
-    padding: var(--spacing-sm);
-    text-align: left;
+    padding: var(--spacing-md);
+    min-height: 80px;
     background: rgba(0, 0, 0, 0.03);
     border: 1px solid var(--parchment-border);
     transition: all 0.2s;
     cursor: pointer;
 }
 
-.spellItem:hover:not(:disabled) {
+.spellItem:hover:not(.disabled) {
     background: rgba(201, 162, 39, 0.1);
     border-color: var(--parchment-accent);
 }
 
-.spellItem:disabled {
+.spellItem.disabled {
     opacity: 0.5;
     filter: grayscale(1);
     cursor: not-allowed;
@@ -145,8 +145,8 @@
 }
 
 .spellIconContainer {
-    width: 32px;
-    height: 32px;
+    width: 48px;
+    height: 48px;
     border-radius: 4px;
     background: rgba(0, 0, 0, 0.1);
     display: flex;
@@ -164,8 +164,8 @@
 }
 
 .iconPlaceholder {
-    width: 32px;
-    height: 32px;
+    width: 48px;
+    height: 48px;
     border-radius: 4px;
     background: rgba(0, 0, 0, 0.05);
     display: flex;
@@ -206,7 +206,7 @@
 .spellName {
     font-weight: bold;
     font-family: var(--font-narrative);
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     color: var(--parchment-text);
     white-space: nowrap;
     overflow: hidden;

@@ -134,13 +134,11 @@ const BookModalContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     );
 };
 
-const BookModal: React.FC<BookModalProps> = ({ isOpen, onClose, initialPages, activePageId }) => {
+const BookModal: React.FC<BookModalProps> = ({ isOpen, onClose }) => {
     if (!isOpen) return null;
 
     return (
-        <BookProvider initialPages={initialPages} initialActiveId={activePageId}>
-            <BookModalContent onClose={onClose} />
-        </BookProvider>
+        <BookModalContent onClose={onClose} />
     );
 };
 

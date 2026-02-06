@@ -48,13 +48,12 @@ export const GameProvider = ({ children }) => {
     const processCommand = useCallback(async (command) => {
         if (!engine)
             return;
-        setIsLoading(true);
         try {
             await engine.processTurn(command);
             updateState();
         }
         finally {
-            setIsLoading(false);
+            // No global loading screen for regular commands
         }
     }, [engine, updateState]);
     useEffect(() => {

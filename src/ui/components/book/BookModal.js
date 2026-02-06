@@ -2,7 +2,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useState, useEffect } from 'react';
 import styles from './BookModal.module.css';
 import { X, ArrowLeft } from 'lucide-react';
-import { BookProvider, useBook } from '../../context/BookContext';
+import { useBook } from '../../context/BookContext';
 import { useGameState } from '../../hooks/useGameState';
 const TAB_ORDER = ['character', 'equipment', 'codex', 'world', 'world_map', 'quests', 'settings'];
 const BookModalContent = ({ onClose }) => {
@@ -73,9 +73,9 @@ const BookModalContent = ({ onClose }) => {
                                 `, children: _jsxs("div", { className: styles.pageContent, children: [isActive && (_jsx("button", { className: styles.closeBtn, onClick: onClose, children: _jsx(X, { size: 24 }) })), page.content] }) }, page.id));
                         }), pages.length > 1 && (_jsxs("div", { className: styles.turnBackOverlay, onClick: handleBack, children: [_jsx("div", { className: styles.turnBackLabel, children: "Turn Back" }), _jsx(ArrowLeft, { size: 32 })] }))] })] }) }));
 };
-const BookModal = ({ isOpen, onClose, initialPages, activePageId }) => {
+const BookModal = ({ isOpen, onClose }) => {
     if (!isOpen)
         return null;
-    return (_jsx(BookProvider, { initialPages: initialPages, initialActiveId: activePageId, children: _jsx(BookModalContent, { onClose: onClose }) }));
+    return (_jsx(BookModalContent, { onClose: onClose }));
 };
 export default BookModal;

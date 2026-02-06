@@ -14,7 +14,7 @@ import BookModal from './components/book/BookModal';
 import SpellPreparationPanel from './components/book/SpellPreparationPanel';
 import WorldMapPage from './components/book/WorldMapPage';
 import QuestsPage from './components/book/QuestsPage';
-import { BookPageData } from './context/BookContext';
+import { BookProvider, BookPageData } from './context/BookContext';
 import { Book, Sparkles } from 'lucide-react';
 import NotificationOverlay from './components/common/NotificationOverlay';
 
@@ -182,101 +182,103 @@ const App: React.FC = () => {
 
 
     return (
-        <div className={styles.appShell}>
-            {isCreatingCharacter ? (
-                <CharacterCreator
-                    onComplete={handleCharacterComplete}
-                    onCancel={() => setIsCreatingCharacter(false)}
-                />
-            ) : !isActive ? (
-                <>
-                    <MainMenu
-                        onNewGame={handleNewGame}
-                        onLoadGame={handleLoadGame}
-                        onMultiplayer={() => setShowLobby(true)}
-                        onSettings={openSettings}
-                        onQuit={() => window.close()}
+        <BookProvider initialPages={bookPages} initialActiveId={activeBookPageId}>
+            <div className={styles.appShell}>
+                {isCreatingCharacter ? (
+                    <CharacterCreator
+                        onComplete={handleCharacterComplete}
+                        onCancel={() => setIsCreatingCharacter(false)}
                     />
-                    {showSettings && (
-                        <SettingsPanel
-                            onClose={() => setShowSettings(false)}
-                            onSave={handleSettingsSave}
-                            initialSettings={defaultSettings}
+                ) : !isActive ? (
+                    <>
+                        <MainMenu
+                            onNewGame={handleNewGame}
+                            onLoadGame={handleLoadGame}
+                            onMultiplayer={() => setShowLobby(true)}
+                            onSettings={openSettings}
+                            onQuit={() => window.close()}
                         />
-                    )}
-                    {showLobby && (
-                        <div className={styles.modalOverlay}>
-                            <div className={styles.placeholderModal}>
-                                <h2>Multiplayer Lobby</h2>
-                                <p>Coming Soon!</p>
-                                <button onClick={() => setShowLobby(false)}>Close</button>
-                            </div>
-                        </div>
-                    )}
-                </>
-            ) : (
-                <>
-                    <Header
-                        onLobby={() => setShowLobby(true)}
-                        onSettings={openSettings}
-                        onCodex={openCodex}
-                        onCharacter={openCharacterSheet}
-                        onMenu={() => setShowMenu(true)}
-                        onEquipment={openEquipment}
-                    />
-                    <div className={styles.mainContent}>
-                        <Sidebar
-                            className={styles.sidebar}
-                            onCharacter={openCharacterSheet}
-                        />
-                        <MainViewport className={styles.viewport} />
-                        <RightPanel
-                            className={styles.rightPanel}
-                            onWorldMap={openWorldMap}
-                            onQuests={openQuests}
-                        />
-                    </div>
-                    {/* In-game Modals */}
-                    {showSettings && (
-                        <SettingsPanel
-                            onClose={() => setShowSettings(false)}
-                            onSave={handleSettingsSave}
-                            initialSettings={defaultSettings}
-                        />
-                    )}
-                    {showMenu && (
-                        <div className={styles.modalOverlay}>
-                            <MainMenu
-                                onNewGame={handleNewGame}
-                                onLoadGame={handleLoadGame}
-                                onMultiplayer={() => { setShowLobby(true); setShowMenu(false); }}
-                                onSettings={() => { openSettings(); setShowMenu(false); }}
-                                onQuit={handleQuit}
+                        {showSettings && (
+                            <SettingsPanel
+                                onClose={() => setShowSettings(false)}
+                                onSave={handleSettingsSave}
+                                initialSettings={defaultSettings}
                             />
-                            <button className={styles.closeOverlay} onClick={() => setShowMenu(false)}>Return to Game</button>
-                        </div>
-                    )}
-                    {showLobby && (
-                        <div className={styles.modalOverlay}>
-                            <div className={styles.placeholderModal}>
-                                <h2>Multiplayer Lobby</h2>
-                                <p>Coming Soon!</p>
-                                <button onClick={() => setShowLobby(false)}>Close</button>
+                        )}
+                        {showLobby && (
+                            <div className={styles.modalOverlay}>
+                                <div className={styles.placeholderModal}>
+                                    <h2>Multiplayer Lobby</h2>
+                                    <p>Coming Soon!</p>
+                                    <button onClick={() => setShowLobby(false)}>Close</button>
+                                </div>
                             </div>
+                        )}
+                    </>
+                ) : (
+                    <>
+                        <Header
+                            onLobby={() => setShowLobby(true)}
+                            onSettings={openSettings}
+                            onCodex={openCodex}
+                            onCharacter={openCharacterSheet}
+                            onMenu={() => setShowMenu(true)}
+                            onEquipment={openEquipment}
+                        />
+                        <div className={styles.mainContent}>
+                            <Sidebar
+                                className={styles.sidebar}
+                                onCharacter={openCharacterSheet}
+                            />
+                            <MainViewport className={styles.viewport} />
+                            <RightPanel
+                                className={styles.rightPanel}
+                                onWorldMap={openWorldMap}
+                                onQuests={openQuests}
+                            />
                         </div>
-                    )}
-                    <NotificationOverlay onOpenCodex={openCodex} />
-                </>
-            )}
-            {bookOpen && (
-                <BookModal
-                    isOpen={bookOpen}
-                    onClose={() => setBookOpen(false)}
-                    initialPages={bookPages}
-                    activePageId={activeBookPageId}
-                />
-            )}
-        </div>
+                        {/* In-game Modals */}
+                        {showSettings && (
+                            <SettingsPanel
+                                onClose={() => setShowSettings(false)}
+                                onSave={handleSettingsSave}
+                                initialSettings={defaultSettings}
+                            />
+                        )}
+                        {showMenu && (
+                            <div className={styles.modalOverlay}>
+                                <MainMenu
+                                    onNewGame={handleNewGame}
+                                    onLoadGame={handleLoadGame}
+                                    onMultiplayer={() => { setShowLobby(true); setShowMenu(false); }}
+                                    onSettings={() => { openSettings(); setShowMenu(false); }}
+                                    onQuit={handleQuit}
+                                />
+                                <button className={styles.closeOverlay} onClick={() => setShowMenu(false)}>Return to Game</button>
+                            </div>
+                        )}
+                        {showLobby && (
+                            <div className={styles.modalOverlay}>
+                                <div className={styles.placeholderModal}>
+                                    <h2>Multiplayer Lobby</h2>
+                                    <p>Coming Soon!</p>
+                                    <button onClick={() => setShowLobby(false)}>Close</button>
+                                </div>
+                            </div>
+                        )}
+                        <NotificationOverlay onOpenCodex={openCodex} />
+                    </>
+                )}
+                {bookOpen && (
+                    <BookModal
+                        isOpen={bookOpen}
+                        onClose={() => setBookOpen(false)}
+                        initialPages={bookPages}
+                        activePageId={activeBookPageId}
+                    />
+                )}
+            </div>
+        </BookProvider>
     );
 };
 

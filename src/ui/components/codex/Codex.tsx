@@ -325,7 +325,17 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                     <div className={styles.detailSection}>
                         {selectedEntry ? (
                             <div className={styles.entryDetail}>
-                                <h3>{selectedEntry.name}</h3>
+                                <h3>
+                                    {selectedEntry.name}
+                                    {activeCategory === 'magic' && (
+                                        <img
+                                            src={`/assets/spells/${selectedEntry.name.toLowerCase().replace(/ /g, '_')}.png`}
+                                            alt=""
+                                            className={styles.spellTitleIcon}
+                                            onError={(e) => (e.currentTarget.style.display = 'none')}
+                                        />
+                                    )}
+                                </h3>
                                 <div className={styles.divider} />
                                 <div className={styles.detailBody}>
                                     {(activeCategory === 'mechanics' || activeCategory === 'world') && (
