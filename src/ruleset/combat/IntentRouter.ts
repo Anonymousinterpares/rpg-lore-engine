@@ -29,8 +29,10 @@ export class IntentRouter {
         // Simple heuristic: if input matches common actions like "attack", "dodge"
         const combatKeywords = ['attack', 'dodge', 'dash', 'disengage', 'hide'];
         if (inCombat && combatKeywords.some(k => trimmed.toLowerCase().includes(k))) {
+            const cmd = combatKeywords.find(k => trimmed.toLowerCase().includes(k));
             return {
                 type: 'COMBAT_ACTION',
+                command: cmd,
                 originalInput: input
             };
         }

@@ -3,6 +3,7 @@ import { CharacterClass } from '../schemas/ClassSchema';
 import { Background } from '../schemas/BackgroundSchema';
 import { Item } from '../schemas/ItemSchema';
 import { Spell } from '../schemas/SpellSchema';
+import { Monster } from '../schemas/MonsterSchema';
 
 /**
  * DataManager
@@ -142,5 +143,25 @@ export class DataManager {
         return Object.values(this.spells).filter(s =>
             s.classes?.includes(className) && s.level <= maxLevel
         );
+    }
+
+    private static monsters: Record<string, Monster> = {};
+    private static monsterLookup: Record<string, Monster> = {};
+
+    public static async loadMonsters() {
+        if (Object.keys(this.monsters).length > 0) return;
+        const monsterModules = import.meta.glob('../../../data/monster/*.json');
+        for (const path in monsterModules) {
+            const mod: any = await monsterModules[path]();
+            const monster = mod.default || mod;
+            if (monster.name) {
+                this.monsters[monster.name] = monster;
+                this.monsterLookup[monster.name.toLowerCase()] = monster;
+            }
+        }
+    }
+
+    public static getMonster(name: string): Monster | undefined {
+        return this.monsters[name] || this.monsterLookup[name.toLowerCase()];
     }
 }

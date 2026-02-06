@@ -107,6 +107,45 @@ export class NarratorService {
         }
     }
 
+    /**
+     * Generates a narrative summary of a completed combat encounter.
+     */
+    public static async summarizeCombat(state: GameState, logs: any[]): Promise<string> {
+        const profile = AgentManager.getAgentProfile('NARRATOR');
+        const providerConfig = LLM_PROVIDERS.find(p => p.id === profile.providerId);
+        const modelConfig = providerConfig?.models.find(m => m.id === profile.modelId);
+
+        if (!providerConfig || !modelConfig) return "The battle ends in silence.";
+
+        const logSummary = logs.map(l => l.message).join('\n');
+        const systemPrompt = `You are a legendary bard and chronicler. 
+Summarize the combat encounter that just occurred in a visceral, exciting, and concise paragraph.
+Focus on the turning points and the final blow. 
+Keep it under 100 words.
+
+## RAW COMBAT LOG
+${logSummary}`;
+
+        try {
+            const rawResponse = await LLMClient.generateCompletion(
+                providerConfig,
+                modelConfig,
+                {
+                    systemPrompt,
+                    userMessage: "Write a dramatic summary of this battle.",
+                    temperature: 0.7,
+                    maxTokens: 500,
+                    responseFormat: 'text'
+                }
+            );
+
+            return this.extractJson(rawResponse).replace(/\{[\s\S]*\}/, '').trim() || rawResponse.trim();
+        } catch (e) {
+            console.error('[NarratorService] Combat summary failed:', e);
+            return "The dust settles, and the battle is won.";
+        }
+    }
+
     private static constructSystemPrompt(context: any, state: GameState, profile: AgentProfile, directorDirective?: any): string {
         const isNewGame = state.conversationHistory.length === 0 && !this.isFirstTurnAfterLoad;
 

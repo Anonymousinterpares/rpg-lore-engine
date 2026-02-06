@@ -121,4 +121,22 @@ export class DataManager {
     static getSpellsByClass(className, maxLevel = 9) {
         return Object.values(this.spells).filter(s => s.classes?.includes(className) && s.level <= maxLevel);
     }
+    static monsters = {};
+    static monsterLookup = {};
+    static async loadMonsters() {
+        if (Object.keys(this.monsters).length > 0)
+            return;
+        const monsterModules = import.meta.glob('../../../data/monster/*.json');
+        for (const path in monsterModules) {
+            const mod = await monsterModules[path]();
+            const monster = mod.default || mod;
+            if (monster.name) {
+                this.monsters[monster.name] = monster;
+                this.monsterLookup[monster.name.toLowerCase()] = monster;
+            }
+        }
+    }
+    static getMonster(name) {
+        return this.monsters[name] || this.monsterLookup[name.toLowerCase()];
+    }
 }

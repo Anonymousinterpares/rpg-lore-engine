@@ -9,11 +9,15 @@ import { WorldClockEngine } from './WorldClockEngine';
 import { StoryScribe } from './StoryScribe';
 import { EncounterDirector } from './EncounterDirector';
 import { Dice } from './Dice';
+import { DataManager } from '../data/DataManager';
 import { NarratorService } from '../agents/NarratorService';
 import { EngineDispatcher } from '../agents/EngineDispatcher';
 import { DirectorService } from '../agents/DirectorService';
 import { NPCService } from '../agents/NPCService';
 import { LoreService } from '../agents/LoreService';
+import { CombatResolutionEngine } from './CombatResolutionEngine';
+import { CombatAI } from './CombatAI';
+import { CombatLogFormatter } from './CombatLogFormatter';
 /**
  * The GameLoop is the central heart of the RPG engine.
  * It coordinates Intent, Logic, AI, and Persistence.
@@ -68,15 +72,20 @@ export class GameLoop {
         if (intent.type === 'COMMAND') {
             systemResponse = this.handleCommand(intent);
         }
-        else if (intent.type === 'COMBAT_ACTION') {
+        else if (intent.type === 'COMBAT_ACTION' && this.state.mode === 'COMBAT') {
             systemResponse = this.handleCombatAction(intent);
         }
-        // 2. Agent Phase (Narrative & Pacing)
+        // If we are in combat, we skip the immediate Narrator generation to avoid latency
+        if (this.state.mode === 'COMBAT') {
+            await this.stateManager.saveGame(this.state);
+            return systemResponse;
+        }
+        // 2. Agent Phase (Narrative & Pacing - Exploration Mode only)
         const currentHex = this.hexMapManager.getHex(this.state.location.hexId);
         // Director check for encounter
         const encounter = this.director.checkEncounter(this.state, currentHex || {});
         if (encounter) {
-            this.initializeCombat(encounter);
+            await this.initializeCombat(encounter);
             systemResponse = `[ENCOUNTER] ${encounter.name}: ${encounter.description}`;
         }
         // Director Pacing Check
@@ -308,34 +317,44 @@ export class GameLoop {
         }
         this.stateManager.saveGame(this.state);
     }
-    initializeCombat(encounter) {
+    async initializeCombat(encounter) {
         this.state.mode = 'COMBAT';
         const combatants = [];
         // 1. Add Player
-        const playerInit = Dice.d20() + MechanicsEngine.getModifier(this.state.character.stats.DEX || 10);
+        const pc = this.state.character;
+        const playerInit = Dice.d20() + MechanicsEngine.getModifier(pc.stats.DEX || 10);
         combatants.push({
             id: 'player',
-            name: this.state.character.name,
-            hp: { current: this.state.character.hp.current, max: this.state.character.hp.max },
+            name: pc.name,
+            hp: { current: pc.hp.current, max: pc.hp.max },
             initiative: playerInit,
             isPlayer: true,
-            type: 'player'
+            type: 'player',
+            ac: pc.ac || 10,
+            stats: pc.stats,
+            conditions: [],
+            spellSlots: pc.spellSlots
         });
         // 2. Add Enemies
-        encounter.monsters.forEach((monsterName, index) => {
-            // Trigger lore discovery
+        await DataManager.loadMonsters(); // Ensure monsters are loaded
+        for (let i = 0; i < encounter.monsters.length; i++) {
+            const monsterName = encounter.monsters[i];
+            const monsterData = DataManager.getMonster(monsterName);
             LoreService.registerMonsterEncounter(monsterName, this.state, () => this.stateManager.saveGame(this.state));
-            // Ideally we get stats from DataManager, but for now placeholders
-            const initRoll = Dice.d20() + 1; // Generic bonus for now
+            const initRoll = Dice.d20() + (monsterData ? MechanicsEngine.getModifier(monsterData.stats['DEX'] || 10) : 0);
             combatants.push({
-                id: `enemy_${index}`,
+                id: `enemy_${i}`,
                 name: monsterName,
-                hp: { current: 15, max: 15 },
+                hp: monsterData ? { current: monsterData.hp.average, max: monsterData.hp.average } : { current: 15, max: 15 },
                 initiative: initRoll,
                 isPlayer: false,
-                type: 'enemy'
+                type: 'enemy',
+                ac: monsterData?.ac || 10,
+                stats: monsterData?.stats || { 'INT': 10, 'STR': 10, 'DEX': 10, 'CON': 10, 'WIS': 10, 'CHA': 10 },
+                conditions: [],
+                spellSlots: {} // Monsters usually use special actions, but can add slots if needed
             });
-        });
+        }
         // 3. Sort by initiative
         combatants.sort((a, b) => b.initiative - a.initiative);
         this.state.combat = {
@@ -354,21 +373,27 @@ export class GameLoop {
         if (!this.state.combat)
             return "Not in combat.";
         const currentCombatant = this.state.combat.combatants[this.state.combat.currentTurnIndex];
-        let message = '';
+        let resultMsg = '';
         if (intent.command === 'attack') {
-            message = `${currentCombatant.name} attacks! (Logic pending)`;
+            const targets = this.state.combat.combatants.filter(c => c.type === 'enemy' && c.hp.current > 0);
+            if (targets.length === 0)
+                return "No valid targets.";
+            const target = targets[0]; // Auto-target first enemy for now
+            const pc = this.state.character;
+            const strMod = MechanicsEngine.getModifier(this.state.character.stats.STR || 10);
+            const prof = MechanicsEngine.getProficiencyBonus(this.state.character.level);
+            const result = CombatResolutionEngine.resolveAttack(currentCombatant, target, strMod + prof, "1d8", // Placeholder weapon dice
+            strMod);
+            CombatResolutionEngine.applyDamage(target, result.damage);
+            resultMsg = CombatLogFormatter.format(result, currentCombatant.name, target.name);
         }
         else if (intent.command === 'dodge') {
-            message = `${currentCombatant.name} is dodging.`;
+            resultMsg = `${currentCombatant.name} takes a defensive stance.`;
         }
-        this.state.combat.logs.push({
-            id: `log-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-            type: 'info',
-            message: message,
-            turn: this.state.combat.round
-        });
+        this.addCombatLog(resultMsg);
+        // After player action, advance turn
         this.advanceCombatTurn();
-        return message;
+        return resultMsg;
     }
     advanceCombatTurn() {
         if (!this.state.combat)
@@ -379,12 +404,71 @@ export class GameLoop {
             this.state.combat.round++;
         }
         const nextCombatant = this.state.combat.combatants[this.state.combat.currentTurnIndex];
+        // Check if combat is over
+        if (this.checkCombatEnd())
+            return;
+        // If next is an enemy, perform AI turn
+        if (nextCombatant.type === 'enemy' && nextCombatant.hp.current > 0) {
+            this.performAITurn(nextCombatant);
+        }
+        else if (nextCombatant.hp.current <= 0) {
+            // Skip dead combatants
+            this.advanceCombatTurn();
+        }
+    }
+    performAITurn(actor) {
+        if (!this.state.combat)
+            return;
+        const action = CombatAI.decideAction(actor, this.state.combat);
+        const player = this.state.combat.combatants.find(c => c.isPlayer);
+        if (action.type === 'ATTACK' && player) {
+            const strMod = MechanicsEngine.getModifier(actor.stats['STR'] || 10);
+            const result = CombatResolutionEngine.resolveAttack(actor, player, strMod + 2, // Generic monster bonus
+            "1d6", // Generic damage
+            strMod);
+            CombatResolutionEngine.applyDamage(player, result.damage);
+            this.state.character.hp.current = player.hp.current; // Sync PC state
+            const logMsg = CombatLogFormatter.format(result, actor.name, player.name);
+            this.addCombatLog(logMsg);
+        }
+        // Advance to next turn
+        this.advanceCombatTurn();
+    }
+    addCombatLog(message) {
+        if (!this.state.combat)
+            return;
         this.state.combat.logs.push({
             id: `log-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
             type: 'info',
-            message: `Next turn: ${nextCombatant.name}`,
+            message: message,
             turn: this.state.combat.round
         });
+    }
+    checkCombatEnd() {
+        if (!this.state.combat)
+            return false;
+        const enemiesAlive = this.state.combat.combatants.some(c => c.type === 'enemy' && c.hp.current > 0);
+        const playersAlive = this.state.combat.combatants.some(c => c.type === 'player' && c.hp.current > 0);
+        if (!enemiesAlive || !playersAlive) {
+            this.endCombat(!enemiesAlive);
+            return true;
+        }
+        return false;
+    }
+    async endCombat(victory) {
+        if (!this.state.combat)
+            return;
+        const summaryMsg = victory
+            ? "Victory! All enemies have been defeated."
+            : "Defeat... You have been overcome by your foes.";
+        this.addCombatLog(summaryMsg);
+        // Transition back to exploration
+        this.state.mode = 'EXPLORATION';
+        // Trigger LLM Summarization
+        const summary = await NarratorService.summarizeCombat(this.state, this.state.combat.logs);
+        this.state.lastNarrative = summary;
+        this.state.combat = undefined;
+        this.stateManager.saveGame(this.state);
     }
     recalculateAC() {
         const char = this.state.character;

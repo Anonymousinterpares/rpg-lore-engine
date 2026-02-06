@@ -11,6 +11,13 @@ export const ConversationTurnSchema = z.object({
     content: z.string(),
     turnNumber: z.number()
 });
+export const CombatConditionSchema = z.object({
+    id: z.string(), // e.g., 'blinded', 'prone'
+    name: z.string(),
+    description: z.string(),
+    duration: z.number().optional(), // rounds remaining, undefined = permanent
+    sourceId: z.string().optional()
+});
 export const CombatantSchema = z.object({
     id: z.string(),
     name: z.string(),
@@ -20,7 +27,15 @@ export const CombatantSchema = z.object({
     }),
     initiative: z.number(),
     isPlayer: z.boolean(),
-    type: z.enum(['player', 'companion', 'enemy'])
+    type: z.enum(['player', 'companion', 'enemy']),
+    // Enhanced fields for deterministic combat
+    ac: z.number().default(10),
+    stats: z.record(z.string(), z.number()).default({}),
+    conditions: z.array(CombatConditionSchema).default([]),
+    spellSlots: z.record(z.string(), z.object({
+        current: z.number(),
+        max: z.number()
+    })).optional()
 });
 export const CombatLogEntrySchema = z.object({
     id: z.string(),
