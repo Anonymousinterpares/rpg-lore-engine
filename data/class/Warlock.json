@@ -30,12 +30,38 @@
     {
       "level": 1,
       "name": "Otherworldly Patron",
-      "description": "At 1st level, you have struck a bargain with an otherworldly being of your choice: the Archfey, the Fiend, or the Great Old One."
+      "description": "At 1st level, you have struck a bargain with an otherworldly being of your choice: the Archfey, the Fiend, or the Great Old One.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     },
     {
       "level": 1,
       "name": "Pact Magic",
-      "description": "Your arcane research and the magic bestowed on you by your patron have given you facility with spells."
+      "description": "Your arcane research and the magic bestowed on you by your patron have given you facility with spells.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 2,
+      "name": "Eldritch Invocations",
+      "description": "In your study of occult lore, you have unearthed eldritch invocations, fragments of forbidden knowledge that imbue you with an abiding magical ability.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 3,
+      "name": "Pact Boon",
+      "description": "At 3rd level, your otherworldly patron bestows a gift upon you for your loyal service.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     }
   ],
   "progression": [
@@ -49,6 +75,42 @@
       "spellSlots": [
         1,
         0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "level": 2,
+      "proficiencyBonus": 2,
+      "features": [
+        "Eldritch Invocations"
+      ],
+      "spellSlots": [
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "level": 3,
+      "proficiencyBonus": 2,
+      "features": [
+        "Pact Boon"
+      ],
+      "spellSlots": [
+        0,
+        2,
         0,
         0,
         0,

@@ -30,12 +30,30 @@
     {
       "level": 1,
       "name": "Spellcasting",
-      "description": "As a conduit for divine power, you can cast cleric spells."
+      "description": "As a conduit for divine power, you can cast cleric spells.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     },
     {
       "level": 1,
       "name": "Divine Domain",
-      "description": "Choose one domain related to your deity: Life, Light, Nature, Tempest, Trickery, War, or Knowledge."
+      "description": "Choose one domain related to your deity: Life, Light, Nature, Tempest, Trickery, War, or Knowledge.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 2,
+      "name": "Channel Divinity",
+      "description": "You gain the ability to channel divine energy directly from your deity, using that energy to fuel magical effects.",
+      "actionCost": "ACTION",
+      "usage": {
+        "type": "SHORT_REST",
+        "limit": 1
+      }
     }
   ],
   "progression": [
@@ -49,6 +67,40 @@
       "spellSlots": [
         2,
         0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "level": 2,
+      "proficiencyBonus": 2,
+      "features": [
+        "Channel Divinity"
+      ],
+      "spellSlots": [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "level": 3,
+      "proficiencyBonus": 2,
+      "features": [],
+      "spellSlots": [
+        4,
+        2,
         0,
         0,
         0,

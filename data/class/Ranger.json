@@ -35,12 +35,56 @@
     {
       "level": 1,
       "name": "Favored Enemy",
-      "description": "You have significant experience studying, tracking, hunting, and even talking to a certain type of enemy."
+      "description": "You have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     },
     {
       "level": 1,
       "name": "Natural Explorer",
-      "description": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions."
+      "description": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 2,
+      "name": "Fighting Style",
+      "description": "You adopt a particular style of fighting as your specialty.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 2,
+      "name": "Spellcasting",
+      "description": "By the time you reach 2nd level, you have learned to use the magical essence of nature to cast spells, much as a druid does.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 3,
+      "name": "Primeval Awareness",
+      "description": "Starting at 3rd level, you can use your action and expend one ranger spell slot to focus your awareness on the region around you.",
+      "actionCost": "ACTION",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 3,
+      "name": "Ranger Archetype",
+      "description": "At 3rd level, you choose an archetype that you strive to emulate.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     }
   ],
   "progression": [
@@ -50,6 +94,44 @@
       "features": [
         "Favored Enemy",
         "Natural Explorer"
+      ]
+    },
+    {
+      "level": 2,
+      "proficiencyBonus": 2,
+      "features": [
+        "Fighting Style",
+        "Spellcasting"
+      ],
+      "spellSlots": [
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "level": 3,
+      "proficiencyBonus": 2,
+      "features": [
+        "Primeval Awareness",
+        "Ranger Archetype"
+      ],
+      "spellSlots": [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
       ]
     }
   ]

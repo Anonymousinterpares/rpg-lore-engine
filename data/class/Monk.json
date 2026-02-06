@@ -29,12 +29,57 @@
     {
       "level": 1,
       "name": "Unarmored Defense",
-      "description": "While you are wearing no armor and not wielding a shield, your AC equals 10 + your Dexterity modifier + your Wisdom modifier."
+      "description": "While you are wearing no armor and not wielding a shield, your AC equals 10 + your Dexterity modifier + your Wisdom modifier.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     },
     {
       "level": 1,
       "name": "Martial Arts",
-      "description": "At 1st level, your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons."
+      "description": "At 1st level, your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 2,
+      "name": "Ki",
+      "description": "Starting at 2nd level, your training allows you to harness the mystic energy of ki.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "SHORT_REST",
+        "limit": 2
+      }
+    },
+    {
+      "level": 2,
+      "name": "Unarmored Movement",
+      "description": "Starting at 2nd level, your speed increases by 10 feet while you are not wearing armor or wielding a shield.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 3,
+      "name": "Monastic Tradition",
+      "description": "When you reach 3rd level, you commit yourself to a monastic tradition.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 3,
+      "name": "Deflect Missiles",
+      "description": "Starting at 3rd level, you can use your reaction to deflect or catch the missile when you are hit by a ranged weapon attack.",
+      "actionCost": "REACTION",
+      "usage": {
+        "type": "PASSIVE"
+      }
     }
   ],
   "progression": [
@@ -44,6 +89,22 @@
       "features": [
         "Unarmored Defense",
         "Martial Arts"
+      ]
+    },
+    {
+      "level": 2,
+      "proficiencyBonus": 2,
+      "features": [
+        "Ki",
+        "Unarmored Movement"
+      ]
+    },
+    {
+      "level": 3,
+      "proficiencyBonus": 2,
+      "features": [
+        "Monastic Tradition",
+        "Deflect Missiles"
       ]
     }
   ]

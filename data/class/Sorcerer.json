@@ -31,12 +31,39 @@
     {
       "level": 1,
       "name": "Spellcasting",
-      "description": "An event in your past, or in the life of an ancestor, left a indelible mark on you, infusing you with arcane magic."
+      "description": "An event in your past, or in the life of an ancestor, left a indelible mark on you, infusing you with arcane magic.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     },
     {
       "level": 1,
       "name": "Sorcerous Origin",
-      "description": "Choose a sorcerous origin, which describes the source of your innate magical power: Draconic Bloodline or Wild Magic."
+      "description": "Choose a sorcerous origin, which describes the source of your innate magical power: Draconic Bloodline or Wild Magic.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 2,
+      "name": "Font of Magic",
+      "description": "At 2nd level, you tap into a deep wellspring of magic within yourself. This wellspring is represented by sorcery points.",
+      "actionCost": "BONUS_ACTION",
+      "usage": {
+        "type": "LONG_REST",
+        "limit": 2
+      }
+    },
+    {
+      "level": 3,
+      "name": "Metamagic",
+      "description": "At 3rd level, you gain the ability to twist your spells to suit your needs.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     }
   ],
   "progression": [
@@ -50,6 +77,42 @@
       "spellSlots": [
         2,
         0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "level": 2,
+      "proficiencyBonus": 2,
+      "features": [
+        "Font of Magic"
+      ],
+      "spellSlots": [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "level": 3,
+      "proficiencyBonus": 2,
+      "features": [
+        "Metamagic"
+      ],
+      "spellSlots": [
+        4,
+        2,
         0,
         0,
         0,

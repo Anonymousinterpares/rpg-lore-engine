@@ -42,12 +42,39 @@
     {
       "level": 1,
       "name": "Druidic",
-      "description": "You know Druidic, the secret language of druids."
+      "description": "You know Druidic, the secret language of druids.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     },
     {
       "level": 1,
       "name": "Spellcasting",
-      "description": "Drawing on the divine essence of nature itself, you can cast spells to shape that essence to your will."
+      "description": "Drawing on the divine essence of nature itself, you can cast spells to shape that essence to your will.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 2,
+      "name": "Wild Shape",
+      "description": "You can use your action to magically assume the shape of a beast that you have seen before.",
+      "actionCost": "ACTION",
+      "usage": {
+        "type": "SHORT_REST",
+        "limit": 2
+      }
+    },
+    {
+      "level": 2,
+      "name": "Druid Circle",
+      "description": "At 2nd level, you choose to identify with a circle of druids.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     }
   ],
   "progression": [
@@ -61,6 +88,41 @@
       "spellSlots": [
         2,
         0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "level": 2,
+      "proficiencyBonus": 2,
+      "features": [
+        "Wild Shape",
+        "Druid Circle"
+      ],
+      "spellSlots": [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "level": 3,
+      "proficiencyBonus": 2,
+      "features": [],
+      "spellSlots": [
+        4,
+        2,
         0,
         0,
         0,

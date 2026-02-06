@@ -31,12 +31,30 @@
     {
       "level": 1,
       "name": "Spellcasting",
-      "description": "You can cast wizard spells using Intelligence."
+      "description": "You can cast wizard spells using Intelligence.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     },
     {
       "level": 1,
       "name": "Arcane Recovery",
-      "description": "You have learned to regain some of your magical energy by studying your spellbook."
+      "description": "You have learned to regain some of your magical energy by studying your spellbook.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "SHORT_REST",
+        "limit": 1
+      }
+    },
+    {
+      "level": 2,
+      "name": "Arcane Tradition",
+      "description": "When you reach 2nd level, you choose an arcane tradition, shaping your practice of magic through one of eight schools.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     }
   ],
   "progression": [
@@ -50,6 +68,40 @@
       "spellSlots": [
         2,
         0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "level": 2,
+      "proficiencyBonus": 2,
+      "features": [
+        "Arcane Tradition"
+      ],
+      "spellSlots": [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "level": 3,
+      "proficiencyBonus": 2,
+      "features": [],
+      "spellSlots": [
+        4,
+        2,
         0,
         0,
         0,

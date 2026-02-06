@@ -38,17 +38,47 @@
     {
       "level": 1,
       "name": "Expertise",
-      "description": "Choose two of your skill proficiencies; your proficiency bonus is doubled for any ability check you make that uses either of them."
+      "description": "Choose two of your skill proficiencies; your proficiency bonus is doubled for any ability check you make that uses either of them.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     },
     {
       "level": 1,
       "name": "Sneak Attack",
-      "description": "You know how to strike subtly and exploit a foe's distraction."
+      "description": "Once per turn, you can deal an extra 1d6 damage to one creature you hit with an attack if you have advantage on the attack roll. The attack must use a finesse or a ranged weapon.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     },
     {
       "level": 1,
       "name": "Thieves' Cant",
-      "description": "During your rogue training you learned thieves' cant, a secret mix of dialect, jargon, and code."
+      "description": "During your rogue training you learned thieves' cant, a secret mix of dialect, jargon, and code.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 2,
+      "name": "Cunning Action",
+      "description": "You can take a bonus action on each of your turns in combat. This action can be used only to take the Dash, Disengage, or Hide action.",
+      "actionCost": "BONUS_ACTION",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 3,
+      "name": "Roguish Archetype",
+      "description": "You choose an archetype that you emulate in the exercise of your rogue abilities, such as Thief.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     }
   ],
   "progression": [
@@ -59,6 +89,20 @@
         "Expertise",
         "Sneak Attack",
         "Thieves' Cant"
+      ]
+    },
+    {
+      "level": 2,
+      "proficiencyBonus": 2,
+      "features": [
+        "Cunning Action"
+      ]
+    },
+    {
+      "level": 3,
+      "proficiencyBonus": 2,
+      "features": [
+        "Roguish Archetype"
       ]
     }
   ]

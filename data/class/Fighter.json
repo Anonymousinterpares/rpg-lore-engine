@@ -59,6 +59,15 @@
         "type": "SHORT_REST",
         "limit": 1
       }
+    },
+    {
+      "level": 3,
+      "name": "Martial Archetype",
+      "description": "At 3rd level, you choose an archetype that you strive to emulate in your combat styles and techniques.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     }
   ],
   "progression": [
@@ -75,6 +84,13 @@
       "proficiencyBonus": 2,
       "features": [
         "Action Surge"
+      ]
+    },
+    {
+      "level": 3,
+      "proficiencyBonus": 2,
+      "features": [
+        "Martial Archetype"
       ]
     }
   ]

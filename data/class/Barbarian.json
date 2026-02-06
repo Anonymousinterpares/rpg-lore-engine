@@ -32,7 +32,7 @@
     {
       "level": 1,
       "name": "Rage",
-      "description": "In battle, you fight with primal ferocity.",
+      "description": "In battle, you fight with primal ferocity. On your turn, you can enter a rage as a bonus action.",
       "actionCost": "BONUS_ACTION",
       "usage": {
         "type": "LONG_REST",
@@ -47,6 +47,33 @@
       "usage": {
         "type": "PASSIVE"
       }
+    },
+    {
+      "level": 2,
+      "name": "Reckless Attack",
+      "description": "Starting at 2nd level, you can throw aside all concern for defense to attack with fierce desperation.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 2,
+      "name": "Danger Sense",
+      "description": "At 2nd level, you gain an uncanny sense of when things nearby aren't as they should be.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 3,
+      "name": "Primal Path",
+      "description": "At 3rd level, you choose a path that shapes the nature of your rage.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     }
   ],
   "progression": [
@@ -56,6 +83,21 @@
       "features": [
         "Rage",
         "Unarmored Defense"
+      ]
+    },
+    {
+      "level": 2,
+      "proficiencyBonus": 2,
+      "features": [
+        "Reckless Attack",
+        "Danger Sense"
+      ]
+    },
+    {
+      "level": 3,
+      "proficiencyBonus": 2,
+      "features": [
+        "Primal Path"
       ]
     }
   ]

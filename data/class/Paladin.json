@@ -48,6 +48,51 @@
         "type": "LONG_REST",
         "limit": 5
       }
+    },
+    {
+      "level": 2,
+      "name": "Fighting Style",
+      "description": "You adopt a particular style of fighting as your specialty.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 2,
+      "name": "Spellcasting",
+      "description": "By 2nd level, you have learned to draw on divine magic through meditation and prayer.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 2,
+      "name": "Divine Smite",
+      "description": "Starting at 2nd level, when you hit a creature with a melee weapon attack, you can expend one spell slot to deal radiant damage to the target.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 3,
+      "name": "Divine Health",
+      "description": "By 3rd level, the divine magic flowing through you makes you immune to disease.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 3,
+      "name": "Sacred Oath",
+      "description": "At 3rd level, you swear the oath that binds you as a paladin forever.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     }
   ],
   "progression": [
@@ -57,6 +102,45 @@
       "features": [
         "Divine Sense",
         "Lay on Hands"
+      ]
+    },
+    {
+      "level": 2,
+      "proficiencyBonus": 2,
+      "features": [
+        "Fighting Style",
+        "Spellcasting",
+        "Divine Smite"
+      ],
+      "spellSlots": [
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "level": 3,
+      "proficiencyBonus": 2,
+      "features": [
+        "Divine Health",
+        "Sacred Oath"
+      ],
+      "spellSlots": [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
       ]
     }
   ]

@@ -45,12 +45,48 @@
     {
       "level": 1,
       "name": "Spellcasting",
-      "description": "You have learned to untangle and reshape the fabric of reality in harmony with your wishes and music."
+      "description": "You have learned to untangle and reshape the fabric of reality in harmony with your wishes and music.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     },
     {
       "level": 1,
       "name": "Bardic Inspiration",
-      "description": "You can inspire others through stirring words or music."
+      "description": "You can inspire others through stirring words or music. You can use a bonus action to give one creature other than yourself a d6 inspiration die.",
+      "actionCost": "BONUS_ACTION",
+      "usage": {
+        "type": "LONG_REST",
+        "limit": 3
+      }
+    },
+    {
+      "level": 2,
+      "name": "Jack of All Trades",
+      "description": "You can add half your proficiency bonus, rounded down, to any ability check you make that doesn't already include your proficiency bonus.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 2,
+      "name": "Song of Rest",
+      "description": "You can use soothing music or oration to help revitalize your wounded allies during a short rest.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
+    },
+    {
+      "level": 3,
+      "name": "Bard College",
+      "description": "You delve into the advanced techniques of a bard college of your choice.",
+      "actionCost": "NONE",
+      "usage": {
+        "type": "PASSIVE"
+      }
     }
   ],
   "progression": [
@@ -64,6 +100,43 @@
       "spellSlots": [
         2,
         0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "level": 2,
+      "proficiencyBonus": 2,
+      "features": [
+        "Jack of All Trades",
+        "Song of Rest"
+      ],
+      "spellSlots": [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "level": 3,
+      "proficiencyBonus": 2,
+      "features": [
+        "Bard College"
+      ],
+      "spellSlots": [
+        4,
+        2,
         0,
         0,
         0,
