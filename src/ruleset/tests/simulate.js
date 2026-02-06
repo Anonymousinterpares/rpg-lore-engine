@@ -37,6 +37,10 @@ function runSimulation() {
         inspiration: false,
         deathSaves: { successes: 0, failures: 0 },
         featureUsages: {},
+        knownEntities: {
+            monsters: [],
+            items: []
+        },
         biography: {
             background: 'Acolyte',
             traits: [],

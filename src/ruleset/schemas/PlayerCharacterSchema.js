@@ -78,5 +78,9 @@ export const PlayerCharacterSchema = z.object({
             turn: z.number(),
             event: z.string()
         })).default([])
+    }).default({}),
+    knownEntities: z.object({
+        monsters: z.array(z.string()).default([]),
+        items: z.array(z.string()).default([])
     }).default({})
 });

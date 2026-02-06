@@ -1,5 +1,6 @@
 import { SwarmConfigSchema } from '../schemas/AgentConfigSchema';
 import DEFAULT_SWARM_JSON from './AgentConfig.json';
+import { LLM_PROVIDERS } from '../data/StaticData';
 const DEFAULT_SWARM_CONFIG = DEFAULT_SWARM_JSON;
 export class AgentManager {
     static STORAGE_KEY = 'rpg_agent_config';
@@ -29,6 +30,19 @@ export class AgentManager {
      */
     static getAgentProfile(type) {
         return this.getConfig()[type];
+    }
+    /**
+     * Helper to get the provider configuration for an agent's current setting.
+     */
+    static getProviderForAgent(profile) {
+        return LLM_PROVIDERS.find(p => p.id === profile.providerId);
+    }
+    /**
+     * Helper to get the model configuration for an agent's current setting.
+     */
+    static getModelForAgent(profile) {
+        const provider = this.getProviderForAgent(profile);
+        return provider?.models.find(m => m.id === profile.modelId);
     }
     /**
      * Saves a specific agent profile override.

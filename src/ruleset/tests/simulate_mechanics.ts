@@ -37,6 +37,10 @@ function runMechanicsSimulation() {
         inspiration: false,
         deathSaves: { successes: 0, failures: 0 },
         featureUsages: {},
+        knownEntities: {
+            monsters: [],
+            items: []
+        },
         biography: {
             background: 'Soldier',
             traits: [],

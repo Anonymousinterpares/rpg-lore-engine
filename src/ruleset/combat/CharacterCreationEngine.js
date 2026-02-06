@@ -110,6 +110,10 @@ export class CharacterCreationEngine {
             inspiration: false,
             deathSaves: { successes: 0, failures: 0 },
             featureUsages: {},
+            knownEntities: {
+                monsters: [],
+                items: []
+            },
             biography: {
                 background: request.background.name,
                 backgroundId: request.background.id,

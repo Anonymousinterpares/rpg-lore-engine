@@ -22,6 +22,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, onSave, initialS
     const [selectedModels, setSelectedModels] = useState<Record<string, string>>({});
     const [testResults, setTestResults] = useState<Record<string, TestResult>>({});
     const [testingProvider, setTestingProvider] = useState<string | null>(null);
+    const [testingAgent, setTestingAgent] = useState<string | null>(null);
     const [swarmConfig, setSwarmConfig] = useState<SwarmConfig>(AgentManager.getConfig());
 
     useEffect(() => {
@@ -122,6 +123,39 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, onSave, initialS
             setTestResults(prev => ({ ...prev, [provider.id]: result }));
         } finally {
             setTestingProvider(null);
+        }
+    };
+
+    const testAgent = async (type: AgentType, profile: AgentProfile) => {
+        setTestingAgent(type);
+        setTestResults(prev => ({ ...prev, [`agent_${type}`]: { success: false, message: '' } }));
+
+        console.log(`[SettingsPanel] Testing Agent: ${profile.name} (${type})...`);
+
+        try {
+            const provider = AgentManager.getProviderForAgent(profile);
+            const model = AgentManager.getModelForAgent(profile);
+
+            if (!provider || !model) {
+                const err = { success: false, message: 'Invalid provider/model config.' };
+                setTestResults(prev => ({ ...prev, [`agent_${type}`]: err }));
+                return;
+            }
+
+            const result = await LLMClient.testConnection(provider, model);
+
+            // Log full output to console as requested by user
+            if (result.success) {
+                console.log(`[Agent Test Success] ${profile.name} is ready.`);
+            } else {
+                console.error(`[Agent Test Failed] ${profile.name}: ${result.message}`);
+            }
+
+            setTestResults(prev => ({ ...prev, [`agent_${type}`]: result }));
+        } catch (e: any) {
+            setTestResults(prev => ({ ...prev, [`agent_${type}`]: { success: false, message: e.message } }));
+        } finally {
+            setTestingAgent(null);
         }
     };
 
@@ -416,6 +450,26 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, onSave, initialS
                                                         onChange={(e) => updateAgentParam(type, 'maxTokens', parseInt(e.target.value))}
                                                         className={styles.keyInput}
                                                     />
+                                                </div>
+
+                                                <div className={styles.agentActions}>
+                                                    <button
+                                                        className={styles.testButton}
+                                                        onClick={() => testAgent(type, profile)}
+                                                        disabled={testingAgent === type}
+                                                    >
+                                                        {testingAgent === type ?
+                                                            <><Loader size={12} className={styles.spin} /> Testing...</> :
+                                                            'Test Agent'
+                                                        }
+                                                    </button>
+
+                                                    {testResults[`agent_${type}`] && (
+                                                        <div className={`${styles.testStatus} ${testResults[`agent_${type}`].success ? styles.success : styles.error}`}>
+                                                            {testResults[`agent_${type}`].success ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
+                                                            <span>{testResults[`agent_${type}`].message}</span>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>

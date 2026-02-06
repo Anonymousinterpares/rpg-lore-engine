@@ -50,7 +50,11 @@ async function verifyMultiplayer() {
             xp: 0,
             inspiration: false,
             attunedItems: [],
-            featureUsages: {}
+            featureUsages: {},
+            knownEntities: {
+                monsters: [],
+                items: []
+            }
         },
         companions: [],
         mode: "EXPLORATION",
@@ -74,7 +78,9 @@ async function verifyMultiplayer() {
             inspirationEnabled: true,
             multiclassingAllowed: true,
             maxConversationHistoryTurns: 50
-        }
+        },
+        codexEntries: [],
+        notifications: []
     };
 
     // 3. Start Multiplayer Host

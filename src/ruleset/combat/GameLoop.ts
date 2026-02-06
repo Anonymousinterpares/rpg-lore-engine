@@ -22,6 +22,7 @@ import { NarratorOutput } from '../agents/ICPSchemas';
 import { EngineDispatcher } from '../agents/EngineDispatcher';
 import { DirectorService } from '../agents/DirectorService';
 import { NPCService } from '../agents/NPCService';
+import { LoreService } from '../agents/LoreService';
 import { z } from 'zod';
 
 type Combatant = z.infer<typeof CombatantSchema>;
@@ -386,6 +387,9 @@ export class GameLoop {
 
         // 2. Add Enemies
         encounter.monsters.forEach((monsterName, index) => {
+            // Trigger lore discovery
+            LoreService.registerMonsterEncounter(monsterName, this.state, () => this.stateManager.saveGame(this.state));
+
             // Ideally we get stats from DataManager, but for now placeholders
             const initRoll = Dice.d20() + 1; // Generic bonus for now
             combatants.push({

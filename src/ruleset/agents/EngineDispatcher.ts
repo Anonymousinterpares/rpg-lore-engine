@@ -3,6 +3,7 @@ import { HexMapManager } from '../combat/HexMapManager';
 import { EngineCallSchema } from './ICPSchemas';
 import { DataManager } from '../data/DataManager';
 import { Dice } from '../combat/Dice';
+import { LoreService } from './LoreService';
 import { z } from 'zod';
 
 type EngineCall = z.infer<typeof EngineCallSchema>;
@@ -54,6 +55,8 @@ export class EngineDispatcher {
                                 quantity: call.args.quantity || 1,
                                 equipped: false
                             });
+                            // Trigger lore discovery
+                            LoreService.registerItemDiscovery(call.args.itemId, state, () => { });
                         }
                         break;
 

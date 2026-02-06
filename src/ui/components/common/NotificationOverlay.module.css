@@ -1,0 +1,102 @@
+.container {
+    position: fixed;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(20, 15, 10, 0.95);
+    border: 1px solid rgba(196, 160, 96, 0.4);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #e0d0b0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(196, 160, 96, 0.1);
+    cursor: pointer;
+    z-index: 2000;
+    min-width: 300px;
+    animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+}
+
+.container:hover {
+    border-color: rgba(196, 160, 96, 0.8);
+    background: rgba(30, 25, 20, 0.98);
+}
+
+.icon {
+    color: #c4a060;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #c4a060;
+    font-weight: 600;
+}
+
+.message {
+    font-size: 0.9rem;
+    color: #e0d0b0;
+}
+
+.closeBtn {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: rgba(224, 208, 176, 0.4);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.closeBtn:hover {
+    color: #e0d0b0;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.progressBar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: #c4a060;
+    width: 100%;
+    animation: shrink 8s linear forwards;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+@keyframes shrink {
+    from {
+        width: 100%;
+    }
+
+    to {
+        width: 0%;
+    }
+}

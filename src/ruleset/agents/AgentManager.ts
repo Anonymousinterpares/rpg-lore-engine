@@ -1,5 +1,7 @@
 import { AgentProfile, AgentType, SwarmConfig, SwarmConfigSchema } from '../schemas/AgentConfigSchema';
 import DEFAULT_SWARM_JSON from './AgentConfig.json';
+import { LLM_PROVIDERS } from '../data/StaticData';
+import { LLMProviderConfig, ModelConfig } from '../schemas/LLMProviderSchema';
 
 const DEFAULT_SWARM_CONFIG = DEFAULT_SWARM_JSON as SwarmConfig;
 
@@ -32,6 +34,21 @@ export class AgentManager {
      */
     public static getAgentProfile(type: AgentType): AgentProfile {
         return this.getConfig()[type] as AgentProfile;
+    }
+
+    /**
+     * Helper to get the provider configuration for an agent's current setting.
+     */
+    public static getProviderForAgent(profile: AgentProfile): LLMProviderConfig | undefined {
+        return LLM_PROVIDERS.find(p => p.id === profile.providerId);
+    }
+
+    /**
+     * Helper to get the model configuration for an agent's current setting.
+     */
+    public static getModelForAgent(profile: AgentProfile): ModelConfig | undefined {
+        const provider = this.getProviderForAgent(profile);
+        return provider?.models.find(m => m.id === profile.modelId);
     }
 
     /**

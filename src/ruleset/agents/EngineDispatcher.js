@@ -1,5 +1,6 @@
 import { DataManager } from '../data/DataManager';
 import { Dice } from '../combat/Dice';
+import { LoreService } from './LoreService';
 export class EngineDispatcher {
     /**
      * Dispatches a list of engine calls suggested by an LLM agent.
@@ -30,6 +31,8 @@ export class EngineDispatcher {
                                 quantity: call.args.quantity || 1,
                                 equipped: false
                             });
+                            // Trigger lore discovery
+                            LoreService.registerItemDiscovery(call.args.itemId, state, () => { });
                         }
                         break;
                     case 'remove_item':

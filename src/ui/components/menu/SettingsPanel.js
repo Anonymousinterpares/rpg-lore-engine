@@ -12,6 +12,7 @@ const SettingsPanel = ({ onClose, onSave, initialSettings, className = '', isPag
     const [selectedModels, setSelectedModels] = useState({});
     const [testResults, setTestResults] = useState({});
     const [testingProvider, setTestingProvider] = useState(null);
+    const [testingAgent, setTestingAgent] = useState(null);
     const [swarmConfig, setSwarmConfig] = useState(AgentManager.getConfig());
     useEffect(() => {
         const loadKeys = async () => {
@@ -105,6 +106,35 @@ const SettingsPanel = ({ onClose, onSave, initialSettings, className = '', isPag
             setTestingProvider(null);
         }
     };
+    const testAgent = async (type, profile) => {
+        setTestingAgent(type);
+        setTestResults(prev => ({ ...prev, [`agent_${type}`]: { success: false, message: '' } }));
+        console.log(`[SettingsPanel] Testing Agent: ${profile.name} (${type})...`);
+        try {
+            const provider = AgentManager.getProviderForAgent(profile);
+            const model = AgentManager.getModelForAgent(profile);
+            if (!provider || !model) {
+                const err = { success: false, message: 'Invalid provider/model config.' };
+                setTestResults(prev => ({ ...prev, [`agent_${type}`]: err }));
+                return;
+            }
+            const result = await LLMClient.testConnection(provider, model);
+            // Log full output to console as requested by user
+            if (result.success) {
+                console.log(`[Agent Test Success] ${profile.name} is ready.`);
+            }
+            else {
+                console.error(`[Agent Test Failed] ${profile.name}: ${result.message}`);
+            }
+            setTestResults(prev => ({ ...prev, [`agent_${type}`]: result }));
+        }
+        catch (e) {
+            setTestResults(prev => ({ ...prev, [`agent_${type}`]: { success: false, message: e.message } }));
+        }
+        finally {
+            setTestingAgent(null);
+        }
+    };
     const handleToggle = (key, section) => {
         setSettings({
             ...settings,
@@ -129,7 +159,9 @@ const SettingsPanel = ({ onClose, onSave, initialSettings, className = '', isPag
                                                                 _jsxs(_Fragment, { children: [_jsx(Loader, { size: 12, className: styles.spin }), " Testing..."] }) :
                                                                 'Test Connection' }), testResults[provider.id] && (_jsxs("div", { className: `${styles.testStatus} ${testResults[provider.id].success ? styles.success : styles.error}`, children: [testResults[provider.id].success ? _jsx(CheckCircle, { size: 14 }) : _jsx(AlertCircle, { size: 14 }), _jsx("span", { children: testResults[provider.id].message }), testResults[provider.id].latencyMs && _jsxs("span", { className: styles.latency, children: ["(", testResults[provider.id].latencyMs, "ms)"] })] }))] })] }, provider.id))) })] })), activeTab === 'agents' && (_jsxs("div", { className: styles.section, children: [_jsxs("div", { className: styles.sectionHeader, children: [_jsx("h3", { children: "Agent Role Assignment" }), _jsxs("div", { className: styles.actionGroup, children: [_jsxs("button", { className: styles.iconButton, onClick: handleExport, title: "Export Config", children: [_jsx(Download, { size: 16 }), _jsx("span", { children: "Export" })] }), _jsxs("label", { className: styles.iconButton, title: "Import Config", children: [_jsx(Upload, { size: 16 }), _jsx("span", { children: "Import" }), _jsx("input", { type: "file", accept: ".json", onChange: handleImport, hidden: true })] })] })] }), _jsx("p", { className: styles.hint, children: "Map specialized game agents to specific LLM models. Settings are saved to browser local storage." }), _jsx("div", { className: styles.agentList, children: Object.entries(swarmConfig).map(([type, profile]) => {
                                             const provider = LLM_PROVIDERS.find(p => p.id === profile.providerId);
-                                            return (_jsxs("div", { className: styles.apiBlock, children: [_jsxs("div", { className: styles.apiHeader, children: [_jsxs("div", { className: styles.agentName, children: [_jsx("strong", { children: profile.name }), _jsx("span", { className: styles.roleTag, children: type })] }), _jsx("button", { className: styles.resetButton, onClick: () => resetAgent(type), title: "Reset to Default", children: _jsx(RotateCcw, { size: 14 }) })] }), _jsxs("div", { className: styles.agentParameters, children: [_jsxs("div", { className: styles.inputGroup, children: [_jsx("label", { children: "Provider" }), _jsx("select", { value: profile.providerId, onChange: (e) => updateAgentModel(type, e.target.value, LLM_PROVIDERS.find(p => p.id === e.target.value)?.models[0].id || ''), className: styles.modelSelect, children: LLM_PROVIDERS.map(p => (_jsx("option", { value: p.id, children: p.name }, p.id))) })] }), _jsxs("div", { className: styles.inputGroup, children: [_jsx("label", { children: "Model" }), _jsx("select", { value: profile.modelId, onChange: (e) => updateAgentModel(type, profile.providerId, e.target.value), className: styles.modelSelect, children: provider?.models.map(m => (_jsx("option", { value: m.id, children: m.displayName }, m.id))) })] }), _jsxs("div", { className: styles.sliderGroup, children: [_jsxs("label", { children: ["Temperature ", _jsxs("span", { children: ["(", profile.temperature, ")"] })] }), _jsx("input", { type: "range", min: "0", max: "2", step: "0.1", value: profile.temperature, onChange: (e) => updateAgentParam(type, 'temperature', parseFloat(e.target.value)) })] }), _jsxs("div", { className: styles.inputGroup, children: [_jsx("label", { children: "Max Tokens" }), _jsx("input", { type: "number", value: profile.maxTokens, onChange: (e) => updateAgentParam(type, 'maxTokens', parseInt(e.target.value)), className: styles.keyInput })] })] })] }, type));
+                                            return (_jsxs("div", { className: styles.apiBlock, children: [_jsxs("div", { className: styles.apiHeader, children: [_jsxs("div", { className: styles.agentName, children: [_jsx("strong", { children: profile.name }), _jsx("span", { className: styles.roleTag, children: type })] }), _jsx("button", { className: styles.resetButton, onClick: () => resetAgent(type), title: "Reset to Default", children: _jsx(RotateCcw, { size: 14 }) })] }), _jsxs("div", { className: styles.agentParameters, children: [_jsxs("div", { className: styles.inputGroup, children: [_jsx("label", { children: "Provider" }), _jsx("select", { value: profile.providerId, onChange: (e) => updateAgentModel(type, e.target.value, LLM_PROVIDERS.find(p => p.id === e.target.value)?.models[0].id || ''), className: styles.modelSelect, children: LLM_PROVIDERS.map(p => (_jsx("option", { value: p.id, children: p.name }, p.id))) })] }), _jsxs("div", { className: styles.inputGroup, children: [_jsx("label", { children: "Model" }), _jsx("select", { value: profile.modelId, onChange: (e) => updateAgentModel(type, profile.providerId, e.target.value), className: styles.modelSelect, children: provider?.models.map(m => (_jsx("option", { value: m.id, children: m.displayName }, m.id))) })] }), _jsxs("div", { className: styles.sliderGroup, children: [_jsxs("label", { children: ["Temperature ", _jsxs("span", { children: ["(", profile.temperature, ")"] })] }), _jsx("input", { type: "range", min: "0", max: "2", step: "0.1", value: profile.temperature, onChange: (e) => updateAgentParam(type, 'temperature', parseFloat(e.target.value)) })] }), _jsxs("div", { className: styles.inputGroup, children: [_jsx("label", { children: "Max Tokens" }), _jsx("input", { type: "number", value: profile.maxTokens, onChange: (e) => updateAgentParam(type, 'maxTokens', parseInt(e.target.value)), className: styles.keyInput })] }), _jsxs("div", { className: styles.agentActions, children: [_jsx("button", { className: styles.testButton, onClick: () => testAgent(type, profile), disabled: testingAgent === type, children: testingAgent === type ?
+                                                                            _jsxs(_Fragment, { children: [_jsx(Loader, { size: 12, className: styles.spin }), " Testing..."] }) :
+                                                                            'Test Agent' }), testResults[`agent_${type}`] && (_jsxs("div", { className: `${styles.testStatus} ${testResults[`agent_${type}`].success ? styles.success : styles.error}`, children: [testResults[`agent_${type}`].success ? _jsx(CheckCircle, { size: 14 }) : _jsx(AlertCircle, { size: 14 }), _jsx("span", { children: testResults[`agent_${type}`].message })] }))] })] })] }, type));
                                         }) })] }))] })] }), _jsxs("div", { className: styles.footer, children: [_jsx("button", { className: styles.saveButton, onClick: () => onSave({ ...settings, ai: { ...settings.ai, selectedModels } }), children: "Save Changes" }), !isPage && _jsx("button", { className: styles.cancelButton, onClick: onClose, children: "Cancel" })] })] }));
     if (isPage)
         return panelContent;

@@ -83,6 +83,23 @@ export const FullSaveStateSchema = z.object({
     lastNarrative: z.string().default(''),
     conversationHistory: z.array(ConversationTurnSchema).default([]),
     triggeredEvents: z.array(z.string()).default([]),
+    codexEntries: z.array(z.object({
+        id: z.string(),
+        category: z.enum(['bestiary', 'items']),
+        entityId: z.string(),
+        title: z.string(),
+        content: z.string(),
+        isNew: z.boolean().default(true),
+        discoveredAt: z.number()
+    })).default([]),
+    notifications: z.array(z.object({
+        id: z.string(),
+        type: z.enum(['CODEX_ENTRY']),
+        message: z.string(),
+        data: z.any(),
+        isRead: z.boolean().default(false),
+        createdAt: z.number()
+    })).default([]),
 
     // --- Settings ---
     settings: CampaignSettingsSchema

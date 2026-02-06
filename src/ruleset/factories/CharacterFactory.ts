@@ -146,6 +146,10 @@ export class CharacterFactory {
                 attunedItems: [],
                 xp: 0,
                 inspiration: false,
+                knownEntities: {
+                    monsters: [],
+                    items: []
+                },
                 biography: {
                     background: background.name,
                     traits: background.personalitySuggested?.traits || [],
@@ -226,7 +230,9 @@ export class CharacterFactory {
                 inspirationEnabled: true,
                 multiclassingAllowed: true,
                 maxConversationHistoryTurns: 50
-            }
+            },
+            codexEntries: [],
+            notifications: []
         };
     }
 }

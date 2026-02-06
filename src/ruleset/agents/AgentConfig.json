@@ -28,7 +28,7 @@
         "name": "Lore Keeper",
         "providerId": "openrouter",
         "modelId": "mistral-7b",
-        "temperature": 0.3,
+        "temperature": 0.7,
         "maxTokens": 2000
     }
 }

@@ -13,6 +13,7 @@ import { NarratorService } from '../agents/NarratorService';
 import { EngineDispatcher } from '../agents/EngineDispatcher';
 import { DirectorService } from '../agents/DirectorService';
 import { NPCService } from '../agents/NPCService';
+import { LoreService } from '../agents/LoreService';
 /**
  * The GameLoop is the central heart of the RPG engine.
  * It coordinates Intent, Logic, AI, and Persistence.
@@ -322,6 +323,8 @@ export class GameLoop {
         });
         // 2. Add Enemies
         encounter.monsters.forEach((monsterName, index) => {
+            // Trigger lore discovery
+            LoreService.registerMonsterEncounter(monsterName, this.state, () => this.stateManager.saveGame(this.state));
             // Ideally we get stats from DataManager, but for now placeholders
             const initRoll = Dice.d20() + 1; // Generic bonus for now
             combatants.push({

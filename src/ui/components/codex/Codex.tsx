@@ -77,9 +77,12 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                     case 'conditions': data = conditionsData; break;
                     case 'races': data = DataManager.getRaces(); break;
                     case 'classes': data = DataManager.getClasses(); break;
-                    case 'bestiary': data = []; break;
+                    case 'bestiary':
+                    case 'items':
+                        data = state?.codexEntries?.filter(e => e.category === initialDeepLink.category) || [];
+                        break;
                 }
-                const entry = data.find(e => (e.id === initialDeepLink.entryId || e.name === initialDeepLink.entryId));
+                const entry = data.find(e => (e.id === initialDeepLink.entryId || e.name === initialDeepLink.entryId || e.entityId === initialDeepLink.entryId));
                 if (entry) {
                     setSelectedEntry(entry);
                     setActiveCategory(initialDeepLink.category);
@@ -204,15 +207,36 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                     </div>
                 );
             case 'items':
-                return (
-                    <div className={styles.entriesGrid}>
-                        {DataManager.getRaces().length > 0 && <p className={styles.placeholder}>Items lore coming soon...</p>}
-                    </div>
-                );
             case 'bestiary':
+                const dynamicEntries = state?.codexEntries?.filter(e => e.category === activeCategory) || [];
+                if (dynamicEntries.length === 0) {
+                    return (
+                        <div className={styles.placeholder}>
+                            {activeCategory === 'items' ? 'Collect items to unlock their lore...' : 'Encounter creatures to record their history...'}
+                        </div>
+                    );
+                }
                 return (
                     <div className={styles.entriesGrid}>
-                        <p className={styles.placeholder}>Monster knowledge being transcribed...</p>
+                        {dynamicEntries.map(entry => (
+                            <div
+                                key={entry.id}
+                                id={`entry-${entry.id}`}
+                                className={`${styles.entryCard} ${selectedEntry?.id === entry.id ? styles.active : ''}`}
+                                onClick={() => {
+                                    setSelectedEntry(entry);
+                                    if (entry.isNew) {
+                                        entry.isNew = false;
+                                        updateState();
+                                    }
+                                }}
+                            >
+                                <div className={styles.entryHeader}>
+                                    <h4>{entry.title}</h4>
+                                    {entry.isNew && <span className={styles.newLabel}>NEW</span>}
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 );
             case 'magic':
@@ -392,6 +416,15 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                                             </div>
                                             <p className={styles.spellDescription}>{selectedEntry.description}</p>
                                         </>
+                                    )}
+                                    {(activeCategory === 'bestiary' || activeCategory === 'items') && (
+                                        <div className={styles.markdownContent}>
+                                            {selectedEntry.content.split('\n').map((line: string, i: number) => {
+                                                if (line.startsWith('###')) return <h4 key={i} className={styles.mdH3}>{parseInlines(line.replace('###', '').trim())}</h4>;
+                                                if (line.startsWith('-')) return <li key={i} className={styles.mdLi}>{parseInlines(line.replace('-', '').trim())}</li>;
+                                                return <p key={i}>{parseInlines(line)}</p>;
+                                            })}
+                                        </div>
                                     )}
                                 </div>
                             </div>

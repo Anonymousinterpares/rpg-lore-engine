@@ -16,6 +16,7 @@ import WorldMapPage from './components/book/WorldMapPage';
 import QuestsPage from './components/book/QuestsPage';
 import { BookPageData } from './context/BookContext';
 import { Book, Sparkles } from 'lucide-react';
+import NotificationOverlay from './components/common/NotificationOverlay';
 
 const App: React.FC = () => {
     const { state, isActive, startGame, endGame } = useGameState();
@@ -25,6 +26,7 @@ const App: React.FC = () => {
     const [bookOpen, setBookOpen] = useState(false);
     const [activeBookPageId, setActiveBookPageId] = useState<string>('character');
     const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
+    const [codexDeepLink, setCodexDeepLink] = useState<{ category: string; entryId?: string } | undefined>(undefined);
 
     // Close modals on Escape key
     useEffect(() => {
@@ -122,8 +124,9 @@ const App: React.FC = () => {
         {
             id: 'codex',
             label: 'Codex',
-            content: <Codex isOpen={true} onClose={() => { }} isPage={true} />,
-            permanent: true
+            content: <Codex isOpen={true} onClose={() => { }} isPage={true} initialDeepLink={codexDeepLink} />,
+            permanent: true,
+            hasNotification: state?.codexEntries?.some(e => e.isNew)
         },
         {
             id: 'settings',
@@ -151,7 +154,8 @@ const App: React.FC = () => {
         setBookOpen(true);
     };
 
-    const openCodex = () => {
+    const openCodex = (category: string = 'mechanics', entryId?: string) => {
+        setCodexDeepLink(entryId ? { category, entryId } : undefined);
         setActiveBookPageId('codex');
         setBookOpen(true);
     };
@@ -261,6 +265,7 @@ const App: React.FC = () => {
                             </div>
                         </div>
                     )}
+                    <NotificationOverlay onOpenCodex={openCodex} />
                 </>
             )}
             {bookOpen && (
