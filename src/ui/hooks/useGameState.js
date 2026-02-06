@@ -13,12 +13,26 @@ export const GameProvider = ({ children }) => {
             setState({ ...engine.getState() });
         }
     }, [engine]);
-    const startGame = useCallback((initialState) => {
+    const startGame = useCallback(async (initialState) => {
         DataManager.initialize();
         const newEngine = new GameLoop(initialState, '/', new BrowserStorageProvider());
         setEngine(newEngine);
         setState(initialState);
         setIsActive(true);
+        // Auto-trigger opening narration for new games (turn 0)
+        if (initialState.worldTime.totalTurns === 0 && initialState.conversationHistory.length === 0) {
+            console.log('[GameProvider] New game detected, triggering opening narration...');
+            // Use setTimeout to ensure state is set before processing
+            setTimeout(async () => {
+                try {
+                    await newEngine.processTurn('__OPENING_SCENE__');
+                    setState({ ...newEngine.getState() });
+                }
+                catch (e) {
+                    console.error('[GameProvider] Failed to generate opening narration:', e);
+                }
+            }, 100);
+        }
     }, []);
     const endGame = useCallback(() => {
         setIsActive(false);

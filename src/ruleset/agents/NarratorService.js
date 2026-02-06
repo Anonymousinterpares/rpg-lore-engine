@@ -21,20 +21,56 @@ export class NarratorService {
         const modelConfig = providerConfig.models.find(m => m.id === profile.modelId);
         if (!modelConfig)
             throw new Error(`Model ${profile.modelId} not found in provider ${profile.providerId}.`);
+        // Handle special opening scene marker
+        const isOpeningScene = playerInput === '__OPENING_SCENE__';
+        const effectiveInput = isOpeningScene ? 'Describe the opening scene of this new adventure.' : playerInput;
         const systemPrompt = this.constructSystemPrompt(context, state, profile, directorDirective);
         try {
+            console.log(`[NarratorService] Generating narrative (isOpening: ${isOpeningScene})...`);
             const rawResponse = await LLMClient.generateCompletion(providerConfig, modelConfig, {
                 systemPrompt,
-                userMessage: playerInput || "The adventure begins.", // Handled as exploration trigger if empty
+                userMessage: effectiveInput || "The adventure begins.",
                 temperature: profile.temperature,
                 maxTokens: profile.maxTokens,
                 responseFormat: 'json'
             });
+            console.log('[NarratorService] Raw response (first 300 chars):', rawResponse.substring(0, 300));
             // Clean response for JSON parsing (remove markdown blocks if LLM adds them)
             const cleanJson = this.extractJson(rawResponse);
-            const parsed = NarratorOutputSchema.parse(JSON.parse(cleanJson));
+            // Parse with safeParse to avoid crashes
+            let parsed;
+            try {
+                parsed = JSON.parse(cleanJson);
+            }
+            catch (jsonError) {
+                console.error('[NarratorService] JSON parse error:', jsonError);
+                console.error('[NarratorService] Clean JSON was:', cleanJson.substring(0, 500));
+                throw new Error('LLM returned invalid JSON');
+            }
+            const result = NarratorOutputSchema.safeParse(parsed);
+            if (!result.success) {
+                console.warn('[NarratorService] Schema validation failed:', result.error.errors);
+                console.warn('[NarratorService] Parsed object was:', JSON.stringify(parsed).substring(0, 500));
+                // Attempt to salvage the narrative_output if it exists
+                if (parsed.narrative_output && typeof parsed.narrative_output === 'string') {
+                    return {
+                        narrative_output: parsed.narrative_output,
+                        engine_calls: [],
+                        world_updates: { hex_discovery: null, poi_unlocked: null }
+                    };
+                }
+                // If there's any text that looks like narrative, use it
+                if (parsed.narrative || parsed.text || parsed.content || parsed.response) {
+                    return {
+                        narrative_output: parsed.narrative || parsed.text || parsed.content || parsed.response,
+                        engine_calls: [],
+                        world_updates: { hex_discovery: null, poi_unlocked: null }
+                    };
+                }
+                throw new Error('LLM response did not match expected schema');
+            }
             this.isFirstTurnAfterLoad = false; // Reset after use
-            return parsed;
+            return result.data;
         }
         catch (e) {
             console.error('[NarratorService] Narrative generation failed:', e);
@@ -48,7 +84,7 @@ export class NarratorService {
     static constructSystemPrompt(context, state, profile, directorDirective) {
         const isNewGame = state.conversationHistory.length === 0 && !this.isFirstTurnAfterLoad;
         let prompt = `You are the Narrator for a D&D 5e text-based RPG.
-${profile.basePrompt}
+${profile.basePrompt || ''}
 
 ## CURRENT CONTEXT
 - Mode: ${context.mode}
@@ -63,7 +99,7 @@ ${profile.basePrompt}
             prompt += `
 ## DIRECTOR DIRECTIVE
 ${directorDirective.directive}
-(Note: Incorporate this into your narrative or engine calls naturally.)
+(Note: Incorporate this into your narrative naturally.)
 
 `;
         }
@@ -98,14 +134,27 @@ TASK:
 `;
         }
         prompt += `
-## OUTPUT RULES
-- Output MUST be valid JSON matching NarratorOutputSchema.
-- Keep narrative concise and evocative.
-- Suggest discoveries or mechanical triggers via engine_calls when appropriate.
+## OUTPUT FORMAT (STRICT JSON)
+You MUST respond with ONLY valid JSON in this EXACT format:
+{
+  "narrative_output": "Your narrative text goes here. Describe the scene, respond to the player's action, and advance the story.",
+  "engine_calls": [],
+  "world_updates": {
+    "hex_discovery": null,
+    "poi_unlocked": null
+  }
+}
+
+RULES:
+- "narrative_output" is REQUIRED and must be a string with your narrative.
+- "engine_calls" should be an empty array [] unless you need to trigger game mechanics.
+- Do NOT include any text outside the JSON object.
+- Do NOT wrap the JSON in markdown code blocks.
 `;
         return prompt;
     }
     static extractJson(text) {
+        // Try to find JSON object in the response
         const jsonMatch = text.match(/\{[\s\S]*\}/);
         return jsonMatch ? jsonMatch[0] : text;
     }

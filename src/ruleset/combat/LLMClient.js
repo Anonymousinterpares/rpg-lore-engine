@@ -34,6 +34,7 @@ export class LLMClient {
         const apiKey = await this.getApiKey(provider);
         if (!apiKey)
             return { success: false, message: 'API key not found.' };
+        console.log(`[LLMClient] Testing connection to ${provider.id} (${model.id})...`);
         const startTime = Date.now();
         try {
             // Minimal "Hello" request
@@ -45,40 +46,55 @@ export class LLMClient {
                 body = { contents: [{ parts: [{ text: 'Hello' }] }] };
             }
             else {
+                const isOAICompatible = provider.id === 'openai' || provider.id === 'openrouter';
+                url = isOAICompatible ? `${provider.baseUrl}/chat/completions` : provider.baseUrl;
                 headers['Authorization'] = `Bearer ${apiKey}`;
                 body = {
                     model: model.apiName,
                     messages: [{ role: 'user', content: 'Hello' }],
                     max_tokens: 5
                 };
-                if (provider.id === 'openai') {
-                    url = `${provider.baseUrl}/chat/completions`;
-                }
-                else if (provider.id === 'anthropic') {
+                if (provider.id === 'anthropic') {
                     url = `${provider.baseUrl}/messages`;
                     headers['x-api-key'] = apiKey;
                     headers['anthropic-version'] = '2023-06-01';
                 }
             }
+            console.log(`[LLMClient] Test URL: ${url.split('?')[0]}`);
             const response = await fetch(url, {
                 method: 'POST',
                 headers,
                 body: JSON.stringify(body)
             });
+            const duration = Date.now() - startTime;
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                return {
-                    success: false,
-                    message: `API Error (${response.status}): ${errorData.error?.message || response.statusText}`
-                };
+                const errorText = await response.text();
+                console.error(`[LLMClient] Test HTTP Error ${response.status} after ${duration}ms`);
+                console.error(`[LLMClient] Test Response Body: ${errorText.substring(0, 500)}`);
+                try {
+                    const errorData = JSON.parse(errorText);
+                    return {
+                        success: false,
+                        message: `API Error (${response.status}): ${errorData.error?.message || response.statusText}`
+                    };
+                }
+                catch {
+                    return {
+                        success: false,
+                        message: `API Error (${response.status}): ${response.statusText} (likely HTML/404)`
+                    };
+                }
             }
+            const data = await response.json();
+            console.log(`[LLMClient] Test Success (${duration}ms).`);
             return {
                 success: true,
                 message: 'Connection successful!',
-                latencyMs: Date.now() - startTime
+                latencyMs: duration
             };
         }
         catch (e) {
+            console.error(`[LLMClient] Test Network Error: ${e.message}`);
             return { success: false, message: `Network Error: ${e.message}` };
         }
     }
@@ -86,9 +102,16 @@ export class LLMClient {
      * Generates a completion from the LLM provider.
      */
     static async generateCompletion(provider, model, options) {
+        // IMMEDIATE LOGGING - If this doesn't appear, the old cached code is running!
+        console.log('======= LLMClient.generateCompletion ENTERED =======');
+        console.log(`[LLMClient] Provider: ${provider.id}, baseUrl: ${provider.baseUrl}`);
+        console.log(`[LLMClient] Model: ${model.id}, apiName: ${model.apiName}`);
         const apiKey = await this.getApiKey(provider);
-        if (!apiKey)
+        if (!apiKey) {
+            console.error(`[LLMClient] NO API KEY FOUND for provider: ${provider.id}`);
             throw new Error(`API key for ${provider.id} not found.`);
+        }
+        console.log(`[LLMClient] API Key found (length: ${apiKey.length})`);
         let url = provider.baseUrl;
         let headers = { 'Content-Type': 'application/json' };
         let body = {};
@@ -123,7 +146,8 @@ export class LLMClient {
         }
         else {
             // OpenAI and OpenRouter (OpenAI compatible)
-            url = provider.id === 'openai' ? `${provider.baseUrl}/chat/completions` : provider.baseUrl;
+            const isOAICompatible = provider.id === 'openai' || provider.id === 'openrouter';
+            url = isOAICompatible ? `${provider.baseUrl}/chat/completions` : provider.baseUrl;
             headers['Authorization'] = `Bearer ${apiKey}`;
             body = {
                 model: model.apiName,
@@ -138,26 +162,42 @@ export class LLMClient {
                 body.response_format = { type: 'json_object' };
             }
         }
+        console.log(`[LLMClient] Requesting ${model.id} via ${provider.id}...`);
+        console.log(`[LLMClient] URL: ${url.split('?')[0]} (API Key hidden)`);
+        const startTime = Date.now();
         const response = await fetch(url, {
             method: 'POST',
             headers,
             body: JSON.stringify(body)
         });
+        const duration = Date.now() - startTime;
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(`LLM API Error (${response.status}): ${errorData.error?.message || response.statusText}`);
+            const errorText = await response.text();
+            console.error(`[LLMClient] HTTP Error ${response.status} after ${duration}ms`);
+            console.error(`[LLMClient] Response Body: ${errorText.substring(0, 500)}${errorText.length > 500 ? '...' : ''}`);
+            try {
+                const errorData = JSON.parse(errorText);
+                throw new Error(`LLM API Error (${response.status}): ${errorData.error?.message || response.statusText}`);
+            }
+            catch {
+                throw new Error(`LLM API Error (${response.status}): ${response.statusText}. See console for HTML response.`);
+            }
         }
         const data = await response.json();
+        console.log(`[LLMClient] Success (${duration}ms). Response received.`);
         // Extract text based on provider
+        let result = '';
         if (provider.id === 'gemini') {
-            return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            result = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
         }
         else if (provider.id === 'anthropic') {
-            return data.content?.[0]?.text || '';
+            result = data.content?.[0]?.text || '';
         }
         else {
             // OpenAI / OpenRouter
-            return data.choices?.[0]?.message?.content || '';
+            result = data.choices?.[0]?.message?.content || '';
         }
+        console.log(`[LLMClient] Content length: ${result.length} characters.`);
+        return result;
     }
 }
