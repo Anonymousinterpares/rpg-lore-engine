@@ -1,6 +1,9 @@
-import { BaseAgent, NarratorAgent, DirectorAgent } from './AgentSwarm';
+import { BaseAgent } from './AgentSwarm';
 import { HistoryManager } from './HistoryManager';
 import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
+import { GameState } from '../schemas/FullSaveStateSchema';
+import { HexMapManager } from '../combat/HexMapManager';
+import { ContextBuilder } from './ContextBuilder';
 
 export class ScribeAgent extends BaseAgent {
     constructor() {
@@ -21,23 +24,15 @@ export class ContextManager {
     /**
      * Constructs the full context for a Narrator call.
      */
-    public getNarratorContext(pc: PlayerCharacter, hex: any): any {
-        return {
-            character: {
-                name: pc.name,
-                class: pc.class,
-                level: pc.level,
-                hp: pc.hp,
-                stats: pc.stats
-            },
-            location: hex.name || (hex.coordinates ? `Hex ${hex.coordinates.join(',')}` : 'Unknown Location'),
-            recentHistory: this.history.getRecent(10),
-            summary: this.currentSummary,
-            partyNames: pc.name // Could expand to include NPCs
-        };
+    public getNarratorContext(state: GameState, hexManager: HexMapManager): any {
+        return ContextBuilder.build(
+            state,
+            hexManager,
+            this.history.getRecent(10)
+        );
     }
 
-    public addEvent(role: 'narrator' | 'player' | 'director', content: string) {
+    public addEvent(role: 'narrator' | 'player' | 'director' | 'scribe' | 'system', content: string) {
         this.history.addMessage(role, content);
     }
 

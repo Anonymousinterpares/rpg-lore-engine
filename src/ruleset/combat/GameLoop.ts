@@ -93,7 +93,7 @@ export class GameLoop {
             systemResponse = `[ENCOUNTER] ${encounter.name}: ${encounter.description}`;
         }
 
-        const narratorContext = this.contextManager.getNarratorContext(this.state.character, currentHex || {});
+        const narratorContext = this.contextManager.getNarratorContext(this.state, this.hexMapManager);
         const narratorOutput = `[SIMULATED NARRATOR] You said: "${input}". 
         Location: ${currentHex?.name || 'Unknown'}. The world reacts to your ${intent.type.toLowerCase()}...`;
 
@@ -102,7 +102,7 @@ export class GameLoop {
         this.contextManager.addEvent('narrator', narratorOutput);
 
         // Scribe processing (summarization)
-        await this.scribe.processTurn(this.state, this.contextManager.getNarratorContext(this.state.character, {}).recentHistory);
+        await this.scribe.processTurn(this.state, narratorContext.recentHistory);
 
         this.stateManager.saveGame(this.state);
 
