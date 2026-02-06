@@ -1,0 +1,206 @@
+{
+    "Plains": [
+        {
+            "id": "Boar",
+            "cr": 0.25
+        },
+        {
+            "id": "Giant_Weasel",
+            "cr": 0.125
+        },
+        {
+            "id": "Goblin",
+            "cr": 0.25
+        },
+        {
+            "id": "Hawk",
+            "cr": 0
+        },
+        {
+            "id": "Worg",
+            "cr": 0.5
+        },
+        {
+            "id": "Giant_Eagle",
+            "cr": 1
+        },
+        {
+            "id": "Lion",
+            "cr": 1
+        }
+    ],
+    "Forest": [
+        {
+            "id": "Wolf",
+            "cr": 0.25
+        },
+        {
+            "id": "Goblin",
+            "cr": 0.25
+        },
+        {
+            "id": "Owl",
+            "cr": 0
+        },
+        {
+            "id": "Brown_Bear",
+            "cr": 1
+        },
+        {
+            "id": "Dire_Wolf",
+            "cr": 1
+        },
+        {
+            "id": "Owlbear",
+            "cr": 3
+        },
+        {
+            "id": "Green_Dragon_Wyrmling",
+            "cr": 2
+        }
+    ],
+    "Swamp": [
+        {
+            "id": "Crocodile",
+            "cr": 0.5
+        },
+        {
+            "id": "Giant_Frog",
+            "cr": 0.25
+        },
+        {
+            "id": "Giant_Lizard",
+            "cr": 0.25
+        },
+        {
+            "id": "Constrictor_Snake",
+            "cr": 0.25
+        },
+        {
+            "id": "Ghoul",
+            "cr": 1
+        },
+        {
+            "id": "Black_Dragon_Wyrmling",
+            "cr": 2
+        }
+    ],
+    "Mountains": [
+        {
+            "id": "Eagle",
+            "cr": 0
+        },
+        {
+            "id": "Giant_Goat",
+            "cr": 0.5
+        },
+        {
+            "id": "Orc",
+            "cr": 0.5
+        },
+        {
+            "id": "Harpy",
+            "cr": 1
+        },
+        {
+            "id": "Griffon",
+            "cr": 2
+        },
+        {
+            "id": "Stone_Giant",
+            "cr": 7
+        }
+    ],
+    "Hills": [
+        {
+            "id": "Goat",
+            "cr": 0
+        },
+        {
+            "id": "Axe_Beak",
+            "cr": 0.25
+        },
+        {
+            "id": "Gnoll",
+            "cr": 0.5
+        },
+        {
+            "id": "Ogre",
+            "cr": 2
+        },
+        {
+            "id": "Hill_Giant",
+            "cr": 5
+        }
+    ],
+    "Desert": [
+        {
+            "id": "Scorpion",
+            "cr": 0
+        },
+        {
+            "id": "Jackal",
+            "cr": 0
+        },
+        {
+            "id": "Hyena",
+            "cr": 0.125
+        },
+        {
+            "id": "Dust_Mephit",
+            "cr": 0.5
+        },
+        {
+            "id": "Giant_Scorpion",
+            "cr": 3
+        },
+        {
+            "id": "Blue_Dragon_Wyrmling",
+            "cr": 3
+        }
+    ],
+    "Coast": [
+        {
+            "id": "Crab",
+            "cr": 0
+        },
+        {
+            "id": "Giant_Crab",
+            "cr": 0.125
+        },
+        {
+            "id": "Merfolk",
+            "cr": 0.125
+        },
+        {
+            "id": "Reef_Shark",
+            "cr": 0.5
+        },
+        {
+            "id": "Sahuagin",
+            "cr": 0.5
+        }
+    ],
+    "Ocean": [
+        {
+            "id": "Quipper",
+            "cr": 0
+        },
+        {
+            "id": "Swarm_of_Quippers",
+            "cr": 1
+        },
+        {
+            "id": "Hunter_Shark",
+            "cr": 2
+        },
+        {
+            "id": "Killer_Whale",
+            "cr": 3
+        },
+        {
+            "id": "Giant_Shark",
+            "cr": 5
+        }
+    ]
+}

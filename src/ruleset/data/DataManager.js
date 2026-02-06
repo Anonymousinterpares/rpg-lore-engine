@@ -11,6 +11,7 @@ export class DataManager {
     static classes = {};
     static backgrounds = {};
     static items = {}; // Keyed by Lowercase Name/ID for flexible lookup
+    static monsterMapping = {};
     static initialized = false;
     static async initialize() {
         if (this.initialized)
@@ -59,6 +60,9 @@ export class DataManager {
                 this.items[item.name.toLowerCase().replace(/ /g, '_')] = item;
             }
         }
+        // Load Biome-Monster Mapping
+        const mappingModule = await import('../../../data/mappings/biome_monster_mapping.json');
+        this.monsterMapping = mappingModule.default || mappingModule;
         this.initialized = true;
         console.log(`[DataManager] Initialized with ${Object.keys(this.races).length} Races, ${Object.keys(this.classes).length} Classes, ${Object.keys(this.backgrounds).length} Backgrounds, ${Object.keys(this.items).length} Items (indexed).`);
     }
@@ -128,15 +132,23 @@ export class DataManager {
             return;
         const monsterModules = import.meta.glob('../../../data/monster/*.json');
         for (const path in monsterModules) {
-            const mod = await monsterModules[path]();
-            const monster = mod.default || mod;
-            if (monster.name) {
-                this.monsters[monster.name] = monster;
-                this.monsterLookup[monster.name.toLowerCase()] = monster;
+            try {
+                const mod = await monsterModules[path]();
+                const monster = mod.default || mod;
+                if (monster.name) {
+                    this.monsters[monster.name] = monster;
+                    this.monsterLookup[monster.name.toLowerCase()] = monster;
+                }
+            }
+            catch (e) {
+                console.error(`[DataManager] Failed to load monster from ${path}:`, e);
             }
         }
     }
     static getMonster(name) {
         return this.monsters[name] || this.monsterLookup[name.toLowerCase()];
+    }
+    static getMonstersByBiome(biome) {
+        return this.monsterMapping[biome] || [];
     }
 }

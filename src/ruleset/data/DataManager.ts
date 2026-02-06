@@ -18,6 +18,7 @@ export class DataManager {
     private static classes: Record<string, CharacterClass> = {};
     private static backgrounds: Record<string, Background> = {};
     private static items: Record<string, Item> = {}; // Keyed by Lowercase Name/ID for flexible lookup
+    private static monsterMapping: Record<string, { id: string, cr: number }[]> = {};
     private static initialized = false;
 
     public static async initialize() {
@@ -70,6 +71,10 @@ export class DataManager {
                 this.items[item.name.toLowerCase().replace(/ /g, '_')] = item;
             }
         }
+
+        // Load Biome-Monster Mapping
+        const mappingModule = await import('../../../data/mappings/biome_monster_mapping.json');
+        this.monsterMapping = mappingModule.default || mappingModule;
 
         this.initialized = true;
         console.log(`[DataManager] Initialized with ${Object.keys(this.races).length} Races, ${Object.keys(this.classes).length} Classes, ${Object.keys(this.backgrounds).length} Backgrounds, ${Object.keys(this.items).length} Items (indexed).`);
@@ -167,5 +172,9 @@ export class DataManager {
 
     public static getMonster(name: string): Monster | undefined {
         return this.monsters[name] || this.monsterLookup[name.toLowerCase()];
+    }
+
+    public static getMonstersByBiome(biome: string): { id: string, cr: number }[] {
+        return this.monsterMapping[biome] || [];
     }
 }
