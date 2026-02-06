@@ -201,6 +201,16 @@ export class GameLoop {
                 };
                 this.initializeCombat(manualEncounter);
                 return `[SYSTEM] Entering COMBAT mode! ${manualEncounter.description}`;
+            case 'target':
+                if (this.state.combat && intent.args?.[0]) {
+                    const targetId = intent.args[0];
+                    const exists = this.state.combat.combatants.some(c => c.id === targetId);
+                    if (exists) {
+                        this.state.combat.selectedTargetId = targetId;
+                        return ''; // Silent success
+                    }
+                }
+                return 'Invalid target.';
             case 'exit':
                 this.state.mode = 'EXPLORATION';
                 this.state.combat = undefined;
@@ -434,7 +444,10 @@ export class GameLoop {
                 type: 'info',
                 message: `Combat started! ${combatants[0].name} takes the first turn.`,
                 turn: 0
-            }]
+            }],
+            selectedTargetId: undefined,
+            lastRoll: undefined,
+            events: []
         };
     }
 
@@ -445,13 +458,17 @@ export class GameLoop {
         let resultMsg = '';
 
         if (intent.command === 'attack') {
-            const targets = this.state.combat.combatants.filter(c => c.type === 'enemy' && c.hp.current > 0);
+            const combatState = this.state.combat;
+            const targets = combatState.combatants.filter(c => c.type === 'enemy' && c.hp.current > 0);
             if (targets.length === 0) return "No valid targets.";
 
-            const target = targets[0]; // Auto-target first enemy for now
+            // Use selected target if valid, otherwise default to first
+            let target = targets.find(t => t.id === combatState.selectedTargetId);
+            if (!target) target = targets[0];
+
             const pc = this.state.character;
-            const strMod = MechanicsEngine.getModifier(this.state.character.stats.STR || 10);
-            const prof = MechanicsEngine.getProficiencyBonus(this.state.character.level);
+            const strMod = MechanicsEngine.getModifier(pc.stats.STR || 10);
+            const prof = MechanicsEngine.getProficiencyBonus(pc.level);
 
             const result = CombatResolutionEngine.resolveAttack(
                 currentCombatant,
@@ -460,6 +477,10 @@ export class GameLoop {
                 "1d8", // Placeholder weapon dice
                 strMod
             );
+
+            // Record roll and emit event
+            combatState.lastRoll = (result.details?.roll || 0) + (result.details?.modifier || 0);
+            this.emitCombatEvent(result.type, target.id, result.damage || 0);
 
             CombatResolutionEngine.applyDamage(target, result.damage);
             resultMsg = CombatLogFormatter.format(result, currentCombatant.name, target.name);
@@ -470,12 +491,12 @@ export class GameLoop {
 
         this.addCombatLog(resultMsg);
 
-        // After player action, advance turn
-        this.advanceCombatTurn();
+        // After player action, advance turn asynchronously
+        setTimeout(() => this.advanceCombatTurn(), 100);
         return resultMsg;
     }
 
-    private advanceCombatTurn() {
+    private async advanceCombatTurn() {
         if (!this.state.combat) return;
 
         this.state.combat.currentTurnIndex++;
@@ -489,16 +510,21 @@ export class GameLoop {
         // Check if combat is over
         if (this.checkCombatEnd()) return;
 
-        // If next is an enemy, perform AI turn
+        // Sync state to UI (important for highlighting current turn)
+        this.stateManager.saveGame(this.state);
+
+        // If next is an enemy, perform AI turn after a delay
         if (nextCombatant.type === 'enemy' && nextCombatant.hp.current > 0) {
-            this.performAITurn(nextCombatant);
+            // "NPC is thinking" delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            await this.performAITurn(nextCombatant);
         } else if (nextCombatant.hp.current <= 0) {
             // Skip dead combatants
             this.advanceCombatTurn();
         }
     }
 
-    private performAITurn(actor: Combatant) {
+    private async performAITurn(actor: Combatant) {
         if (!this.state.combat) return;
 
         const action = CombatAI.decideAction(actor, this.state.combat);
@@ -513,6 +539,10 @@ export class GameLoop {
                 "1d6", // Generic damage
                 strMod
             );
+
+            // Record roll and emit event
+            this.state.combat.lastRoll = (result.details?.roll || 0) + (result.details?.modifier || 0);
+            this.emitCombatEvent(result.type, player.id, result.damage || 0);
 
             CombatResolutionEngine.applyDamage(player, result.damage);
             this.state.character.hp.current = player.hp.current; // Sync PC state
@@ -533,6 +563,26 @@ export class GameLoop {
             message: message,
             turn: this.state.combat.round
         });
+    }
+
+    private emitCombatEvent(type: string, targetId: string, value: number) {
+        if (!this.state.combat) return;
+
+        // Map engine types to UI event types
+        const eventType = type === 'CRIT' ? 'CRIT' : (type === 'HIT' ? 'HIT' : 'MISS');
+
+        this.state.combat.events.push({
+            id: `event-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+            type: eventType as any,
+            targetId,
+            value,
+            timestamp: Date.now()
+        });
+
+        // Limit event history to avoid bloating save state
+        if (this.state.combat.events.length > 10) {
+            this.state.combat.events.shift();
+        }
     }
 
     private checkCombatEnd(): boolean {

@@ -31,10 +31,26 @@
 }
 
 .active {
-    transform: scale(1.05);
-    background: rgba(201, 162, 39, 0.15);
+    transform: scale(1.1);
+    background: rgba(201, 162, 39, 0.2);
     border-radius: var(--radius-sm);
-    box-shadow: 0 0 10px rgba(201, 162, 39, 0.3);
+    box-shadow: 0 0 15px rgba(201, 162, 39, 0.5);
+    z-index: 10;
+}
+
+.selected {
+    outline: 2px solid #8b3a3a;
+    outline-offset: 4px;
+    border-radius: var(--radius-sm);
+    background: rgba(139, 58, 58, 0.15);
+}
+
+.combatant:not(.player) {
+    cursor: pointer;
+}
+
+.combatant:not(.player):hover {
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .indicator {
@@ -74,6 +90,19 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.targetLabel {
+    position: absolute;
+    bottom: -15px;
+    font-size: 0.55rem;
+    font-weight: 900;
+    color: #8b3a3a;
+    letter-spacing: 1px;
+    background: var(--parchment-bg);
+    padding: 0 4px;
+    border: 1px solid #8b3a3a;
+    border-radius: 2px;
 }
 
 .player .name {

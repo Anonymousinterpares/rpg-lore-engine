@@ -50,11 +50,23 @@ export const CombatLogEntrySchema = z.object({
     turn: z.number().optional()
 });
 
+export const CombatEventSchema = z.object({
+    id: z.string(),
+    type: z.enum(['HIT', 'MISS', 'CRIT', 'HEAL', 'CONDITION']),
+    targetId: z.string(),
+    value: z.number().optional(),
+    text: z.string().optional(),
+    timestamp: z.number()
+});
+
 export const CombatStateSchema = z.object({
     round: z.number().default(1),
     currentTurnIndex: z.number().default(0),
     combatants: z.array(CombatantSchema),
-    logs: z.array(CombatLogEntrySchema).default([])
+    logs: z.array(CombatLogEntrySchema).default([]),
+    selectedTargetId: z.string().optional(),
+    lastRoll: z.number().optional(),
+    events: z.array(CombatEventSchema).default([])
 });
 
 export const FullSaveStateSchema = z.object({

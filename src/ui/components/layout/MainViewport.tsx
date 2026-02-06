@@ -7,6 +7,8 @@ import CombatLog from '../combat/CombatLog';
 import DiceRoller from '../combat/DiceRoller';
 import CombatActionBar from '../combat/CombatActionBar';
 import LoadingOverlay from '../common/LoadingOverlay';
+import TurnBanner from '../combat/TurnBanner';
+import CombatOverlay from '../combat/CombatOverlay';
 
 interface MainViewportProps {
     className?: string;
@@ -49,12 +51,21 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
             {isLoading && <LoadingOverlay message="Loading..." />}
 
             {isCombat && state.combat && (
-                <div className={styles.combatTopBar}>
-                    <InitiativeTracker
-                        combatants={state.combat.combatants}
-                        currentTurnId={state.combat.combatants[state.combat.currentTurnIndex]?.id || ''}
+                <>
+                    <TurnBanner
+                        isPlayerTurn={state.combat.combatants[state.combat.currentTurnIndex]?.isPlayer || false}
+                        turnNumber={state.combat.round}
                     />
-                </div>
+                    <CombatOverlay events={state.combat.events} />
+                    <div className={styles.combatTopBar}>
+                        <InitiativeTracker
+                            combatants={state.combat.combatants}
+                            currentTurnId={state.combat.combatants[state.combat.currentTurnIndex]?.id || ''}
+                            selectedTargetId={state.combat.selectedTargetId}
+                            onSelectTarget={(id) => processCommand(`/target ${id}`)}
+                        />
+                    </div>
+                </>
             )}
 
             <div className={styles.centerArea}>
@@ -74,6 +85,8 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
                         <DiceRoller
                             className={styles.combatDice}
                             sides={20}
+                            result={state.combat.lastRoll}
+                            isRolling={isLoading} // Simple approximation
                         />
                     </div>
                 )}

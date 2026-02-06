@@ -1,0 +1,63 @@
+.overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    pointer-events: none;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.banner {
+    background: rgba(0, 0, 0, 0.85);
+    padding: 30px 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-top: 3px solid var(--parchment-accent);
+    border-bottom: 3px solid var(--parchment-accent);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(201, 162, 39, 0.1);
+    animation: slideInOut 2s ease-in-out forwards;
+}
+
+.text {
+    font-family: var(--font-narrative);
+    font-size: 4rem;
+    color: var(--parchment-accent);
+    font-weight: 700;
+    letter-spacing: 0.8rem;
+    text-shadow: 0 0 20px rgba(201, 162, 39, 0.6);
+    margin: 15px 0;
+    text-transform: uppercase;
+}
+
+.line {
+    width: 60%;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--parchment-accent), transparent);
+}
+
+@keyframes slideInOut {
+    0% {
+        transform: scaleX(0);
+        opacity: 0;
+    }
+
+    15% {
+        transform: scaleX(1);
+        opacity: 1;
+    }
+
+    85% {
+        transform: scaleX(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scaleX(0);
+        opacity: 0;
+    }
+}

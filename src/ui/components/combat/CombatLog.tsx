@@ -19,7 +19,10 @@ const CombatLog: React.FC<CombatLogProps> = ({ logs, className = '' }) => {
 
     useEffect(() => {
         if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+            const scrollContainer = scrollRef.current;
+            requestAnimationFrame(() => {
+                scrollContainer.scrollTop = scrollContainer.scrollHeight;
+            });
         }
     }, [logs]);
 

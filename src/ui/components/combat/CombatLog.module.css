@@ -12,7 +12,7 @@
     font-family: var(--font-mono);
     font-size: 0.8rem;
     font-weight: bold;
-    color: var(--terminal-accent);
+    color: var(--terminal-text);
     text-transform: uppercase;
 }
 

@@ -6,7 +6,10 @@ const CombatLog = ({ logs, className = '' }) => {
     const scrollRef = useRef(null);
     useEffect(() => {
         if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+            const scrollContainer = scrollRef.current;
+            requestAnimationFrame(() => {
+                scrollContainer.scrollTop = scrollContainer.scrollHeight;
+            });
         }
     }, [logs]);
     const getTypeClass = (type) => {

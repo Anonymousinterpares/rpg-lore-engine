@@ -1,4 +1,4 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-runtime";
 import styles from './MainViewport.module.css';
 import NarrativeBox from '../narrative/NarrativeBox';
 import PlayerInputField from '../actions/PlayerInputField';
@@ -7,6 +7,8 @@ import CombatLog from '../combat/CombatLog';
 import DiceRoller from '../combat/DiceRoller';
 import CombatActionBar from '../combat/CombatActionBar';
 import LoadingOverlay from '../common/LoadingOverlay';
+import TurnBanner from '../combat/TurnBanner';
+import CombatOverlay from '../combat/CombatOverlay';
 import { useGameState } from '../../hooks/useGameState';
 const MainViewport = ({ className }) => {
     const { state, processCommand, isLoading } = useGameState();
@@ -31,6 +33,6 @@ const MainViewport = ({ className }) => {
     const handlePlayerInput = (input) => {
         processCommand(input);
     };
-    return (_jsxs("main", { className: `${styles.viewport} ${className} ${isCombat ? styles.combatMode : ''}`, children: [isLoading && _jsx(LoadingOverlay, { message: "Loading..." }), isCombat && state.combat && (_jsx("div", { className: styles.combatTopBar, children: _jsx(InitiativeTracker, { combatants: state.combat.combatants, currentTurnId: state.combat.combatants[state.combat.currentTurnIndex]?.id || '' }) })), _jsxs("div", { className: styles.centerArea, children: [_jsx("div", { className: styles.narrativeContainer, children: _jsx(NarrativeBox, { title: locationTitle, text: narrativeText }) }), isCombat && state.combat && (_jsxs("div", { className: styles.combatSidePanel, children: [_jsx(CombatLog, { logs: state.combat.logs, className: styles.combatLog }), _jsx(DiceRoller, { className: styles.combatDice, sides: 20 })] }))] }), _jsx("div", { className: styles.actionBar, children: isCombat ? (_jsx(CombatActionBar, {})) : (_jsx(PlayerInputField, { suggestedActions: suggestedActions, onSubmit: handlePlayerInput })) })] }));
+    return (_jsxs("main", { className: `${styles.viewport} ${className} ${isCombat ? styles.combatMode : ''}`, children: [isLoading && _jsx(LoadingOverlay, { message: "Loading..." }), isCombat && state.combat && (_jsxs(_Fragment, { children: [_jsx(TurnBanner, { isPlayerTurn: state.combat.combatants[state.combat.currentTurnIndex]?.isPlayer || false, turnNumber: state.combat.round }), _jsx(CombatOverlay, { events: state.combat.events }), _jsx("div", { className: styles.combatTopBar, children: _jsx(InitiativeTracker, { combatants: state.combat.combatants, currentTurnId: state.combat.combatants[state.combat.currentTurnIndex]?.id || '', selectedTargetId: state.combat.selectedTargetId, onSelectTarget: (id) => processCommand(`/target ${id}`) }) })] })), _jsxs("div", { className: styles.centerArea, children: [_jsx("div", { className: styles.narrativeContainer, children: _jsx(NarrativeBox, { title: locationTitle, text: narrativeText }) }), isCombat && state.combat && (_jsxs("div", { className: styles.combatSidePanel, children: [_jsx(CombatLog, { logs: state.combat.logs, className: styles.combatLog }), _jsx(DiceRoller, { className: styles.combatDice, sides: 20, result: state.combat.lastRoll, isRolling: isLoading })] }))] }), _jsx("div", { className: styles.actionBar, children: isCombat ? (_jsx(CombatActionBar, {})) : (_jsx(PlayerInputField, { suggestedActions: suggestedActions, onSubmit: handlePlayerInput })) })] }));
 };
 export default MainViewport;
