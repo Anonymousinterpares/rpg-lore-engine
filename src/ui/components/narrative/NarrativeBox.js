@@ -7,12 +7,17 @@ const NarrativeBox = ({ text, speed = 20, title }) => {
     const [isComplete, setIsComplete] = useState(false);
     const scrollRef = useRef(null);
     useEffect(() => {
+        console.log('[NarrativeBox] Text received, first 50 chars:', JSON.stringify(text.substring(0, 50)));
+        console.log('[NarrativeBox] First char code:', text.charCodeAt(0));
         setDisplayedText('');
         setIsComplete(false);
         let index = 0;
         const timer = setInterval(() => {
             if (index < text.length) {
-                setDisplayedText((prev) => prev + text.charAt(index));
+                // CRITICAL: Capture the character BEFORE incrementing index
+                // This prevents the closure from reading the wrong index value
+                const currentChar = text.charAt(index);
+                setDisplayedText((prev) => prev + currentChar);
                 index++;
                 // Auto-scroll to bottom
                 if (scrollRef.current) {
