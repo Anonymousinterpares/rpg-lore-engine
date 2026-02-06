@@ -289,7 +289,12 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                 </div>
                 <nav className={styles.nav}>
                     {CATEGORIES.map(cat => {
-                        const hasNew = cat.id === 'magic' && (state?.character?.unseenSpells?.length ?? 0) > 0;
+                        let hasNew = false;
+                        if (cat.id === 'magic') {
+                            hasNew = (state?.character?.unseenSpells?.length ?? 0) > 0;
+                        } else if (cat.id === 'bestiary' || cat.id === 'items') {
+                            hasNew = state?.codexEntries?.some(e => e.category === cat.id && e.isNew) ?? false;
+                        }
                         return (
                             <button
                                 key={cat.id}

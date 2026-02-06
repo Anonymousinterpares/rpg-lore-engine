@@ -150,7 +150,13 @@ const Codex = ({ isOpen, onClose, initialDeepLink, isPage = false, seenItems = [
         }
     };
     const modalContent = (_jsxs("div", { className: `${styles.modal} ${isPage ? styles.isPage : ''}`, onClick: (e) => e.stopPropagation(), children: [_jsxs("div", { className: styles.sidebar, children: [_jsxs("div", { className: styles.codexHeader, children: [_jsx(Book, { size: 24 }), _jsx("h2", { children: "Codex" })] }), _jsx("nav", { className: styles.nav, children: CATEGORIES.map(cat => {
-                            const hasNew = cat.id === 'magic' && (state?.character?.unseenSpells?.length ?? 0) > 0;
+                            let hasNew = false;
+                            if (cat.id === 'magic') {
+                                hasNew = (state?.character?.unseenSpells?.length ?? 0) > 0;
+                            }
+                            else if (cat.id === 'bestiary' || cat.id === 'items') {
+                                hasNew = state?.codexEntries?.some(e => e.category === cat.id && e.isNew) ?? false;
+                            }
                             return (_jsxs("button", { className: `${styles.navItem} ${activeCategory === cat.id ? styles.active : ''}`, onClick: () => {
                                     setActiveCategory(cat.id);
                                     setSelectedEntry(null);

@@ -130,7 +130,7 @@ ${JSON.stringify(data, null, 2)}
 OUTPUT FORMAT (JSON):
 {
     "title": "A grand or evocative title for the entry",
-    "content": "The full entry in professional Markdown format. Use ### for subheads, - for lists, and *italic* for quotes."
+"content": "The full entry in clean, immersive text. Do NOT use # or ## headers. Use ### for major sections if absolutely necessary, but prefer bolding for labels. Do not use markdown code blocks. Keep the tone in-universe."
 }
 
 Do not include any text outside the JSON block.`;
