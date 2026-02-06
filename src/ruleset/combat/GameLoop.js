@@ -88,6 +88,13 @@ export class GameLoop {
             narratorOutput += `\n\n${chatter}`;
         }
         // 3. State Update & Persistence Phase
+        const turn = this.state.worldTime.totalTurns;
+        // Push to persistent conversation history in state
+        this.state.conversationHistory.push({ role: 'player', content: input, turnNumber: turn });
+        this.state.conversationHistory.push({ role: 'narrator', content: narratorOutput, turnNumber: turn });
+        // Set ephemeral display field
+        this.state.lastNarrative = narratorOutput;
+        // Internal context manager history (for LLM context window)
         this.contextManager.addEvent('player', input);
         this.contextManager.addEvent('narrator', narratorOutput);
         // Execute narrator suggested effects

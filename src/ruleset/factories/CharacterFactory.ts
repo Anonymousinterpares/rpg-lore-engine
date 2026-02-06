@@ -214,6 +214,7 @@ export class CharacterFactory {
             ],
             factions: [],
             storySummary: `started their journey as a ${race.name} ${characterClass.name} with the ${background.name} background.`,
+            lastNarrative: '',
             conversationHistory: [],
             triggeredEvents: [],
             settings: {

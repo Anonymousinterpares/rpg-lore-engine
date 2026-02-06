@@ -62,6 +62,7 @@ async function verifyMultiplayer() {
         activeQuests: [],
         factions: [],
         storySummary: "",
+        lastNarrative: "",
         conversationHistory: [],
         triggeredEvents: [],
         settings: {

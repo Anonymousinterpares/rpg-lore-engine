@@ -159,7 +159,7 @@ const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests
                         visibleHistory.map((turn, i) => (
                             <div key={i} className={
                                 turn.role === 'narrator' ? styles.narratorText :
-                                    turn.role === 'user' ? styles.userText :
+                                    turn.role === 'player' ? styles.userText :
                                         styles.systemText
                             }>
                                 <span className={styles.timestamp}>[{turn.turnNumber}]</span>

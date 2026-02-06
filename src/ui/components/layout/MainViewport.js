@@ -10,7 +10,7 @@ import { useGameState } from '../../hooks/useGameState';
 const MainViewport = ({ className }) => {
     const { state, processCommand } = useGameState();
     const isCombat = state?.mode === 'COMBAT';
-    const narrativeText = state?.storySummary ||
+    const narrativeText = state?.lastNarrative || state?.storySummary ||
         "Welcome to your adventure. Describe your first move...";
     const locationTitle = state ?
         `${isCombat ? '[COMBAT] ' : ''}Coordinates: [${state.location.coordinates.join(', ')}]` :

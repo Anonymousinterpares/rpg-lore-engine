@@ -18,7 +18,7 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
 
     const isCombat = state?.mode === 'COMBAT';
 
-    const narrativeText = state?.storySummary ||
+    const narrativeText = state?.lastNarrative || state?.storySummary ||
         "Welcome to your adventure. Describe your first move...";
 
     const locationTitle = state ?

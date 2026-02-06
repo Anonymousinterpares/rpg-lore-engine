@@ -8,7 +8,7 @@ import { FactionSchema } from './FactionSchema';
 import { CampaignSettingsSchema } from './CampaignSettingsSchema';
 
 export const ConversationTurnSchema = z.object({
-    role: z.enum(['user', 'narrator', 'system']),
+    role: z.enum(['player', 'narrator', 'director', 'scribe', 'system']),
     content: z.string(),
     turnNumber: z.number()
 });
@@ -80,6 +80,7 @@ export const FullSaveStateSchema = z.object({
 
     // --- Narrative & LLM ---
     storySummary: z.string().default(''),
+    lastNarrative: z.string().default(''),
     conversationHistory: z.array(ConversationTurnSchema).default([]),
     triggeredEvents: z.array(z.string()).default([]),
 
