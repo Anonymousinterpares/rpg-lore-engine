@@ -144,6 +144,11 @@ export class GameLoop {
         // Execute narrator suggested effects
         this.applyNarratorEffects(narratorResponse);
 
+        // Advance World Time (5 minutes per narrative turn)
+        if (this.state.mode === 'EXPLORATION') {
+            this.state.worldTime = WorldClockEngine.advanceTime(this.state.worldTime, 5);
+        }
+
         // Scribe processing (summarization)
         await this.scribe.processTurn(this.state, this.contextManager.getRecentHistory(10));
 
@@ -515,8 +520,8 @@ export class GameLoop {
 
         // If next is an enemy, perform AI turn after a delay
         if (nextCombatant.type === 'enemy' && nextCombatant.hp.current > 0) {
-            // "NPC is thinking" delay
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            // "NPC is thinking" delay (tuned to 800ms for better pacing)
+            await new Promise(resolve => setTimeout(resolve, 800));
             await this.performAITurn(nextCombatant);
         } else if (nextCombatant.hp.current <= 0) {
             // Skip dead combatants
@@ -610,6 +615,11 @@ export class GameLoop {
 
         // Transition back to exploration
         this.state.mode = 'EXPLORATION';
+
+        // Calculate time passed (Round * 6s) + 5 minutes recovery
+        const combatSeconds = this.state.combat.round * 6;
+        const totalMinutes = Math.ceil(combatSeconds / 60) + 5;
+        this.state.worldTime = WorldClockEngine.advanceTime(this.state.worldTime, totalMinutes);
 
         // Trigger LLM Summarization
         const summary = await NarratorService.summarizeCombat(this.state, this.state.combat.logs);

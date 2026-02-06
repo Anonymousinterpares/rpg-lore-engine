@@ -152,11 +152,15 @@ export class DataManager {
         if (Object.keys(this.monsters).length > 0) return;
         const monsterModules = import.meta.glob('../../../data/monster/*.json');
         for (const path in monsterModules) {
-            const mod: any = await monsterModules[path]();
-            const monster = mod.default || mod;
-            if (monster.name) {
-                this.monsters[monster.name] = monster;
-                this.monsterLookup[monster.name.toLowerCase()] = monster;
+            try {
+                const mod: any = await monsterModules[path]();
+                const monster = mod.default || mod;
+                if (monster.name) {
+                    this.monsters[monster.name] = monster;
+                    this.monsterLookup[monster.name.toLowerCase()] = monster;
+                }
+            } catch (e) {
+                console.error(`[DataManager] Failed to load monster from ${path}:`, e);
             }
         }
     }
