@@ -19,6 +19,7 @@ import { Encounter } from './EncounterDirector';
 import { CombatantSchema } from '../schemas/FullSaveStateSchema';
 import { NarratorService } from '../agents/NarratorService';
 import { NarratorOutput } from '../agents/ICPSchemas';
+import { EngineDispatcher } from '../agents/EngineDispatcher';
 import { z } from 'zod';
 
 type Combatant = z.infer<typeof CombatantSchema>;
@@ -456,57 +457,14 @@ export class GameLoop {
     }
 
     private applyNarratorEffects(output: NarratorOutput) {
-        if (!output.engine_calls) return;
-
-        for (const call of output.engine_calls) {
-            console.log(`[NarratorService] Executing Engine Call: ${call.function}`, call.args);
-            switch (call.function) {
-                case 'add_xp':
-                    this.state.character.xp += (call.args.amount || 0);
-                    break;
-                case 'add_item':
-                    const itemData = DataManager.getItem(call.args.itemId);
-                    if (itemData) {
-                        this.state.character.inventory.items.push({
-                            id: call.args.itemId,
-                            name: itemData.name,
-                            type: itemData.type,
-                            weight: itemData.weight,
-                            instanceId: Dice.roll('1d1000').toString(),
-                            quantity: call.args.quantity || 1,
-                            equipped: false
-                        });
-                    }
-                    break;
-                case 'modify_hp':
-                    const amount = call.args.amount || 0;
-                    this.state.character.hp.current = Math.min(
-                        this.state.character.hp.max,
-                        Math.max(0, this.state.character.hp.current + amount)
-                    );
-                    break;
-                case 'set_condition':
-                    if (call.args.condition && !this.state.character.conditions.includes(call.args.condition)) {
-                        this.state.character.conditions.push(call.args.condition);
-                    }
-                    break;
-                case 'discover_poi':
-                    const currentHex = this.hexMapManager.getHex(this.state.location.hexId);
-                    if (currentHex && call.args.poiId) {
-                        const poi = currentHex.interest_points.find(p => p.id === call.args.poiId);
-                        if (poi) poi.discovered = true;
-                    }
-                    break;
-                case 'start_combat':
-                    const manualEncounter: Encounter = {
-                        name: call.args.encounterName || 'Sudden Skirmish',
-                        description: call.args.description || 'Hostilities break out!',
-                        monsters: call.args.monsters || ['Goblin'],
-                        difficulty: call.args.difficulty || this.state.character.level
-                    };
-                    this.initializeCombat(manualEncounter);
-                    break;
+        EngineDispatcher.dispatch(
+            output.engine_calls || [],
+            this.state,
+            this.hexMapManager,
+            {
+                combatInitializer: (enc: Encounter) => this.initializeCombat(enc),
+                worldClock: { advanceTime: (s: any, h: number) => { this.state.worldTime.hour += h; } } // Example shim
             }
-        }
+        );
     }
 }
