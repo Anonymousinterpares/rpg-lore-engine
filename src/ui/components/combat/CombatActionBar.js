@@ -25,7 +25,7 @@ export const CombatActionBar = () => {
                 // For now, we'll simulate fetching them from DataManager based on the combatant state
                 const pcPrepared = state.character.preparedSpells || [];
                 const pcCantrips = state.character.cantripsKnown || [];
-                const allNames = [...pcCantrips, ...pcPrepared];
+                const allNames = Array.from(new Set([...pcCantrips, ...pcPrepared]));
                 const spells = allNames
                     .map(name => DataManager.getSpell(name))
                     .filter((s) => s !== undefined);

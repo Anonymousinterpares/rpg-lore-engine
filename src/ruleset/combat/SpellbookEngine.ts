@@ -149,9 +149,11 @@ export class SpellbookEngine {
             return { success: false, message: `Too many spells! You can only prepare ${max}.` };
         }
 
-        // Validate all spells are known or in spellbook
+        // Validate all spells are known, in spellbook, or are cantrips
         const invalid = spellNames.filter(name =>
-            !pc.knownSpells.includes(name) && !pc.spellbook.includes(name)
+            !pc.knownSpells.includes(name) &&
+            !pc.spellbook.includes(name) &&
+            !pc.cantripsKnown.includes(name)
         );
 
         if (invalid.length > 0) {

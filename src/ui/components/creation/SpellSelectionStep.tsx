@@ -169,6 +169,13 @@ const SpellSelectionStep: React.FC<SpellSelectionStepProps> = ({
                             <div className={styles.detailDesc}>
                                 {hoveredSpell.description}
                             </div>
+                            <div className={styles.largeIllustration}>
+                                <img
+                                    src={`/assets/spells/${hoveredSpell.name.toLowerCase().replace(/ /g, '_')}.png`}
+                                    alt=""
+                                    onError={(e) => (e.currentTarget.style.display = 'none')}
+                                />
+                            </div>
                         </>
                     ) : (
                         <div className={styles.nothingSelected}>

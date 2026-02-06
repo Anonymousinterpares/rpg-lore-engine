@@ -73,11 +73,11 @@ export class CharacterFactory {
                 spells = ['Cure Wounds', 'Healing Word', 'Thunderwave', 'Charm Person'];
             }
         }
-        // Always-Prepared classes: Synchronize preparedSpells with knownSpells
-        // Cantrips are ALWAYS "prepared" (available to cast)
-        const knownCasters = ['Sorcerer', 'Warlock', 'Bard', 'Ranger'];
-        const preparedSpells = [...cantrips];
-        if (knownCasters.includes(characterClass.name)) {
+        // Initial Preparation
+        // Cantrips are ALWAYS available (handled by ActionBar combining Known/Prepared)
+        // Only level 1+ spells go into the "prepared" list for casters who need to prepare
+        const preparedSpells = [];
+        if (['Sorcerer', 'Warlock', 'Bard', 'Ranger'].includes(characterClass.name)) {
             preparedSpells.push(...spells);
         }
         const now = new Date().toISOString();
