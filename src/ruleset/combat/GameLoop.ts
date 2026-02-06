@@ -20,6 +20,8 @@ import { CombatantSchema } from '../schemas/FullSaveStateSchema';
 import { NarratorService } from '../agents/NarratorService';
 import { NarratorOutput } from '../agents/ICPSchemas';
 import { EngineDispatcher } from '../agents/EngineDispatcher';
+import { DirectorService } from '../agents/DirectorService';
+import { NPCService } from '../agents/NPCService';
 import { z } from 'zod';
 
 type Combatant = z.infer<typeof CombatantSchema>;
@@ -96,14 +98,24 @@ export class GameLoop {
             systemResponse = `[ENCOUNTER] ${encounter.name}: ${encounter.description}`;
         }
 
+        // Director Pacing Check
+        const directive = await DirectorService.evaluatePacing(this.state);
+
         const narratorResponse = await NarratorService.generate(
             this.state,
             this.hexMapManager,
             input,
-            this.contextManager.getRecentHistory(10)
+            this.contextManager.getRecentHistory(10),
+            directive
         );
 
-        const narratorOutput = narratorResponse.narrative_output;
+        let narratorOutput = narratorResponse.narrative_output;
+
+        // NPC Companion Chatter
+        const chatter = await NPCService.generateChatter(this.state, this.contextManager.getNarratorContext(this.state, this.hexMapManager));
+        if (chatter) {
+            narratorOutput += `\n\n${chatter}`;
+        }
 
         // 3. State Update & Persistence Phase
         this.contextManager.addEvent('player', input);

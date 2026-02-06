@@ -11,7 +11,7 @@ export class NarratorService {
     /**
      * Primary entry point for generating narrative.
      */
-    static async generate(state, hexManager, playerInput, history) {
+    static async generate(state, hexManager, playerInput, history, directorDirective) {
         const profile = AgentManager.getAgentProfile('NARRATOR');
         const context = ContextBuilder.build(state, hexManager, history);
         // Resolve provider and model configs
@@ -21,7 +21,7 @@ export class NarratorService {
         const modelConfig = providerConfig.models.find(m => m.id === profile.modelId);
         if (!modelConfig)
             throw new Error(`Model ${profile.modelId} not found in provider ${profile.providerId}.`);
-        const systemPrompt = this.constructSystemPrompt(context, state, profile);
+        const systemPrompt = this.constructSystemPrompt(context, state, profile, directorDirective);
         try {
             const rawResponse = await LLMClient.generateCompletion(providerConfig, modelConfig, {
                 systemPrompt,
@@ -45,7 +45,7 @@ export class NarratorService {
             };
         }
     }
-    static constructSystemPrompt(context, state, profile) {
+    static constructSystemPrompt(context, state, profile, directorDirective) {
         const isNewGame = state.conversationHistory.length === 0 && !this.isFirstTurnAfterLoad;
         let prompt = `You are the Narrator for a D&D 5e text-based RPG.
 ${profile.basePrompt}
@@ -59,6 +59,14 @@ ${profile.basePrompt}
 - Story So Far: ${context.storySummary}
 
 `;
+        if (directorDirective) {
+            prompt += `
+## DIRECTOR DIRECTIVE
+${directorDirective.directive}
+(Note: Incorporate this into your narrative or engine calls naturally.)
+
+`;
+        }
         if (isNewGame) {
             prompt += `
 ## NEW ADVENTURE START
