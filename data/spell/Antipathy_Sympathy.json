@@ -17,7 +17,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "CONTROL",
     "timing": "DURATION",
     "duration": {
       "value": 10,
@@ -33,5 +33,9 @@
       "count": "ALL_IN_AREA"
     }
   },
-  "condition": "frightened"
+  "condition": "frightened",
+  "save": {
+    "ability": "wisdom",
+    "effect": "none"
+  }
 }

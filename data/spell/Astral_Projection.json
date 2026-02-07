@@ -18,14 +18,14 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "UTILITY",
     "timing": "DURATION",
     "area": {
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "ENEMY",
-      "count": 1
+      "type": "ALLY",
+      "count": 9
     }
   },
   "condition": "unconscious"

@@ -29,5 +29,17 @@
       "type": "ENEMY",
       "count": "ALL_IN_AREA"
     }
+  },
+  "damage": {
+    "dice": "8d6",
+    "type": "necrotic",
+    "scaling": {
+      "mode": "LEVEL",
+      "dice": "1d6"
+    }
+  },
+  "save": {
+    "ability": "constitution",
+    "effect": "half"
   }
 }

@@ -23,12 +23,22 @@
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "SINGLE"
+      "shape": "CUBE",
+      "size": 20,
+      "units": "feet"
     },
     "targets": {
       "type": "ENEMY",
-      "count": 1
+      "count": "ALL_IN_AREA"
     }
+  },
+  "damage": {
+    "dice": "3d6",
+    "type": "bludgeoning"
+  },
+  "save": {
+    "ability": "dexterity",
+    "effect": "none"
   },
   "condition": "restrained"
 }

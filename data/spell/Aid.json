@@ -17,7 +17,7 @@
     "Paladin"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "BUFF",
     "timing": "DURATION",
     "duration": {
       "value": 8,
@@ -27,7 +27,7 @@
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "ENEMY",
+      "type": "ALLY",
       "count": 3
     }
   }

@@ -15,7 +15,7 @@
     "Druid"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "TRANSFORM",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 24,
@@ -25,9 +25,8 @@
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "ENEMY",
-      "count": 1
+      "type": "ALLY",
+      "count": 100
     }
-  },
-  "condition": "unconscious"
+  }
 }

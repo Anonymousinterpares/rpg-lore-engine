@@ -28,6 +28,14 @@
     "targets": {
       "type": "ENEMY",
       "count": 1
+    },
+    "damage": {
+      "dice": "4d8",
+      "type": "force",
+      "scaling": {
+        "mode": "LEVEL",
+        "dice": "2d8"
+      }
     }
   }
 }

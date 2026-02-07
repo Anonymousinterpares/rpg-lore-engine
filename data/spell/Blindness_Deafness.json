@@ -32,5 +32,9 @@
       "count": 1
     }
   },
-  "condition": "blinded"
+  "condition": "blinded",
+  "save": {
+    "ability": "constitution",
+    "effect": "none"
+  }
 }

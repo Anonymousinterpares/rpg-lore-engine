@@ -34,5 +34,9 @@
       "count": 1
     }
   },
-  "condition": "incapacitated"
+  "condition": "incapacitated",
+  "save": {
+    "ability": "charisma",
+    "effect": "none"
+  }
 }

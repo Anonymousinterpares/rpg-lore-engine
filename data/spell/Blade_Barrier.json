@@ -22,11 +22,21 @@
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "SINGLE"
+      "shape": "LINE",
+      "size": 100,
+      "units": "feet"
     },
     "targets": {
       "type": "ENEMY",
-      "count": 1
+      "count": "ALL_IN_AREA"
     }
+  },
+  "damage": {
+    "dice": "6d10",
+    "type": "slashing"
+  },
+  "save": {
+    "ability": "dexterity",
+    "effect": "half"
   }
 }

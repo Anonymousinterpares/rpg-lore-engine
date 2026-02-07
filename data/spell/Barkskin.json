@@ -17,7 +17,7 @@
     "Ranger"
   ],
   "effect": {
-    "category": "UTILITY",
+    "category": "BUFF",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 1,
@@ -27,7 +27,7 @@
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "CREATURE",
+      "type": "ALLY",
       "count": 1
     }
   }

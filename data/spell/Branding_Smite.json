@@ -22,14 +22,19 @@
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "RADIUS",
-      "size": 5,
-      "units": "feet"
+      "shape": "SINGLE"
     },
     "targets": {
       "type": "ENEMY",
-      "count": "ALL_IN_AREA"
+      "count": 1
     }
   },
-  "condition": "invisible"
+  "damage": {
+    "dice": "2d6",
+    "type": "radiant",
+    "scaling": {
+      "mode": "LEVEL",
+      "dice": "1d6"
+    }
+  }
 }

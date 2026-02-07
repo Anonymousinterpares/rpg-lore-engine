@@ -15,18 +15,20 @@
     "Cleric"
   ],
   "effect": {
-    "category": "HEAL",
+    "category": "BUFF",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 1,
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "SINGLE"
+      "shape": "RADIUS",
+      "size": 30,
+      "units": "feet"
     },
     "targets": {
       "type": "ALLY",
-      "count": 1
+      "count": "ALL_IN_AREA"
     }
   }
 }

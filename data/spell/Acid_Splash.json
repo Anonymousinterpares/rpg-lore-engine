@@ -25,5 +25,17 @@
       "type": "ENEMY",
       "count": 2
     }
+  },
+  "damage": {
+    "dice": "1d6",
+    "type": "acid",
+    "scaling": {
+      "mode": "CANTRIP",
+      "dice": "1d6"
+    }
+  },
+  "save": {
+    "ability": "dexterity",
+    "effect": "none"
   }
 }

@@ -24,7 +24,15 @@
     },
     "targets": {
       "type": "ENEMY",
-      "count": 1
+      "count": 4
     }
+  },
+  "damage": {
+    "dice": "10d8",
+    "type": "lightning"
+  },
+  "save": {
+    "ability": "dexterity",
+    "effect": "half"
   }
 }

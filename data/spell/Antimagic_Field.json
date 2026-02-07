@@ -17,7 +17,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "CONTROL",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 1,
@@ -32,6 +32,5 @@
       "type": "ENEMY",
       "count": "ALL_IN_AREA"
     }
-  },
-  "condition": "invisible"
+  }
 }

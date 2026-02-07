@@ -31,5 +31,17 @@
       "type": "ENEMY",
       "count": "ALL_IN_AREA"
     }
+  },
+  "damage": {
+    "dice": "5d8",
+    "type": "poison",
+    "scaling": {
+      "mode": "LEVEL",
+      "dice": "1d8"
+    }
+  },
+  "save": {
+    "ability": "constitution",
+    "effect": "half"
   }
 }

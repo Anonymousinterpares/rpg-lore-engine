@@ -32,5 +32,9 @@
       "count": 1
     }
   },
+  "save": {
+    "ability": "wisdom",
+    "effect": "none"
+  },
   "condition": "charmed"
 }

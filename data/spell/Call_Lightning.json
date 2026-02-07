@@ -23,12 +23,24 @@
     },
     "area": {
       "shape": "RADIUS",
-      "size": 60,
+      "size": 5,
       "units": "feet"
     },
     "targets": {
       "type": "ENEMY",
       "count": "ALL_IN_AREA"
     }
+  },
+  "damage": {
+    "dice": "3d10",
+    "type": "lightning",
+    "scaling": {
+      "mode": "LEVEL",
+      "dice": "1d10"
+    }
+  },
+  "save": {
+    "ability": "dexterity",
+    "effect": "half"
   }
 }

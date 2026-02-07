@@ -20,11 +20,13 @@
     "category": "UTILITY",
     "timing": "INSTANT",
     "area": {
-      "shape": "RADIUS"
+      "shape": "RADIUS",
+      "size": 3,
+      "units": "miles"
     },
     "targets": {
-      "type": "CREATURE",
-      "count": "ALL_IN_AREA"
+      "type": "SELF",
+      "count": 1
     }
   }
 }

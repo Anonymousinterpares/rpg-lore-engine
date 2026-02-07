@@ -24,11 +24,11 @@
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "RADIUS"
+      "shape": "SINGLE"
     },
     "targets": {
-      "type": "CREATURE",
-      "count": "ALL_IN_AREA"
+      "type": "OBJECT",
+      "count": 10
     }
   }
 }
