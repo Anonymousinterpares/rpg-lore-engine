@@ -17,7 +17,7 @@
     "Druid"
   ],
   "effect": {
-    "category": "HEAL",
+    "category": "HEALING",
     "timing": "INSTANT",
     "area": {
       "shape": "RADIUS",
@@ -27,6 +27,24 @@
     "targets": {
       "type": "ALLY",
       "count": "ALL_IN_AREA"
+    }
+  },
+  "damage": {
+    "dice": "3d8",
+    "type": "Healing",
+    "scaling": {
+      "levels": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "values": [
+        "4d8",
+        "5d8",
+        "6d8",
+        "7d8"
+      ]
     }
   }
 }

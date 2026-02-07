@@ -16,18 +16,18 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "UTILITY",
     "timing": "DURATION",
     "duration": {
       "value": 24,
       "unit": "HOUR"
     },
     "area": {
-      "shape": "RADIUS"
+      "shape": "SINGLE"
     },
     "targets": {
-      "type": "ENEMY",
-      "count": "ALL_IN_AREA"
+      "type": "POINT",
+      "count": 1
     }
   },
   "condition": "invisible"

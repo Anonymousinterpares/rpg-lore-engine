@@ -15,15 +15,21 @@
     "Cleric"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "HEALING",
     "timing": "INSTANT",
     "area": {
-      "shape": "SINGLE"
+      "shape": "RADIUS",
+      "size": 60,
+      "units": "feet"
     },
     "targets": {
-      "type": "ENEMY",
-      "count": 1
+      "type": "ALLY",
+      "count": "ALL_IN_AREA"
     }
+  },
+  "damage": {
+    "dice": "700",
+    "type": "Healing"
   },
   "condition": "blinded"
 }

@@ -33,5 +33,27 @@
       "type": "ENEMY",
       "count": "ALL_IN_AREA"
     }
+  },
+  "damage": {
+    "dice": "4d10",
+    "type": "Piercing",
+    "scaling": {
+      "levels": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "values": [
+        "5d10",
+        "6d10",
+        "7d10",
+        "8d10"
+      ]
+    }
+  },
+  "save": {
+    "ability": "constitution",
+    "effect": "half"
   }
 }

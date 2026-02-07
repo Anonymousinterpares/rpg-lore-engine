@@ -28,5 +28,9 @@
       "type": "ENEMY",
       "count": 1
     }
+  },
+  "damage": {
+    "dice": "1d6",
+    "type": "Slashing"
   }
 }

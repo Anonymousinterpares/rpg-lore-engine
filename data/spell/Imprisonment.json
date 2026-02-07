@@ -17,19 +17,23 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "CONTROL",
     "timing": "DURATION",
     "duration": {
       "value": 1,
       "unit": "PERMANENT"
     },
     "area": {
-      "shape": "RADIUS"
+      "shape": "SINGLE"
     },
     "targets": {
       "type": "ENEMY",
-      "count": "ALL_IN_AREA"
+      "count": 1
     }
+  },
+  "save": {
+    "ability": "wisdom",
+    "effect": "none"
   },
   "condition": "restrained"
 }

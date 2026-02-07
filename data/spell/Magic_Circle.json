@@ -19,19 +19,25 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "UTILITY",
     "timing": "DURATION",
     "duration": {
       "value": 1,
       "unit": "HOUR"
     },
     "area": {
-      "shape": "SINGLE"
+      "shape": "RADIUS",
+      "size": 10,
+      "units": "feet"
     },
     "targets": {
-      "type": "ENEMY",
+      "type": "POINT",
       "count": 1
     }
+  },
+  "save": {
+    "ability": "charisma",
+    "effect": "none"
   },
   "condition": "charmed"
 }

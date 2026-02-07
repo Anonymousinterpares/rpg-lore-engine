@@ -23,11 +23,13 @@
       "unit": "HOUR"
     },
     "area": {
-      "shape": "CUBE"
+      "shape": "CUBE",
+      "size": 100,
+      "units": "feet"
     },
     "targets": {
-      "type": "CREATURE",
-      "count": "ALL_IN_AREA"
+      "type": "POINT",
+      "count": 1
     }
   }
 }

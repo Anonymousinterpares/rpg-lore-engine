@@ -17,7 +17,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "UTILITY",
+    "category": "CONTROL",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 10,
@@ -30,5 +30,9 @@
       "type": "CREATURE",
       "count": 1
     }
+  },
+  "save": {
+    "ability": "constitution",
+    "effect": "none"
   }
 }

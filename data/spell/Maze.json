@@ -15,7 +15,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "UTILITY",
+    "category": "CONTROL",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 10,
@@ -25,8 +25,12 @@
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "CREATURE",
+      "type": "ENEMY",
       "count": 1
     }
+  },
+  "save": {
+    "ability": "intelligence",
+    "effect": "none"
   }
 }

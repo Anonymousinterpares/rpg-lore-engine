@@ -31,8 +31,12 @@
       "units": "feet"
     },
     "targets": {
-      "type": "CREATURE",
-      "count": "ALL_IN_AREA"
+      "type": "OBJECT",
+      "count": 1
     }
+  },
+  "save": {
+    "ability": "dexterity",
+    "effect": "none"
   }
 }

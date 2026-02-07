@@ -17,7 +17,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "BUFF",
     "timing": "DURATION",
     "duration": {
       "value": 1,
@@ -27,7 +27,7 @@
       "shape": "SELF"
     },
     "targets": {
-      "type": "ENEMY",
+      "type": "CREATURE",
       "count": 1
     }
   }

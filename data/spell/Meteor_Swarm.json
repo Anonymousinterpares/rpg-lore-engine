@@ -27,5 +27,15 @@
       "type": "ENEMY",
       "count": "ALL_IN_AREA"
     }
+  },
+  "damage": {
+    "dice": "20d6",
+    "type": "Fire",
+    "secondary_dice": "20d6",
+    "secondary_type": "Bludgeoning"
+  },
+  "save": {
+    "ability": "dexterity",
+    "on_success": "half"
   }
 }

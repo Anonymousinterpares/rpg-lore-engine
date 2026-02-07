@@ -19,7 +19,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "UTILITY",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 10,
@@ -31,8 +31,8 @@
       "units": "feet"
     },
     "targets": {
-      "type": "ENEMY",
-      "count": "ALL_IN_AREA"
+      "type": "POINT",
+      "count": 1
     }
   }
 }

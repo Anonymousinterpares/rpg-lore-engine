@@ -15,14 +15,38 @@
     "Cleric"
   ],
   "effect": {
-    "category": "HEAL",
+    "category": "HEALING",
     "timing": "INSTANT",
     "area": {
-      "shape": "SINGLE"
+      "shape": "RADIUS",
+      "size": 60,
+      "units": "feet"
     },
     "targets": {
       "type": "ALLY",
-      "count": 1
+      "count": "ALL_IN_AREA"
+    }
+  },
+  "damage": {
+    "dice": "1d4",
+    "type": "Healing",
+    "scaling": {
+      "levels": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "values": [
+        "2d4",
+        "3d4",
+        "4d4",
+        "5d4",
+        "6d4",
+        "7d4"
+      ]
     }
   }
 }

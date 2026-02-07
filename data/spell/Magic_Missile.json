@@ -23,7 +23,11 @@
     },
     "targets": {
       "type": "ENEMY",
-      "count": 1
+      "count": 3
+    },
+    "damage": {
+      "dice": "1d4+1",
+      "type": "Force"
     }
   }
 }

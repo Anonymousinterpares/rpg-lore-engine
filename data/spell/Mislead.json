@@ -16,7 +16,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "CONTROL",
+    "category": "BUFF",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 1,
@@ -26,7 +26,7 @@
       "shape": "SELF"
     },
     "targets": {
-      "type": "ENEMY",
+      "type": "CREATURE",
       "count": 1
     }
   },

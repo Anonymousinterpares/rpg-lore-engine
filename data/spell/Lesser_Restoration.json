@@ -19,13 +19,13 @@
     "Ranger"
   ],
   "effect": {
-    "category": "CONTROL",
+    "category": "HEALING",
     "timing": "INSTANT",
     "area": {
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "ENEMY",
+      "type": "ALLY",
       "count": 1
     }
   },

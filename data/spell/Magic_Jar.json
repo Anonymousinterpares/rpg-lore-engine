@@ -29,5 +29,9 @@
       "type": "CREATURE",
       "count": 1
     }
+  },
+  "save": {
+    "ability": "charisma",
+    "effect": "none"
   }
 }

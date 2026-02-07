@@ -16,7 +16,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "BUFF",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 1,
@@ -26,8 +26,15 @@
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "ENEMY",
+      "type": "OBJECT",
       "count": 1
+    },
+    "scaling": {
+      "type": "LEVEL",
+      "bonus": {
+        "4": 2,
+        "6": 3
+      }
     }
   }
 }

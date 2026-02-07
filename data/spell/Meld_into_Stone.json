@@ -16,17 +16,17 @@
     "Druid"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "UTILITY",
     "timing": "DURATION",
     "duration": {
       "value": 8,
       "unit": "HOUR"
     },
     "area": {
-      "shape": "SINGLE"
+      "shape": "SELF"
     },
     "targets": {
-      "type": "ENEMY",
+      "type": "CREATURE",
       "count": 1
     }
   },

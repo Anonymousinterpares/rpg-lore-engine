@@ -29,5 +29,29 @@
       "type": "ENEMY",
       "count": "ALL_IN_AREA"
     }
+  },
+  "damage": {
+    "dice": "2d8+4d6",
+    "type": "Cold",
+    "scaling": {
+      "levels": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "values": [
+        "3d8+4d6",
+        "4d8+4d6",
+        "5d8+4d6",
+        "6d8+4d6",
+        "7d8+4d6"
+      ]
+    }
+  },
+  "save": {
+    "ability": "dexterity",
+    "effect": "half"
   }
 }

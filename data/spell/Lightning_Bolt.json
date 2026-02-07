@@ -20,11 +20,39 @@
     "category": "DAMAGE",
     "timing": "INSTANT",
     "area": {
-      "shape": "LINE"
+      "shape": "LINE",
+      "size": 100,
+      "width": 5
     },
     "targets": {
       "type": "ENEMY",
       "count": "ALL_IN_AREA"
     }
+  },
+  "damage": {
+    "dice": "8d6",
+    "type": "Lightning",
+    "scaling": {
+      "levels": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "values": [
+        "9d6",
+        "10d6",
+        "11d6",
+        "12d6",
+        "13d6",
+        "14d6"
+      ]
+    }
+  },
+  "save": {
+    "ability": "dexterity",
+    "effect": "half"
   }
 }

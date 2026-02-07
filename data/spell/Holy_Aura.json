@@ -16,7 +16,7 @@
     "Cleric"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "BUFF",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 1,
@@ -28,9 +28,13 @@
       "units": "feet"
     },
     "targets": {
-      "type": "ENEMY",
+      "type": "ALLY",
       "count": "ALL_IN_AREA"
     }
+  },
+  "save": {
+    "ability": "constitution",
+    "effect": "none"
   },
   "condition": "blinded"
 }
