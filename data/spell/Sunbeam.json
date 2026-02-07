@@ -26,14 +26,22 @@
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "RADIUS",
-      "size": 30,
+      "shape": "LINE",
+      "size": 60,
       "units": "feet"
     },
     "targets": {
       "type": "ENEMY",
       "count": "ALL_IN_AREA"
     }
+  },
+  "save": {
+    "ability": "constitution",
+    "on_success": "half"
+  },
+  "damage": {
+    "dice": "6d8",
+    "type": "Radiant"
   },
   "condition": "blinded"
 }

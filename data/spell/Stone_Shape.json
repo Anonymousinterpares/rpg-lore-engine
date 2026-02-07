@@ -18,14 +18,14 @@
     "Wizard"
   ],
   "effect": {
-    "category": "TRANSFORM",
+    "category": "UTILITY",
     "timing": "INSTANT",
     "area": {
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "CREATURE",
-      "count": 2
+      "type": "OBJECT",
+      "count": 1
     }
   }
 }

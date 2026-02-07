@@ -19,7 +19,7 @@
     "Ranger"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "UTILITY",
     "timing": "DURATION",
     "duration": {
       "value": 1,
@@ -29,8 +29,8 @@
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "ENEMY",
-      "count": 1
+      "type": "ALLY",
+      "count": 10
     }
   }
 }

@@ -24,5 +24,25 @@
       "type": "ENEMY",
       "count": 1
     }
+  },
+  "save": {
+    "ability": "wisdom",
+    "on_success": "none"
+  },
+  "damage": {
+    "dice": "1d4",
+    "type": "Psychic",
+    "scaling": {
+      "levels": [
+        5,
+        11,
+        17
+      ],
+      "values": [
+        "2d4",
+        "3d4",
+        "4d4"
+      ]
+    }
   }
 }

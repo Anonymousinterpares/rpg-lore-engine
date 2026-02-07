@@ -31,5 +31,13 @@
       "count": "ALL_IN_AREA"
     }
   },
+  "save": {
+    "ability": "constitution",
+    "on_success": "half"
+  },
+  "damage": {
+    "dice": "12d6",
+    "type": "Radiant"
+  },
   "condition": "blinded"
 }

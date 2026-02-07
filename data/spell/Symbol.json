@@ -33,5 +33,12 @@
       "count": "ALL_IN_AREA"
     }
   },
-  "condition": "stunned"
+  "save": {
+    "ability": "constitution",
+    "on_success": "half"
+  },
+  "damage": {
+    "dice": "10d10",
+    "type": "Necrotic"
+  }
 }

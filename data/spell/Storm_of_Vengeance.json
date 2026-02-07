@@ -22,12 +22,18 @@
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "RADIUS"
+      "shape": "RADIUS",
+      "size": 360,
+      "units": "feet"
     },
     "targets": {
       "type": "ENEMY",
       "count": "ALL_IN_AREA"
     }
+  },
+  "save": {
+    "ability": "constitution",
+    "on_success": "half"
   },
   "condition": "deafened"
 }

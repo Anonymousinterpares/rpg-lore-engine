@@ -23,11 +23,21 @@
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "LINE"
+      "shape": "LINE",
+      "size": 60,
+      "units": "feet"
     },
     "targets": {
       "type": "ENEMY",
       "count": "ALL_IN_AREA"
     }
+  },
+  "save": {
+    "ability": "dexterity",
+    "on_success": "half"
+  },
+  "damage": {
+    "dice": "7d8",
+    "type": "Piercing"
   }
 }

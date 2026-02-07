@@ -31,5 +31,13 @@
       "count": "ALL_IN_AREA"
     }
   },
+  "save": {
+    "ability": "wisdom",
+    "on_success": "none"
+  },
+  "damage": {
+    "dice": "4d10",
+    "type": "Psychic"
+  },
   "condition": "frightened"
 }

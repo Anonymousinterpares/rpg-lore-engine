@@ -16,7 +16,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "HEAL",
+    "category": "DAMAGE",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 1,
@@ -26,8 +26,12 @@
       "shape": "SELF"
     },
     "targets": {
-      "type": "ALLY",
+      "type": "ENEMY",
       "count": 1
     }
+  },
+  "damage": {
+    "dice": "3d6",
+    "type": "Necrotic"
   }
 }

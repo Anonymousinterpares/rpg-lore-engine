@@ -24,11 +24,21 @@
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "SINGLE"
+      "shape": "LINE",
+      "size": 50,
+      "units": "feet"
     },
     "targets": {
       "type": "ENEMY",
-      "count": 1
+      "count": "ALL_IN_AREA"
     }
+  },
+  "save": {
+    "ability": "strength",
+    "on_success": "half"
+  },
+  "damage": {
+    "dice": "3d8",
+    "type": "Bludgeoning"
   }
 }

@@ -16,14 +16,16 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "CONTROL",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 10,
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "RADIUS"
+      "shape": "RADIUS",
+      "size": 10,
+      "units": "feet"
     },
     "targets": {
       "type": "ENEMY",

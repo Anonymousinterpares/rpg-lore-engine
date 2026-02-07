@@ -24,11 +24,13 @@
       "unit": "ROUND"
     },
     "area": {
-      "shape": "SINGLE"
+      "shape": "RADIUS",
+      "size": 5,
+      "units": "feet"
     },
     "targets": {
-      "type": "CREATURE",
-      "count": 1
+      "type": "ALLY",
+      "count": "ALL_IN_AREA"
     }
   }
 }

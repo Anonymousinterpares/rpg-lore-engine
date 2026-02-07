@@ -16,7 +16,7 @@
     "Druid"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "UTILITY",
     "timing": "DURATION",
     "duration": {
       "value": 8,
@@ -26,8 +26,8 @@
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "ENEMY",
-      "count": 1
+      "type": "ALLY",
+      "count": 11
     }
   },
   "condition": "incapacitated"

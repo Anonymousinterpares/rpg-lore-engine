@@ -25,11 +25,21 @@
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "SINGLE"
+      "shape": "LINE",
+      "size": 60,
+      "units": "feet"
     },
     "targets": {
       "type": "ENEMY",
-      "count": 1
+      "count": "ALL_IN_AREA"
     }
+  },
+  "save": {
+    "ability": "dexterity",
+    "on_success": "half"
+  },
+  "damage": {
+    "dice": "5d8",
+    "type": "Fire"
   }
 }

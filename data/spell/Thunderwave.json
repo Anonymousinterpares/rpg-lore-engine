@@ -21,11 +21,21 @@
     "category": "DAMAGE",
     "timing": "INSTANT",
     "area": {
-      "shape": "SELF"
+      "shape": "CUBE",
+      "size": 15,
+      "units": "feet"
     },
     "targets": {
       "type": "ENEMY",
-      "count": 1
+      "count": "ALL_IN_AREA"
     }
+  },
+  "save": {
+    "ability": "constitution",
+    "on_success": "half"
+  },
+  "damage": {
+    "dice": "2d8",
+    "type": "Thunder"
   }
 }

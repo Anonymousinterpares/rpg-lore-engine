@@ -17,7 +17,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "CONTROL",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 1,
@@ -32,6 +32,10 @@
       "type": "ENEMY",
       "count": "ALL_IN_AREA"
     }
+  },
+  "save": {
+    "ability": "dexterity",
+    "on_success": "none"
   },
   "condition": "restrained"
 }

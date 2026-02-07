@@ -2,7 +2,7 @@
   "name": "True Seeing",
   "level": 6,
   "school": "Divination",
-  "time": "1 action",
+  "time": "action",
   "range": "Touch",
   "components": {
     "v": true,
@@ -30,7 +30,7 @@
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "CREATURE",
+      "type": "ALLY",
       "count": 1
     }
   }

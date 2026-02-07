@@ -27,8 +27,8 @@
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "CREATURE",
-      "count": 1
+      "type": "ALLY",
+      "count": 8
     }
   }
 }
