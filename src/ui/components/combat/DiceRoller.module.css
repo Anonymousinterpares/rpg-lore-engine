@@ -3,91 +3,192 @@
     flex-direction: column;
     align-items: center;
     gap: var(--spacing-xs);
-    width: 60px;
+    width: 80px;
+    transition: all 0.3s ease;
+}
+
+.resultGlow {
+    filter: drop-shadow(0 0 15px rgba(var(--glass-accent-rgb), 0.8));
 }
 
 .die {
     position: relative;
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 70px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(var(--glass-accent-rgb), 0.1);
-    border: 1px solid var(--glass-accent);
-    border-radius: var(--radius-sm);
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid var(--glass-accent);
+    border-radius: var(--radius-md);
     color: var(--glass-accent);
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    overflow: hidden;
 }
 
-.icon {
+.d20Svg {
     position: absolute;
-    opacity: 0.2;
+    width: 100%;
+    height: 100%;
+    opacity: 0.15;
+}
+
+.d20Shape {
+    fill: none;
+    stroke: var(--glass-accent);
+    stroke-width: 2;
 }
 
 .value {
     font-family: var(--font-mono);
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: bold;
     z-index: 1;
-    text-shadow: 0 0 10px rgba(var(--glass-accent-rgb), 0.5);
+    text-shadow: 0 0 15px rgba(var(--glass-accent-rgb), 0.6);
+    transition: all 0.2s ease;
 }
 
 .label {
     font-family: var(--font-mono);
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
     color: var(--glass-text-dim);
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
+.critLabel {
+    color: #ffd700;
+    font-weight: bold;
+    animation: pulse 0.5s ease infinite;
+}
+
+.fumbleLabel {
+    color: #ff4444;
+    font-weight: bold;
+}
+
+/* Rolling Animation */
 .rolling {
-    animation: shake 0.1s infinite;
+    animation: diceRoll 0.1s infinite;
     border-color: #fff;
     color: #fff;
 }
 
-@keyframes shake {
+.rolling .value {
+    animation: flickerValue 0.08s infinite;
+}
+
+/* Critical Hit - Gold Glow */
+.crit {
+    border-color: #ffd700;
+    color: #ffd700;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, rgba(0, 0, 0, 0.6) 100%);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), inset 0 0 20px rgba(255, 215, 0, 0.2);
+    animation: critPulse 0.5s ease-out;
+}
+
+.crit .value {
+    color: #ffd700;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    animation: critBounce 0.5s ease-out;
+}
+
+.crit .d20Shape {
+    stroke: #ffd700;
+}
+
+/* Fumble - Red */
+.fumble {
+    border-color: #ff4444;
+    color: #ff4444;
+    background: linear-gradient(135deg, rgba(255, 68, 68, 0.2) 0%, rgba(0, 0, 0, 0.6) 100%);
+    box-shadow: 0 0 20px rgba(255, 68, 68, 0.4);
+}
+
+.fumble .value {
+    color: #ff4444;
+    text-shadow: 0 0 15px rgba(255, 68, 68, 0.6);
+}
+
+.fumble .d20Shape {
+    stroke: #ff4444;
+}
+
+/* Keyframes */
+@keyframes diceRoll {
     0% {
-        transform: translate(1px, 1px) rotate(0deg);
+        transform: rotate(-3deg) scale(1.02);
     }
 
-    10% {
-        transform: translate(-1px, -2px) rotate(-1deg);
-    }
-
-    20% {
-        transform: translate(-3px, 0px) rotate(1deg);
-    }
-
-    30% {
-        transform: translate(3px, 2px) rotate(0deg);
-    }
-
-    40% {
-        transform: translate(1px, -1px) rotate(1deg);
+    25% {
+        transform: rotate(2deg) scale(0.98);
     }
 
     50% {
-        transform: translate(-1px, 2px) rotate(-1deg);
+        transform: rotate(-2deg) scale(1.01);
     }
 
-    60% {
-        transform: translate(-3px, 1px) rotate(0deg);
-    }
-
-    70% {
-        transform: translate(3px, 1px) rotate(-1deg);
-    }
-
-    80% {
-        transform: translate(-1px, -1px) rotate(1deg);
-    }
-
-    90% {
-        transform: translate(1px, 2px) rotate(0deg);
+    75% {
+        transform: rotate(3deg) scale(0.99);
     }
 
     100% {
-        transform: translate(1px, -2px) rotate(-1deg);
+        transform: rotate(-3deg) scale(1.02);
+    }
+}
+
+@keyframes flickerValue {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+@keyframes critPulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes critBounce {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
     }
 }

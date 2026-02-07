@@ -10,7 +10,7 @@ import { DataManager } from '../../../ruleset/data/DataManager';
 import { Spell } from '../../../ruleset/schemas/SpellSchema';
 
 export const CombatActionBar: React.FC = () => {
-    const { state, processCommand } = useGameState();
+    const { state, engine, processCommand, updateState } = useGameState();
     const [showSpells, setShowSpells] = useState(false);
     const [showAbilities, setShowAbilities] = useState(false);
     const [availableSpells, setAvailableSpells] = useState<Spell[]>([]);
@@ -50,7 +50,12 @@ export const CombatActionBar: React.FC = () => {
     };
 
     const handleCastSpell = (spell: Spell) => {
-        processCommand(`/cast ${spell.name}`);
+        if (!engine || !state?.combat) return;
+
+        // Use the public castSpell API instead of processCommand
+        const targetId = state.combat.selectedTargetId;
+        engine.castSpell(spell.name, targetId);
+        updateState();
         setShowSpells(false);
     };
 
