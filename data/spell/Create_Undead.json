@@ -16,5 +16,16 @@
     "Cleric",
     "Warlock",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "BUFF",
+    "timing": "INSTANT",
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": 3
+    }
+  }
 }

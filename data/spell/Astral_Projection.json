@@ -16,5 +16,17 @@
     "Cleric",
     "Warlock",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "DURATION",
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": 1
+    }
+  },
+  "condition": "unconscious"
 }

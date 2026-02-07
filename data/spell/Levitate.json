@@ -15,5 +15,20 @@
   "classes": [
     "Sorcerer",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "UTILITY",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 10,
+      "unit": "MINUTE"
+    },
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": 1
+    }
+  }
 }

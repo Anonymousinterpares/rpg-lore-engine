@@ -15,5 +15,23 @@
   "classes": [
     "Druid",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "DURATION",
+    "duration": {
+      "value": 10,
+      "unit": "DAY"
+    },
+    "area": {
+      "shape": "CUBE",
+      "size": 200,
+      "units": "feet"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": "ALL_IN_AREA"
+    }
+  },
+  "condition": "frightened"
 }

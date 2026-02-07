@@ -16,5 +16,22 @@
     "Druid",
     "Sorcerer",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "UTILITY",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 1,
+      "unit": "MINUTE"
+    },
+    "area": {
+      "shape": "RADIUS",
+      "size": 50,
+      "units": "feet"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": "ALL_IN_AREA"
+    }
+  }
 }

@@ -14,5 +14,44 @@
   "classes": [
     "Druid",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "SUMMON",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 1,
+      "unit": "HOUR"
+    },
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": 1
+    }
+  },
+  "summon": {
+    "options": [
+      {
+        "count": 1,
+        "maxCR": 2.0,
+        "type": "elemental"
+      },
+      {
+        "count": 2,
+        "maxCR": 1.0,
+        "type": "elemental"
+      },
+      {
+        "count": 4,
+        "maxCR": 0.5,
+        "type": "elemental"
+      },
+      {
+        "count": 8,
+        "maxCR": 0.25,
+        "type": "elemental"
+      }
+    ]
+  }
 }

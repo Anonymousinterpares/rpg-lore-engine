@@ -15,5 +15,20 @@
     "Bard",
     "Cleric",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 1,
+      "unit": "MINUTE"
+    },
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": 1
+    }
+  }
 }

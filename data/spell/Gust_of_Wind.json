@@ -16,5 +16,20 @@
     "Druid",
     "Sorcerer",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "BUFF",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 1,
+      "unit": "MINUTE"
+    },
+    "area": {
+      "shape": "LINE"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": "ALL_IN_AREA"
+    }
+  }
 }

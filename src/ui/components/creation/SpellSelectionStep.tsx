@@ -173,6 +173,23 @@ const SpellSelectionStep: React.FC<SpellSelectionStepProps> = ({
                                         <span className={styles.detailLabel}>Duration</span>
                                         <span className={styles.detailValue}>{selectedDetailSpell.duration}</span>
                                     </div>
+                                    {selectedDetailSpell.effect && (
+                                        <>
+                                            <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>Category</span>
+                                                <span className={styles.detailValue}>{selectedDetailSpell.effect.category}</span>
+                                            </div>
+                                            {selectedDetailSpell.effect.area && (
+                                                <div className={styles.detailRow}>
+                                                    <span className={styles.detailLabel}>Area</span>
+                                                    <span className={styles.detailValue}>
+                                                        {selectedDetailSpell.effect.area.shape}
+                                                        {selectedDetailSpell.effect.area.size && ` (${selectedDetailSpell.effect.area.size}${selectedDetailSpell.effect.area.units || 'ft'})`}
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
                                 </div>
 
                                 <div className={styles.imageColumn}>

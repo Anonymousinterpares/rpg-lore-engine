@@ -17,5 +17,21 @@
     "Paladin",
     "Warlock",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 10,
+      "unit": "MINUTE"
+    },
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": 1
+    }
+  },
+  "condition": "charmed"
 }

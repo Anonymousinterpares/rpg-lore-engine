@@ -21,5 +21,16 @@
     "Sorcerer",
     "Warlock",
     "Ranger"
-  ]
+  ],
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "INSTANT",
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": 1
+    }
+  }
 }

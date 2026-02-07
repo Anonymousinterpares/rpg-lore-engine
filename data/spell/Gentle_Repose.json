@@ -16,5 +16,20 @@
   "classes": [
     "Cleric",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "UTILITY",
+    "timing": "DURATION",
+    "duration": {
+      "value": 10,
+      "unit": "DAY"
+    },
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": 1
+    }
+  }
 }

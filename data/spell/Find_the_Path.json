@@ -16,5 +16,20 @@
     "Bard",
     "Cleric",
     "Druid"
-  ]
+  ],
+  "effect": {
+    "category": "SUMMON",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 24,
+      "unit": "HOUR"
+    },
+    "area": {
+      "shape": "SELF"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": 1
+    }
+  }
 }

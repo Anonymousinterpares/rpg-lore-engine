@@ -15,5 +15,18 @@
     "Bard",
     "Cleric",
     "Druid"
-  ]
+  ],
+  "effect": {
+    "category": "HEAL",
+    "timing": "INSTANT",
+    "area": {
+      "shape": "RADIUS",
+      "size": 30,
+      "units": "feet"
+    },
+    "targets": {
+      "type": "ALLY",
+      "count": "ALL_IN_AREA"
+    }
+  }
 }

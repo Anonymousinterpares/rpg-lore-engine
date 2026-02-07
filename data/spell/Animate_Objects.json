@@ -15,5 +15,20 @@
     "Bard",
     "Sorcerer",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "SUMMON",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 1,
+      "unit": "MINUTE"
+    },
+    "area": {
+      "shape": "RADIUS"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": "ALL_IN_AREA"
+    }
+  }
 }

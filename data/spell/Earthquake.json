@@ -16,5 +16,23 @@
     "Cleric",
     "Druid",
     "Sorcerer"
-  ]
+  ],
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 1,
+      "unit": "MINUTE"
+    },
+    "area": {
+      "shape": "RADIUS",
+      "size": 100,
+      "units": "feet"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": "ALL_IN_AREA"
+    }
+  },
+  "condition": "prone"
 }

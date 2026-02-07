@@ -15,5 +15,20 @@
     "Sorcerer",
     "Warlock",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "BUFF",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 10,
+      "unit": "MINUTE"
+    },
+    "area": {
+      "shape": "SELF"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": 1
+    }
+  }
 }

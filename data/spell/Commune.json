@@ -15,5 +15,20 @@
   "ritual": true,
   "classes": [
     "Cleric"
-  ]
+  ],
+  "effect": {
+    "category": "UTILITY",
+    "timing": "DURATION",
+    "duration": {
+      "value": 1,
+      "unit": "MINUTE"
+    },
+    "area": {
+      "shape": "SELF"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": 3
+    }
+  }
 }

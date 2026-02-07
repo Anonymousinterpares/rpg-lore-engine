@@ -14,5 +14,22 @@
   "classes": [
     "Sorcerer",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 10,
+      "unit": "MINUTE"
+    },
+    "area": {
+      "shape": "RADIUS",
+      "size": 20,
+      "units": "feet"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": "ALL_IN_AREA"
+    }
+  }
 }

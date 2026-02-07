@@ -15,5 +15,18 @@
     "Bard",
     "Druid",
     "Ranger"
-  ]
+  ],
+  "effect": {
+    "category": "UTILITY",
+    "timing": "INSTANT",
+    "area": {
+      "shape": "RADIUS",
+      "size": 100,
+      "units": "feet"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": "ALL_IN_AREA"
+    }
+  }
 }

@@ -17,5 +17,21 @@
     "Sorcerer",
     "Warlock",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "DURATION",
+    "duration": {
+      "value": 24,
+      "unit": "HOUR"
+    },
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": 12
+    }
+  },
+  "condition": "charmed"
 }

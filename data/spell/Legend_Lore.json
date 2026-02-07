@@ -16,5 +16,16 @@
     "Bard",
     "Cleric",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "UTILITY",
+    "timing": "INSTANT",
+    "area": {
+      "shape": "SELF"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": 1
+    }
+  }
 }

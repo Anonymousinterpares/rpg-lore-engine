@@ -17,5 +17,22 @@
     "Paladin",
     "Ranger",
     "Sorcerer"
-  ]
+  ],
+  "effect": {
+    "category": "UTILITY",
+    "timing": "DURATION",
+    "duration": {
+      "value": 1,
+      "unit": "HOUR"
+    },
+    "area": {
+      "shape": "RADIUS",
+      "size": 60,
+      "units": "feet"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": "ALL_IN_AREA"
+    }
+  }
 }

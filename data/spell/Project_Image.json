@@ -15,5 +15,21 @@
   "classes": [
     "Bard",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 24,
+      "unit": "HOUR"
+    },
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": 1
+    }
+  },
+  "condition": "blinded"
 }

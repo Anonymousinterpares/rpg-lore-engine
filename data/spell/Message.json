@@ -16,5 +16,20 @@
     "Bard",
     "Sorcerer",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "UTILITY",
+    "timing": "DURATION",
+    "duration": {
+      "value": 1,
+      "unit": "ROUND"
+    },
+    "area": {
+      "shape": "LINE"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": "ALL_IN_AREA"
+    }
+  }
 }

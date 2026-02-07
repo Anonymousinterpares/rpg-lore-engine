@@ -17,5 +17,20 @@
     "Cleric",
     "Druid",
     "Ranger"
-  ]
+  ],
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "DURATION",
+    "duration": {
+      "value": 1,
+      "unit": "HOUR"
+    },
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": 1
+    }
+  }
 }

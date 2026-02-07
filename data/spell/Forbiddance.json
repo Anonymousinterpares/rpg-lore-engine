@@ -15,5 +15,20 @@
   "ritual": true,
   "classes": [
     "Cleric"
-  ]
+  ],
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "DURATION",
+    "duration": {
+      "value": 24,
+      "unit": "HOUR"
+    },
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": 1
+    }
+  }
 }

@@ -15,5 +15,21 @@
   "classes": [
     "Warlock",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "TRANSFORM",
+    "timing": "DURATION",
+    "duration": {
+      "value": 1,
+      "unit": "HOUR"
+    },
+    "area": {
+      "shape": "CUBE"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": "ALL_IN_AREA"
+    }
+  },
+  "condition": "invisible"
 }

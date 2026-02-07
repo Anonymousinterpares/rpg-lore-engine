@@ -429,6 +429,14 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                                                 <strong>Components:</strong> {Object.entries(selectedEntry.components || {}).filter(([_, v]) => v).map(([k]) => k.toUpperCase()).join(', ')}
                                                 {selectedEntry.concentration ? ' (Concentration)' : ''}
                                             </div>
+                                            {selectedEntry.effect && (
+                                                <div className={styles.statLine}>
+                                                    <strong>Category:</strong> <span className={styles.categoryBadge}>{selectedEntry.effect.category}</span>
+                                                    {selectedEntry.effect.area && (
+                                                        <> | <strong> Area:</strong> {selectedEntry.effect.area.shape} {selectedEntry.effect.area.size ? `(${selectedEntry.effect.area.size}${selectedEntry.effect.area.units || 'ft'})` : ''}</>
+                                                    )}
+                                                </div>
+                                            )}
                                             <p className={styles.spellDescription}>{selectedEntry.description}</p>
                                         </>
                                     )}

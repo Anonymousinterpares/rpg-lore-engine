@@ -15,5 +15,25 @@
   "classes": [
     "Cleric",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "SUMMON",
+    "timing": "INSTANT",
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": 1
+    }
+  },
+  "summon": {
+    "options": [
+      {
+        "count": 1,
+        "maxCR": 0.25,
+        "type": "undead"
+      }
+    ]
+  }
 }

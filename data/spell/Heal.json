@@ -14,5 +14,16 @@
   "classes": [
     "Cleric",
     "Druid"
-  ]
+  ],
+  "effect": {
+    "category": "HEAL",
+    "timing": "INSTANT",
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "ALLY",
+      "count": 1
+    }
+  }
 }

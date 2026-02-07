@@ -15,5 +15,21 @@
   "classes": [
     "Druid",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 1,
+      "unit": "HOUR"
+    },
+    "area": {
+      "shape": "SELF"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": 1
+    }
+  },
+  "condition": "unconscious"
 }

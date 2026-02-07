@@ -13,5 +13,23 @@
   "description": "The next time you hit a creature with a weapon attack before this spell ends, the weapon gleams with astral radiance as you strike. The attack deals an extra 2d6 radiant damage to the target, which becomes visible if it's invisible, and the target sheds dim light in a 5-foot radius and can't become invisible until the spell ends.",
   "classes": [
     "Paladin"
-  ]
+  ],
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 1,
+      "unit": "MINUTE"
+    },
+    "area": {
+      "shape": "RADIUS",
+      "size": 5,
+      "units": "feet"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": "ALL_IN_AREA"
+    }
+  },
+  "condition": "invisible"
 }

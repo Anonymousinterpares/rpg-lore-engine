@@ -15,5 +15,16 @@
   "classes": [
     "Druid",
     "Ranger"
-  ]
+  ],
+  "effect": {
+    "category": "UTILITY",
+    "timing": "INSTANT",
+    "area": {
+      "shape": "RADIUS"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": "ALL_IN_AREA"
+    }
+  }
 }

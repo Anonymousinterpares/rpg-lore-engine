@@ -16,5 +16,16 @@
     "Cleric",
     "Druid",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "TRANSFORM",
+    "timing": "INSTANT",
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": 2
+    }
+  }
 }

@@ -15,5 +15,17 @@
   "classes": [
     "Bard",
     "Druid"
-  ]
+  ],
+  "effect": {
+    "category": "CONTROL",
+    "timing": "INSTANT",
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": 1
+    }
+  },
+  "condition": "charmed"
 }

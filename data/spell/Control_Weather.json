@@ -16,5 +16,20 @@
     "Cleric",
     "Druid",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "UTILITY",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 8,
+      "unit": "HOUR"
+    },
+    "area": {
+      "shape": "SELF"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": 1
+    }
+  }
 }

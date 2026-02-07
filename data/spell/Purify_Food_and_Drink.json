@@ -16,5 +16,18 @@
     "Cleric",
     "Druid",
     "Paladin"
-  ]
+  ],
+  "effect": {
+    "category": "UTILITY",
+    "timing": "INSTANT",
+    "area": {
+      "shape": "RADIUS",
+      "size": 5,
+      "units": "feet"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": "ALL_IN_AREA"
+    }
+  }
 }

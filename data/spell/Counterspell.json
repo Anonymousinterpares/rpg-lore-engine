@@ -15,5 +15,16 @@
     "Sorcerer",
     "Warlock",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "REACTION",
+    "timing": "INSTANT",
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": 1
+    }
+  }
 }

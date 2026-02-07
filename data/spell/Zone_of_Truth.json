@@ -15,5 +15,22 @@
     "Bard",
     "Cleric",
     "Paladin"
-  ]
+  ],
+  "effect": {
+    "category": "UTILITY",
+    "timing": "DURATION",
+    "duration": {
+      "value": 10,
+      "unit": "MINUTE"
+    },
+    "area": {
+      "shape": "RADIUS",
+      "size": 15,
+      "units": "feet"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": "ALL_IN_AREA"
+    }
+  }
 }

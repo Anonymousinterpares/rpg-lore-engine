@@ -15,5 +15,18 @@
     "Bard",
     "Sorcerer",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "UTILITY",
+    "timing": "INSTANT",
+    "area": {
+      "shape": "CUBE",
+      "size": 10,
+      "units": "feet"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": "ALL_IN_AREA"
+    }
+  }
 }

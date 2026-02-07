@@ -15,5 +15,16 @@
   "classes": [
     "Sorcerer",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "INSTANT",
+    "area": {
+      "shape": "CUBE"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": "ALL_IN_AREA"
+    }
+  }
 }

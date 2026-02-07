@@ -15,5 +15,23 @@
   "classes": [
     "Sorcerer",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "DURATION",
+    "duration": {
+      "value": 1,
+      "unit": "ROUND"
+    },
+    "area": {
+      "shape": "CONE",
+      "size": 15,
+      "units": "feet"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": "ALL_IN_AREA"
+    }
+  },
+  "condition": "blinded"
 }

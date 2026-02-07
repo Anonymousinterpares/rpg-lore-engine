@@ -16,5 +16,16 @@
     "Druid",
     "Sorcerer",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "INSTANT",
+    "area": {
+      "shape": "SELF"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": 1
+    }
+  }
 }

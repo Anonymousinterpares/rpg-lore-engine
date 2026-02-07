@@ -14,5 +14,20 @@
   "classes": [
     "Druid",
     "Warlock"
-  ]
+  ],
+  "effect": {
+    "category": "SUMMON",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 1,
+      "unit": "HOUR"
+    },
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": 1
+    }
+  }
 }

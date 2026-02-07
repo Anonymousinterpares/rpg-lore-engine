@@ -14,5 +14,21 @@
   "classes": [
     "Bard",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "CONTROL",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 1,
+      "unit": "HOUR"
+    },
+    "area": {
+      "shape": "SELF"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": 1
+    }
+  },
+  "condition": "blinded"
 }

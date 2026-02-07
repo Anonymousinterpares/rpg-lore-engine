@@ -17,5 +17,23 @@
     "Sorcerer",
     "Warlock",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "CONTROL",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 1,
+      "unit": "MINUTE"
+    },
+    "area": {
+      "shape": "CONE",
+      "size": 30,
+      "units": "feet"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": "ALL_IN_AREA"
+    }
+  },
+  "condition": "frightened"
 }

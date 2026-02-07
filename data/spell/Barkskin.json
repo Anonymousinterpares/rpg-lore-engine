@@ -15,5 +15,20 @@
   "classes": [
     "Druid",
     "Ranger"
-  ]
+  ],
+  "effect": {
+    "category": "UTILITY",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 1,
+      "unit": "HOUR"
+    },
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": 1
+    }
+  }
 }

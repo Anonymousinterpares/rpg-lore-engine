@@ -16,5 +16,21 @@
     "Bard",
     "Druid",
     "Ranger"
-  ]
+  ],
+  "effect": {
+    "category": "CONTROL",
+    "timing": "DURATION",
+    "duration": {
+      "value": 24,
+      "unit": "HOUR"
+    },
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": 1
+    }
+  },
+  "condition": "charmed"
 }

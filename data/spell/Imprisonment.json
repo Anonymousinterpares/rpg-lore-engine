@@ -15,5 +15,21 @@
   "classes": [
     "Warlock",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "DURATION",
+    "duration": {
+      "value": 1,
+      "unit": "PERMANENT"
+    },
+    "area": {
+      "shape": "RADIUS"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": "ALL_IN_AREA"
+    }
+  },
+  "condition": "restrained"
 }

@@ -16,5 +16,23 @@
     "Druid",
     "Sorcerer",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "CONTROL",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 1,
+      "unit": "MINUTE"
+    },
+    "area": {
+      "shape": "RADIUS",
+      "size": 40,
+      "units": "feet"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": "ALL_IN_AREA"
+    }
+  },
+  "condition": "prone"
 }

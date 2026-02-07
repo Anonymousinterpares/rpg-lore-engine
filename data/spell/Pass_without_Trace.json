@@ -15,5 +15,20 @@
   "classes": [
     "Druid",
     "Ranger"
-  ]
+  ],
+  "effect": {
+    "category": "BUFF",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 1,
+      "unit": "HOUR"
+    },
+    "area": {
+      "shape": "SELF"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": 1
+    }
+  }
 }

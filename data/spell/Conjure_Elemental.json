@@ -15,5 +15,22 @@
   "classes": [
     "Druid",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "SUMMON",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 1,
+      "unit": "HOUR"
+    },
+    "area": {
+      "shape": "CUBE",
+      "size": 10,
+      "units": "feet"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": "ALL_IN_AREA"
+    }
+  }
 }

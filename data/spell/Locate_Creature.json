@@ -19,5 +19,20 @@
     "Paladin",
     "Ranger",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "TRANSFORM",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 1,
+      "unit": "HOUR"
+    },
+    "area": {
+      "shape": "SELF"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": 1
+    }
+  }
 }

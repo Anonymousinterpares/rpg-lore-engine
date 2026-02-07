@@ -14,5 +14,20 @@
   "classes": [
     "Warlock",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "HEAL",
+    "timing": "CONCENTRATION",
+    "duration": {
+      "value": 1,
+      "unit": "MINUTE"
+    },
+    "area": {
+      "shape": "SELF"
+    },
+    "targets": {
+      "type": "ALLY",
+      "count": 1
+    }
+  }
 }

@@ -15,5 +15,16 @@
     "Cleric",
     "Druid",
     "Ranger"
-  ]
+  ],
+  "effect": {
+    "category": "SUMMON",
+    "timing": "INSTANT",
+    "area": {
+      "shape": "LINE"
+    },
+    "targets": {
+      "type": "CREATURE",
+      "count": "ALL_IN_AREA"
+    }
+  }
 }

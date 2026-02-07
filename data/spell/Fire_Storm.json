@@ -15,5 +15,18 @@
     "Cleric",
     "Druid",
     "Sorcerer"
-  ]
+  ],
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "INSTANT",
+    "area": {
+      "shape": "CUBE",
+      "size": 10,
+      "units": "feet"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": "ALL_IN_AREA"
+    }
+  }
 }

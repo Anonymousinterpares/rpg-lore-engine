@@ -16,5 +16,23 @@
     "Bard",
     "Cleric",
     "Wizard"
-  ]
+  ],
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "DURATION",
+    "duration": {
+      "value": 1,
+      "unit": "PERMANENT"
+    },
+    "area": {
+      "shape": "RADIUS",
+      "size": 20,
+      "units": "feet"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": "ALL_IN_AREA"
+    }
+  },
+  "condition": "invisible"
 }

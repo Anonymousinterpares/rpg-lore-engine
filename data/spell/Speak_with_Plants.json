@@ -15,5 +15,21 @@
     "Bard",
     "Druid",
     "Ranger"
-  ]
+  ],
+  "effect": {
+    "category": "CONTROL",
+    "timing": "DURATION",
+    "duration": {
+      "value": 10,
+      "unit": "MINUTE"
+    },
+    "area": {
+      "shape": "SELF"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": 1
+    }
+  },
+  "condition": "restrained"
 }
