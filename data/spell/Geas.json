@@ -19,7 +19,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "CONTROL",
     "timing": "DURATION",
     "duration": {
       "value": 30,
@@ -32,6 +32,14 @@
       "type": "ENEMY",
       "count": 1
     }
+  },
+  "damage": {
+    "dice": "5d10",
+    "type": "Psychic"
+  },
+  "save": {
+    "ability": "wisdom",
+    "effect": "none"
   },
   "condition": "charmed"
 }

@@ -15,7 +15,7 @@
     "Druid"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "SUMMON",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 10,
@@ -25,8 +25,8 @@
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "ENEMY",
-      "count": 1
+      "type": "POINT",
+      "count": 10
     }
   }
 }

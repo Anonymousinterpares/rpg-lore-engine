@@ -28,5 +28,13 @@
       "type": "ENEMY",
       "count": "ALL_IN_AREA"
     }
+  },
+  "damage": {
+    "dice": "7d10",
+    "type": "Fire"
+  },
+  "save": {
+    "ability": "dexterity",
+    "effect": "half"
   }
 }

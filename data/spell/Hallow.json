@@ -16,19 +16,20 @@
     "Cleric"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "UTILITY",
     "timing": "DURATION",
     "duration": {
       "value": 1,
       "unit": "PERMANENT"
     },
     "area": {
-      "shape": "RADIUS"
+      "shape": "RADIUS",
+      "size": 60,
+      "units": "feet"
     },
     "targets": {
-      "type": "ENEMY",
-      "count": "ALL_IN_AREA"
+      "type": "POINT",
+      "count": 1
     }
-  },
-  "condition": "charmed"
+  }
 }

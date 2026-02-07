@@ -17,19 +17,25 @@
     "Wizard"
   ],
   "effect": {
-    "category": "TRANSFORM",
+    "category": "CONTROL",
     "timing": "DURATION",
     "duration": {
       "value": 1,
       "unit": "HOUR"
     },
     "area": {
-      "shape": "CUBE"
+      "shape": "CUBE",
+      "size": 20,
+      "units": "feet"
     },
     "targets": {
-      "type": "CREATURE",
+      "type": "ENEMY",
       "count": "ALL_IN_AREA"
     }
+  },
+  "save": {
+    "ability": "charisma",
+    "effect": "none"
   },
   "condition": "invisible"
 }

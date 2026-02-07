@@ -26,5 +26,13 @@
       "type": "ENEMY",
       "count": 1
     }
+  },
+  "damage": {
+    "dice": "7d8+30",
+    "type": "Necrotic"
+  },
+  "save": {
+    "ability": "constitution",
+    "effect": "half"
   }
 }

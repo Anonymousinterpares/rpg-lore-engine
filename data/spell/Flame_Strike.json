@@ -27,5 +27,31 @@
       "type": "ENEMY",
       "count": "ALL_IN_AREA"
     }
+  },
+  "damage": {
+    "dice": "4d6",
+    "type": "Fire",
+    "secondary": {
+      "dice": "4d6",
+      "type": "Radiant"
+    },
+    "scaling": {
+      "levels": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "values": [
+        "5d6",
+        "6d6",
+        "7d6",
+        "8d6"
+      ]
+    }
+  },
+  "save": {
+    "ability": "dexterity",
+    "effect": "half"
   }
 }

@@ -24,11 +24,17 @@
       "unit": "HOUR"
     },
     "area": {
-      "shape": "SINGLE"
+      "shape": "RADIUS",
+      "size": 112,
+      "units": "feet"
     },
     "targets": {
       "type": "ENEMY",
-      "count": 1
+      "count": "ALL_IN_AREA"
     }
+  },
+  "damage": {
+    "dice": "5d10",
+    "type": "Radiant"
   }
 }

@@ -17,7 +17,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "BUFF",
     "timing": "DURATION",
     "duration": {
       "value": 1,
@@ -27,8 +27,33 @@
       "shape": "SELF"
     },
     "targets": {
-      "type": "ENEMY",
-      "count": 1
+      "type": "SELF"
+    }
+  },
+  "damage": {
+    "dice": "1d4+4",
+    "type": "Healing",
+    "scaling": {
+      "levels": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "values": [
+        "1d4+9",
+        "1d4+14",
+        "1d4+19",
+        "1d4+24",
+        "1d4+29",
+        "1d4+34",
+        "1d4+39",
+        "1d4+44"
+      ]
     }
   }
 }

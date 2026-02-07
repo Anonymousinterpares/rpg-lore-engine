@@ -31,5 +31,9 @@
       "count": 1
     }
   },
+  "save": {
+    "ability": "constitution",
+    "effect": "none"
+  },
   "condition": "restrained"
 }

@@ -23,12 +23,18 @@
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "SINGLE"
+      "shape": "SQUARE",
+      "size": 10,
+      "units": "feet"
     },
     "targets": {
-      "type": "ENEMY",
+      "type": "POINT",
       "count": 1
     }
+  },
+  "save": {
+    "ability": "dexterity",
+    "effect": "none"
   },
   "condition": "prone"
 }

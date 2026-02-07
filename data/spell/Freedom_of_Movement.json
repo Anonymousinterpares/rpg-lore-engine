@@ -19,7 +19,7 @@
     "Ranger"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "BUFF",
     "timing": "DURATION",
     "duration": {
       "value": 1,
@@ -29,9 +29,8 @@
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "ENEMY",
+      "type": "ALLY",
       "count": 1
     }
-  },
-  "condition": "paralyzed"
+  }
 }

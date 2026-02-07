@@ -35,5 +35,9 @@
       "count": "ALL_IN_AREA"
     }
   },
+  "save": {
+    "ability": "wisdom",
+    "effect": "none"
+  },
   "condition": "frightened"
 }

@@ -16,21 +16,25 @@
     "Druid"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "DEBUFF",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 1,
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "RADIUS",
-      "size": 10,
+      "shape": "CUBE",
+      "size": 20,
       "units": "feet"
     },
     "targets": {
       "type": "ENEMY",
       "count": "ALL_IN_AREA"
     }
+  },
+  "save": {
+    "ability": "dexterity",
+    "effect": "none"
   },
   "condition": "invisible"
 }

@@ -19,7 +19,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "DEBUFF",
     "timing": "INSTANT",
     "area": {
       "shape": "SINGLE"
@@ -28,5 +28,13 @@
       "type": "ENEMY",
       "count": 1
     }
+  },
+  "damage": {
+    "dice": "4d6",
+    "type": "Psychic"
+  },
+  "save": {
+    "ability": "intelligence",
+    "effect": "none"
   }
 }

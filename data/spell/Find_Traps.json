@@ -17,14 +17,16 @@
     "Ranger"
   ],
   "effect": {
-    "category": "SUMMON",
+    "category": "UTILITY",
     "timing": "INSTANT",
     "area": {
-      "shape": "LINE"
+      "shape": "RADIUS",
+      "size": 120,
+      "units": "feet"
     },
     "targets": {
-      "type": "CREATURE",
-      "count": "ALL_IN_AREA"
+      "type": "SELF",
+      "count": 1
     }
   }
 }

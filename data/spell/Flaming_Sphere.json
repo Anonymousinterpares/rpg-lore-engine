@@ -25,12 +25,40 @@
     },
     "area": {
       "shape": "RADIUS",
-      "size": 20,
+      "size": 5,
       "units": "feet"
     },
     "targets": {
       "type": "ENEMY",
       "count": "ALL_IN_AREA"
     }
+  },
+  "damage": {
+    "dice": "2d6",
+    "type": "Fire",
+    "scaling": {
+      "levels": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "values": [
+        "3d6",
+        "4d6",
+        "5d6",
+        "6d6",
+        "7d6",
+        "8d6",
+        "9d6"
+      ]
+    }
+  },
+  "save": {
+    "ability": "dexterity",
+    "effect": "half"
   }
 }

@@ -17,14 +17,18 @@
     "Ranger"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "HEALING",
     "timing": "INSTANT",
     "area": {
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "ENEMY",
+      "type": "SELF",
       "count": 1
     }
+  },
+  "damage": {
+    "dice": "1",
+    "type": "Healing"
   }
 }

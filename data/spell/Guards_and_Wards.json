@@ -17,17 +17,19 @@
     "Wizard"
   ],
   "effect": {
-    "category": "TRANSFORM",
+    "category": "UTILITY",
     "timing": "DURATION",
     "duration": {
       "value": 24,
       "unit": "HOUR"
     },
     "area": {
-      "shape": "SINGLE"
+      "shape": "RADIUS",
+      "size": 28,
+      "units": "feet"
     },
     "targets": {
-      "type": "CREATURE",
+      "type": "POINT",
       "count": 1
     }
   }
