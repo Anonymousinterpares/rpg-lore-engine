@@ -461,6 +461,16 @@ export class GameLoop {
             lastRoll: undefined,
             events: []
         };
+
+        // Save initial combat state to UI
+        this.stateManager.saveGame(this.state);
+
+        // If the first combatant is an enemy, trigger their AI turn
+        const firstCombatant = combatants[0];
+        if (firstCombatant.type === 'enemy' && firstCombatant.hp.current > 0) {
+            // Use a short delay so UI can render before AI acts
+            setTimeout(() => this.performAITurn(firstCombatant), 800);
+        }
     }
 
     private handleCombatAction(intent: ParsedIntent): string {
