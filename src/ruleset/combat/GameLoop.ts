@@ -1,6 +1,7 @@
 import { IntentRouter, ParsedIntent } from './IntentRouter';
 import { GameStateManager, GameState } from './GameStateManager';
 import { IStorageProvider } from './IStorageProvider';
+import { Spell } from '../schemas/SpellSchema';
 import { ContextManager } from '../agents/ContextManager';
 import { MechanicsEngine } from './MechanicsEngine';
 import { RestingEngine } from './RestingEngine';
@@ -220,6 +221,10 @@ export class GameLoop {
                 this.state.mode = 'EXPLORATION';
                 this.state.combat = undefined;
                 return `[SYSTEM] Exiting current mode. Returning to EXPLORATION.`;
+            case 'cast':
+                const spName = intent.args?.[0];
+                if (!spName) return "Which spell do you wish to cast?";
+                return this.handleExplorationCast(spName);
             default:
                 return `Unknown command: /${intent.command}`;
         }
@@ -409,8 +414,9 @@ export class GameLoop {
             isPlayer: true,
             type: 'player',
             ac: pc.ac || 10,
-            stats: pc.stats,
+            stats: pc.stats as Record<string, number>,
             conditions: [],
+            statusEffects: [],
             spellSlots: pc.spellSlots
         });
 
@@ -431,9 +437,10 @@ export class GameLoop {
                 isPlayer: false,
                 type: 'enemy',
                 ac: monsterData?.ac || 10,
-                stats: monsterData?.stats || { 'INT': 10, 'STR': 10, 'DEX': 10, 'CON': 10, 'WIS': 10, 'CHA': 10 },
+                stats: (monsterData?.stats || { 'INT': 10, 'STR': 10, 'DEX': 10, 'CON': 10, 'WIS': 10, 'CHA': 10 }) as Record<string, number>,
                 conditions: [],
-                spellSlots: {} // Monsters usually use special actions, but can add slots if needed
+                statusEffects: [],
+                spellSlots: {}
             });
         }
 
@@ -492,13 +499,190 @@ export class GameLoop {
 
         } else if (intent.command === 'dodge') {
             resultMsg = `${currentCombatant.name} takes a defensive stance.`;
+        } else if (intent.command === 'cast') {
+            const spellName = intent.args?.[0];
+            if (!spellName) return "Which spell do you wish to cast?";
+            resultMsg = this.handleCast(currentCombatant, spellName);
         }
 
         this.addCombatLog(resultMsg);
 
         // After player action, advance turn asynchronously
-        setTimeout(() => this.advanceCombatTurn(), 100);
+        if (resultMsg && !resultMsg.includes("Which spell")) {
+            setTimeout(() => this.advanceCombatTurn(), 100);
+        }
         return resultMsg;
+    }
+
+    private handleCast(caster: Combatant, spellName: string): string {
+        const spell = DataManager.getSpell(spellName);
+        if (!spell) return `Unknown spell: ${spellName}`;
+
+        const pc = this.state.character;
+
+        // 1. Check Spell Slots (if not a cantrip)
+        if (spell.level > 0) {
+            const slotData = pc.spellSlots[spell.level.toString()];
+            if (!slotData || slotData.current <= 0) {
+                return `You have no ${spell.level}${this.getOrdinal(spell.level)} level spell slots remaining!`;
+            }
+        }
+
+        // 2. Determine Targets
+        let targets: Combatant[] = [];
+        const combo = this.state.combat!;
+        const effect = spell.effect;
+
+        if (effect?.targets?.type === 'ENEMY' || spell.damage) {
+            const potentialTargets = combo.combatants.filter(c => c.type === 'enemy' && c.hp.current > 0);
+            if (effect?.targets?.count === 'ALL_IN_AREA') {
+                targets = potentialTargets;
+            } else {
+                let target = potentialTargets.find(t => t.id === combo.selectedTargetId);
+                if (!target) target = potentialTargets[0];
+                if (target) targets = [target];
+            }
+        } else if (effect?.targets?.type === 'ALLY' || effect?.category === 'HEAL' || effect?.category === 'BUFF') {
+            const potentialTargets = combo.combatants.filter(c => (c.type === 'player' || c.type === 'companion') && c.hp.current > 0);
+            if (effect?.targets?.count === 'ALL_IN_AREA') {
+                targets = potentialTargets;
+            } else {
+                targets = [caster]; // Default to self for heals/buffs if no target logic
+            }
+        } else {
+            targets = [caster];
+        }
+
+        if (targets.length === 0 && effect?.category !== 'SUMMON') return "No valid targets for this spell.";
+
+        // 3. Resolve Spell for each target
+        let fullMessage = `${caster.name} casts ${spell.name}! `;
+        const spellAttackBonus = MechanicsEngine.getModifier(caster.stats['INT'] || caster.stats['WIS'] || caster.stats['CHA'] || 10) + MechanicsEngine.getProficiencyBonus(pc.level);
+        const spellSaveDC = 8 + spellAttackBonus;
+
+        for (const target of targets) {
+            const result = CombatResolutionEngine.resolveSpell(caster, target, spell, spellAttackBonus, spellSaveDC);
+
+            if (result.damage > 0) {
+                CombatResolutionEngine.applyDamage(target, result.damage);
+                this.emitCombatEvent(result.type, target.id, result.damage);
+            }
+            if (result.heal > 0) {
+                CombatResolutionEngine.applyHealing(target, result.heal);
+                this.emitCombatEvent('HEAL', target.id, result.heal);
+            }
+
+            // Apply Conditions/Effects
+            if (result.type !== 'MISS' && result.type !== 'SAVE_SUCCESS') {
+                if (spell.effect?.category === 'CONTROL' && spell.condition) {
+                    target.conditions.push({
+                        id: spell.condition.toLowerCase(),
+                        name: spell.condition,
+                        description: `Affected by ${spell.name}`,
+                        duration: spell.effect.duration?.unit === 'ROUND' ? spell.effect.duration.value : 10,
+                        sourceId: caster.id
+                    });
+                }
+                if (spell.effect?.category === 'BUFF' || spell.effect?.category === 'DEBUFF') {
+                    target.statusEffects.push({
+                        id: spell.name.toLowerCase().replace(/ /g, '_'),
+                        name: spell.name,
+                        type: spell.effect.category as 'BUFF' | 'DEBUFF',
+                        duration: spell.effect.duration?.unit === 'ROUND' ? spell.effect.duration.value : 10,
+                        sourceId: caster.id
+                    });
+                }
+            }
+
+            fullMessage += result.message + " ";
+        }
+
+        // 4. Handle Summoning
+        if (spell.effect?.category === 'SUMMON') {
+            this.executeSummon(caster, spell);
+            fullMessage += `Allies have arrived!`;
+        }
+
+        // 5. Consume Slot
+        if (spell.level > 0) {
+            pc.spellSlots[spell.level.toString()].current--;
+        }
+
+        return fullMessage;
+    }
+
+    private async executeSummon(caster: Combatant, spell: Spell) {
+        if (!this.state.combat) return;
+
+        // Simplified summon logic: spawn based on first option or default
+        const option = spell.summon?.options?.[0] || { count: 1, maxCR: 0.25, type: 'beast' };
+        const count = typeof option.count === 'string' ? Dice.roll(option.count) : option.count;
+
+        await DataManager.loadMonsters();
+        const availableMonsters = DataManager.getMonstersByBiome('Plains').filter(m => m.cr <= option.maxCR);
+        const monsterId = availableMonsters.length > 0 ? availableMonsters[0].id : 'Wolf'; // Fallback
+        const monsterData = DataManager.getMonster(monsterId);
+
+        for (let i = 0; i < count; i++) {
+            const initRoll = Dice.d20() + (monsterData ? MechanicsEngine.getModifier(monsterData.stats['DEX'] || 10) : 0);
+            const summon: Combatant = {
+                id: `summon_${Date.now()}_${i}`,
+                name: monsterData?.name || monsterId,
+                hp: monsterData ? { current: monsterData.hp.average, max: monsterData.hp.average } : { current: 10, max: 10 },
+                initiative: initRoll,
+                isPlayer: false,
+                type: 'companion', // Companions are allies
+                ac: monsterData?.ac || 12,
+                stats: monsterData?.stats || { 'STR': 10, 'DEX': 10, 'CON': 10, 'INT': 10, 'WIS': 10, 'CHA': 10 },
+                conditions: [],
+                statusEffects: [],
+                spellSlots: {}
+            };
+            this.state.combat.combatants.push(summon);
+        }
+
+        // Re-sort initiative
+        this.state.combat.combatants.sort((a, b) => b.initiative - a.initiative);
+    }
+
+    private getOrdinal(n: number): string {
+        if (n === 1) return 'st';
+        if (n === 2) return 'nd';
+        if (n === 3) return 'rd';
+        return 'th';
+    }
+
+    private handleExplorationCast(spellName: string): string {
+        const spell = DataManager.getSpell(spellName);
+        if (!spell) return `Unknown spell: ${spellName}`;
+
+        const pc = this.state.character;
+
+        // 1. Check Spell Slots
+        if (spell.level > 0) {
+            const slotData = pc.spellSlots[spell.level.toString()];
+            if (!slotData || slotData.current <= 0) {
+                return `You have no ${spell.level}${this.getOrdinal(spell.level)} level spell slots remaining!`;
+            }
+        }
+
+        // 2. Resolve Effect
+        const category = spell.effect?.category || 'UTILITY';
+
+        if (category === 'HEAL') {
+            const heal = Dice.roll(spell.damage?.dice || '1d8') + MechanicsEngine.getModifier(pc.stats['WIS'] || pc.stats['CHA'] || pc.stats['INT'] || 10);
+            pc.hp.current = Math.min(pc.hp.max, pc.hp.current + heal);
+            if (spell.level > 0) pc.spellSlots[spell.level.toString()].current--;
+            return `You cast ${spell.name}, healing ${heal} HP. Current HP: ${pc.hp.current}/${pc.hp.max}`;
+        }
+
+        if (category === 'SUMMON') {
+            // Out of combat summon adds a companion to state.companions for 1 hour
+            // This is a simplified version for now
+            return `You cast ${spell.name}. A companion arrives and will aid you in the coming struggles.`;
+        }
+
+        return `You cast ${spell.name}, but its primary effects are best seen in the heat of battle.`;
     }
 
     private async advanceCombatTurn() {

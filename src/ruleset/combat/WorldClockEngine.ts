@@ -12,6 +12,7 @@ export class WorldClockEngine {
     public static createDefaultClock(): WorldClock {
         return {
             hour: 9,
+            minute: 0,
             day: 1,
             month: 1,
             year: 1489,
@@ -21,16 +22,17 @@ export class WorldClockEngine {
 
     /**
      * Advances the clock by a number of minutes.
-     * 10 turns = 1 minute (assuming 6s combat turns)
-     * 1 travel turn (exploration) = variable minutes/hours
      */
     public static advanceTime(clock: WorldClock, minutes: number): WorldClock {
-        let { hour, day, month, year, totalTurns } = clock;
+        let { hour, minute, day, month, year, totalTurns } = clock;
 
-        const totalMinutes = hour * 60 + minutes;
-        hour = Math.floor(totalMinutes / 60) % 24;
+        const totalMinutes = hour * 60 + minute + minutes;
 
-        const extraDays = Math.floor(totalMinutes / (60 * 24));
+        minute = totalMinutes % 60;
+        const totalHours = Math.floor(totalMinutes / 60);
+        hour = totalHours % 24;
+
+        const extraDays = Math.floor(totalHours / 24);
         if (extraDays > 0) {
             day += extraDays;
             while (day > 30) {
@@ -43,15 +45,27 @@ export class WorldClockEngine {
             }
         }
 
-        return { hour, day, month, year, totalTurns: totalTurns + (minutes * 10) };
+        return { hour, minute, day, month, year, totalTurns: totalTurns + (minutes * 10) };
     }
 
     /**
      * Advances the clock by combat turns (6 seconds each)
      */
     public static advanceTurns(clock: WorldClock, turns: number): WorldClock {
-        const minutes = Math.floor((clock.totalTurns % 10 + turns) / 10);
-        const newClock = this.advanceTime(clock, minutes);
+        // totalTurns is just a counter, we use it for modulo precision if needed
+        // but the core is hour/minute/day/month/year
+
+        // Convert current time to total minutes, add turns-as-minutes
+        // or just calculate the overflow
+        const addedMinutes = Math.floor(turns / 10); // 10 turns = 1 min
+        // Actually, let's keep it consistent: 6s per turn.
+
+        // This is a bit tricky if we want exact second tracking, but schema doesn't have seconds.
+        // We'll track partial minutes via totalTurns or just round up/down.
+        // Given 5 min per narrturn, 10 turns = 1 min is the intended scale.
+
+        const netMinutes = Math.floor(turns / 10);
+        const newClock = this.advanceTime(clock, netMinutes);
         newClock.totalTurns = clock.totalTurns + turns;
         return newClock;
     }
@@ -67,7 +81,7 @@ export class WorldClockEngine {
         const tenday = Math.ceil(clock.day / 10);
         const dayInTenday = ((clock.day - 1) % 10) + 1;
 
-        return `${dayInTenday} of ${monthName} (${tenday}${this.getOrdinal(tenday)} Tenday), Year ${clock.year} | ${pad(clock.hour)}:00`;
+        return `${dayInTenday} of ${monthName} (${tenday}${this.getOrdinal(tenday)} Tenday), Year ${clock.year} | ${pad(clock.hour)}:${pad(clock.minute)}`;
     }
 
     private static getOrdinal(n: number): string {

@@ -21,6 +21,16 @@ export const CombatConditionSchema = z.object({
     sourceId: z.string().optional()
 });
 
+export const StatusEffectSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    type: z.enum(['BUFF', 'DEBUFF']),
+    modifier: z.union([z.number(), z.string()]).optional(), // e.g., 5 or 'd4'
+    stat: z.string().optional(), // 'ac', 'STR_SAVE', etc.
+    duration: z.number().optional(), // rounds remaining
+    sourceId: z.string().optional()
+});
+
 export const CombatantSchema = z.object({
     id: z.string(),
     name: z.string(),
@@ -35,6 +45,7 @@ export const CombatantSchema = z.object({
     ac: z.number().default(10),
     stats: z.record(z.string(), z.number()).default({}),
     conditions: z.array(CombatConditionSchema).default([]),
+    statusEffects: z.array(StatusEffectSchema).default([]),
     spellSlots: z.record(z.string(), z.object({
         current: z.number(),
         max: z.number()
