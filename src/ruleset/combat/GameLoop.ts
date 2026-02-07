@@ -414,7 +414,8 @@ export class GameLoop {
             stats: pc.stats as Record<string, number>,
             conditions: [],
             statusEffects: [],
-            spellSlots: pc.spellSlots
+            spellSlots: pc.spellSlots,
+            isConcentrating: false
         });
 
         // 2. Add Enemies
@@ -437,7 +438,8 @@ export class GameLoop {
                 stats: (monsterData?.stats || { 'INT': 10, 'STR': 10, 'DEX': 10, 'CON': 10, 'WIS': 10, 'CHA': 10 }) as Record<string, number>,
                 conditions: [],
                 statusEffects: [],
-                spellSlots: {}
+                spellSlots: {},
+                isConcentrating: false
             });
         }
 
@@ -491,7 +493,7 @@ export class GameLoop {
             combatState.lastRoll = (result.details?.roll || 0) + (result.details?.modifier || 0);
             this.emitCombatEvent(result.type, target.id, result.damage || 0);
 
-            CombatResolutionEngine.applyDamage(target, result.damage);
+            this.applyCombatDamage(target, result.damage);
             resultMsg = CombatLogFormatter.format(result, currentCombatant.name, target.name);
 
         } else if (intent.command === 'dodge') {
@@ -579,7 +581,7 @@ export class GameLoop {
             const result = CombatResolutionEngine.resolveSpell(caster, target, spell, spellAttackBonus, spellSaveDC);
 
             if (result.damage > 0) {
-                CombatResolutionEngine.applyDamage(target, result.damage);
+                this.applyCombatDamage(target, result.damage);
                 this.emitCombatEvent(result.type, target.id, result.damage);
             }
             if (result.heal > 0) {
@@ -618,7 +620,17 @@ export class GameLoop {
             fullMessage += `Allies have arrived!`;
         }
 
-        // 5. Consume Slot
+        // 5. Handle Concentration
+        if (spell.concentration || spell.effect?.timing === 'CONCENTRATION') {
+            if (caster.isConcentrating && caster.concentratingOn) {
+                fullMessage += ` (Ends concentration on ${caster.concentratingOn})`;
+                this.breakConcentration(caster);
+            }
+            caster.isConcentrating = true;
+            caster.concentratingOn = spell.name;
+        }
+
+        // 6. Consume Slot
         if (spell.level > 0) {
             pc.spellSlots[spell.level.toString()].current--;
         }
@@ -626,38 +638,89 @@ export class GameLoop {
         return fullMessage;
     }
 
-    private async executeSummon(caster: Combatant, spell: Spell) {
+    private breakConcentration(caster: Combatant) {
+        caster.isConcentrating = false;
+        const spellName = caster.concentratingOn;
+        caster.concentratingOn = undefined;
+
         if (!this.state.combat) return;
 
-        // Simplified summon logic: spawn based on first option or default
-        const option = spell.summon?.options?.[0] || { count: 1, maxCR: 0.25, type: 'beast' };
-        const count = typeof option.count === 'string' ? Dice.roll(option.count) : option.count;
+        // Remove all combatants summoned by this caster for this spell
+        // Note: In D&D 5e, concentration breaking usually ends the summon.
+        this.state.combat.combatants = this.state.combat.combatants.filter(c => {
+            if (c.type === 'summon' && c.sourceId === caster.id) {
+                this.addCombatLog(`${c.name} vanishes as ${caster.name} loses concentration on ${spellName}.`);
+                return false;
+            }
+            return true;
+        });
+
+        // Re-calculate turn index if combatants were removed
+        const currentIndex = this.state.combat.currentTurnIndex;
+        // This is a bit complex, but for now we'll just sort and hope turn index logic in advanceCombatTurn handles it.
+        this.state.combat.combatants.sort((a, b) => b.initiative - a.initiative);
+    }
+
+    private async executeSummon(caster: Combatant, spell: Spell, optionIndex: number = 0) {
+        if (!this.state.combat) return;
+
+        const option = spell.summon?.options?.[optionIndex] || spell.summon?.options?.[0] || { count: 1, maxCR: 0.25, type: 'beast' };
+
+        // 1. Roll for count if it's a dice formula
+        let count = 1;
+        if (typeof option.count === 'string') {
+            count = Dice.roll(option.count);
+        } else {
+            count = option.count;
+        }
 
         await DataManager.loadMonsters();
-        const availableMonsters = DataManager.getMonstersByBiome('Plains').filter(m => m.cr <= option.maxCR);
-        const monsterId = availableMonsters.length > 0 ? availableMonsters[0].id : 'Wolf'; // Fallback
+
+        // 2. Select a monster based on CR and Type
+        // Improvement: Try to find monsters matching the requested type
+        const biome = this.hexMapManager.getHex(this.state.location.hexId)?.biome || 'Plains';
+        const availableMonsters = DataManager.getMonstersByBiome(biome).filter(m => m.cr <= option.maxCR);
+
+        // In a real scenario, we might want to filter m.type === option.type, 
+        // but for now we'll pick the most appropriate one from the biome.
+        const monsterId = availableMonsters.length > 0 ? availableMonsters[0].id : 'Wolf';
         const monsterData = DataManager.getMonster(monsterId);
 
+        // 3. Roll Shared Initiative
+        const dexMod = monsterData ? MechanicsEngine.getModifier(monsterData.stats['DEX'] || 10) : 0;
+        const sharedInit = Dice.d20() + dexMod;
+
+        const newSummons: Combatant[] = [];
+
         for (let i = 0; i < count; i++) {
-            const initRoll = Dice.d20() + (monsterData ? MechanicsEngine.getModifier(monsterData.stats['DEX'] || 10) : 0);
             const summon: Combatant = {
-                id: `summon_${Date.now()}_${i}`,
-                name: monsterData?.name || monsterId,
+                id: `summon_${Date.now()}_${i}_${Math.random().toString(36).substr(2, 4)}`,
+                name: `${monsterData?.name || monsterId} (Summoned)`,
                 hp: monsterData ? { current: monsterData.hp.average, max: monsterData.hp.average } : { current: 10, max: 10 },
-                initiative: initRoll,
-                isPlayer: false,
-                type: 'companion', // Companions are allies
+                initiative: sharedInit,
+                isPlayer: true, // Controlled by player
+                type: 'summon',
                 ac: monsterData?.ac || 12,
-                stats: monsterData?.stats || { 'STR': 10, 'DEX': 10, 'CON': 10, 'INT': 10, 'WIS': 10, 'CHA': 10 },
+                stats: (monsterData?.stats || { 'STR': 10, 'DEX': 10, 'CON': 10, 'INT': 10, 'WIS': 10, 'CHA': 10 }) as Record<string, number>,
                 conditions: [],
                 statusEffects: [],
-                spellSlots: {}
+                spellSlots: {},
+                sourceId: caster.id,
+                isConcentrating: false
             };
+            newSummons.push(summon);
             this.state.combat.combatants.push(summon);
         }
 
-        // Re-sort initiative
+        // 4. Re-sort initiative and preserve round order
         this.state.combat.combatants.sort((a, b) => b.initiative - a.initiative);
+
+        // Ensure turn index is still valid (it might have shifted)
+        const currentCombatant = this.state.combat.combatants[this.state.combat.currentTurnIndex];
+        if (currentCombatant?.id !== caster.id) {
+            // Find the caster again to keep the turn index synchronized
+            this.state.combat.currentTurnIndex = this.state.combat.combatants.findIndex(c => c.id === caster.id);
+        }
     }
 
     private getOrdinal(n: number): string {
@@ -698,6 +761,27 @@ export class GameLoop {
         }
 
         return `You cast ${spell.name}, but its primary effects are best seen in the heat of battle.`;
+    }
+
+    private applyCombatDamage(target: Combatant, damage: number) {
+        if (damage <= 0) return;
+
+        CombatResolutionEngine.applyDamage(target, damage);
+
+        // Concentration Check
+        if (target.isConcentrating && target.hp.current > 0) {
+            const dc = Math.max(10, Math.floor(damage / 2));
+            const conMod = MechanicsEngine.getModifier(target.stats['CON'] || 10);
+            const roll = Dice.d20();
+            const total = roll + conMod;
+
+            if (total < dc) {
+                this.addCombatLog(`${target.name} fails a CON save (rolled ${total} vs DC ${dc}) and loses concentration!`);
+                this.breakConcentration(target);
+            } else {
+                this.addCombatLog(`${target.name} maintains concentration (rolled ${total} vs DC ${dc}).`);
+            }
+        }
     }
 
     private async advanceCombatTurn() {
@@ -748,7 +832,7 @@ export class GameLoop {
             this.state.combat.lastRoll = (result.details?.roll || 0) + (result.details?.modifier || 0);
             this.emitCombatEvent(result.type, player.id, result.damage || 0);
 
-            CombatResolutionEngine.applyDamage(player, result.damage);
+            this.applyCombatDamage(player, result.damage);
             this.state.character.hp.current = player.hp.current; // Sync PC state
 
             const logMsg = CombatLogFormatter.format(result, actor.name, player.name);

@@ -40,7 +40,7 @@ export const CombatantSchema = z.object({
     }),
     initiative: z.number(),
     isPlayer: z.boolean(),
-    type: z.enum(['player', 'companion', 'enemy']),
+    type: z.enum(['player', 'companion', 'enemy', 'summon']),
     // Enhanced fields for deterministic combat
     ac: z.number().default(10),
     stats: z.record(z.string(), z.number()).default({}),
@@ -49,7 +49,10 @@ export const CombatantSchema = z.object({
     spellSlots: z.record(z.string(), z.object({
         current: z.number(),
         max: z.number()
-    })).optional()
+    })).optional(),
+    sourceId: z.string().optional(), // ID of the caster who summoned this combatant
+    isConcentrating: z.boolean().default(false),
+    concentratingOn: z.string().optional() // Name of the spell being concentrated on
 });
 
 export type CombatCondition = z.infer<typeof CombatConditionSchema>;
