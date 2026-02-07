@@ -52,10 +52,7 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
 
             {isCombat && state.combat && (
                 <>
-                    <TurnBanner
-                        isPlayerTurn={state.combat.combatants[state.combat.currentTurnIndex]?.isPlayer || false}
-                        turnNumber={state.combat.round}
-                    />
+                    <TurnBanner />
                     <CombatOverlay events={state.combat.events} />
                     <div className={styles.combatTopBar}>
                         <InitiativeTracker

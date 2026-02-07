@@ -52,7 +52,11 @@ export const CombatantSchema = z.object({
     })).optional(),
     sourceId: z.string().optional(), // ID of the caster who summoned this combatant
     isConcentrating: z.boolean().default(false),
-    concentratingOn: z.string().optional() // Name of the spell being concentrated on
+    concentratingOn: z.string().optional(), // Name of the spell being concentrated on
+    // Action Economy tracking
+    hasUsedAction: z.boolean().default(false),
+    hasUsedBonusAction: z.boolean().default(false),
+    hasMoved: z.boolean().default(false)
 });
 
 export type CombatCondition = z.infer<typeof CombatConditionSchema>;
@@ -80,7 +84,14 @@ export const CombatStateSchema = z.object({
     logs: z.array(CombatLogEntrySchema).default([]),
     selectedTargetId: z.string().optional(),
     lastRoll: z.number().optional(),
-    events: z.array(CombatEventSchema).default([])
+    events: z.array(CombatEventSchema).default([]),
+    // UI Pacing & Orchestration
+    activeBanner: z.object({
+        type: z.enum(['PLAYER', 'ENEMY', 'NAME']),
+        text: z.string().optional(),
+        visible: z.boolean().default(false)
+    }).optional(),
+    lastActionMessage: z.string().optional()
 });
 
 export const FullSaveStateSchema = z.object({

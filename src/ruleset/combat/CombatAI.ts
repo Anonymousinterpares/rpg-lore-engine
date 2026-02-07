@@ -36,7 +36,19 @@ export class CombatAI {
     public static decideAction(actor: Combatant, state: CombatState): AIAction {
         const intScore = actor.stats['INT'] || 10;
         const tier = this.getTier(intScore);
-        const targets = state.combatants.filter(c => c.type !== actor.type && c.hp.current > 0);
+
+        // Define "Enemies" based on actor type
+        // If actor is enemy, targets are players/companions/summons
+        // If actor is companion/summon, targets are enemies
+        const targets = state.combatants.filter(c => {
+            if (c.hp.current <= 0) return false;
+
+            if (actor.type === 'enemy') {
+                return c.type !== 'enemy';
+            } else {
+                return c.type === 'enemy';
+            }
+        });
 
         if (targets.length === 0) return { type: 'MOVE', targetId: '' };
 
@@ -77,13 +89,11 @@ export class CombatAI {
 
     private static getNearestTarget(actor: Combatant, targets: Combatant[]): Combatant {
         // Simplified distance (we don't have grid coords yet, so just pick first for now)
-        // In a real grid, this would calculate actual distance
         return targets[0];
     }
 
     private static getAllyTarget(actor: Combatant, state: CombatState, enemies: Combatant[]): Combatant | null {
-        const allies = state.combatants.filter(c => c.type === actor.type && c.id !== actor.id);
-        // This would require tracking who allies are attacking (state currently doesn't track this)
+        // This would require tracking who allies are attacking
         return null;
     }
 }

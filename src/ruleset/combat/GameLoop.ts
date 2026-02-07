@@ -45,6 +45,8 @@ export class GameLoop {
     private scribe: StoryScribe = new StoryScribe();
     private director: EncounterDirector = new EncounterDirector();
 
+    private turnProcessing: boolean = false;
+
     constructor(initialState: GameState, basePath: string, storage?: IStorageProvider) {
         this.state = initialState;
         this.stateManager = new GameStateManager(basePath, storage);
@@ -419,7 +421,10 @@ export class GameLoop {
             conditions: [],
             statusEffects: [],
             spellSlots: pc.spellSlots,
-            isConcentrating: false
+            isConcentrating: false,
+            hasUsedAction: false,
+            hasUsedBonusAction: false,
+            hasMoved: false
         });
 
         // 2. Add Enemies
@@ -443,7 +448,10 @@ export class GameLoop {
                 conditions: [],
                 statusEffects: [],
                 spellSlots: {},
-                isConcentrating: false
+                isConcentrating: false,
+                hasUsedAction: false,
+                hasUsedBonusAction: false,
+                hasMoved: false
             });
         }
 
@@ -452,12 +460,12 @@ export class GameLoop {
 
         this.state.combat = {
             round: 1,
-            currentTurnIndex: 0,
+            currentTurnIndex: -1, // Start before the first turn
             combatants: combatants,
             logs: [{
                 id: `log-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
                 type: 'info',
-                message: `Combat started! ${combatants[0].name} takes the first turn.`,
+                message: `Combat started!`,
                 turn: 0
             }],
             selectedTargetId: undefined,
@@ -465,15 +473,8 @@ export class GameLoop {
             events: []
         };
 
-        // Save initial combat state to UI
-        this.stateManager.saveGame(this.state);
-
-        // If the first combatant is an enemy, trigger their AI turn
-        const firstCombatant = combatants[0];
-        if (firstCombatant.type === 'enemy' && firstCombatant.hp.current > 0) {
-            // Use a short delay so UI can render before AI acts
-            setTimeout(() => this.performAITurn(firstCombatant), 800);
-        }
+        // Transition to the first turn
+        await this.advanceCombatTurn();
     }
 
     private handleCombatAction(intent: ParsedIntent): string {
@@ -481,6 +482,12 @@ export class GameLoop {
 
         const currentCombatant = this.state.combat.combatants[this.state.combat.currentTurnIndex];
         let resultMsg = '';
+
+        // Action Economy Check
+        const nonActionCommands = ['target', 'end turn'];
+        if (currentCombatant.hasUsedAction && !nonActionCommands.includes(intent.command || '')) {
+            return `You have already used your main action this turn. Use "End Turn" or a bonus action if available.`;
+        }
 
         if (intent.command === 'attack') {
             const combatState = this.state.combat;
@@ -538,15 +545,26 @@ export class GameLoop {
             const abilityName = intent.args?.[0] || intent.originalInput.replace(/^use /i, '').trim();
             resultMsg = this.useAbility(abilityName);
         } else if (intent.command === 'end turn') {
+            // Only players explicitly end turn via command. AI handles it internally.
+            if (!currentCombatant.isPlayer) return "";
             resultMsg = `${currentCombatant.name} ends their turn.`;
         }
 
         this.addCombatLog(resultMsg);
 
-        // After player action, advance turn asynchronously
-        if (resultMsg) {
-            setTimeout(() => this.advanceCombatTurn(), 100);
+        // Consuming action if it was an action command
+        if (resultMsg && !nonActionCommands.includes(intent.command || '')) {
+            currentCombatant.hasUsedAction = true;
         }
+
+        // After player action, we don't advance the turn immediately if the action 
+        // didn't explicitly end the turn. The player might still want to move or use bonus action.
+        if (intent.command === 'end turn') {
+            this.advanceCombatTurn();
+        } else {
+            this.stateManager.saveGame(this.state);
+        }
+
         return resultMsg;
     }
 
@@ -559,13 +577,16 @@ export class GameLoop {
         if (this.state.mode === 'COMBAT' && combat) {
             const currentCombatant = combat.combatants[combat.currentTurnIndex];
             if (!currentCombatant.isPlayer) return "It is not your turn.";
+            if (currentCombatant.hasUsedAction) return "You have already used your action this turn.";
+            if (this.turnProcessing) return "Turn is already ending...";
 
             // Set target if provided
             if (targetId) combat.selectedTargetId = targetId;
 
             const result = this.handleCast(currentCombatant, spellName);
             this.addCombatLog(result);
-            setTimeout(() => this.advanceCombatTurn(), 100);
+            currentCombatant.hasUsedAction = true;
+            this.stateManager.saveGame(this.state);
             return result;
         } else {
             return this.handleExplorationCast(spellName);
@@ -739,7 +760,7 @@ export class GameLoop {
                 name: `${monsterData?.name || monsterId} (Summoned)`,
                 hp: monsterData ? { current: monsterData.hp.average, max: monsterData.hp.average } : { current: 10, max: 10 },
                 initiative: sharedInit,
-                isPlayer: true, // Controlled by player
+                isPlayer: false, // ALLY NPC, not directly controlled by player UI
                 type: 'summon',
                 ac: monsterData?.ac || 12,
                 stats: (monsterData?.stats || { 'STR': 10, 'DEX': 10, 'CON': 10, 'INT': 10, 'WIS': 10, 'CHA': 10 }) as Record<string, number>,
@@ -747,7 +768,10 @@ export class GameLoop {
                 statusEffects: [],
                 spellSlots: {},
                 sourceId: caster.id,
-                isConcentrating: false
+                isConcentrating: false,
+                hasUsedAction: false,
+                hasUsedBonusAction: false,
+                hasMoved: false
             };
             newSummons.push(summon);
             this.state.combat.combatants.push(summon);
@@ -826,31 +850,100 @@ export class GameLoop {
     }
 
     private async advanceCombatTurn() {
-        if (!this.state.combat) return;
+        if (!this.state.combat || this.turnProcessing) return;
 
-        this.state.combat.currentTurnIndex++;
-        if (this.state.combat.currentTurnIndex >= this.state.combat.combatants.length) {
-            this.state.combat.currentTurnIndex = 0;
-            this.state.combat.round++;
+        // Loop to find next VALID (alive) combatant
+        let validNextFound = false;
+        let loops = 0;
+
+        while (!validNextFound && loops < 50) { // Safety break
+            this.state.combat.currentTurnIndex++;
+            if (this.state.combat.currentTurnIndex >= this.state.combat.combatants.length) {
+                this.state.combat.currentTurnIndex = 0;
+                this.state.combat.round++;
+            }
+
+            const check = this.state.combat.combatants[this.state.combat.currentTurnIndex];
+            if (check && check.hp.current > 0) {
+                validNextFound = true;
+            }
+            loops++;
         }
 
-        const nextCombatant = this.state.combat.combatants[this.state.combat.currentTurnIndex];
-        this.processStartOfTurn(nextCombatant);
+        // Trigger the Central Orchestrator Queue
+        await this.processCombatQueue();
+    }
 
-        // Check if combat is over
-        if (this.checkCombatEnd()) return;
+    /**
+     * The Central Combat Orchestrator.
+     * Sequentially processes turns until it reaches the Player's turn.
+     */
+    private async processCombatQueue() {
+        if (!this.state.combat || this.turnProcessing) return;
 
-        // Sync state to UI (important for highlighting current turn)
-        this.stateManager.saveGame(this.state);
+        this.turnProcessing = true;
 
-        // If next is an enemy, perform AI turn after a delay
-        if (nextCombatant.type === 'enemy' && nextCombatant.hp.current > 0) {
-            // "NPC is thinking" delay (tuned to 800ms for better pacing)
-            await new Promise(resolve => setTimeout(resolve, 800));
-            await this.performAITurn(nextCombatant);
-        } else if (nextCombatant.hp.current <= 0) {
-            // Skip dead combatants
-            this.advanceCombatTurn();
+        try {
+            while (this.state.combat && !this.checkCombatEnd()) {
+                const actor = this.state.combat.combatants[this.state.combat.currentTurnIndex];
+
+                // --- 1. Reset Turn Economy ---
+                actor.hasUsedAction = false;
+                actor.hasUsedBonusAction = false;
+                actor.hasMoved = false;
+
+                // --- 2. Determine Banner Type ---
+                let bannerType: 'PLAYER' | 'ENEMY' | 'NAME' = 'PLAYER';
+                if (actor.type === 'enemy') bannerType = 'ENEMY';
+                else if (actor.type === 'companion' || actor.type === 'summon') bannerType = 'NAME'; // Use Name banner for allies
+
+                this.state.combat.activeBanner = {
+                    type: bannerType,
+                    text: bannerType === 'NAME' ? `${actor.name.toUpperCase()} TURN` : undefined,
+                    visible: true
+                };
+
+                // Tick effects
+                this.processStartOfTurn(actor);
+                this.stateManager.saveGame(this.state);
+
+                // --- 3. Handle Control Flow ---
+                if (actor.isPlayer) {
+                    // Control handed back to player. Exit loop and unlock UI.
+                    this.turnProcessing = false;
+                    return;
+                } else {
+                    // AI Turn (Enemy, Companion, or Summon)
+                    // Wait for Banner
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+
+                    // Execute AI Logic
+                    await this.performAITurn(actor);
+
+                    // Pacing delay after action
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+
+                    // Move to NEXT in loop
+                    if (!this.state.combat) break;
+
+                    let validNextFound = false;
+                    let loops = 0;
+                    while (!validNextFound && loops < 50) {
+                        this.state.combat.currentTurnIndex++;
+                        if (this.state.combat.currentTurnIndex >= this.state.combat.combatants.length) {
+                            this.state.combat.currentTurnIndex = 0;
+                            this.state.combat.round++;
+                        }
+                        const check = this.state.combat.combatants[this.state.combat.currentTurnIndex];
+                        if (check && check.hp.current > 0) validNextFound = true;
+                        loops++;
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("Critical Error in processCombatQueue:", error);
+        } finally {
+            this.turnProcessing = false;
         }
     }
 
@@ -881,14 +974,21 @@ export class GameLoop {
     private async performAITurn(actor: Combatant) {
         if (!this.state.combat) return;
 
-        const action = CombatAI.decideAction(actor, this.state.combat);
-        const player = this.state.combat.combatants.find(c => c.isPlayer);
+        // 1. Visual feedback: Secondary banner for specific action?
+        // We'll skip secondary banner for now for speed, or just use the Name banner already up.
 
-        if (action.type === 'ATTACK' && player) {
+        // 2. Decide Action
+        const action = CombatAI.decideAction(actor, this.state.combat);
+        const pcCombatant = this.state.combat.combatants.find(c => c.isPlayer);
+
+        if (action.type === 'ATTACK' && action.targetId) {
+            const target = this.state.combat.combatants.find(c => c.id === action.targetId);
+            if (!target) return;
+
             const strMod = MechanicsEngine.getModifier(actor.stats['STR'] || 10);
             const result = CombatResolutionEngine.resolveAttack(
                 actor,
-                player,
+                target,
                 strMod + 2, // Generic monster bonus
                 "1d6", // Generic damage
                 strMod
@@ -896,17 +996,23 @@ export class GameLoop {
 
             // Record roll and emit event
             this.state.combat.lastRoll = (result.details?.roll || 0) + (result.details?.modifier || 0);
-            this.emitCombatEvent(result.type, player.id, result.damage || 0);
+            this.emitCombatEvent(result.type, target.id, result.damage || 0);
 
-            this.applyCombatDamage(player, result.damage);
-            this.state.character.hp.current = player.hp.current; // Sync PC state
+            this.applyCombatDamage(target, result.damage);
 
-            const logMsg = CombatLogFormatter.format(result, actor.name, player.name);
+            // Sync PC state if player was hit
+            if (target.isPlayer) {
+                this.state.character.hp.current = target.hp.current;
+            }
+
+            const logMsg = CombatLogFormatter.format(result, actor.name, target.name);
             this.addCombatLog(logMsg);
+        } else {
+            // Fallback for other actions
+            this.addCombatLog(`${actor.name} waits for an opening.`);
         }
 
-        // Advance to next turn
-        this.advanceCombatTurn();
+        this.stateManager.saveGame(this.state);
     }
 
     public useAbility(abilityName: string): string {
@@ -914,6 +1020,14 @@ export class GameLoop {
         const ability = AbilityParser.getCombatAbilities(char).find(a => a.name.toLowerCase() === abilityName.toLowerCase());
 
         if (!ability) return `You don't have an ability named "${abilityName}".`;
+
+        const combat = this.state.combat;
+        const currentCombatant = combat?.combatants[combat.currentTurnIndex];
+
+        // Action Economy Check
+        if (currentCombatant && ability.actionCost === 'ACTION' && currentCombatant.hasUsedAction) {
+            return "You have already used your action this turn.";
+        }
 
         // Check usage
         const usage = this.state.character.featureUsages?.[ability.name];
@@ -943,9 +1057,17 @@ export class GameLoop {
             usage.current--;
         }
 
-        if (this.state.mode === 'COMBAT') {
+        if (this.state.mode === 'COMBAT' && currentCombatant) {
+            if (ability.actionCost === 'ACTION') {
+                currentCombatant.hasUsedAction = true;
+            } else if (ability.actionCost === 'BONUS_ACTION') {
+                currentCombatant.hasUsedBonusAction = true;
+            }
+
             this.addCombatLog(result);
-            setTimeout(() => this.advanceCombatTurn(), 100);
+            if (!this.turnProcessing) {
+                setTimeout(() => this.advanceCombatTurn(), 1500);
+            }
         }
 
         return result;

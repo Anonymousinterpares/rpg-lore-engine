@@ -45,6 +45,10 @@ export const CombatActionBar: React.FC = () => {
 
     if (!state?.combat) return null;
 
+    const player = state.combat.combatants.find(c => c.id === 'player');
+    const isPlayerTurn = state.combat.combatants[state.combat.currentTurnIndex]?.isPlayer;
+    const hasUsedAction = player?.hasUsedAction || false;
+
     const handleAction = (command: string) => {
         processCommand(command);
     };
@@ -72,6 +76,8 @@ export const CombatActionBar: React.FC = () => {
                     label="Attack"
                     hotkey="1"
                     onClick={() => handleAction('attack')}
+                    disabled={!isPlayerTurn || hasUsedAction}
+                    disabledReason={!isPlayerTurn ? "Not your turn" : "Action already used"}
                     tooltip="Perform a weapon attack"
                 />
                 <ActionButton
@@ -80,8 +86,8 @@ export const CombatActionBar: React.FC = () => {
                     hotkey="2"
                     onClick={() => { setShowSpells(!showSpells); setShowAbilities(false); }}
                     active={showSpells}
-                    disabled={availableSpells.length === 0}
-                    disabledReason="No spells prepared"
+                    disabled={availableSpells.length === 0 || !isPlayerTurn || hasUsedAction}
+                    disabledReason={!isPlayerTurn ? "Not your turn" : (hasUsedAction ? "Action already used" : "No spells prepared")}
                     tooltip="Open spellbook"
                 />
                 <ActionButton
@@ -90,8 +96,8 @@ export const CombatActionBar: React.FC = () => {
                     hotkey="3"
                     onClick={() => { setShowAbilities(!showAbilities); setShowSpells(false); }}
                     active={showAbilities}
-                    disabled={availableAbilities.length === 0}
-                    disabledReason="No class abilities"
+                    disabled={availableAbilities.length === 0 || !isPlayerTurn || hasUsedAction}
+                    disabledReason={!isPlayerTurn ? "Not your turn" : (hasUsedAction ? "Action already used" : "No class abilities")}
                     tooltip="Use class features"
                 />
             </div>
@@ -104,6 +110,8 @@ export const CombatActionBar: React.FC = () => {
                     label="Dodge"
                     hotkey="4"
                     onClick={() => handleAction('dodge')}
+                    disabled={!isPlayerTurn || hasUsedAction}
+                    disabledReason={!isPlayerTurn ? "Not your turn" : "Action already used"}
                     tooltip="Take a defensive stance"
                 />
                 <ActionButton
@@ -111,6 +119,8 @@ export const CombatActionBar: React.FC = () => {
                     label="Dash"
                     hotkey="5"
                     onClick={() => handleAction('dash')}
+                    disabled={!isPlayerTurn || hasUsedAction}
+                    disabledReason={!isPlayerTurn ? "Not your turn" : "Action already used"}
                     tooltip="Move double your speed"
                 />
                 <ActionButton
@@ -118,6 +128,8 @@ export const CombatActionBar: React.FC = () => {
                     label="Disengage"
                     hotkey="6"
                     onClick={() => handleAction('disengage')}
+                    disabled={!isPlayerTurn || hasUsedAction}
+                    disabledReason={!isPlayerTurn ? "Not your turn" : "Action already used"}
                     tooltip="Move without provoking opportunity attacks"
                 />
             </div>

@@ -23,6 +23,34 @@
     animation: slideInOut 2s ease-in-out forwards;
 }
 
+.enemyBanner {
+    background: rgba(40, 0, 0, 0.9);
+    border-top-color: #ff4444;
+    border-bottom-color: #ff4444;
+    box-shadow: 0 0 50px rgba(120, 0, 0, 0.6), inset 0 0 30px rgba(255, 68, 68, 0.1);
+}
+
+.enemyBanner .text {
+    color: #ff4444;
+    text-shadow: 0 0 20px rgba(255, 68, 68, 0.6);
+}
+
+.enemyBanner .line {
+    background: linear-gradient(to right, transparent, #ff4444, transparent);
+}
+
+.nameBanner {
+    background: rgba(0, 0, 0, 0.9);
+    border-top-color: #ffd700;
+    border-bottom-color: #ffd700;
+}
+
+.nameBanner .text {
+    font-size: 3rem;
+    letter-spacing: 0.5rem;
+    color: #ffd700;
+}
+
 .text {
     font-family: var(--font-narrative);
     font-size: 4rem;
