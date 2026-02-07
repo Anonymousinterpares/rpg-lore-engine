@@ -221,10 +221,6 @@ export class GameLoop {
                 this.state.mode = 'EXPLORATION';
                 this.state.combat = undefined;
                 return `[SYSTEM] Exiting current mode. Returning to EXPLORATION.`;
-            case 'cast':
-                const spName = intent.args?.[0];
-                if (!spName) return "Which spell do you wish to cast?";
-                return this.handleExplorationCast(spName);
             default:
                 return `Unknown command: /${intent.command}`;
         }
@@ -499,19 +495,37 @@ export class GameLoop {
 
         } else if (intent.command === 'dodge') {
             resultMsg = `${currentCombatant.name} takes a defensive stance.`;
-        } else if (intent.command === 'cast') {
-            const spellName = intent.args?.[0];
-            if (!spellName) return "Which spell do you wish to cast?";
-            resultMsg = this.handleCast(currentCombatant, spellName);
         }
 
         this.addCombatLog(resultMsg);
 
         // After player action, advance turn asynchronously
-        if (resultMsg && !resultMsg.includes("Which spell")) {
+        if (resultMsg) {
             setTimeout(() => this.advanceCombatTurn(), 100);
         }
         return resultMsg;
+    }
+
+    /**
+     * Public API for UI to trigger spellcasting. 
+     * Bypasses the intent router / chat command logic.
+     */
+    public castSpell(spellName: string, targetId?: string): string {
+        const combat = this.state.combat;
+        if (this.state.mode === 'COMBAT' && combat) {
+            const currentCombatant = combat.combatants[combat.currentTurnIndex];
+            if (!currentCombatant.isPlayer) return "It is not your turn.";
+
+            // Set target if provided
+            if (targetId) combat.selectedTargetId = targetId;
+
+            const result = this.handleCast(currentCombatant, spellName);
+            this.addCombatLog(result);
+            setTimeout(() => this.advanceCombatTurn(), 100);
+            return result;
+        } else {
+            return this.handleExplorationCast(spellName);
+        }
     }
 
     private handleCast(caster: Combatant, spellName: string): string {
