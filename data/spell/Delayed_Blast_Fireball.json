@@ -32,5 +32,23 @@
       "type": "ENEMY",
       "count": "ALL_IN_AREA"
     }
+  },
+  "damage": {
+    "dice": "12d6",
+    "type": "Fire",
+    "scaling": {
+      "levels": [
+        8,
+        9
+      ],
+      "values": [
+        "13d6",
+        "14d6"
+      ]
+    }
+  },
+  "save": {
+    "ability": "dexterity",
+    "effect": "half"
   }
 }

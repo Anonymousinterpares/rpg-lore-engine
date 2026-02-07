@@ -18,14 +18,23 @@
     "Wizard"
   ],
   "effect": {
-    "category": "BUFF",
+    "category": "SUMMON",
     "timing": "INSTANT",
     "area": {
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "CREATURE",
-      "count": 3
+      "type": "POINT",
+      "count": 1
     }
+  },
+  "summon": {
+    "options": [
+      {
+        "count": 3,
+        "maxCR": 1,
+        "type": "undead"
+      }
+    ]
   }
 }

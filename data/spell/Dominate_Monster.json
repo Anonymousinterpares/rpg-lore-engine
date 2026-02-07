@@ -18,7 +18,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "CONTROL",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 1,
@@ -31,6 +31,10 @@
       "type": "ENEMY",
       "count": 1
     }
+  },
+  "save": {
+    "ability": "wisdom",
+    "effect": "none"
   },
   "condition": "charmed"
 }

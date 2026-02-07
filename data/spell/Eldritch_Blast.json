@@ -24,5 +24,21 @@
       "type": "ENEMY",
       "count": 1
     }
+  },
+  "damage": {
+    "dice": "1d10",
+    "type": "Force",
+    "scaling": {
+      "levels": [
+        5,
+        11,
+        17
+      ],
+      "values": [
+        "2d10",
+        "3d10",
+        "4d10"
+      ]
+    }
   }
 }

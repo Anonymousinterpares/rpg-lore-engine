@@ -17,7 +17,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "UTILITY",
     "timing": "DURATION",
     "duration": {
       "value": 1,
@@ -27,8 +27,16 @@
       "shape": "SELF"
     },
     "targets": {
-      "type": "ENEMY",
+      "type": "SELF",
       "count": 1
     }
+  },
+  "damage": {
+    "dice": "6d6",
+    "type": "psychic"
+  },
+  "save": {
+    "ability": "intelligence",
+    "effect": "none"
   }
 }

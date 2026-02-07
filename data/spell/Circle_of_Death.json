@@ -34,8 +34,16 @@
     "dice": "8d6",
     "type": "necrotic",
     "scaling": {
-      "mode": "LEVEL",
-      "dice": "1d6"
+      "levels": [
+        7,
+        8,
+        9
+      ],
+      "values": [
+        "10d6",
+        "12d6",
+        "14d6"
+      ]
     }
   },
   "save": {

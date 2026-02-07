@@ -22,12 +22,18 @@
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "SINGLE"
+      "shape": "CUBE",
+      "size": 20,
+      "units": "feet"
     },
     "targets": {
       "type": "ENEMY",
-      "count": 1
+      "count": "ALL_IN_AREA"
     }
+  },
+  "save": {
+    "ability": "strength",
+    "effect": "none"
   },
   "condition": "restrained"
 }

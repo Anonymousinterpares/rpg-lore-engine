@@ -30,8 +30,16 @@
     "dice": "1d6",
     "type": "acid",
     "scaling": {
-      "mode": "CANTRIP",
-      "dice": "1d6"
+      "levels": [
+        5,
+        11,
+        17
+      ],
+      "values": [
+        "2d6",
+        "3d6",
+        "4d6"
+      ]
     }
   },
   "save": {

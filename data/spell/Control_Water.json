@@ -18,18 +18,28 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "UTILITY",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 10,
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "CUBE"
+      "shape": "CUBE",
+      "size": 100,
+      "units": "feet"
     },
     "targets": {
       "type": "ENEMY",
       "count": "ALL_IN_AREA"
     }
+  },
+  "damage": {
+    "dice": "2d8",
+    "type": "bludgeoning"
+  },
+  "save": {
+    "ability": "strength",
+    "effect": "half"
   }
 }

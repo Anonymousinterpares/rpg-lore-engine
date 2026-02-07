@@ -29,8 +29,17 @@
       "units": "feet"
     },
     "targets": {
-      "type": "CREATURE",
-      "count": "ALL_IN_AREA"
+      "type": "POINT",
+      "count": 1
     }
+  },
+  "summon": {
+    "options": [
+      {
+        "count": 1,
+        "maxCR": 5,
+        "type": "elemental"
+      }
+    ]
   }
 }

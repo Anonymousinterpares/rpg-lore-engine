@@ -23,12 +23,18 @@
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "SINGLE"
+      "shape": "RADIUS",
+      "size": 60,
+      "units": "feet"
     },
     "targets": {
       "type": "ENEMY",
-      "count": 1
+      "count": "ALL_IN_AREA"
     }
+  },
+  "save": {
+    "ability": "wisdom",
+    "effect": "none"
   },
   "condition": "charmed"
 }

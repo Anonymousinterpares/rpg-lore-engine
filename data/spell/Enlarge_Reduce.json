@@ -17,7 +17,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "BUFF",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 1,
@@ -27,8 +27,12 @@
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "ENEMY",
+      "type": "CREATURE",
       "count": 1
     }
+  },
+  "save": {
+    "ability": "constitution",
+    "effect": "none"
   }
 }

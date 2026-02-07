@@ -18,7 +18,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "BUFF",
+    "category": "UTILITY",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 1,
@@ -30,8 +30,8 @@
       "units": "feet"
     },
     "targets": {
-      "type": "CREATURE",
-      "count": "ALL_IN_AREA"
+      "type": "POINT",
+      "count": 4
     }
   }
 }

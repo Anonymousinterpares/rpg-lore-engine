@@ -25,10 +25,12 @@
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "SELF"
+      "shape": "RADIUS",
+      "size": 30,
+      "units": "feet"
     },
     "targets": {
-      "type": "CREATURE",
+      "type": "SELF",
       "count": 1
     }
   },

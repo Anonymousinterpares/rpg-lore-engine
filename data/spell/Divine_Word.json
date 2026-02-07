@@ -18,12 +18,18 @@
     "category": "CONTROL",
     "timing": "INSTANT",
     "area": {
-      "shape": "SINGLE"
+      "shape": "RADIUS",
+      "size": 30,
+      "units": "feet"
     },
     "targets": {
       "type": "ENEMY",
-      "count": 1
+      "count": "ALL_IN_AREA"
     }
+  },
+  "save": {
+    "ability": "charisma",
+    "effect": "none"
   },
   "condition": "blinded"
 }

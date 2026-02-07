@@ -16,7 +16,7 @@
     "Druid"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "DEBUFF",
     "timing": "DURATION",
     "duration": {
       "value": 7,
@@ -29,6 +29,10 @@
       "type": "ENEMY",
       "count": 1
     }
+  },
+  "save": {
+    "ability": "constitution",
+    "effect": "none"
   },
   "condition": "stunned"
 }

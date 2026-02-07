@@ -18,7 +18,7 @@ export const CurrencySchema = z.object({
 export const DamageTypeSchema = z.enum([
   'Acid', 'Bludgeoning', 'Cold', 'Fire', 'Force',
   'Lightning', 'Necrotic', 'Piercing', 'Poison',
-  'Psychic', 'Radiant', 'Slashing', 'Thunder'
+  'Psychic', 'Radiant', 'Slashing', 'Thunder', 'Healing'
 ]);
 export type DamageType = z.infer<typeof DamageTypeSchema>;
 

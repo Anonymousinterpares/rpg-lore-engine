@@ -20,11 +20,31 @@
     "category": "DAMAGE",
     "timing": "INSTANT",
     "area": {
-      "shape": "CUBE"
+      "shape": "SINGLE"
     },
     "targets": {
       "type": "ENEMY",
-      "count": "ALL_IN_AREA"
+      "count": 1
     }
+  },
+  "damage": {
+    "dice": "10d6+40",
+    "type": "Force",
+    "scaling": {
+      "levels": [
+        7,
+        8,
+        9
+      ],
+      "values": [
+        "13d6+40",
+        "16d6+40",
+        "19d6+40"
+      ]
+    }
+  },
+  "save": {
+    "ability": "dexterity",
+    "effect": "none"
   }
 }

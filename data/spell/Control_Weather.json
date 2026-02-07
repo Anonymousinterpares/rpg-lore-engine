@@ -25,10 +25,12 @@
       "unit": "HOUR"
     },
     "area": {
-      "shape": "SELF"
+      "shape": "RADIUS",
+      "size": 5,
+      "units": "miles"
     },
     "targets": {
-      "type": "CREATURE",
+      "type": "SELF",
       "count": 1
     }
   }

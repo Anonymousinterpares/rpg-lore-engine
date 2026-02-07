@@ -34,5 +34,13 @@
       "count": "ALL_IN_AREA"
     }
   },
+  "damage": {
+    "dice": "5d6",
+    "type": "Bludgeoning"
+  },
+  "save": {
+    "ability": "dexterity",
+    "effect": "half"
+  },
   "condition": "prone"
 }

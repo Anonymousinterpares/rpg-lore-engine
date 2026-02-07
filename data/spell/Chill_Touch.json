@@ -35,8 +35,16 @@
     "dice": "1d8",
     "type": "necrotic",
     "scaling": {
-      "mode": "CANTRIP",
-      "dice": "1d8"
+      "levels": [
+        5,
+        11,
+        17
+      ],
+      "values": [
+        "2d8",
+        "3d8",
+        "4d8"
+      ]
     }
   }
 }

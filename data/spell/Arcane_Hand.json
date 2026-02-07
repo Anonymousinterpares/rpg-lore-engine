@@ -33,8 +33,18 @@
       "dice": "4d8",
       "type": "force",
       "scaling": {
-        "mode": "LEVEL",
-        "dice": "2d8"
+        "levels": [
+          6,
+          7,
+          8,
+          9
+        ],
+        "values": [
+          "6d8",
+          "8d8",
+          "10d8",
+          "12d8"
+        ]
       }
     }
   }
