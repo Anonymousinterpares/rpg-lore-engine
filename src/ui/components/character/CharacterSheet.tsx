@@ -5,6 +5,8 @@ import { X, Shield, Zap, Heart, Footprints, CheckCircle2 as Check } from 'lucide
 import { useGameState } from '../../hooks/useGameState';
 import { useBook } from '../../context/BookContext';
 import { AbilityParser } from '../../../ruleset/combat/AbilityParser';
+import { MechanicsEngine } from '../../../ruleset/combat/MechanicsEngine';
+import XPBar from './XPBar';
 import Codex from '../codex/Codex';
 
 const SKILLS = [
@@ -70,6 +72,9 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ onClose, isPage = false
                 <h1 className={styles.name}>{char.name}</h1>
                 <div className={styles.subHeader}>
                     Level {char.level} {char.race} {char.class} • {bio.background || 'Unknown Background'}
+                </div>
+                <div style={{ width: '200px', marginTop: '8px' }}>
+                    <XPBar current={char.xp} max={MechanicsEngine.getNextLevelXP(char.level)} />
                 </div>
             </header>
 

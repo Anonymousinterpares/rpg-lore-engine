@@ -204,7 +204,8 @@ export class GameLoop {
                     name: `Assault on ${targetName}`,
                     description: `You initiate combat against ${targetName}!`,
                     monsters: ['Goblin'], // Placeholder for manual attack
-                    difficulty: this.state.character.level
+                    difficulty: this.state.character.level,
+                    xpAward: 50
                 };
                 this.initializeCombat(manualEncounter);
                 return `[SYSTEM] Entering COMBAT mode! ${manualEncounter.description}`;
@@ -895,6 +896,52 @@ export class GameLoop {
             : "Defeat... You have been overcome by your foes.";
 
         this.addCombatLog(summaryMsg);
+
+        // --- Award XP on Victory ---
+        if (victory) {
+            let totalXP = 0;
+            // Get all enemies that were in the combat
+            const enemies = this.state.combat.combatants.filter(c => c.type === 'enemy');
+
+            for (const enemy of enemies) {
+                // Get monster data to find CR
+                const monsterData = DataManager.getMonster(enemy.name);
+                if (monsterData) {
+                    totalXP += MechanicsEngine.getCRtoXP(monsterData.cr);
+                } else {
+                    // Fallback to CR 1/4 if missing (50 XP)
+                    totalXP += 50;
+                }
+            }
+
+            // Apply difficulty modifier from settings (Phase 25H preview)
+            const difficulty = this.state.settings?.gameplay?.difficulty || 'normal';
+            if (difficulty === 'hard') {
+                totalXP = Math.floor(totalXP * 1.25);
+                this.addCombatLog(`Bonus XP awarded for Hard difficulty!`);
+            }
+
+            const char = this.state.character;
+            char.xp += totalXP;
+            this.addCombatLog(`You gained ${totalXP} Experience Points! (Total: ${char.xp})`);
+
+            // Check for Level Up
+            const nextThreshold = MechanicsEngine.getNextLevelXP(char.level);
+            if (char.xp >= nextThreshold && char.level < 20) {
+                char.level++;
+                this.addCombatLog(`*** LEVEL UP! *** You have reached level ${char.level}!`);
+
+                // Increase HP on level up (Simple version: heal to full and add 10 to max)
+                // In D&D 5e it's Hit Die + CON mod, but we'll do 10 for now as a celebration event
+                char.hp.max += 10;
+                char.hp.current = char.hp.max;
+
+                // Recover spell slots
+                Object.values(char.spellSlots).forEach(slot => {
+                    slot.current = slot.max;
+                });
+            }
+        }
 
         // Transition back to exploration
         this.state.mode = 'EXPLORATION';

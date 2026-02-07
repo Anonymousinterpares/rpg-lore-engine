@@ -229,7 +229,10 @@ export class CharacterFactory {
                 difficultyModifier: 1.0,
                 inspirationEnabled: true,
                 multiclassingAllowed: true,
-                maxConversationHistoryTurns: 50
+                maxConversationHistoryTurns: 50,
+                video: { fullscreen: false, vsync: true, resolutionScale: 1.0 },
+                audio: { master: 0.8, music: 0.5 },
+                gameplay: { difficulty: 'normal', tutorials: true }
             },
             codexEntries: [],
             notifications: []

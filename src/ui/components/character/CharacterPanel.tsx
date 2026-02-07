@@ -2,11 +2,13 @@ import React from 'react';
 import styles from './CharacterPanel.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
 import HealthBar from './HealthBar';
+import XPBar from './XPBar';
 import ConditionDisplay from './ConditionDisplay';
 import SpellSlotTracker from './SpellSlotTracker';
 import { Sword, Shield, Zap } from 'lucide-react';
 
 import { useGameState } from '../../hooks/useGameState';
+import { MechanicsEngine } from '../../../ruleset/combat/MechanicsEngine';
 
 interface CharacterPanelProps {
     onCharacter?: () => void;
@@ -47,6 +49,7 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({ onCharacter }) => {
             </div>
 
             <HealthBar current={char.hp.current} max={char.hp.max} />
+            <XPBar current={char.xp} max={MechanicsEngine.getNextLevelXP(char.level)} />
 
             <ConditionDisplay conditions={char.conditions} />
 

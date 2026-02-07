@@ -1,0 +1,39 @@
+.container {
+    width: 100%;
+    position: relative;
+    height: 16px;
+    margin-top: 4px;
+}
+
+.barBackground {
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    position: relative;
+}
+
+.xpFill {
+    height: 100%;
+    background: linear-gradient(90deg, #8e44ad, #9b59b6);
+    box-shadow: 0 0 10px rgba(155, 89, 182, 0.4);
+    transition: width 0.3s ease;
+}
+
+.text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    pointer-events: none;
+}
