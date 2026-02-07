@@ -1,0 +1,108 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(50, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 1s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    max-width: 600px;
+}
+
+.title {
+    font-family: 'MedievalSharp', cursive, serif;
+    font-size: 5rem;
+    color: #ff3333;
+    text-shadow: 0 0 20px rgba(255, 0, 0, 0.5), 0 0 40px rgba(0, 0, 0, 0.8);
+    margin: 0;
+    letter-spacing: 0.2rem;
+    animation: flicker 4s infinite;
+}
+
+@keyframes flicker {
+
+    0%,
+    100% {
+        opacity: 1;
+        text-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+    }
+
+    50% {
+        opacity: 0.9;
+        text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+    }
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    color: #cccccc;
+    font-style: italic;
+    margin-top: -1rem;
+}
+
+.choiceList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.choiceButton {
+    background: linear-gradient(to right, #2a0000, #4a0000);
+    border: 1px solid #770000;
+    color: #eeeeee;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+}
+
+.choiceButton:hover {
+    background: linear-gradient(to right, #4a0000, #7a0000);
+    border-color: #ff3333;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+    transform: scale(1.02);
+}
+
+.choiceButton:active {
+    transform: scale(0.98);
+}
+
+.icon {
+    opacity: 0.7;
+}
+
+.choiceButton:hover .icon {
+    opacity: 1;
+}

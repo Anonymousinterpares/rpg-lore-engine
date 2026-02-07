@@ -13,6 +13,8 @@ interface GameContextType {
     endGame: () => void;
     processCommand: (command: string) => Promise<void>;
     updateState: () => void;
+    loadGame: (saveId: string) => void;
+    loadLastSave: () => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -71,6 +73,27 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, [engine]);
 
+    const loadGame = useCallback((saveId: string) => {
+        // Instantiate a temporary GameLoop to use its state manager for loading
+        const tempEngine = new GameLoop(state || ({} as GameState), '/', new BrowserStorageProvider());
+        const newState = tempEngine.getStateManager().loadGame(saveId);
+        if (newState) {
+            startGame(newState);
+        }
+    }, [state, startGame]);
+
+    const loadLastSave = useCallback(() => {
+        const tempEngine = new GameLoop(state || ({} as GameState), '/', new BrowserStorageProvider());
+        const registry = tempEngine.getStateManager().getSaveRegistry();
+        if (registry.slots.length > 0) {
+            // Sort by date to find the most recent
+            const lastSave = [...registry.slots].sort((a, b) =>
+                new Date(b.lastSaved).getTime() - new Date(a.lastSaved).getTime()
+            )[0];
+            loadGame(lastSave.id);
+        }
+    }, [state, loadGame]);
+
     useEffect(() => {
         if (isActive && engine) {
             // Subscribe to engine state updates
@@ -96,7 +119,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
             startGame,
             endGame,
             processCommand,
-            updateState
+            updateState,
+            loadGame,
+            loadLastSave
         }}>
             {children}
         </GameContext.Provider>

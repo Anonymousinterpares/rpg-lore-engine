@@ -9,6 +9,8 @@ import CombatActionBar from '../combat/CombatActionBar';
 import LoadingOverlay from '../common/LoadingOverlay';
 import TurnBanner from '../combat/TurnBanner';
 import CombatOverlay from '../combat/CombatOverlay';
+import GameOverScreen from '../menu/GameOverScreen';
+import SaveLoadModal from '../menu/SaveLoadModal';
 
 interface MainViewportProps {
     className?: string;
@@ -17,9 +19,11 @@ interface MainViewportProps {
 import { useGameState } from '../../hooks/useGameState';
 
 const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
-    const { state, processCommand, isLoading } = useGameState();
+    const { state, processCommand, isLoading, endGame, engine, startGame, loadGame, loadLastSave } = useGameState();
+    const [showLoadModal, setShowLoadModal] = useState(false);
 
     const isCombat = state?.mode === 'COMBAT';
+    const isGameOver = state?.mode === 'GAME_OVER';
 
     const narrativeText = state?.lastNarrative || state?.storySummary ||
         "Welcome to your adventure. Describe your first move...";
@@ -45,10 +49,59 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
         processCommand(input);
     };
 
+    const handleLoadGame = (saveId: string) => {
+        loadGame(saveId);
+        setShowLoadModal(false);
+    };
+
+    const getSaveSlots = () => {
+        if (!engine) return [];
+        const registry = engine.getStateManager().getSaveRegistry();
+        return registry.slots.map((s: any) => ({
+            id: s.id,
+            name: s.slotName || 'Quick Save',
+            charName: s.characterName,
+            level: s.characterLevel,
+            location: s.locationSummary,
+            lastSaved: new Date(s.lastSaved).toLocaleString(),
+            playTime: `${Math.floor(s.playTimeSeconds / 60)}m`
+        }));
+    };
+
+    const handleLoadLastSave = () => {
+        loadLastSave();
+    };
+
+    const handleReturnToMenu = () => {
+        endGame();
+    };
+
+    const handleOpenLoadModal = () => {
+        setShowLoadModal(true);
+    };
+
     return (
         <main className={`${styles.viewport} ${className} ${isCombat ? styles.combatMode : ''}`}>
             {/* Loading Overlay */}
             {isLoading && <LoadingOverlay message="Loading..." />}
+
+            {isGameOver && (
+                <GameOverScreen
+                    onLoadLastSave={handleLoadLastSave}
+                    onReturnToMenu={handleReturnToMenu}
+                    onLoadGame={handleOpenLoadModal}
+                />
+            )}
+
+            {showLoadModal && (
+                <SaveLoadModal
+                    mode="load"
+                    slots={getSaveSlots()}
+                    onAction={handleLoadGame}
+                    onDelete={() => { }} // No-op for now
+                    onClose={() => setShowLoadModal(false)}
+                />
+            )}
 
             {isCombat && state.combat && (
                 <>

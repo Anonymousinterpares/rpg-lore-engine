@@ -114,6 +114,10 @@ export class GameLoop {
         this.notifyListeners();
     }
 
+    public getStateManager() {
+        return this.stateManager;
+    }
+
     /**
      * The primary entry point for player interaction.
      * @param input Raw text from the player
@@ -1205,20 +1209,27 @@ export class GameLoop {
             }
         }
 
-        // Transition back to exploration
-        this.state.mode = 'EXPLORATION';
+        // Transition back to exploration or game over
+        if (victory) {
+            this.state.mode = 'EXPLORATION';
 
-        // Calculate time passed (Round * 6s) + 5 minutes recovery
-        const combatSeconds = this.state.combat.round * 6;
-        const totalMinutes = Math.ceil(combatSeconds / 60) + 5;
-        this.state.worldTime = WorldClockEngine.advanceTime(this.state.worldTime, totalMinutes);
+            // Calculate time passed (Round * 6s) + 5 minutes recovery
+            const combatSeconds = (this.state.combat?.round || 0) * 6;
+            const totalMinutes = Math.ceil(combatSeconds / 60) + 5;
+            this.state.worldTime = WorldClockEngine.advanceTime(this.state.worldTime, totalMinutes);
 
-        // Trigger LLM Summarization
-        const summary = await NarratorService.summarizeCombat(this.state, this.state.combat.logs);
-        this.state.lastNarrative = summary;
-        this.state.combat = undefined;
+            // Trigger LLM Summarization
+            const summary = await NarratorService.summarizeCombat(this.state, this.state.combat?.logs || []);
+            this.state.lastNarrative = summary;
+            this.state.combat = undefined;
 
-        this.emitStateUpdate();
+            this.emitStateUpdate();
+        } else {
+            this.state.mode = 'GAME_OVER';
+            // We keep the combat state so the UI can still display some info if needed,
+            // or just to avoid crashing if components expect it.
+            this.emitStateUpdate();
+        }
     }
 
     private recalculateAC() {
