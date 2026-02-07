@@ -65,17 +65,27 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!engine) return;
         try {
             await engine.processTurn(command);
-            updateState();
+            // No need for updateState() here anymore as the engine will notify us via subscription
         } finally {
             // No global loading screen for regular commands
         }
-    }, [engine, updateState]);
+    }, [engine]);
 
     useEffect(() => {
         if (isActive && engine) {
-            updateState();
+            // Subscribe to engine state updates
+            const unsubscribe = engine.subscribe((newState: GameState) => {
+                setState({ ...newState });
+            });
+
+            // Initial state sync
+            setState({ ...engine.getState() });
+
+            return () => {
+                unsubscribe();
+            };
         }
-    }, [isActive, engine, updateState]);
+    }, [isActive, engine]);
 
     return (
         <GameContext.Provider value={{

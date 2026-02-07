@@ -46,12 +46,16 @@ export class GameLoop {
     private director: EncounterDirector = new EncounterDirector();
 
     private turnProcessing: boolean = false;
+    private listeners: ((state: GameState) => void)[] = [];
 
     constructor(initialState: GameState, basePath: string, storage?: IStorageProvider) {
         this.state = initialState;
         this.stateManager = new GameStateManager(basePath, storage);
         this.hexMapManager = new HexMapManager(basePath, 'world_01', storage);
         this.movementEngine = new MovementEngine(this.hexMapManager);
+
+        // Save initial combat state to UI
+        this.emitStateUpdate();
 
         // Initialize factions if empty
         if (!this.state.factions || this.state.factions.length === 0) {
@@ -82,6 +86,35 @@ export class GameLoop {
     }
 
     /**
+     * Subscribe to state changes.
+     * @param listener Callback function
+     * @returns Unsubscribe function
+     */
+    public subscribe(listener: (state: GameState) => void): () => void {
+        this.listeners.push(listener);
+        return () => {
+            this.listeners = this.listeners.filter(l => l !== listener);
+        };
+    }
+
+    /**
+     * Internal helper to notify all subscribers of a state change.
+     */
+    private notifyListeners() {
+        // We pass a shallow clone of the state to avoid direct mutation issues in React
+        const stateClone = { ...this.state };
+        this.listeners.forEach(listener => listener(stateClone));
+    }
+
+    /**
+     * Centralized method to save state and notify the UI.
+     */
+    private emitStateUpdate() {
+        this.stateManager.saveGame(this.state);
+        this.notifyListeners();
+    }
+
+    /**
      * The primary entry point for player interaction.
      * @param input Raw text from the player
      */
@@ -98,7 +131,7 @@ export class GameLoop {
 
         // If we are in combat, we skip the immediate Narrator generation to avoid latency
         if (this.state.mode === 'COMBAT') {
-            await this.stateManager.saveGame(this.state);
+            this.emitStateUpdate();
             return systemResponse;
         }
 
@@ -157,7 +190,7 @@ export class GameLoop {
         // Scribe processing (summarization)
         await this.scribe.processTurn(this.state, this.contextManager.getRecentHistory(10));
 
-        this.stateManager.saveGame(this.state);
+        this.emitStateUpdate();
 
         return systemResponse ? `${systemResponse}\n\n${narratorOutput}` : narratorOutput;
     }
@@ -177,7 +210,7 @@ export class GameLoop {
                 this.state.worldTime = WorldClockEngine.advanceTime(this.state.worldTime, restResult.timeCost);
                 return restResult.message;
             case 'save':
-                this.stateManager.saveGame(this.state);
+                this.emitStateUpdate();
                 return 'Game saved.';
             case 'move':
                 const char = this.state.character;
@@ -263,7 +296,7 @@ export class GameLoop {
         // Remove from dropped items
         droppedItems.splice(itemIndex, 1);
 
-        this.stateManager.saveGame(this.state);
+        this.emitStateUpdate();
         return `Picked up ${item.name}.`;
     }
 
@@ -295,7 +328,7 @@ export class GameLoop {
             }
         });
 
-        this.stateManager.saveGame(this.state);
+        this.emitStateUpdate();
         return `Dropped ${item.name}.`;
     }
 
@@ -313,7 +346,7 @@ export class GameLoop {
                     (char.equipmentSlots as any)[slot] = undefined;
                 }
             });
-            this.stateManager.saveGame(this.state);
+            this.emitStateUpdate();
             return `Unequipped ${item.name}.`;
         } else {
             // Equip
@@ -341,7 +374,7 @@ export class GameLoop {
                 this.recalculateAC();
             }
 
-            this.stateManager.saveGame(this.state);
+            this.emitStateUpdate();
             return `Equipped ${item.name}.`;
         }
     }
@@ -350,7 +383,7 @@ export class GameLoop {
         const quest = this.state.activeQuests?.find(q => q.id === questId);
         if (quest && quest.isNew) {
             quest.isNew = false;
-            this.stateManager.saveGame(this.state);
+            this.emitStateUpdate();
         }
     }
 
@@ -399,7 +432,7 @@ export class GameLoop {
             }
         }
 
-        this.stateManager.saveGame(this.state);
+        this.emitStateUpdate();
     }
 
     private async initializeCombat(encounter: Encounter) {
@@ -433,7 +466,7 @@ export class GameLoop {
             const monsterName = encounter.monsters[i];
             const monsterData = DataManager.getMonster(monsterName);
 
-            LoreService.registerMonsterEncounter(monsterName, this.state, () => this.stateManager.saveGame(this.state));
+            LoreService.registerMonsterEncounter(monsterName, this.state, () => this.emitStateUpdate());
 
             const initRoll = Dice.d20() + (monsterData ? MechanicsEngine.getModifier(monsterData.stats['DEX'] || 10) : 0);
             combatants.push({
@@ -562,7 +595,7 @@ export class GameLoop {
         if (intent.command === 'end turn') {
             this.advanceCombatTurn();
         } else {
-            this.stateManager.saveGame(this.state);
+            this.emitStateUpdate();
         }
 
         return resultMsg;
@@ -586,7 +619,7 @@ export class GameLoop {
             const result = this.handleCast(currentCombatant, spellName);
             this.addCombatLog(result);
             currentCombatant.hasUsedAction = true;
-            this.stateManager.saveGame(this.state);
+            this.emitStateUpdate();
             return result;
         } else {
             return this.handleExplorationCast(spellName);
@@ -905,7 +938,7 @@ export class GameLoop {
 
                 // Tick effects
                 this.processStartOfTurn(actor);
-                this.stateManager.saveGame(this.state);
+                this.emitStateUpdate();
 
                 // --- 3. Handle Control Flow ---
                 if (actor.isPlayer) {
@@ -1012,7 +1045,7 @@ export class GameLoop {
             this.addCombatLog(`${actor.name} waits for an opening.`);
         }
 
-        this.stateManager.saveGame(this.state);
+        this.emitStateUpdate();
     }
 
     public useAbility(abilityName: string): string {
@@ -1185,7 +1218,7 @@ export class GameLoop {
         this.state.lastNarrative = summary;
         this.state.combat = undefined;
 
-        this.stateManager.saveGame(this.state);
+        this.emitStateUpdate();
     }
 
     private recalculateAC() {
