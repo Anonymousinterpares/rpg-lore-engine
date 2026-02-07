@@ -28,7 +28,7 @@
       "shape": "SELF"
     },
     "targets": {
-      "type": "CREATURE",
+      "type": "SELF",
       "count": 1
     }
   }

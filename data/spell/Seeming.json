@@ -23,11 +23,17 @@
       "unit": "HOUR"
     },
     "area": {
-      "shape": "SINGLE"
+      "shape": "RADIUS",
+      "size": 30,
+      "units": "feet"
     },
     "targets": {
       "type": "CREATURE",
-      "count": 1
+      "count": "ALL_IN_AREA"
     }
+  },
+  "save": {
+    "ability": "charisma",
+    "on_success": "none"
   }
 }

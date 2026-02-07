@@ -16,7 +16,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "CONTROL",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 1,
@@ -29,5 +29,9 @@
       "type": "ENEMY",
       "count": 1
     }
+  },
+  "save": {
+    "ability": "constitution",
+    "on_success": "none"
   }
 }

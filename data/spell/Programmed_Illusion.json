@@ -28,8 +28,13 @@
       "units": "feet"
     },
     "targets": {
-      "type": "CREATURE",
-      "count": "ALL_IN_AREA"
+      "type": "POINT",
+      "count": 1
     }
+  },
+  "save": {
+    "ability": "intelligence",
+    "type": "Investigation",
+    "on_success": "none"
   }
 }

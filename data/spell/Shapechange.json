@@ -17,7 +17,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "BUFF",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 1,
@@ -27,9 +27,8 @@
       "shape": "SELF"
     },
     "targets": {
-      "type": "ENEMY",
+      "type": "SELF",
       "count": 1
     }
-  },
-  "condition": "unconscious"
+  }
 }

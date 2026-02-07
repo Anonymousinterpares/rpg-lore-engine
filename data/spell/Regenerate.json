@@ -18,7 +18,7 @@
     "Druid"
   ],
   "effect": {
-    "category": "HEAL",
+    "category": "HEALING",
     "timing": "DURATION",
     "duration": {
       "value": 1,
@@ -31,5 +31,9 @@
       "type": "ALLY",
       "count": 1
     }
+  },
+  "damage": {
+    "dice": "4d8+15",
+    "type": "Healing"
   }
 }

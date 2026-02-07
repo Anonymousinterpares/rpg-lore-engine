@@ -22,13 +22,27 @@
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "RADIUS",
-      "size": 10,
-      "units": "feet"
+      "shape": "SINGLE"
     },
     "targets": {
       "type": "ENEMY",
-      "count": "ALL_IN_AREA"
+      "count": 1
+    }
+  },
+  "damage": {
+    "dice": "1d8",
+    "type": "Fire",
+    "scaling": {
+      "levels": [
+        5,
+        11,
+        17
+      ],
+      "values": [
+        "2d8",
+        "3d8",
+        "4d8"
+      ]
     }
   }
 }

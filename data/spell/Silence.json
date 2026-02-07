@@ -18,7 +18,7 @@
     "Ranger"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "CONTROL",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 10,
@@ -30,8 +30,8 @@
       "units": "feet"
     },
     "targets": {
-      "type": "ENEMY",
-      "count": "ALL_IN_AREA"
+      "type": "POINT",
+      "count": 1
     }
   },
   "condition": "deafened"

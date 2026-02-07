@@ -17,14 +17,18 @@
     "Cleric"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "HEALING",
     "timing": "INSTANT",
     "area": {
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "ENEMY",
+      "type": "ALLY",
       "count": 1
     }
+  },
+  "damage": {
+    "dice": "ALL",
+    "type": "Healing"
   }
 }

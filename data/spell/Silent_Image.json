@@ -30,8 +30,12 @@
       "units": "feet"
     },
     "targets": {
-      "type": "CREATURE",
-      "count": "ALL_IN_AREA"
+      "type": "POINT",
+      "count": 1
     }
+  },
+  "save": {
+    "ability": "intelligence",
+    "on_success": "none"
   }
 }

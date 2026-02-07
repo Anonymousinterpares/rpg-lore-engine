@@ -17,7 +17,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "UTILITY",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 24,
@@ -27,9 +27,14 @@
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "ENEMY",
+      "type": "POINT",
       "count": 1
     }
+  },
+  "save": {
+    "ability": "intelligence",
+    "type": "Investigation",
+    "on_success": "none"
   },
   "condition": "blinded"
 }

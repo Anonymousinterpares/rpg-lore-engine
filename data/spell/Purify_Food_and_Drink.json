@@ -26,7 +26,7 @@
       "units": "feet"
     },
     "targets": {
-      "type": "CREATURE",
+      "type": "OBJECT",
       "count": "ALL_IN_AREA"
     }
   }

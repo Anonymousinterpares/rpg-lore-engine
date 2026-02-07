@@ -16,18 +16,22 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "CONTROL",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 1,
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "RADIUS"
+      "shape": "SINGLE"
     },
     "targets": {
-      "type": "ENEMY",
-      "count": "ALL_IN_AREA"
+      "type": "CREATURE",
+      "count": 1
     }
+  },
+  "save": {
+    "ability": "dexterity",
+    "on_success": "none"
   }
 }

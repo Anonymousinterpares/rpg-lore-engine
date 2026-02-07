@@ -17,19 +17,20 @@
     "Ranger"
   ],
   "effect": {
-    "category": "CONTROL",
+    "category": "UTILITY",
     "timing": "DURATION",
     "duration": {
       "value": 10,
       "unit": "MINUTE"
     },
     "area": {
-      "shape": "SELF"
+      "shape": "RADIUS",
+      "size": 30,
+      "units": "feet"
     },
     "targets": {
-      "type": "ENEMY",
+      "type": "SELF",
       "count": 1
     }
-  },
-  "condition": "restrained"
+  }
 }

@@ -16,7 +16,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "HEAL",
+    "category": "UTILITY",
     "timing": "DURATION",
     "duration": {
       "value": 1,

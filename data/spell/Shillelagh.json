@@ -16,7 +16,7 @@
     "Druid"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "BUFF",
     "timing": "DURATION",
     "duration": {
       "value": 1,
@@ -26,7 +26,7 @@
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "ENEMY",
+      "type": "OBJECT",
       "count": 1
     }
   }

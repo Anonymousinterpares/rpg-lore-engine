@@ -30,9 +30,13 @@
       "units": "feet"
     },
     "targets": {
-      "type": "ENEMY",
-      "count": "ALL_IN_AREA"
+      "type": "POINT",
+      "count": 1
     }
+  },
+  "save": {
+    "ability": "dexterity",
+    "on_success": "none"
   },
   "condition": "prone"
 }

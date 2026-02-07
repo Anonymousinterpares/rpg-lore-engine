@@ -16,7 +16,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "DAMAGE",
+    "category": "UTILITY",
     "timing": "DURATION",
     "duration": {
       "value": 1,
@@ -26,7 +26,7 @@
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "ENEMY",
+      "type": "ALLY",
       "count": 1
     }
   },

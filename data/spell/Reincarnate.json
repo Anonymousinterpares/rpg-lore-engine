@@ -22,8 +22,12 @@
       "shape": "SINGLE"
     },
     "targets": {
-      "type": "CREATURE",
+      "type": "ALLY",
       "count": 1
     }
+  },
+  "damage": {
+    "dice": "1",
+    "type": "Healing"
   }
 }

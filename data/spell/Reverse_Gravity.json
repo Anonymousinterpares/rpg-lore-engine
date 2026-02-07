@@ -33,5 +33,9 @@
       "type": "CREATURE",
       "count": "ALL_IN_AREA"
     }
+  },
+  "save": {
+    "ability": "dexterity",
+    "on_success": "none"
   }
 }

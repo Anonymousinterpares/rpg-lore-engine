@@ -17,7 +17,7 @@
     "Wizard"
   ],
   "effect": {
-    "category": "BUFF",
+    "category": "CONTROL",
     "timing": "CONCENTRATION",
     "duration": {
       "value": 1,
@@ -29,8 +29,12 @@
       "units": "feet"
     },
     "targets": {
-      "type": "CREATURE",
-      "count": "ALL_IN_AREA"
+      "type": "ENEMY",
+      "count": 6
     }
+  },
+  "save": {
+    "ability": "wisdom",
+    "on_success": "none"
   }
 }
