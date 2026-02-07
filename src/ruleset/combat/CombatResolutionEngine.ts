@@ -33,7 +33,8 @@ export class CombatResolutionEngine {
         damageFormula: string,
         statMod: number
     ): CombatActionResult {
-        const d20 = Dice.d20();
+        const hasDisadvantage = target.statusEffects.some(e => e.id === 'dodge');
+        const d20 = hasDisadvantage ? Dice.disadvantage() : Dice.d20();
         const isCrit = d20 === 20;
         const total = d20 + attackBonus;
         const hit = isCrit || total >= target.ac;
@@ -112,7 +113,8 @@ export class CombatResolutionEngine {
             message += saveSuccess ? `SUCCESS.` : `FAILURE.`;
         } else if (category === 'DAMAGE' || category === 'DEBUFF' || category === 'CONTROL') {
             // Default to Spell Attack if no save and it's offensive
-            const d20 = Dice.d20();
+            const hasDisadvantage = target.statusEffects.some(e => e.id === 'dodge');
+            const d20 = hasDisadvantage ? Dice.disadvantage() : Dice.d20();
             const isCrit = d20 === 20;
             const total = d20 + spellAttackBonus;
             const hit = isCrit || total >= target.ac;

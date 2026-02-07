@@ -1,4 +1,5 @@
 import { IntentRouter, ParsedIntent } from './IntentRouter';
+import { AbilityParser } from './AbilityParser';
 import { GameStateManager, GameState } from './GameStateManager';
 import { IStorageProvider } from './IStorageProvider';
 import { Spell } from '../schemas/SpellSchema';
@@ -219,10 +220,12 @@ export class GameLoop {
                     }
                 }
                 return 'Invalid target.';
-            case 'exit':
-                this.state.mode = 'EXPLORATION';
-                this.state.combat = undefined;
                 return `[SYSTEM] Exiting current mode. Returning to EXPLORATION.`;
+            case 'use':
+                return this.useAbility(intent.args?.join(' ') || '');
+            case 'cast':
+                const spellName = intent.args?.join(' ') || '';
+                return this.castSpell(spellName);
             default:
                 return `Unknown command: /${intent.command}`;
         }
@@ -508,7 +511,34 @@ export class GameLoop {
             resultMsg = CombatLogFormatter.format(result, currentCombatant.name, target.name);
 
         } else if (intent.command === 'dodge') {
-            resultMsg = `${currentCombatant.name} takes a defensive stance.`;
+            currentCombatant.statusEffects.push({
+                id: 'dodge',
+                name: 'Dodge',
+                type: 'BUFF',
+                duration: 1,
+                sourceId: currentCombatant.id
+            });
+            resultMsg = `${currentCombatant.name} takes a defensive stance. Attacks against them will have disadvantage until the start of their next turn.`;
+        } else if (intent.command === 'dash') {
+            resultMsg = `${currentCombatant.name} dashes, doubling their movement speed for this turn.`;
+        } else if (intent.command === 'disengage') {
+            currentCombatant.statusEffects.push({
+                id: 'disengage',
+                name: 'Disengage',
+                type: 'BUFF',
+                duration: 1,
+                sourceId: currentCombatant.id
+            });
+            resultMsg = `${currentCombatant.name} focuses on defense while moving, preventing opportunity attacks.`;
+        } else if (intent.command === 'hide') {
+            const d20 = Dice.d20();
+            const stealth = d20 + MechanicsEngine.getModifier(currentCombatant.stats.DEX || 10);
+            resultMsg = `${currentCombatant.name} attempts to hide! (Roll: ${stealth})`;
+        } else if (intent.command === 'use') {
+            const abilityName = intent.args?.[0] || intent.originalInput.replace(/^use /i, '').trim();
+            resultMsg = this.useAbility(abilityName);
+        } else if (intent.command === 'end turn') {
+            resultMsg = `${currentCombatant.name} ends their turn.`;
         }
 
         this.addCombatLog(resultMsg);
@@ -805,6 +835,7 @@ export class GameLoop {
         }
 
         const nextCombatant = this.state.combat.combatants[this.state.combat.currentTurnIndex];
+        this.processStartOfTurn(nextCombatant);
 
         // Check if combat is over
         if (this.checkCombatEnd()) return;
@@ -820,6 +851,30 @@ export class GameLoop {
         } else if (nextCombatant.hp.current <= 0) {
             // Skip dead combatants
             this.advanceCombatTurn();
+        }
+    }
+
+    private processStartOfTurn(actor: Combatant) {
+        // Tick down status effects
+        if (actor.statusEffects) {
+            actor.statusEffects = actor.statusEffects.filter(effect => {
+                if (effect.duration !== undefined) {
+                    effect.duration--;
+                    return effect.duration > 0;
+                }
+                return true;
+            });
+        }
+
+        // Tick down conditions
+        if (actor.conditions) {
+            actor.conditions = actor.conditions.filter(condition => {
+                if (condition.duration !== undefined) {
+                    condition.duration--;
+                    return condition.duration > 0;
+                }
+                return true;
+            });
         }
     }
 
@@ -852,6 +907,48 @@ export class GameLoop {
 
         // Advance to next turn
         this.advanceCombatTurn();
+    }
+
+    public useAbility(abilityName: string): string {
+        const char = this.state.character;
+        const ability = AbilityParser.getCombatAbilities(char).find(a => a.name.toLowerCase() === abilityName.toLowerCase());
+
+        if (!ability) return `You don't have an ability named "${abilityName}".`;
+
+        // Check usage
+        const usage = this.state.character.featureUsages?.[ability.name];
+        if (usage && usage.current <= 0) {
+            return `You have no more uses of "${ability.name}" left until you ${usage.usageType === 'LONG_REST' ? 'take a long rest' : 'rest'}.`;
+        }
+
+        let result = `You use ${ability.name}. `;
+
+        // Execute effect based on name
+        if (ability.name === 'Arcane Recovery') {
+            if (this.state.mode === 'COMBAT') {
+                return "Arcane Recovery can only be used during a short rest (outside of combat).";
+            }
+            result += "You focus your mind to recover some of your spent magical energy.";
+        } else if (ability.name === 'Second Wind') {
+            const heal = Dice.roll("1d10") + char.level;
+            char.hp.current = Math.min(char.hp.max, char.hp.current + heal);
+            result += `Recovering ${heal} HP.`;
+        } else if (ability.name === 'Action Surge') {
+            result += "You push yourself beyond your normal limits for a moment.";
+            // Note: In a full implementation, this would grant an extra action
+        }
+
+        // Consume usage
+        if (usage) {
+            usage.current--;
+        }
+
+        if (this.state.mode === 'COMBAT') {
+            this.addCombatLog(result);
+            setTimeout(() => this.advanceCombatTurn(), 100);
+        }
+
+        return result;
     }
 
     private addCombatLog(message: string) {

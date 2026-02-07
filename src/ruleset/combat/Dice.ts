@@ -29,4 +29,12 @@ export class Dice {
     public static d20(): number {
         return Math.floor(Math.random() * 20) + 1;
     }
+
+    public static advantage(): number {
+        return Math.max(this.d20(), this.d20());
+    }
+
+    public static disadvantage(): number {
+        return Math.min(this.d20(), this.d20());
+    }
 }
