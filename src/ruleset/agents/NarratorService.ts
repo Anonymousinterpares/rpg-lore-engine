@@ -22,7 +22,8 @@ export class NarratorService {
         hexManager: HexMapManager,
         playerInput: string,
         history: any[],
-        directorDirective?: any
+        directorDirective?: any,
+        encounter?: any
     ): Promise<NarratorOutput> {
         const profile = AgentManager.getAgentProfile('NARRATOR');
         const context = ContextBuilder.build(state, hexManager, history);
@@ -38,7 +39,7 @@ export class NarratorService {
         const isOpeningScene = playerInput === '__OPENING_SCENE__';
         const effectiveInput = isOpeningScene ? 'Describe the opening scene of this new adventure.' : playerInput;
 
-        const systemPrompt = this.constructSystemPrompt(context, state, profile, directorDirective);
+        const systemPrompt = this.constructSystemPrompt(context, state, profile, directorDirective, encounter);
 
         try {
             console.log(`[NarratorService] Generating narrative (isOpening: ${isOpeningScene})...`);
@@ -146,7 +147,7 @@ ${logSummary}`;
         }
     }
 
-    private static constructSystemPrompt(context: any, state: GameState, profile: AgentProfile, directorDirective?: any): string {
+    private static constructSystemPrompt(context: any, state: GameState, profile: AgentProfile, directorDirective?: any, encounter?: any): string {
         const isNewGame = state.conversationHistory.length === 0 && !this.isFirstTurnAfterLoad;
 
         let prompt = `You are the Narrator for a D&D 5e text-based RPG.
@@ -167,6 +168,17 @@ ${profile.basePrompt || ''}
 ## DIRECTOR DIRECTIVE
 ${directorDirective.directive}
 (Note: Incorporate this into your narrative naturally.)
+
+`;
+        }
+
+        if (encounter) {
+            prompt += `
+## ENCOUNTER DETAILS
+- Name: ${encounter.name}
+- Monsters: ${encounter.monsters.join(', ')}
+- Context: ${encounter.description}
+(Note: You MUST describe these exact monsters. Do not hallucinate other creatures unless they are supplemental to the scene.)
 
 `;
         }

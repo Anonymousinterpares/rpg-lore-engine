@@ -117,7 +117,8 @@ export class GameLoop {
             this.hexMapManager,
             input,
             this.contextManager.getRecentHistory(10),
-            directive
+            directive,
+            encounter || undefined
         );
 
         let narratorOutput = narratorResponse.narrative_output;
