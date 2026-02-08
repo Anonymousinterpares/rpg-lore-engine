@@ -243,12 +243,24 @@ export class GameLoop {
                 const manualEncounter: Encounter = {
                     name: `Assault on ${targetName}`,
                     description: `You initiate combat against ${targetName}!`,
-                    monsters: ['Goblin'], // Placeholder for manual attack
+                    monsters: [targetName],
                     difficulty: this.state.character.level,
                     xpAward: 50
                 };
                 this.initializeCombat(manualEncounter);
                 return `[SYSTEM] Entering COMBAT mode! ${manualEncounter.description}`;
+            case 'combat':
+                const entityType = intent.args?.[0] || 'Goblin';
+                const count = parseInt(intent.args?.[1] || '1', 10) || 1;
+                const devEncounter: Encounter = {
+                    name: `Dev Combat: ${entityType} x${count}`,
+                    description: `Manually triggered combat with ${count} ${entityType}(s).`,
+                    monsters: Array(count).fill(entityType),
+                    difficulty: this.state.character.level,
+                    xpAward: 0
+                };
+                this.initializeCombat(devEncounter);
+                return `[SYSTEM] Spawning ${count} ${entityType}(s) for combat.`;
             case 'target':
                 if (this.state.combat && intent.args?.[0]) {
                     const targetId = intent.args[0];
