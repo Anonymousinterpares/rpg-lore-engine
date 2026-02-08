@@ -22,6 +22,17 @@ function discoverBiomes() {
         lastUpdated: new Date().toISOString()
     };
 
+    // Ensure all known biomes are initialized with empty arrays
+    const ALL_BIOMES = [
+        'Plains', 'Forest', 'Hills', 'Mountains', 'Swamp',
+        'Desert', 'Tundra', 'Jungle', 'Coast', 'Ocean',
+        'Volcanic', 'Ruins', 'Farmland', 'Urban'
+    ];
+
+    ALL_BIOMES.forEach(b => {
+        manifest.variants[b] = [];
+    });
+
     files.forEach(file => {
         if (!file.endsWith('.png')) return;
 
@@ -34,25 +45,16 @@ function discoverBiomes() {
             // Normalize biome name to TitleCase to match BiomeType (e.g. "desert" -> "Desert")
             const normalizedBiome = biome.charAt(0).toUpperCase() + biome.slice(1);
 
-            if (!manifest.variants[normalizedBiome]) {
-                manifest.variants[normalizedBiome] = 0;
+            // Add variant if it belongs to a known biome
+            if (manifest.variants[normalizedBiome] && !manifest.variants[normalizedBiome].includes(variant)) {
+                manifest.variants[normalizedBiome].push(variant);
             }
-
-            // Keep track of the highest variant number (or just count them)
-            // Using max variant number as the "count" is safer if files are missing in between
-            manifest.variants[normalizedBiome] = Math.max(manifest.variants[normalizedBiome], variant);
         }
     });
 
-    // Ensure all known biomes are present even with 0 variants
-    const ALL_BIOMES = [
-        'Plains', 'Forest', 'Hills', 'Mountains', 'Swamp',
-        'Desert', 'Tundra', 'Jungle', 'Coast', 'Ocean',
-        'Volcanic', 'Ruins', 'Farmland', 'Urban'
-    ];
-
-    ALL_BIOMES.forEach(b => {
-        if (!manifest.variants[b]) manifest.variants[b] = 0;
+    // Sort variants for logic consistency
+    Object.keys(manifest.variants).forEach(key => {
+        manifest.variants[key].sort((a, b) => a - b);
     });
 
     fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2));

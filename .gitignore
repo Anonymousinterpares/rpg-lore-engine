@@ -2,6 +2,8 @@
 node_modules/
 dist/
 
+monster icons repo/
+
 # Temporary files
 temp_srd/
 error.log
