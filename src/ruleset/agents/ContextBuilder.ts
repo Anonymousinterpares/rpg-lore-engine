@@ -83,7 +83,7 @@ export class ContextBuilder {
                 hpStatus: this.getHpStatus(char.hp),
                 conditions: char.conditions
             },
-            timeOfDay: this.getTimeOfDay(state.worldTime.hour),
+            timeOfDay: this.getHybridTime(state.worldTime),
             location: {
                 name: this.getCurrentHex(state).name || 'Unknown Location',
                 biome: this.getCurrentHex(state).biome || 'Unknown Biome',
@@ -167,13 +167,11 @@ export class ContextBuilder {
         return 'unconscious';
     }
 
-    private static getTimeOfDay(hour: number): TimeOfDay {
-        if (hour >= 5 && hour < 7) return 'dawn';
-        if (hour >= 7 && hour < 12) return 'morning';
-        if (hour >= 12 && hour < 14) return 'midday';
-        if (hour >= 14 && hour < 17) return 'afternoon';
-        if (hour >= 17 && hour < 20) return 'dusk';
-        return 'night';
+    private static getHybridTime(clock: WorldClock): any {
+        const phase = WorldClockEngine.getTimePhase(clock);
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        const exact = `${pad(clock.hour)}:${pad(clock.minute)}`;
+        return `${phase} (${exact})`;
     }
 
     private static getFactionDisposition(standing: number): FactionDisposition {

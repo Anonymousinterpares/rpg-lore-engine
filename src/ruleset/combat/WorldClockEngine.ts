@@ -74,14 +74,58 @@ export class WorldClockEngine {
      * Formats the clock into a readable string
      */
     public static formatTime(clock: WorldClock): string {
-        const pad = (n: number) => n.toString().padStart(2, '0');
         const monthName = this.MONTH_NAMES[clock.month - 1] || `Month ${clock.month}`;
 
         // D&D Tendays (10 days per week)
         const tenday = Math.ceil(clock.day / 10);
         const dayInTenday = ((clock.day - 1) % 10) + 1;
 
-        return `${dayInTenday} of ${monthName} (${tenday}${this.getOrdinal(tenday)} Tenday), Year ${clock.year} | ${pad(clock.hour)}:${pad(clock.minute)}`;
+        const phase = this.getTimePhase(clock);
+
+        return `${dayInTenday} of ${monthName} (${tenday}${this.getOrdinal(tenday)} Tenday), Year ${clock.year} | ${phase}`;
+    }
+
+    /**
+     * Returns the seasonal sunrise and sunset hours for a given month.
+     */
+    public static getSeasonConfig(month: number): { sunrise: number, sunset: number } {
+        // Simple seasonal curve for Forgotten Realms (Northern Hemisphere-ish)
+        const configs: Record<number, { sunrise: number, sunset: number }> = {
+            1: { sunrise: 8, sunset: 16 },  // Hammer (Deepwinter)
+            2: { sunrise: 7, sunset: 17 },  // Alturiak
+            3: { sunrise: 6, sunset: 18 },  // Ches (Equinox)
+            4: { sunrise: 5, sunset: 19 },  // Tarsakh
+            5: { sunrise: 4, sunset: 20 },  // Mirtul
+            6: { sunrise: 4, sunset: 21 },  // Kythorn
+            7: { sunrise: 4, sunset: 22 },  // Flamerule (Summertide)
+            8: { sunrise: 5, sunset: 21 },  // Eleasis
+            9: { sunrise: 6, sunset: 18 },  // Eleint (Equinox)
+            10: { sunrise: 7, sunset: 17 }, // Marpenoth
+            11: { sunrise: 8, sunset: 16 }, // Uktar
+            12: { sunrise: 8, sunset: 16 }, // Nightal
+        };
+
+        return configs[month] || { sunrise: 6, sunset: 18 };
+    }
+
+    /**
+     * Calculates the narrative time phase based on current time and season.
+     */
+    public static getTimePhase(clock: WorldClock): string {
+        const { hour, month } = clock;
+        const { sunrise, sunset } = this.getSeasonConfig(month);
+
+        if (hour === 0) return 'Deep Night';
+        if (hour < sunrise - 1) return 'Small Hours';
+        if (hour < sunrise) return 'First Light';
+        if (hour < sunrise + 1) return 'Dawn';
+        if (hour < 11) return 'Morning';
+        if (hour >= 11 && hour < 14) return 'High Sun';
+        if (hour >= 14 && hour < sunset - 2) return 'Afternoon';
+        if (hour < sunset - 1) return 'Evenfall';
+        if (hour < sunset) return 'Dusk';
+        if (hour < sunset + 1) return 'Nightfall';
+        return 'Deep Night';
     }
 
     private static getOrdinal(n: number): string {
