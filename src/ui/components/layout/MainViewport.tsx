@@ -11,6 +11,7 @@ import TurnBanner from '../combat/TurnBanner';
 import CombatOverlay from '../combat/CombatOverlay';
 import GameOverScreen from '../menu/GameOverScreen';
 import SaveLoadModal from '../menu/SaveLoadModal';
+import RestWaitModal from '../exploration/RestWaitModal';
 
 interface MainViewportProps {
     className?: string;
@@ -21,6 +22,7 @@ import { useGameState } from '../../hooks/useGameState';
 const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
     const { state, processCommand, isLoading, endGame, engine, startGame, loadGame, loadLastSave } = useGameState();
     const [showLoadModal, setShowLoadModal] = useState(false);
+    const [showRestModal, setShowRestModal] = useState(false);
 
     const isCombat = state?.mode === 'COMBAT';
     const isGameOver = state?.mode === 'GAME_OVER';
@@ -46,7 +48,18 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
     ];
 
     const handlePlayerInput = (input: string) => {
+        if (input.toLowerCase() === 'rest') {
+            setShowRestModal(true);
+            return;
+        }
         processCommand(input);
+    };
+
+    const handleRestConfirm = (action: 'rest' | 'wait', duration: number) => {
+        setShowRestModal(false);
+        // Send command: /rest [duration] or /wait [duration]
+        // Note: GameLoop needs to handle /rest with numeric args
+        processCommand(`/${action} ${duration}`);
     };
 
     const handleLoadGame = (saveId: string) => {
@@ -100,6 +113,13 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
                     onAction={handleLoadGame}
                     onDelete={() => { }} // No-op for now
                     onClose={() => setShowLoadModal(false)}
+                />
+            )}
+
+            {showRestModal && (
+                <RestWaitModal
+                    onConfirm={handleRestConfirm}
+                    onCancel={() => setShowRestModal(false)}
                 />
             )}
 

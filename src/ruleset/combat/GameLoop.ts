@@ -247,10 +247,25 @@ export class GameLoop {
             case 'stats':
                 return `Name: ${this.state.character.name} | HP: ${this.state.character.hp.current}/${this.state.character.hp.max} | Level: ${this.state.character.level} | Location: ${this.state.location.hexId}`;
             case 'rest':
-                const isLong = intent.args?.[0] === 'long';
-                const restResult = isLong
-                    ? RestingEngine.longRest(this.state.character)
-                    : RestingEngine.shortRest(this.state.character);
+                const restDuration = parseInt(intent.args?.[0] || '60', 10);
+
+                // Determine rest type based on duration
+                // >= 8 hours (480 mins) = Long Rest
+                // >= 1 hour (60 mins) = Short Rest
+                // < 1 hour = No mechanical benefit (effectively a wait)
+
+                let restResult;
+                if (restDuration >= 480) {
+                    restResult = RestingEngine.longRest(this.state.character);
+                    // Override time cost to match user input if longer
+                    restResult.timeCost = Math.max(restResult.timeCost, restDuration);
+                } else if (restDuration >= 60) {
+                    restResult = RestingEngine.shortRest(this.state.character);
+                    restResult.timeCost = Math.max(restResult.timeCost, restDuration);
+                } else {
+                    restResult = RestingEngine.wait(restDuration);
+                    restResult.message = `You rest for ${restDuration} minutes, but it's not long enough to gain any benefits.`;
+                }
 
                 // Special handling for Ambush during rest
                 this.advanceTimeAndProcess(restResult.timeCost, true).then(encounter => {

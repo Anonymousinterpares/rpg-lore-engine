@@ -37,6 +37,22 @@ export class IntentRouter {
             };
         }
 
+        // 2.5 Check for Explicit System Keywords (Exploration)
+        if (!inCombat) {
+            const lower = trimmed.toLowerCase();
+            if (lower === 'rest' || lower === 'short rest') {
+                return { type: 'COMMAND', command: 'rest', args: ['short'], originalInput: input };
+            }
+            if (lower === 'long rest') {
+                return { type: 'COMMAND', command: 'rest', args: ['long'], originalInput: input };
+            }
+            if (lower.startsWith('wait')) {
+                // Parse "Wait 60" or just "Wait"
+                const parts = trimmed.split(' ');
+                return { type: 'COMMAND', command: 'wait', args: parts.slice(1), originalInput: input };
+            }
+        }
+
         // 3. Default to Narrative
         return {
             type: 'NARRATIVE',

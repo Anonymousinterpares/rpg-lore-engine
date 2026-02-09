@@ -28,8 +28,8 @@
 }
 
 .weatherIcon {
-    width: 24px;
-    height: 24px;
+    width: 64px;
+    height: 64px;
     object-fit: contain;
     filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.4));
 }
