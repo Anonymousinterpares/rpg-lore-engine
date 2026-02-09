@@ -42,8 +42,9 @@ export const HexSchema = z.object({
         quantity: z.number()
     }))).default({}),
     visited: z.boolean().default(false),
+    inLineOfSight: z.boolean().default(false),
     playerName: z.string().optional(),
-    namingSource: z.enum(['engine', 'llm', 'player']).default('engine'),
+    namingSource: z.enum(['engine', 'llm', 'player', 'npc']).default('engine'),
     visualVariant: z.number().int().min(1).max(5).default(1)
 });
 

@@ -79,6 +79,7 @@ export class GameLoop {
                 biome: 'Plains',
                 name: 'Starting Clearing',
                 description: 'A calm meadow where your adventure begins.',
+                inLineOfSight: true,
                 interest_points: [],
                 resourceNodes: [],
                 openedContainers: {},
@@ -249,44 +250,121 @@ export class GameLoop {
      * Programmatically expands the map discovery around a coordinate.
      * Progressively "uncovers" a hex and reveals its neighbors.
      */
-    private expandHorizon(coords: [number, number]) {
-        const hexKey = `${coords[0]},${coords[1]}`;
-        const hex = this.hexMapManager.getHex(hexKey);
+    private expandHorizon(centerCoords: [number, number]) {
+        // 1. Handle Current Hex (Distance 0)
+        const centerKey = `${centerCoords[0]},${centerCoords[1]}`;
+        const centerHex = this.hexMapManager.getHex(centerKey);
 
-        if (hex) {
+        if (centerHex) {
             // Regeneration Condition: Not generated OR has placeholder name
-            const currentName = hex.name || '';
-            if (!hex.generated || currentName === 'Uncharted Territory' || currentName.includes('(Unknown)')) {
-                // Fully generate the hex using probabilities
-                const neighbors = this.hexMapManager.getNeighbors(coords);
-                const clusterSizes: any = {};
-
-                const biomes = ['Plains', 'Forest', 'Hills', 'Mountains', 'Swamp', 'Desert', 'Tundra', 'Jungle', 'Coast', 'Ocean', 'Volcanic', 'Ruins', 'Farmland', 'Urban'];
-                for (const b of biomes) {
-                    const neighborWithBiome = neighbors.find(n => n.biome === b);
-                    clusterSizes[b] = neighborWithBiome ? this.hexMapManager.getClusterSize(neighborWithBiome) : 0;
-                }
-
-                // Generate new data
-                const generatedData = HexGenerator.generateHex(coords, neighbors, clusterSizes);
-                const newName = (generatedData.name || '').replace('(Unknown)', '(Discovered)');
-
-                // Merge with existing to preserve ID/Coordinates but overwrite content
-                const updatedHex = {
-                    ...hex,
-                    ...generatedData,
-                    visited: true,
-                    generated: true,
-                    // EXPLICITLY set the name to the generated one if it was placeholder
-                    name: newName
-                };
-
-                this.hexMapManager.setHex(updatedHex);
+            const currentName = centerHex.name || '';
+            if (!centerHex.generated || currentName === 'Uncharted Territory' || currentName.includes('(Unknown)')) {
+                // Fully generate the hex
+                this.generateAndSaveHex(centerCoords, centerHex, true, true);
             }
         }
 
-        // Always ensure neighbors are registered as placeholders (reveals brown hexes)
-        this.hexMapManager.ensureNeighborsRegistered(coords);
+        // 2. Handle Neighbors (Distance 1) - Visible on Map
+        const neighbors = this.hexMapManager.getNeighbors(centerCoords);
+        neighbors.forEach(neighbor => {
+            const nKey = `${neighbor.coordinates[0]},${neighbor.coordinates[1]}`;
+            const nHex = this.hexMapManager.getHex(nKey); // Refetch to be safe
+            if (nHex) {
+                // Determine if we need to reveal it
+                // If it's not generated, generate it
+                const nName = nHex.name || '';
+                if (!nHex.generated || nName === 'Uncharted Territory' || nName.includes('(Unknown)')) {
+                    this.generateAndSaveHex(neighbor.coordinates, nHex, false, true); // visited=false, inLOS=true
+                } else if (!nHex.inLineOfSight) {
+                    // Update LOS status if already generated
+                    nHex.inLineOfSight = true;
+                    this.hexMapManager.setHex(nHex);
+                }
+            }
+        });
+
+        // 3. Handle Distance 2 (Horizon) - Hidden on Map, Known to Engine
+        // We need to iterate neighbors of neighbors
+        const distance2Coords: string[] = [];
+        neighbors.forEach(n => {
+            const nn = this.hexMapManager.getNeighbors(n.coordinates);
+            nn.forEach(target => {
+                const key = `${target.coordinates[0]},${target.coordinates[1]}`;
+                if (key !== centerKey && !neighbors.some(nb => `${nb.coordinates[0]},${nb.coordinates[1]}` === key)) {
+                    // Unique Distance 2 hex
+                    distance2Coords.push(key);
+                }
+            });
+        });
+
+        // Ensure D2 hexes exist as placeholders or generated (but hidden)
+        // For now, we just ensure they are registered so the engine knows about them
+        // The implementation in ensureNeighborsRegistered handles the placeholders
+        // We might want to pre-generate them here too so the Narrator knows what they are?
+        // YES.
+
+        // Optimized: Just ensure neighbors of neighbors are registered
+        // Note: ensureNeighborsRegistered creates placeholders.
+        // We then selectively generate them if we want the narrator to know.
+
+        neighbors.forEach(n => {
+            this.hexMapManager.ensureNeighborsRegistered(n.coordinates);
+        });
+
+        // Loop through D2 placeholders and generate them (but keep inLineOfSight=false)
+        neighbors.forEach(n => {
+            const secondLayer = this.hexMapManager.getNeighbors(n.coordinates);
+            secondLayer.forEach(d2 => {
+                const d2Key = `${d2.coordinates[0]},${d2.coordinates[1]}`;
+                if (d2Key === centerKey) return; // Skip center
+
+                const d2Hex = this.hexMapManager.getHex(d2Key);
+                if (d2Hex && !d2Hex.generated) {
+                    // Generate but DO NOT REVEAL
+                    this.generateAndSaveHex(d2.coordinates, d2Hex, false, false);
+                }
+            });
+        });
+    }
+
+    private generateAndSaveHex(coords: [number, number], hex: any, isVisited: boolean, isVisible: boolean) {
+        const neighbors = this.hexMapManager.getNeighbors(coords);
+        const clusterSizes: any = {};
+        const biomes = ['Plains', 'Forest', 'Hills', 'Mountains', 'Swamp', 'Desert', 'Tundra', 'Jungle', 'Coast', 'Ocean', 'Volcanic', 'Ruins', 'Farmland', 'Urban'];
+
+        for (const b of biomes) {
+            const neighborWithBiome = neighbors.find(n => n.biome === b);
+            clusterSizes[b] = neighborWithBiome ? this.hexMapManager.getClusterSize(neighborWithBiome) : 0;
+        }
+
+        const generatedData = HexGenerator.generateHex(coords, neighbors, clusterSizes);
+
+        // Name logic
+        let newName = generatedData.name || '';
+        if (isVisible && !isVisited) {
+            newName = newName.replace('(Unknown)', '(Uncharted Territory)');
+        } else if (isVisited) {
+            newName = newName.replace('(Unknown)', '(Discovered)');
+        } else {
+            // Hidden (Distance 2)
+            newName = 'Uncharted Territory'; // Keep it vague in the data, or reveal it?
+            // Narrator needs to know... so we should probably keep the biome name but maybe flag it?
+            // Actually, the request said "visible but not visited hexes should have biome (uncharted territory)"
+            // "brown ones should be just 'uncharted territory'"
+            // So D2 = "Uncharted Territory"
+            newName = 'Uncharted Territory';
+        }
+
+        const updatedHex = {
+            ...hex,
+            ...generatedData,
+            visited: isVisited,
+            generated: true,
+            inLineOfSight: isVisible,
+            name: newName
+        };
+
+        this.hexMapManager.setHex(updatedHex);
     }
 
     /**

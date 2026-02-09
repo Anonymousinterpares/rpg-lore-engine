@@ -205,6 +205,29 @@ TASK:
 `;
         }
 
+        if (context.hex && context.hex.neighbors && context.hex.neighbors.length > 0) {
+            const visible = context.hex.neighbors.filter((n: any) => n.distance === 1);
+            const horizon = context.hex.neighbors.filter((n: any) => n.distance === 2);
+
+            prompt += `
+## SURROUNDINGS
+Immediate Vicinity (Visible):
+${visible.map((n: any) => `- ${n.direction}: ${n.biome} ${n.name ? `(${n.name})` : ''}`).join('\n')}
+
+On the Horizon (Distant):
+${horizon.map((n: any) => `- ${n.direction}: ${n.biome} ${n.name ? `(${n.name})` : ''}`).join('\n')}
+
+CRITICAL INSTRUCTION:
+- You MUST base your environmental description on the data above.
+- Do NOT hallucinate mountains or oceans if they are not listed in the Surroundings or Horizon.
+- If a direction is missing, it means there is nothing notable generated there yet (fog of war). Describe it as "shrouded in mist" or "obscured".
+- You can NAME a location (e.g., "The Whispering Woods") if the player passes a passive Lore check (History/Nature/Religion) or if an NPC reveals it.
+- To name a hex, use the \`engine_call\`: \`NAME_HEX\`. 
+  Format: \`{ "action": "NAME_HEX", "hex_id": "0,1", "name": "The Dragon's Teeth", "source": "lore_check", "skill": "History" }\`
+  (Note: You don't have hex IDs here, so for now just describe it. The system will support ID-based naming in the next update. For now, rely on your description matches.)
+`;
+        }
+
         // Add mode-specific details
         if (context.combat) {
             prompt += `

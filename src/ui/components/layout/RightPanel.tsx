@@ -50,7 +50,7 @@ const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests
         biome: hex.biome,
         isVisited: hex.visited,
         isCurrent: state.location.hexId === id,
-        isDiscovered: true, // If it's in the registry, we show it (placeholders are greyed via unvisited style)
+        isDiscovered: hex.visited || hex.inLineOfSight || false, // Show if visited or in LOS
         name: hex.name,
         playerName: hex.playerName,
         namingSource: hex.namingSource,

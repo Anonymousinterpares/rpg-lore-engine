@@ -96,6 +96,7 @@ export class MovementEngine {
                 biome: 'Plains', // Default for placeholder
                 name: 'Uncharted Territory',
                 description: 'The mists of the unknown cling to this place.',
+                inLineOfSight: false,
                 interest_points: [],
                 resourceNodes: [],
                 openedContainers: {},

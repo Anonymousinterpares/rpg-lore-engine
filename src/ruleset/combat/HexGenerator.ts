@@ -50,6 +50,7 @@ export class HexGenerator {
             resourceNodes: nodes,
             openedContainers: {},
             visited: false,
+            inLineOfSight: false,
             namingSource: 'engine',
             visualVariant: variant
         };

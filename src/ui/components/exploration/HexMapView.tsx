@@ -13,10 +13,12 @@ interface HexData {
     isDiscovered: boolean;
     name?: string;
     playerName?: string;
-    namingSource?: 'engine' | 'llm' | 'player';
+    namingSource?: 'engine' | 'llm' | 'player' | 'npc';
     visualVariant?: number;
     resourceNodes?: { resourceType: string }[];
     interest_points?: { name: string }[];
+    // Add inLineOfSight to interface if we pass it down, or infer from logic
+    inLineOfSight?: boolean;
 }
 
 interface HexMapViewProps {
@@ -96,12 +98,37 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                 {hexes.map((hex) => {
                     const biomeBase = hex.biome.toLowerCase();
                     const variantClass = hex.visualVariant ? styles[`${biomeBase}_${hex.visualVariant}`] : styles[biomeBase];
-                    const tooltip = hex.playerName
-                        ? `${hex.playerName} (${hex.name})`
-                        : (hex.name || `${hex.biome} (${hex.q}, ${hex.r})`);
+
+                    // Display Name Logic
+                    let displayName = hex.name || `${hex.biome} (${hex.q}, ${hex.r})`;
+                    if (hex.playerName) {
+                        displayName = `${hex.name || hex.biome} (${hex.playerName})`;
+                    }
+
+                    const tooltip = displayName;
 
                     const isZoomedIn = viewMode === 'zoomed-in';
                     const isSelected = selectedHexId === hex.id;
+
+                    // Visibility Logic
+                    // Visited: Full Brightness
+                    // In Line of Sight (Adjacent): Full Image (maybe slightly dimmed if we had CSS for it), but requirement says "visible"
+                    // Distant (Horizon, "Uncharted Territory"): Brown Placeholder
+
+                    // Logic from RightPanel: isDiscovered = visited || inLineOfSight.
+                    // If name is "Uncharted Territory", treat as placeholder.
+                    const isUncharted = hex.name === 'Uncharted Territory' || (!hex.isVisited && !hex.name?.includes('(Discovered)') && !hex.name?.includes('(Uncharted Territory)'));
+                    // Actually, rely on name convention or explicit flags if passed.
+
+                    // Better check:
+                    // If !visited and !inLineOfSight (implied) -> Brown
+                    // But we don't have inLOS passed explicitly yet in HexData, but we rely on RightPanel passing it as isDiscovered.
+                    // RightPanel sets isDiscovered = true if inLOS.
+
+                    // If Discovered (Visible/Visited) AND NOT "Uncharted Territory" -> Show Biome
+                    // If "Uncharted Territory" -> Show Brown
+
+                    const showBiomeImage = (hex.isVisited || hex.name?.includes('(Discovered)') || hex.name?.includes('(Uncharted Territory)')) && hex.name !== 'Uncharted Territory';
 
                     return (
                         <div
@@ -126,7 +153,7 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                             }}
                         >
                             <div className={styles.hexInner}>
-                                {hex.isVisited && hex.visualVariant && (
+                                {showBiomeImage && hex.visualVariant && (
                                     <img
                                         src={`/assets/biomes/${biomeBase}_${hex.visualVariant}.png`}
                                         className={styles.biomeImage}

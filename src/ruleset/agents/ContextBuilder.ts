@@ -35,7 +35,7 @@ export interface ExplorationContext extends BaseContext {
     hex: {
         interestPoints: string[];
         resourceNodes: string[];
-        neighbors?: { direction: string; biome: string }[];
+        neighbors?: { direction: string; biome: string; name?: string; distance: number }[];
     };
     activeQuests: { title: string; currentObjective: string }[];
 }
@@ -102,26 +102,86 @@ export class ContextBuilder {
 
     private static buildExplorationContext(base: BaseContext, state: GameState, hexManager: HexMapManager): ExplorationContext {
         const hex = this.getCurrentHex(state);
-        const neighbors = hexManager.getNeighbors(state.location.coordinates);
 
-        // Only include neighbors if we just moved or looking around (logic can be refined)
-        const neighborInfo = neighbors.map((n, i) => ({
-            direction: ['N', 'S', 'NE', 'NW', 'SE', 'SW'][i], // Simplified mapping
-            biome: n.biome
+        // Get Distance 1 Neighbors
+        const neighborsD1 = hexManager.getNeighbors(hex.coordinates);
+        const neighborInfoD1 = neighborsD1.map(n => ({
+            direction: this.getDirection(hex.coordinates, n.coordinates),
+            biome: n.biome,
+            name: n.name,
+            distance: 1
         }));
+
+        // Get Distance 2 Neighbors (Horizon)
+        const neighborInfoD2: { direction: string; biome: string; name?: string; distance: number }[] = [];
+        neighborsD1.forEach(n1 => {
+            const neighborsD2 = hexManager.getNeighbors(n1.coordinates);
+            neighborsD2.forEach(n2 => {
+                // Filter out current hex and duplicates (if already covered)
+                const isCurrent = n2.coordinates[0] === hex.coordinates[0] && n2.coordinates[1] === hex.coordinates[1];
+                const isD1 = neighborsD1.some(d1 => d1.coordinates[0] === n2.coordinates[0] && d1.coordinates[1] === n2.coordinates[1]);
+                // Simplified check for already added D2 hexes. For now, we'll allow some redundancy if directions are approximate.
+                // A more robust check would involve unique hex IDs or coordinate pairs.
+                const isAlreadyAdded = neighborInfoD2.some(d => d.name === n2.name && d.biome === n2.biome && d.distance === 2);
+
+                if (!isCurrent && !isD1 && !isAlreadyAdded) {
+                    // Calculate rough direction from center
+                    const dir = this.getDirection(hex.coordinates, n2.coordinates);
+                    neighborInfoD2.push({
+                        direction: dir,
+                        biome: n2.biome,
+                        name: n2.name,
+                        distance: 2
+                    });
+                }
+            });
+        });
+
+        // Deduplicate D2 list based on direction/biome to avoid spamming "North: Mountains, North: Mountains"
+        // Actually, let's just pass all legitimate hexes and let the LLM sort it out, or refine.
 
         return {
             ...base,
             hex: {
                 interestPoints: hex.interest_points.map(p => p.name),
                 resourceNodes: hex.resourceNodes.map(r => r.resourceType),
-                neighbors: neighborInfo
+                neighbors: [...neighborInfoD1, ...neighborInfoD2]
             },
             activeQuests: state.activeQuests.map(q => ({
                 title: q.title,
                 currentObjective: q.objectives.find(o => !o.isCompleted)?.description || 'No active objective'
             }))
         };
+    }
+
+    private static getDirection(source: [number, number], target: [number, number]): string {
+        const dq = target[0] - source[0];
+        const dr = target[1] - source[1];
+
+        // Distance 1 directions
+        if (dq === 0 && dr === -1) return 'N';
+        if (dq === 1 && dr === -1) return 'NE';
+        if (dq === 1 && dr === 0) return 'SE';
+        if (dq === 0 && dr === 1) return 'S';
+        if (dq === -1 && dr === 1) return 'SW';
+        if (dq === -1 && dr === 0) return 'NW';
+
+        // Extended logic for D2 (Approximation)
+        // These are approximations for the general direction from the source hex
+        if (dq === 0 && dr === -2) return 'N (Far)';
+        if (dq === 1 && dr === -2) return 'N/NE (Far)'; // Between N and NE
+        if (dq === 2 && dr === -2) return 'NE (Far)';
+        if (dq === 2 && dr === -1) return 'NE/SE (Far)'; // Between NE and SE
+        if (dq === 2 && dr === 0) return 'SE (Far)';
+        if (dq === 1 && dr === 1) return 'SE/S (Far)'; // Between SE and S
+        if (dq === 0 && dr === 2) return 'S (Far)';
+        if (dq === -1 && dr === 2) return 'S/SW (Far)'; // Between S and SW
+        if (dq === -2 && dr === 2) return 'SW (Far)';
+        if (dq === -2 && dr === 1) return 'SW/NW (Far)'; // Between SW and NW
+        if (dq === -2 && dr === 0) return 'NW (Far)';
+        if (dq === -1 && dr === -1) return 'NW/N (Far)'; // Between NW and N
+
+        return 'Distant'; // Fallback for any other distance/direction
     }
 
     private static buildCombatContext(base: BaseContext, state: GameState): CombatContext {

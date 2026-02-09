@@ -126,6 +126,7 @@ export class HexMapManager {
                     biome: 'Plains', // Initial guess, will be refined by expandHorizon
                     name: 'Uncharted Territory',
                     description: 'The mists of the unknown cling to this place.',
+                    inLineOfSight: false,
                     interest_points: [],
                     resourceNodes: [],
                     openedContainers: {},
