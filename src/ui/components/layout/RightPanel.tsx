@@ -103,8 +103,8 @@ const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests
                         viewMode={viewMode}
                         isDraggable={false}
                         onHexClick={(id) => {
-                            const hex = state.worldMap.hexes[id];
-                            if (hex) handleMove(hex.coordinates);
+                            // Left click now only selects, does not move
+                            // Ideally, we should set some selected state here if we want inspection
                         }}
                         onHexContextMenu={handleHexContextMenu}
                     />

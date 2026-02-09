@@ -269,6 +269,11 @@ export class GameLoop {
             // Preserve specific flags
             updatedHex.visited = true;
 
+            // Force name update if it was a placeholder
+            if (!updatedHex.name || updatedHex.name.includes('Unknown') || hex.name === 'Uncharted Territory') {
+                updatedHex.name = `${updatedHex.biome} (Discovered)`;
+            }
+
             this.hexMapManager.setHex(updatedHex);
         }
 
@@ -339,6 +344,10 @@ export class GameLoop {
                 this.emitStateUpdate();
                 return 'Game saved.';
             case 'move':
+                if (this.state.mode === 'COMBAT') {
+                    return "You cannot travel while in combat! Finish the fight or flee.";
+                }
+
                 const char = this.state.character;
                 const currentWeight = char.inventory.items.reduce((sum, i) => sum + (i.weight * (i.quantity || 1)), 0);
                 const capacity = (char.stats.STR || 10) * 15;
@@ -361,6 +370,10 @@ export class GameLoop {
                 }
                 return result.message;
             case 'moveto':
+                if (this.state.mode === 'COMBAT') {
+                    return "You cannot travel while in combat! Finish the fight or flee.";
+                }
+
                 const moveChar = this.state.character;
                 const weight = moveChar.inventory.items.reduce((sum, i) => sum + (i.weight * (i.quantity || 1)), 0);
                 const strCapacity = (moveChar.stats.STR || 10) * 15;
