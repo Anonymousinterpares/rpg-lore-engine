@@ -14,86 +14,12 @@ export const ConversationTurnSchema = z.object({
     turnNumber: z.number()
 });
 
-export const CombatConditionSchema = z.object({
-    id: z.string(), // e.g., 'blinded', 'prone'
-    name: z.string(),
-    description: z.string(),
-    duration: z.number().optional(), // rounds remaining, undefined = permanent
-    sourceId: z.string().optional()
-});
-
-export const StatusEffectSchema = z.object({
-    id: z.string(),
-    name: z.string(),
-    type: z.enum(['BUFF', 'DEBUFF']),
-    modifier: z.union([z.number(), z.string()]).optional(), // e.g., 5 or 'd4'
-    stat: z.string().optional(), // 'ac', 'STR_SAVE', etc.
-    duration: z.number().optional(), // rounds remaining
-    sourceId: z.string().optional()
-});
-
-export const CombatantSchema = z.object({
-    id: z.string(),
-    name: z.string(),
-    hp: z.object({
-        current: z.number(),
-        max: z.number()
-    }),
-    initiative: z.number(),
-    isPlayer: z.boolean(),
-    type: z.enum(['player', 'companion', 'enemy', 'summon']),
-    // Enhanced fields for deterministic combat
-    ac: z.number().default(10),
-    stats: z.record(z.string(), z.number()).default({}),
-    conditions: z.array(CombatConditionSchema).default([]),
-    statusEffects: z.array(StatusEffectSchema).default([]),
-    spellSlots: z.record(z.string(), z.object({
-        current: z.number(),
-        max: z.number()
-    })).optional(),
-    sourceId: z.string().optional(), // ID of the caster who summoned this combatant
-    isConcentrating: z.boolean().default(false),
-    concentratingOn: z.string().optional(), // Name of the spell being concentrated on
-    // Action Economy tracking
-    hasUsedAction: z.boolean().default(false),
-    hasUsedBonusAction: z.boolean().default(false),
-    hasMoved: z.boolean().default(false)
-});
-
-export type CombatCondition = z.infer<typeof CombatConditionSchema>;
-
-export const CombatLogEntrySchema = z.object({
-    id: z.string(),
-    type: z.enum(['info', 'warning', 'error', 'success']),
-    message: z.string(),
-    turn: z.number().optional()
-});
-
-export const CombatEventSchema = z.object({
-    id: z.string(),
-    type: z.enum(['HIT', 'MISS', 'CRIT', 'HEAL', 'CONDITION']),
-    targetId: z.string(),
-    value: z.number().optional(),
-    text: z.string().optional(),
-    timestamp: z.number()
-});
-
-export const CombatStateSchema = z.object({
-    round: z.number().default(1),
-    currentTurnIndex: z.number().default(0),
-    combatants: z.array(CombatantSchema),
-    logs: z.array(CombatLogEntrySchema).default([]),
-    selectedTargetId: z.string().optional(),
-    lastRoll: z.number().optional(),
-    events: z.array(CombatEventSchema).default([]),
-    // UI Pacing & Orchestration
-    activeBanner: z.object({
-        type: z.enum(['PLAYER', 'ENEMY', 'NAME']),
-        text: z.string().optional(),
-        visible: z.boolean().default(false)
-    }).optional(),
-    lastActionMessage: z.string().optional()
-});
+import {
+    CombatantSchema,
+    CombatLogEntrySchema,
+    CombatEventSchema,
+    CombatStateSchema
+} from './CombatSchema';
 
 export const FullSaveStateSchema = z.object({
     // --- Meta ---
