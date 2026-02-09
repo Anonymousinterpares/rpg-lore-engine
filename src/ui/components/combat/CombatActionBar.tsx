@@ -47,7 +47,7 @@ export const CombatActionBar: React.FC = () => {
 
     const player = state.combat.combatants.find(c => c.id === 'player');
     const isPlayerTurn = state.combat.combatants[state.combat.currentTurnIndex]?.isPlayer;
-    const hasUsedAction = player?.hasUsedAction || false;
+    const hasUsedAction = player?.resources?.actionSpent || false;
 
     const handleAction = (command: string) => {
         processCommand(command);

@@ -21,6 +21,13 @@ import {
     CombatStateSchema
 } from './CombatSchema';
 
+export {
+    CombatantSchema,
+    CombatLogEntrySchema,
+    CombatEventSchema,
+    CombatStateSchema
+};
+
 export const FullSaveStateSchema = z.object({
     // --- Meta ---
     saveId: z.string(),

@@ -1,0 +1,163 @@
+import { CombatState, Combatant, GridPosition } from '../schemas/CombatSchema';
+import { GameState } from '../schemas/FullSaveStateSchema';
+import { TerrainGenerator } from './grid/TerrainGenerator';
+import { CombatGridManager } from './grid/CombatGridManager';
+import { CombatFactory } from './CombatFactory';
+import { Encounter } from './EncounterDirector';
+import { DataManager } from '../data/DataManager';
+import { Dice } from './Dice';
+import { MechanicsEngine } from './MechanicsEngine';
+import { LoreService } from '../agents/LoreService';
+
+export class CombatManager {
+    private state: GameState;
+    private gridManager?: CombatGridManager;
+
+    constructor(state: GameState) {
+        this.state = state;
+        if (this.state.combat?.grid) {
+            this.gridManager = new CombatGridManager(this.state.combat.grid);
+        }
+    }
+
+    /**
+     * Initializes a new combat encounter with spatial grid and deployment.
+     */
+    public async initializeCombat(encounter: Encounter, biome: string): Promise<void> {
+        this.state.mode = 'COMBAT';
+
+        // 1. Generate Grid
+        const seed = `combat_${Date.now()}_${Math.random()}`;
+        const grid = TerrainGenerator.generate(biome, seed);
+
+        // 2. Prepare Combatants
+        const combatants: Combatant[] = [];
+
+        // Add Player
+        const pc = CombatFactory.fromPlayer(this.state.character);
+        pc.initiative = Dice.d20() + MechanicsEngine.getModifier(this.state.character.stats.DEX || 10);
+        pc.position = grid.playerStartZone[0] || { x: 2, y: 10 };
+        combatants.push(pc);
+
+        // Add Companions
+        for (let i = 0; i < this.state.companions.length; i++) {
+            const companion = CombatFactory.fromPlayer(this.state.companions[i]);
+            companion.initiative = Dice.d20() + MechanicsEngine.getModifier(companion.stats.DEX || 10);
+
+            // Deployment: Pick unique positions from player zone
+            const posIndex = Math.min(i + 1, grid.playerStartZone.length - 1);
+            companion.position = grid.playerStartZone[posIndex] || { x: 2 + i, y: 11 + i };
+            combatants.push(companion);
+        }
+
+        // Add Enemies
+        await DataManager.loadMonsters();
+        for (let i = 0; i < encounter.monsters.length; i++) {
+            const monsterName = encounter.monsters[i];
+            const monsterData = DataManager.getMonster(monsterName);
+
+            // Deployment: Pick unique positions from enemy zone
+            const posIndex = Math.min(i, grid.enemyStartZone.length - 1);
+            const pos = grid.enemyStartZone[posIndex] || { x: 17, y: 10 };
+
+            const monster = CombatFactory.fromMonster(monsterData || { name: monsterName, hp: { average: 15 }, ac: 10, stats: {} } as any, `enemy_${i}`);
+            monster.initiative = Dice.d20() + (monsterData ? MechanicsEngine.getModifier(monsterData.stats['DEX'] || 10) : 0);
+            monster.position = pos;
+            combatants.push(monster);
+
+            // Register discovery
+            LoreService.registerMonsterEncounter(monsterName, this.state, () => { });
+        }
+
+        // 3. Sort by Initiative
+        combatants.sort((a, b) => {
+            if (b.initiative !== a.initiative) return b.initiative - a.initiative;
+            return (b.dexterityScore || 0) - (a.dexterityScore || 0); // Dexterity tie-breaker
+        });
+
+        // 4. Set Initial State
+        this.state.combat = {
+            round: 1,
+            currentTurnIndex: 0,
+            combatants,
+            grid,
+            isAmbush: false,
+            logs: [{
+                id: `log_start_${Date.now()}`,
+                type: 'info',
+                message: `Combat started in the ${biome}!`,
+                turn: 1
+            }],
+            events: []
+        };
+
+        this.gridManager = new CombatGridManager(grid);
+    }
+
+    /**
+     * Gets available actions for the current combatant based on grid position and rules.
+     */
+    public getContextualActions(combatant: Combatant): string[] {
+        const actions = ['Attack', 'Dodge', 'Dash', 'Disengage', 'Hide', 'End Turn'];
+
+        // Add 'Move' if they have movement remaining
+        if (combatant.movementRemaining > 0) {
+            actions.unshift('Move');
+        }
+
+        // Future: Check for specific interactables on grid
+        return actions;
+    }
+
+    /**
+     * Executes a movement on the grid.
+     */
+    public moveCombatant(combatant: Combatant, targetPos: GridPosition): string {
+        if (!this.gridManager) return "No grid available.";
+
+        const path = this.gridManager.findPath(combatant.position, targetPos, this.state.combat?.combatants || []);
+        if (!path) return "Target is unreachable or blocked.";
+
+        const distance = path.length - 1; // Number of steps
+        if (distance > combatant.movementRemaining) {
+            return `Too far! You only have ${combatant.movementRemaining} cells of movement left.`;
+        }
+
+        combatant.position = targetPos;
+        combatant.movementRemaining -= distance;
+
+        return `${combatant.name} moves to (${targetPos.x}, ${targetPos.y}).`;
+    }
+
+    /**
+     * Orchestrates end of turn and next turn transitions.
+     */
+    public advanceTurn(): string {
+        if (!this.state.combat) return "Not in combat.";
+
+        const combat = this.state.combat;
+        const prevCombatant = combat.combatants[combat.currentTurnIndex];
+
+        // Reset resources of the combatant who just finished
+        prevCombatant.resources.actionSpent = false;
+        prevCombatant.resources.bonusActionSpent = false;
+        prevCombatant.resources.reactionSpent = false;
+        prevCombatant.movementRemaining = prevCombatant.movementSpeed;
+
+        // Transition index
+        combat.currentTurnIndex++;
+        if (combat.currentTurnIndex >= combat.combatants.length) {
+            combat.currentTurnIndex = 0;
+            combat.round++;
+        }
+
+        const nextCombatant = combat.combatants[combat.currentTurnIndex];
+
+        // Handle Unconscious or dead
+        if (nextCombatant.hp.current <= 0) {
+            return this.advanceTurn(); // Skip to next
+        }
+
+        return `Round ${combat.round}: ${nextCombatant.name}'s turn.`;
+    }
+}

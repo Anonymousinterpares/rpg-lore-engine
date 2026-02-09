@@ -107,6 +107,7 @@ export const CombatEventSchema = z.object({
 export const TerrainTypeSchema = z.enum([
     'OPEN', 'WALL', 'WATER', 'RUBBLE', 'TREE', 'LAVA', 'PIT', 'DIFFICULT'
 ]);
+export type TerrainType = z.infer<typeof TerrainTypeSchema>;
 
 export const TerrainFeatureSchema = z.object({
     id: z.string(),
@@ -118,6 +119,7 @@ export const TerrainFeatureSchema = z.object({
     isDestructible: z.boolean().default(false),
     hp: z.number().optional()
 });
+export type TerrainFeature = z.infer<typeof TerrainFeatureSchema>;
 
 export const CombatGridSchema = z.object({
     width: z.number().default(20),
@@ -126,6 +128,7 @@ export const CombatGridSchema = z.object({
     playerStartZone: z.array(GridPositionSchema).default([]),
     enemyStartZone: z.array(GridPositionSchema).default([])
 });
+export type CombatGrid = z.infer<typeof CombatGridSchema>;
 
 export const CombatStateSchema = z.object({
     round: z.number().default(1),

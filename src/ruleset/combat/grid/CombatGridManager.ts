@@ -1,4 +1,4 @@
-import { CombatGrid, GridPosition, TerrainFeature, Combatant } from '../schemas/CombatSchema';
+import { CombatGrid, GridPosition, TerrainFeature, Combatant } from '../../schemas/CombatSchema';
 
 export class CombatGridManager {
     private grid: CombatGrid;
@@ -37,7 +37,7 @@ export class CombatGridManager {
      * Gets terrain feature at specific coordinates.
      */
     public getFeatureAt(pos: GridPosition): TerrainFeature | undefined {
-        return this.grid.features.find(f => f.position.x === pos.x && f.position.y === pos.y);
+        return this.grid.features.find((f: TerrainFeature) => f.position.x === pos.x && f.position.y === pos.y);
     }
 
     /**

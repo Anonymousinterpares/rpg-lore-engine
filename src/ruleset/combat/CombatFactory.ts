@@ -18,7 +18,10 @@ export class CombatFactory {
             ac: monster.ac,
             initiative: 0,
             dexterityScore: monster.stats['DEX'] || 10,
+            type: 'enemy',
+            stats: monster.stats as Record<string, number>,
             conditions: [],
+            statusEffects: [],
             isPlayer: false,
             resources: {
                 actionSpent: false,
@@ -36,7 +39,13 @@ export class CombatFactory {
             preparedSpells: monster.spellcasting ? [
                 ...monster.spellcasting.cantrips,
                 ...Object.values(monster.spellcasting.slots).flatMap(s => s.spells)
-            ] : []
+            ] : [],
+
+            // Spatial Defaults
+            position: { x: 0, y: 0 },
+            size: monster.size || 'Medium',
+            movementSpeed: 6, // 30ft / 5 = 6 cells
+            movementRemaining: 6
         };
     }
 
@@ -45,13 +54,16 @@ export class CombatFactory {
      */
     public static fromPlayer(pc: PlayerCharacter, idOverride?: string): CombatantState {
         return {
-            id: idOverride || `player_${pc.name.toLowerCase().replace(/\s/g, '_')}`,
+            id: idOverride || 'player',
             name: pc.name,
             hp: { ...pc.hp },
             ac: pc.ac,
             initiative: 0,
             dexterityScore: pc.stats['DEX'] || 10,
+            type: 'player',
+            stats: pc.stats as Record<string, number>,
             conditions: [],
+            statusEffects: [],
             isPlayer: true,
             resources: {
                 actionSpent: false,
@@ -64,7 +76,13 @@ export class CombatFactory {
                 isRanged: false
             },
             spellSlots: JSON.parse(JSON.stringify(pc.spellSlots)),
-            preparedSpells: [...pc.cantripsKnown, ...pc.preparedSpells]
+            preparedSpells: [...pc.cantripsKnown, ...pc.preparedSpells],
+
+            // Spatial Defaults
+            position: { x: 0, y: 0 },
+            size: 'Medium',
+            movementSpeed: 6,
+            movementRemaining: 6
         };
     }
 }

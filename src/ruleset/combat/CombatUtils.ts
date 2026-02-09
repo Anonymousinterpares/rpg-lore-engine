@@ -54,4 +54,23 @@ export class CombatUtils {
     public static getWalkingSpeed(speedStr: string): number {
         return this.parseSpeed(speedStr).walk;
     }
+
+    /**
+     * Parses a D&D range string into grid units (cells).
+     * @example "60 feet" -> 12, "Touch" -> 1, "Self" -> 0
+     */
+    public static parseRange(rangeStr: string): number {
+        if (!rangeStr) return 0;
+        const lower = rangeStr.toLowerCase();
+
+        if (lower.includes('self')) return 0;
+        if (lower.includes('touch')) return 1;
+
+        const match = lower.match(/(\d+)\s*ft/);
+        if (match) {
+            return Math.ceil(parseInt(match[1]) / 5);
+        }
+
+        return 5; // Default fallback for single targets if units missing
+    }
 }

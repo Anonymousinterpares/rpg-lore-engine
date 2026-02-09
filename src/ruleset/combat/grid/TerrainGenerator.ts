@@ -1,4 +1,4 @@
-import { CombatGrid, GridPosition, TerrainFeature, TerrainTypeSchema } from '../schemas/CombatSchema';
+import { CombatGrid, GridPosition, TerrainFeature, TerrainType } from '../../schemas/CombatSchema';
 
 export class TerrainGenerator {
     /**
@@ -62,7 +62,7 @@ export class TerrainGenerator {
 
     private static addCluster(
         features: TerrainFeature[],
-        type: string,
+        type: TerrainType,
         count: number,
         rng: () => number,
         width: number,
@@ -80,7 +80,7 @@ export class TerrainGenerator {
 
             features.push({
                 id: `feat_${type}_${i}_${pos.x}_${pos.y}`,
-                type: type as any,
+                type,
                 position: pos,
                 blocksMovement: props.blocksMovement ?? false,
                 blocksVision: props.blocksVision ?? false,
@@ -95,7 +95,7 @@ export class TerrainGenerator {
                 if (neighborPos.x < width && !this.isInStartZone(neighborPos)) {
                     features.push({
                         id: `feat_${type}_${i}_n_${neighborPos.x}_${neighborPos.y}`,
-                        type: type as any,
+                        type,
                         position: neighborPos,
                         blocksMovement: props.blocksMovement ?? false,
                         blocksVision: props.blocksVision ?? false,

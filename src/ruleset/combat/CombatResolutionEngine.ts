@@ -98,7 +98,7 @@ export class CombatResolutionEngine {
         let success = true; // For caster: does it hit? For target: do they fail save?
 
         if (spell.save) {
-            const saveAbility = spell.save.ability as any;
+            const saveAbility = spell.save.ability as 'STR' | 'DEX' | 'CON' | 'INT' | 'WIS' | 'CHA';
             const targetStat = target.stats[saveAbility] || 10;
             const targetMod = MechanicsEngine.getModifier(targetStat);
             const saveRoll = Dice.d20();

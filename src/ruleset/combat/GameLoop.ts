@@ -32,6 +32,9 @@ import { CombatAI } from './CombatAI';
 import { CombatLogFormatter } from './CombatLogFormatter';
 import { WeatherEngine } from './WeatherEngine';
 import { BiomePoolManager } from './BiomeRegistry';
+import { CombatManager } from './CombatManager';
+import { CombatGridManager } from './grid/CombatGridManager';
+import { CombatUtils } from './CombatUtils';
 import { z } from 'zod';
 
 type Combatant = z.infer<typeof CombatantSchema>;
@@ -49,6 +52,7 @@ export class GameLoop {
     private biomePool: BiomePoolManager = new BiomePoolManager();
     private scribe: StoryScribe = new StoryScribe();
     private director: EncounterDirector = new EncounterDirector();
+    private combatManager: CombatManager;
 
     private turnProcessing: boolean = false;
     private listeners: ((state: GameState) => void)[] = [];
@@ -58,6 +62,7 @@ export class GameLoop {
         this.stateManager = new GameStateManager(basePath, storage);
         this.hexMapManager = new HexMapManager(basePath, this.state.worldMap, 'world_01', storage);
         this.movementEngine = new MovementEngine(this.hexMapManager);
+        this.combatManager = new CombatManager(this.state);
 
         // Save initial combat state to UI
         this.emitStateUpdate();
@@ -110,8 +115,16 @@ export class GameLoop {
      * Internal helper to notify all subscribers of a state change.
      */
     private notifyListeners() {
-        // We pass a shallow clone of the state to avoid direct mutation issues in React
-        const stateClone = { ...this.state };
+        // Bug Fix #5: Deep-ish clone for combat state to ensure React detects nested changes
+        const stateClone = {
+            ...this.state,
+            combat: this.state.combat ? {
+                ...this.state.combat,
+                combatants: this.state.combat.combatants.map(c => ({ ...c, resources: { ...c.resources }, tactical: { ...c.tactical }, hp: { ...c.hp } })),
+                events: [...this.state.combat.events],
+                logs: [...this.state.combat.logs]
+            } : undefined
+        };
         this.listeners.forEach(listener => listener(stateClone));
     }
 
@@ -144,6 +157,7 @@ export class GameLoop {
 
         // If we are in combat, we skip the immediate Narrator generation to avoid latency
         if (this.state.mode === 'COMBAT') {
+            this.state.lastNarrative = systemResponse; // Update narrative box with current combat action
             this.emitStateUpdate();
             return systemResponse;
         }
@@ -756,78 +770,9 @@ export class GameLoop {
     }
 
     public async initializeCombat(encounter: Encounter) {
-        this.state.mode = 'COMBAT';
-        const combatants: Combatant[] = [];
-
-        // 1. Add Player
-        const pc = this.state.character;
-        const playerInit = Dice.d20() + MechanicsEngine.getModifier(pc.stats.DEX || 10);
-        combatants.push({
-            id: 'player',
-            name: pc.name,
-            hp: { current: pc.hp.current, max: pc.hp.max },
-            initiative: playerInit,
-            isPlayer: true,
-            type: 'player',
-            ac: pc.ac || 10,
-            stats: pc.stats as Record<string, number>,
-            conditions: [],
-            statusEffects: [],
-            spellSlots: pc.spellSlots,
-            isConcentrating: false,
-            hasUsedAction: false,
-            hasUsedBonusAction: false,
-            hasMoved: false
-        });
-
-        // 2. Add Enemies
-        await DataManager.loadMonsters(); // Ensure monsters are loaded
-        for (let i = 0; i < encounter.monsters.length; i++) {
-            const monsterName = encounter.monsters[i];
-            const monsterData = DataManager.getMonster(monsterName);
-
-            LoreService.registerMonsterEncounter(monsterName, this.state, () => this.emitStateUpdate());
-
-            const initRoll = Dice.d20() + (monsterData ? MechanicsEngine.getModifier(monsterData.stats['DEX'] || 10) : 0);
-            combatants.push({
-                id: `enemy_${i}`,
-                name: monsterName,
-                hp: monsterData ? { current: monsterData.hp.average, max: monsterData.hp.average } : { current: 15, max: 15 },
-                initiative: initRoll,
-                isPlayer: false,
-                type: 'enemy',
-                ac: monsterData?.ac || 10,
-                stats: (monsterData?.stats || { 'INT': 10, 'STR': 10, 'DEX': 10, 'CON': 10, 'WIS': 10, 'CHA': 10 }) as Record<string, number>,
-                conditions: [],
-                statusEffects: [],
-                spellSlots: {},
-                isConcentrating: false,
-                hasUsedAction: false,
-                hasUsedBonusAction: false,
-                hasMoved: false
-            });
-        }
-
-        // 3. Sort by initiative
-        combatants.sort((a, b) => b.initiative - a.initiative);
-
-        this.state.combat = {
-            round: 1,
-            currentTurnIndex: -1, // Start before the first turn
-            combatants: combatants,
-            logs: [{
-                id: `log-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-                type: 'info',
-                message: `Combat started!`,
-                turn: 0
-            }],
-            selectedTargetId: undefined,
-            lastRoll: undefined,
-            events: []
-        };
-
-        // Transition to the first turn
-        await this.advanceCombatTurn();
+        const biome = this.hexMapManager.getHex(this.state.location.hexId)?.biome || 'Plains';
+        await this.combatManager.initializeCombat(encounter, biome);
+        this.emitStateUpdate();
     }
 
     private handleCombatAction(intent: ParsedIntent): string {
@@ -836,9 +781,8 @@ export class GameLoop {
         const currentCombatant = this.state.combat.combatants[this.state.combat.currentTurnIndex];
         let resultMsg = '';
 
-        // Action Economy Check
         const nonActionCommands = ['target', 'end turn'];
-        if (currentCombatant.hasUsedAction && !nonActionCommands.includes(intent.command || '')) {
+        if (currentCombatant.resources.actionSpent && !nonActionCommands.includes(intent.command || '')) {
             return `You have already used your main action this turn. Use "End Turn" or a bonus action if available.`;
         }
 
@@ -854,6 +798,16 @@ export class GameLoop {
             const pc = this.state.character;
             const strMod = MechanicsEngine.getModifier(pc.stats.STR || 10);
             const prof = MechanicsEngine.getProficiencyBonus(pc.level);
+
+            // Bug Fix #2: Spatial Range Validation
+            const gridManager = new CombatGridManager(this.state.combat.grid!);
+            const distance = gridManager.getDistance(currentCombatant.position, target.position);
+            const reach = currentCombatant.tactical.reach || 5;
+            const reachCells = Math.ceil(reach / 5);
+
+            if (distance > reachCells) {
+                return `Target is too far away! (${distance} cells). Your reach is only ${reachCells} cell(s).`;
+            }
 
             const result = CombatResolutionEngine.resolveAttack(
                 currentCombatant,
@@ -907,7 +861,7 @@ export class GameLoop {
 
         // Consuming action if it was an action command
         if (resultMsg && !nonActionCommands.includes(intent.command || '')) {
-            currentCombatant.hasUsedAction = true;
+            currentCombatant.resources.actionSpent = true;
         }
 
         // After player action, we don't advance the turn immediately if the action 
@@ -930,7 +884,7 @@ export class GameLoop {
         if (this.state.mode === 'COMBAT' && combat) {
             const currentCombatant = combat.combatants[combat.currentTurnIndex];
             if (!currentCombatant.isPlayer) return "It is not your turn.";
-            if (currentCombatant.hasUsedAction) return "You have already used your action this turn.";
+            if (currentCombatant.resources.actionSpent) return "You have already used your action this turn.";
             if (this.turnProcessing) return "Turn is already ending...";
 
             // Set target if provided
@@ -938,7 +892,7 @@ export class GameLoop {
 
             const result = this.handleCast(currentCombatant, spellName);
             this.addCombatLog(result);
-            currentCombatant.hasUsedAction = true;
+            currentCombatant.resources.actionSpent = true;
             this.emitStateUpdate();
             return result;
         } else {
@@ -987,7 +941,25 @@ export class GameLoop {
 
         if (targets.length === 0 && effect?.category !== 'SUMMON') return "No valid targets for this spell.";
 
-        // 3. Resolve Spell for each target
+        // 3. Range Validation
+        if (combo.grid) {
+            const gridManager = new CombatGridManager(combo.grid);
+            const rangeCells = CombatUtils.parseRange(spell.range);
+
+            if (rangeCells > 0) {
+                const withinRange = targets.filter(t => {
+                    const dist = gridManager.getDistance(caster.position, t.position);
+                    return dist <= rangeCells;
+                });
+
+                if (withinRange.length === 0 && targets.length > 0) {
+                    return `Targets are too far away! Range: ${spell.range} (${rangeCells} cells).`;
+                }
+                targets = withinRange;
+            }
+        }
+
+        // 4. Resolve Spell for each target
         let fullMessage = `${caster.name} casts ${spell.name}! `;
         const spellAttackBonus = MechanicsEngine.getModifier(caster.stats['INT'] || caster.stats['WIS'] || caster.stats['CHA'] || 10) + MechanicsEngine.getProficiencyBonus(pc.level);
         const spellSaveDC = 8 + spellAttackBonus;
@@ -1007,13 +979,7 @@ export class GameLoop {
             // Apply Conditions/Effects
             if (result.type !== 'MISS' && result.type !== 'SAVE_SUCCESS') {
                 if (spell.effect?.category === 'CONTROL' && spell.condition) {
-                    target.conditions.push({
-                        id: spell.condition.toLowerCase(),
-                        name: spell.condition,
-                        description: `Affected by ${spell.name}`,
-                        duration: spell.effect.duration?.unit === 'ROUND' ? spell.effect.duration.value : 10,
-                        sourceId: caster.id
-                    });
+                    target.conditions.push(spell.condition);
                 }
                 if (spell.effect?.category === 'BUFF' || spell.effect?.category === 'DEBUFF') {
                     target.statusEffects.push({
@@ -1037,12 +1003,14 @@ export class GameLoop {
 
         // 5. Handle Concentration
         if (spell.concentration || spell.effect?.timing === 'CONCENTRATION') {
-            if (caster.isConcentrating && caster.concentratingOn) {
-                fullMessage += ` (Ends concentration on ${caster.concentratingOn})`;
+            if (caster.concentration) {
+                fullMessage += ` (Ends concentration on ${caster.concentration.spellName})`;
                 this.breakConcentration(caster);
             }
-            caster.isConcentrating = true;
-            caster.concentratingOn = spell.name;
+            caster.concentration = {
+                spellName: spell.name,
+                startTurn: combo.round
+            };
         }
 
         // 6. Consume Slot
@@ -1054,9 +1022,8 @@ export class GameLoop {
     }
 
     private breakConcentration(caster: Combatant) {
-        caster.isConcentrating = false;
-        const spellName = caster.concentratingOn;
-        caster.concentratingOn = undefined;
+        const spellName = caster.concentration?.spellName;
+        caster.concentration = undefined;
 
         if (!this.state.combat) return;
 
@@ -1111,20 +1078,25 @@ export class GameLoop {
             const summon: Combatant = {
                 id: `summon_${Date.now()}_${i}_${Math.random().toString(36).substr(2, 4)}`,
                 name: `${monsterData?.name || monsterId} (Summoned)`,
-                hp: monsterData ? { current: monsterData.hp.average, max: monsterData.hp.average } : { current: 10, max: 10 },
-                initiative: sharedInit,
-                isPlayer: false, // ALLY NPC, not directly controlled by player UI
                 type: 'summon',
+                isPlayer: false, // ALLY NPC, not directly controlled by player UI
+                hp: monsterData ? { current: monsterData.hp.average, max: monsterData.hp.average, temp: 0 } : { current: 10, max: 10, temp: 0 },
                 ac: monsterData?.ac || 12,
                 stats: (monsterData?.stats || { 'STR': 10, 'DEX': 10, 'CON': 10, 'INT': 10, 'WIS': 10, 'CHA': 10 }) as Record<string, number>,
+                initiative: sharedInit,
+                dexterityScore: monsterData?.stats['DEX'] || 10,
+                spellSlots: {},
+                preparedSpells: [],
+                resources: { actionSpent: false, bonusActionSpent: false, reactionSpent: false },
+                tactical: { cover: 'None', reach: 4, isRanged: false }, // Reach 4 = 1 cell (5ft) in hex/grid notation usually, or just 5
                 conditions: [],
                 statusEffects: [],
-                spellSlots: {},
-                sourceId: caster.id,
-                isConcentrating: false,
-                hasUsedAction: false,
-                hasUsedBonusAction: false,
-                hasMoved: false
+                concentration: undefined,
+                position: caster.position, // Deploy nearby
+                size: (monsterData?.size as any) || 'Medium',
+                movementSpeed: 6,
+                movementRemaining: 6,
+                sourceId: caster.id
             };
             newSummons.push(summon);
             this.state.combat.combatants.push(summon);
@@ -1187,7 +1159,7 @@ export class GameLoop {
         CombatResolutionEngine.applyDamage(target, damage);
 
         // Concentration Check
-        if (target.isConcentrating && target.hp.current > 0) {
+        if (target.concentration && target.hp.current > 0) {
             const dc = Math.max(10, Math.floor(damage / 2));
             const conMod = MechanicsEngine.getModifier(target.stats['CON'] || 10);
             const roll = Dice.d20();
@@ -1203,25 +1175,8 @@ export class GameLoop {
     }
 
     private async advanceCombatTurn() {
-        if (!this.state.combat || this.turnProcessing) return;
-
-        // Loop to find next VALID (alive) combatant
-        let validNextFound = false;
-        let loops = 0;
-
-        while (!validNextFound && loops < 50) { // Safety break
-            this.state.combat.currentTurnIndex++;
-            if (this.state.combat.currentTurnIndex >= this.state.combat.combatants.length) {
-                this.state.combat.currentTurnIndex = 0;
-                this.state.combat.round++;
-            }
-
-            const check = this.state.combat.combatants[this.state.combat.currentTurnIndex];
-            if (check && check.hp.current > 0) {
-                validNextFound = true;
-            }
-            loops++;
-        }
+        const msg = this.combatManager.advanceTurn();
+        this.addCombatLog(msg);
 
         // Trigger the Central Orchestrator Queue
         await this.processCombatQueue();
@@ -1241,9 +1196,9 @@ export class GameLoop {
                 const actor = this.state.combat.combatants[this.state.combat.currentTurnIndex];
 
                 // --- 1. Reset Turn Economy ---
-                actor.hasUsedAction = false;
-                actor.hasUsedBonusAction = false;
-                actor.hasMoved = false;
+                actor.resources.actionSpent = false;
+                actor.resources.bonusActionSpent = false;
+                actor.movementRemaining = actor.movementSpeed;
 
                 // --- 2. Determine Banner Type ---
                 let bannerType: 'PLAYER' | 'ENEMY' | 'NAME' = 'PLAYER';
@@ -1279,21 +1234,12 @@ export class GameLoop {
                     // Move to NEXT in loop
                     if (!this.state.combat) break;
 
-                    let validNextFound = false;
-                    let loops = 0;
-                    while (!validNextFound && loops < 50) {
-                        this.state.combat.currentTurnIndex++;
-                        if (this.state.combat.currentTurnIndex >= this.state.combat.combatants.length) {
-                            this.state.combat.currentTurnIndex = 0;
-                            this.state.combat.round++;
-                        }
-                        const check = this.state.combat.combatants[this.state.combat.currentTurnIndex];
-                        if (check && check.hp.current > 0) validNextFound = true;
-                        loops++;
-                    }
+                    const msg = this.combatManager.advanceTurn();
+                    this.addCombatLog(msg);
                 }
             }
-        } catch (error) {
+        }
+        catch (error) {
             console.error("Critical Error in processCombatQueue:", error);
         } finally {
             this.turnProcessing = false;
@@ -1312,16 +1258,8 @@ export class GameLoop {
             });
         }
 
-        // Tick down conditions
-        if (actor.conditions) {
-            actor.conditions = actor.conditions.filter(condition => {
-                if (condition.duration !== undefined) {
-                    condition.duration--;
-                    return condition.duration > 0;
-                }
-                return true;
-            });
-        }
+        // NOTE: Standard conditions in the current schema are string identifiers.
+        // If we want them to have durations, we should use statusEffects for those.
     }
 
     private async performAITurn(actor: Combatant) {
@@ -1375,7 +1313,7 @@ export class GameLoop {
         const currentCombatant = combat?.combatants[combat.currentTurnIndex];
 
         // Action Economy Check
-        if (currentCombatant && ability.actionCost === 'ACTION' && currentCombatant.hasUsedAction) {
+        if (currentCombatant && ability.actionCost === 'ACTION' && currentCombatant.resources.actionSpent) {
             return "You have already used your action this turn.";
         }
 
@@ -1408,10 +1346,11 @@ export class GameLoop {
         }
 
         if (this.state.mode === 'COMBAT' && currentCombatant) {
+            this.state.lastNarrative = result;
             if (ability.actionCost === 'ACTION') {
-                currentCombatant.hasUsedAction = true;
+                currentCombatant.resources.actionSpent = true;
             } else if (ability.actionCost === 'BONUS_ACTION') {
-                currentCombatant.hasUsedBonusAction = true;
+                currentCombatant.resources.bonusActionSpent = true;
             }
 
             this.addCombatLog(result);
