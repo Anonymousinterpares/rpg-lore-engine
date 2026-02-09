@@ -253,28 +253,36 @@ export class GameLoop {
         const hexKey = `${coords[0]},${coords[1]}`;
         const hex = this.hexMapManager.getHex(hexKey);
 
-        if (hex && !hex.generated) {
-            // Fully generate the hex using probabilities
-            const neighbors = this.hexMapManager.getNeighbors(coords);
-            const clusterSizes: any = {};
+        if (hex) {
+            // Regeneration Condition: Not generated OR has placeholder name
+            const currentName = hex.name || '';
+            if (!hex.generated || currentName === 'Uncharted Territory' || currentName.includes('(Unknown)')) {
+                // Fully generate the hex using probabilities
+                const neighbors = this.hexMapManager.getNeighbors(coords);
+                const clusterSizes: any = {};
 
-            const biomes = ['Plains', 'Forest', 'Hills', 'Mountains', 'Swamp', 'Desert', 'Tundra', 'Jungle', 'Coast', 'Ocean', 'Volcanic', 'Ruins', 'Farmland', 'Urban'];
-            for (const b of biomes) {
-                const neighborWithBiome = neighbors.find(n => n.biome === b);
-                clusterSizes[b] = neighborWithBiome ? this.hexMapManager.getClusterSize(neighborWithBiome) : 0;
+                const biomes = ['Plains', 'Forest', 'Hills', 'Mountains', 'Swamp', 'Desert', 'Tundra', 'Jungle', 'Coast', 'Ocean', 'Volcanic', 'Ruins', 'Farmland', 'Urban'];
+                for (const b of biomes) {
+                    const neighborWithBiome = neighbors.find(n => n.biome === b);
+                    clusterSizes[b] = neighborWithBiome ? this.hexMapManager.getClusterSize(neighborWithBiome) : 0;
+                }
+
+                // Generate new data
+                const generatedData = HexGenerator.generateHex(coords, neighbors, clusterSizes);
+                const newName = (generatedData.name || '').replace('(Unknown)', '(Discovered)');
+
+                // Merge with existing to preserve ID/Coordinates but overwrite content
+                const updatedHex = {
+                    ...hex,
+                    ...generatedData,
+                    visited: true,
+                    generated: true,
+                    // EXPLICITLY set the name to the generated one if it was placeholder
+                    name: newName
+                };
+
+                this.hexMapManager.setHex(updatedHex);
             }
-
-            const updatedHex = HexGenerator.generateHex(coords, neighbors, clusterSizes);
-
-            // Preserve specific flags
-            updatedHex.visited = true;
-
-            // Force name update if it was a placeholder
-            if (!updatedHex.name || updatedHex.name.includes('Unknown') || hex.name === 'Uncharted Territory') {
-                updatedHex.name = `${updatedHex.biome} (Discovered)`;
-            }
-
-            this.hexMapManager.setHex(updatedHex);
         }
 
         // Always ensure neighbors are registered as placeholders (reveals brown hexes)
