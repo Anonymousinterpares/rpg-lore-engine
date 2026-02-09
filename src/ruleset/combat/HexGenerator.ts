@@ -10,11 +10,17 @@ export class HexGenerator {
     /**
      * Generates a new hex at the given coordinates.
      */
-    public static generateHex(coords: [number, number], neighbors: { biome: BiomeType }[], clusterSizes: Record<BiomeType, number>, pool?: BiomePoolManager): Hex {
+    public static generateHex(coords: [number, number], neighbors: { biome: BiomeType, visualVariant?: number }[], clusterSizes: Record<BiomeType, number>, pool?: BiomePoolManager): Hex {
         const biome = BiomeGenerationEngine.selectBiome(neighbors, clusterSizes);
         const hash = Math.abs(coords[0] * 31 + coords[1] * 17);
         const activePool = pool || new BiomePoolManager();
-        const variant = activePool.getVariant(biome, hash);
+
+        // Smart Variant Selection: Exclude variants used by immediate neighbors of the same biome
+        const excludedVariants = neighbors
+            .filter(n => n.biome === biome && n.visualVariant !== undefined)
+            .map(n => n.visualVariant!);
+
+        const variant = activePool.getVariant(biome, hash, excludedVariants);
 
         // Roll for resource nodes
         const nodes: ResourceNode[] = [];

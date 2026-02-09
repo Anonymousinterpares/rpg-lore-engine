@@ -31,6 +31,7 @@ import { CombatResolutionEngine } from './CombatResolutionEngine';
 import { CombatAI } from './CombatAI';
 import { CombatLogFormatter } from './CombatLogFormatter';
 import { WeatherEngine } from './WeatherEngine';
+import { BiomePoolManager } from './BiomeRegistry';
 import { z } from 'zod';
 
 type Combatant = z.infer<typeof CombatantSchema>;
@@ -45,6 +46,7 @@ export class GameLoop {
     private contextManager: ContextManager = new ContextManager();
     private hexMapManager: HexMapManager;
     private movementEngine: MovementEngine;
+    private biomePool: BiomePoolManager = new BiomePoolManager();
     private scribe: StoryScribe = new StoryScribe();
     private director: EncounterDirector = new EncounterDirector();
 
@@ -256,9 +258,14 @@ export class GameLoop {
         const centerHex = this.hexMapManager.getHex(centerKey);
 
         if (centerHex) {
-            // Regeneration Condition: Not generated OR has placeholder name
+            // Regeneration Condition: Not generated OR has placeholder/unvisited name
             const currentName = centerHex.name || '';
-            if (!centerHex.generated || currentName === 'Uncharted Territory' || currentName.includes('(Unknown)')) {
+            const needsRegen = !centerHex.generated ||
+                currentName === 'Uncharted Territory' ||
+                currentName.includes('(Unknown)') ||
+                currentName.includes('(Uncharted Territory)'); // <-- FIX: Also re-process former neighbors!
+
+            if (needsRegen) {
                 // Fully generate the hex
                 this.generateAndSaveHex(centerCoords, centerHex, true, true);
             }
@@ -337,21 +344,28 @@ export class GameLoop {
             clusterSizes[b] = neighborWithBiome ? this.hexMapManager.getClusterSize(neighborWithBiome) : 0;
         }
 
-        const generatedData = HexGenerator.generateHex(coords, neighbors, clusterSizes);
+        const generatedData = HexGenerator.generateHex(coords, neighbors, clusterSizes, this.biomePool);
 
         // Name logic
         let newName = generatedData.name || '';
+        const unknownPattern = /\(Unknown\)/i;
+
         if (isVisible && !isVisited) {
-            newName = newName.replace('(Unknown)', '(Uncharted Territory)');
+            // Keep it unknown or mark as uncharted
+            if (unknownPattern.test(newName)) {
+                newName = newName.replace(unknownPattern, '(Uncharted Territory)');
+            } else if (!newName.includes('(Uncharted Territory)')) {
+                newName += ' (Uncharted Territory)';
+            }
         } else if (isVisited) {
-            newName = newName.replace('(Unknown)', '(Discovered)');
+            // Reveal it
+            if (unknownPattern.test(newName)) {
+                newName = newName.replace(unknownPattern, '(Discovered)');
+            } else if (!newName.includes('(Discovered)')) {
+                newName += ' (Discovered)';
+            }
         } else {
             // Hidden (Distance 2)
-            newName = 'Uncharted Territory'; // Keep it vague in the data, or reveal it?
-            // Narrator needs to know... so we should probably keep the biome name but maybe flag it?
-            // Actually, the request said "visible but not visited hexes should have biome (uncharted territory)"
-            // "brown ones should be just 'uncharted territory'"
-            // So D2 = "Uncharted Territory"
             newName = 'Uncharted Territory';
         }
 
