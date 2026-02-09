@@ -1,5 +1,6 @@
 import { HexMapManager } from './HexMapManager';
 import { Hex, HexDirection } from '../schemas/HexMapSchema';
+import { TravelPace } from '../schemas/BaseSchemas';
 
 export interface MovementResult {
     success: boolean;
@@ -17,9 +18,58 @@ export class MovementEngine {
     }
 
     /**
-     * Attempts to move the player in a direction from the current hex.
+     * Helper to get direction from coordinate delta.
      */
-    public move(currentCoords: [number, number], direction: HexDirection): MovementResult {
+    public static getDirection(current: [number, number], target: [number, number]): HexDirection | null {
+        const dq = target[0] - current[0];
+        const dr = target[1] - current[1];
+
+        if (dq === 0 && dr === 1) return 'N';
+        if (dq === 0 && dr === -1) return 'S';
+        if (dq === 1 && dr === 0) return 'NE';
+        if (dq === -1 && dr === 1) return 'NW';
+        if (dq === 1 && dr === -1) return 'SE';
+        if (dq === -1 && dr === 0) return 'SW';
+
+        return null;
+    }
+
+    /**
+     * Calculates distance between two hexes in axial coordinates.
+     */
+    public static getDistance(a: [number, number], b: [number, number]): number {
+        return (Math.abs(a[0] - b[0])
+            + Math.abs(a[0] + a[1] - b[0] - b[1])
+            + Math.abs(a[1] - b[1])) / 2;
+    }
+
+    /**
+     * Attempts to move the player toward a target destination.
+     * Can be called with a direction or specific target coordinates.
+     */
+    public move(
+        currentCoords: [number, number],
+        input: HexDirection | [number, number],
+        pace: TravelPace = 'Normal'
+    ): MovementResult {
+        let direction: HexDirection | null = null;
+        let targetCoords: [number, number] | null = null;
+
+        if (typeof input === 'string') {
+            direction = input;
+            targetCoords = HexMapManager.getNewCoords(currentCoords, direction);
+        } else {
+            targetCoords = input;
+            direction = MovementEngine.getDirection(currentCoords, targetCoords);
+            const distance = MovementEngine.getDistance(currentCoords, targetCoords);
+
+            if (distance > 1) {
+                return { success: false, newHex: null, requiresGeneration: false, message: 'Destination is too far. You can only move to adjacent hexes.', timeCost: 0 };
+            }
+            if (!direction) {
+                return { success: false, newHex: null, requiresGeneration: false, message: 'Invalid destination coordinates.', timeCost: 0 };
+            }
+        }
         const currentHexKey = `${currentCoords[0]},${currentCoords[1]}`;
         const currentHex = this.mapManager.getHex(currentHexKey);
 
@@ -72,7 +122,11 @@ export class MovementEngine {
             ? `You venture ${direction} into unexplored territory... [TRIGGER: HEX_GENERATION]`
             : `You travel ${direction} into ${newHex.name || 'the unknown'}.`;
 
-        const timeCost = 4 * 60; // Standard 4 hours per hex travel
+        // Pace-based time cost calculation
+        const baseTime = 4 * 60; // 4 hours base
+        let timeCost = baseTime;
+        if (pace === 'Fast') timeCost = Math.floor(baseTime * 0.75); // 3 hours
+        if (pace === 'Slow') timeCost = Math.floor(baseTime * 1.5);  // 6 hours
 
         return { success: true, newHex, requiresGeneration, message, timeCost };
     }

@@ -55,7 +55,6 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
     ] : [
         "Look around",
         "Check gear",
-        "Move North",
         "Rest"
     ];
 

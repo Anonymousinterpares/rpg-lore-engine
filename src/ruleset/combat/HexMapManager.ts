@@ -8,16 +8,18 @@ export class HexMapManager {
     private registry: MapRegistry;
     private storage: IStorageProvider;
 
-    constructor(basePath: string, gridId: string = 'world_01', storage?: IStorageProvider) {
+    constructor(basePath: string, registry: MapRegistry, gridId: string = 'world_01', storage?: IStorageProvider) {
         this.storage = storage || new FileStorageProvider();
         this.mapPath = path.join(basePath, 'data', 'world', `${gridId}.json`);
+        this.registry = registry;
 
-        if (this.storage.exists(this.mapPath)) {
+        // If the registry is empty, try to bootstrap it from the local file if it exists
+        // This ensures Option A still respects pre-existing world data during development
+        if (Object.keys(this.registry.hexes).length === 0 && this.storage.exists(this.mapPath)) {
             const data = this.storage.read(this.mapPath) as string;
-            this.registry = JSON.parse(data);
-        } else {
-            this.registry = { grid_id: gridId, hexes: {} };
-            this.save();
+            const fileRegistry = JSON.parse(data);
+            this.registry.hexes = fileRegistry.hexes;
+            this.registry.grid_id = fileRegistry.grid_id || gridId;
         }
     }
 
@@ -67,9 +69,6 @@ export class HexMapManager {
         this.storage.write(this.mapPath, JSON.stringify(this.registry, null, 2));
     }
 
-    public getRegistry(): MapRegistry {
-        return this.registry;
-    }
 
     /**
      * Returns the size of a contiguous cluster of the same biome.
@@ -108,5 +107,34 @@ export class HexMapManager {
         return directions
             .map(dir => this.getHex(`${HexMapManager.getNewCoords(coords, dir)[0]},${HexMapManager.getNewCoords(coords, dir)[1]}`))
             .filter(h => h !== null) as Hex[];
+    }
+
+    /**
+     * Ensures all 6 neighbors of a coordinate exist in the registry.
+     * If they don't, creates minimal placeholders.
+     */
+    public ensureNeighborsRegistered(coords: [number, number]) {
+        const directions: HexDirection[] = ['N', 'S', 'NE', 'NW', 'SE', 'SW'];
+        for (const dir of directions) {
+            const neighborCoords = HexMapManager.getNewCoords(coords, dir);
+            const key = `${neighborCoords[0]},${neighborCoords[1]}`;
+            if (!this.registry.hexes[key]) {
+                const placeholder: Hex = {
+                    coordinates: neighborCoords,
+                    generated: false,
+                    visited: false,
+                    biome: 'Plains', // Initial guess, will be refined by expandHorizon
+                    name: 'Uncharted Territory',
+                    description: 'The mists of the unknown cling to this place.',
+                    interest_points: [],
+                    resourceNodes: [],
+                    openedContainers: {},
+                    namingSource: 'engine',
+                    visualVariant: 1
+                };
+                this.registry.hexes[key] = placeholder;
+            }
+        }
+        this.save();
     }
 }

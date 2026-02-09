@@ -13,6 +13,43 @@
     border-bottom: 2px solid #ffd700;
 }
 
+.paceSection {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-right: 12px;
+    border-right: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.paceLabel {
+    color: #ffd700;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.paceSelect {
+    background: #1a0f0a;
+    color: #ffd700;
+    border: 1px solid #b8860b;
+    border-radius: 2px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    padding: 2px 4px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.paceSelect:hover,
+.paceSelect:focus {
+    border-color: #ffd700;
+    background: #2a1a14;
+}
+
 .timeSection {
     display: flex;
     align-items: center;

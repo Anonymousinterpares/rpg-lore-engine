@@ -47,9 +47,13 @@ export class IntentRouter {
                 return { type: 'COMMAND', command: 'rest', args: ['long'], originalInput: input };
             }
             if (lower.startsWith('wait')) {
-                // Parse "Wait 60" or just "Wait"
                 const parts = trimmed.split(' ');
                 return { type: 'COMMAND', command: 'wait', args: parts.slice(1), originalInput: input };
+            }
+            if (lower.startsWith('move')) {
+                // Parse "move north" or "moveto 1 -1"
+                const parts = trimmed.split(' ');
+                return { type: 'COMMAND', command: parts[0], args: parts.slice(1), originalInput: input };
             }
         }
 

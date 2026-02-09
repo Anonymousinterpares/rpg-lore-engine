@@ -39,7 +39,7 @@ const WorldMapPage: React.FC = () => {
 
     const handleMove = (direction: string) => {
         if (engine) {
-            engine.processTurn(`move ${direction}`);
+            engine.processTurn(`/move ${direction}`);
             updateState();
             setContextMenu(null);
         }

@@ -28,9 +28,13 @@ const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests
         setContextMenu({ id, x, y });
     };
 
-    const handleMove = (direction: string) => {
+    const handleMove = (destination: string | [number, number]) => {
         if (engine) {
-            engine.processTurn(`move ${direction}`);
+            if (typeof destination === 'string') {
+                engine.processTurn(`/move ${destination}`);
+            } else {
+                engine.processTurn(`/moveto ${destination[0]} ${destination[1]}`);
+            }
             updateState();
             setContextMenu(null);
         }
@@ -98,6 +102,10 @@ const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests
                         hexes={filteredHexes}
                         viewMode={viewMode}
                         isDraggable={false}
+                        onHexClick={(id) => {
+                            const hex = state.worldMap.hexes[id];
+                            if (hex) handleMove(hex.coordinates);
+                        }}
                         onHexContextMenu={handleHexContextMenu}
                     />
                 </div>

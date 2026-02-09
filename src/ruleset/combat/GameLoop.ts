@@ -8,8 +8,10 @@ import { MechanicsEngine } from './MechanicsEngine';
 import { RestingEngine } from './RestingEngine';
 import { HexMapManager } from './HexMapManager';
 import { MovementEngine } from './MovementEngine';
+import { HexGenerator } from './HexGenerator';
 import { WorldClockEngine } from './WorldClockEngine';
 import { HexDirection } from '../schemas/HexMapSchema';
+import { TravelPace } from '../schemas/BaseSchemas';
 import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
 import { StoryScribe } from './StoryScribe';
 import { EncounterDirector } from './EncounterDirector';
@@ -52,7 +54,7 @@ export class GameLoop {
     constructor(initialState: GameState, basePath: string, storage?: IStorageProvider) {
         this.state = initialState;
         this.stateManager = new GameStateManager(basePath, storage);
-        this.hexMapManager = new HexMapManager(basePath, 'world_01', storage);
+        this.hexMapManager = new HexMapManager(basePath, this.state.worldMap, 'world_01', storage);
         this.movementEngine = new MovementEngine(this.hexMapManager);
 
         // Save initial combat state to UI
@@ -84,6 +86,9 @@ export class GameLoop {
                 visualVariant: 1
             });
         }
+
+        // Ensure neighbors of the current location are generated (Exploration Bootstrap)
+        this.expandHorizon(this.state.location.coordinates);
     }
 
     /**
@@ -232,14 +237,43 @@ export class GameLoop {
                 const encounter = this.director.checkEncounter(this.state, currentHex || {}, isResting);
                 if (encounter) {
                     resultEncounter = encounter;
-                    // Note: If encounter found, we stop the time advancement loop? 
-                    // Usually yes, you get jumped during your activity.
                     break;
                 }
             }
         }
 
         return resultEncounter;
+    }
+
+    /**
+     * Programmatically expands the map discovery around a coordinate.
+     * Progressively "uncovers" a hex and reveals its neighbors.
+     */
+    private expandHorizon(coords: [number, number]) {
+        const hexKey = `${coords[0]},${coords[1]}`;
+        const hex = this.hexMapManager.getHex(hexKey);
+
+        if (hex && !hex.generated) {
+            // Fully generate the hex using probabilities
+            const neighbors = this.hexMapManager.getNeighbors(coords);
+            const clusterSizes: any = {};
+
+            const biomes = ['Plains', 'Forest', 'Hills', 'Mountains', 'Swamp', 'Desert', 'Tundra', 'Jungle', 'Coast', 'Ocean', 'Volcanic', 'Ruins', 'Farmland', 'Urban'];
+            for (const b of biomes) {
+                const neighborWithBiome = neighbors.find(n => n.biome === b);
+                clusterSizes[b] = neighborWithBiome ? this.hexMapManager.getClusterSize(neighborWithBiome) : 0;
+            }
+
+            const updatedHex = HexGenerator.generateHex(coords, neighbors, clusterSizes);
+
+            // Preserve specific flags
+            updatedHex.visited = true;
+
+            this.hexMapManager.setHex(updatedHex);
+        }
+
+        // Always ensure neighbors are registered as placeholders (reveals brown hexes)
+        this.hexMapManager.ensureNeighborsRegistered(coords);
     }
 
     /**
@@ -314,14 +348,43 @@ export class GameLoop {
                 }
 
                 const direction = (intent.args?.[0]?.toUpperCase() || 'N') as HexDirection;
-                const result = this.movementEngine.move(this.state.location.coordinates, direction);
+                const result = this.movementEngine.move(this.state.location.coordinates, direction, this.state.travelPace);
                 if (result.success && result.newHex) {
                     this.state.location.coordinates = result.newHex.coordinates;
                     this.state.location.hexId = `${result.newHex.coordinates[0]},${result.newHex.coordinates[1]}`;
+
+                    // Programmatic Discovery
+                    this.expandHorizon(result.newHex.coordinates);
+
                     this.advanceTimeAndProcess(result.timeCost);
                     this.trackTutorialEvent('moved_hex');
                 }
                 return result.message;
+            case 'moveto':
+                const moveChar = this.state.character;
+                const weight = moveChar.inventory.items.reduce((sum, i) => sum + (i.weight * (i.quantity || 1)), 0);
+                const strCapacity = (moveChar.stats.STR || 10) * 15;
+
+                if (weight > strCapacity) {
+                    return "You are overencumbered and cannot move!";
+                }
+
+                const targetQ = parseInt(intent.args?.[0] || '0', 10);
+                const targetR = parseInt(intent.args?.[1] || '0', 10);
+                const targetCoords: [number, number] = [targetQ, targetR];
+
+                const moveResult = this.movementEngine.move(this.state.location.coordinates, targetCoords, this.state.travelPace);
+                if (moveResult.success && moveResult.newHex) {
+                    this.state.location.coordinates = moveResult.newHex.coordinates;
+                    this.state.location.hexId = `${moveResult.newHex.coordinates[0]},${moveResult.newHex.coordinates[1]}`;
+
+                    // Programmatic Discovery
+                    this.expandHorizon(moveResult.newHex.coordinates);
+
+                    this.advanceTimeAndProcess(moveResult.timeCost);
+                    this.trackTutorialEvent('moved_hex');
+                }
+                return moveResult.message;
             case 'look':
                 const hex = this.hexMapManager.getHex(this.state.location.hexId);
                 if (!hex) return 'You are in an unknown void.';
@@ -365,6 +428,11 @@ export class GameLoop {
             case 'cast':
                 const spellName = intent.args?.join(' ') || '';
                 return this.castSpell(spellName);
+            case 'pace':
+                const newPace = (intent.args?.[0] || 'Normal') as TravelPace;
+                this.state.travelPace = newPace;
+                this.emitStateUpdate();
+                return `Travel pace set to ${newPace}.`;
             default:
                 return `Unknown command: /${intent.command}`;
         }
@@ -1111,10 +1179,7 @@ export class GameLoop {
     private async performAITurn(actor: Combatant) {
         if (!this.state.combat) return;
 
-        // 1. Visual feedback: Secondary banner for specific action?
-        // We'll skip secondary banner for now for speed, or just use the Name banner already up.
-
-        // 2. Decide Action
+        // 1. Decide Action
         const action = CombatAI.decideAction(actor, this.state.combat);
         const pcCombatant = this.state.combat.combatants.find(c => c.isPlayer);
 
@@ -1280,7 +1345,7 @@ export class GameLoop {
                 }
             }
 
-            // Apply difficulty modifier from settings (Phase 25H preview)
+            // Apply difficulty modifier from settings
             const difficulty = this.state.settings?.gameplay?.difficulty || 'normal';
             if (difficulty === 'hard') {
                 totalXP = Math.floor(totalXP * 1.25);
@@ -1297,8 +1362,6 @@ export class GameLoop {
                 char.level++;
                 this.addCombatLog(`*** LEVEL UP! *** You have reached level ${char.level}!`);
 
-                // Increase HP on level up (Simple version: heal to full and add 10 to max)
-                // In D&D 5e it's Hit Die + CON mod, but we'll do 10 for now as a celebration event
                 char.hp.max += 10;
                 char.hp.current = char.hp.max;
 
@@ -1330,8 +1393,6 @@ export class GameLoop {
             this.emitStateUpdate();
         } else {
             this.state.mode = 'GAME_OVER';
-            // We keep the combat state so the UI can still display some info if needed,
-            // or just to avoid crashing if components expect it.
             this.emitStateUpdate();
         }
     }
@@ -1341,7 +1402,6 @@ export class GameLoop {
         let baseAC = 10 + Math.floor(((char.stats.DEX || 10) - 10) / 2);
 
         // Add armor stats if we add AC to items later
-        // For now, let's keep it simple
         this.state.character.ac = baseAC;
     }
 
@@ -1349,15 +1409,6 @@ export class GameLoop {
         return this.state;
     }
 
-    public loadSession(saveId: string): boolean {
-        const loaded = this.stateManager.loadGame(saveId);
-        if (loaded) {
-            this.state = loaded;
-            NarratorService.setFirstTurnAfterLoad(true);
-            return true;
-        }
-        return false;
-    }
 
     private applyNarratorEffects(output: NarratorOutput) {
         EngineDispatcher.dispatch(
