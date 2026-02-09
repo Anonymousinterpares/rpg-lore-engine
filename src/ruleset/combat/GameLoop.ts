@@ -373,43 +373,40 @@ export class GameLoop {
     }
 
     private generateAndSaveHex(coords: [number, number], hex: any, isVisited: boolean, isVisible: boolean) {
-        const neighbors = this.hexMapManager.getNeighbors(coords);
-        const clusterSizes: any = {};
-        const biomes = ['Plains', 'Forest', 'Hills', 'Mountains', 'Swamp', 'Desert', 'Tundra', 'Jungle', 'Coast', 'Ocean', 'Volcanic', 'Ruins', 'Farmland', 'Urban'];
+        let biome = hex.biome;
+        let variant = hex.visualVariant;
+        let generatedData: any = {};
 
-        for (const b of biomes) {
-            const neighborWithBiome = neighbors.find(n => n.biome === b);
-            clusterSizes[b] = neighborWithBiome ? this.hexMapManager.getClusterSize(neighborWithBiome) : 0;
+        if (!hex.generated) {
+            const neighbors = this.hexMapManager.getNeighbors(coords);
+            const clusterSizes: any = {};
+            const biomes = ['Plains', 'Forest', 'Hills', 'Mountains', 'Swamp', 'Desert', 'Tundra', 'Jungle', 'Coast', 'Ocean', 'Volcanic', 'Ruins', 'Farmland', 'Urban'];
+
+            for (const b of biomes) {
+                const neighborWithBiome = neighbors.find(n => n.biome === b);
+                clusterSizes[b] = neighborWithBiome ? this.hexMapManager.getClusterSize(neighborWithBiome) : 0;
+            }
+
+            generatedData = HexGenerator.generateHex(coords, neighbors, clusterSizes, this.biomePool, this.state.worldMap.coastlines || []);
+            biome = generatedData.biome;
+            variant = generatedData.visualVariant;
         }
 
-        const generatedData = HexGenerator.generateHex(coords, neighbors, clusterSizes, this.biomePool, this.state.worldMap.coastlines || []);
-
-        // Name logic
-        let newName = generatedData.name || '';
-        const unknownPattern = /\(Unknown\)/i;
-
+        // Name logic - Construct fresh from biome, never append to old names
+        let newName: string;
         if (isVisible && !isVisited) {
-            // Keep it unknown or mark as uncharted
-            if (unknownPattern.test(newName)) {
-                newName = newName.replace(unknownPattern, '(Uncharted Territory)');
-            } else if (!newName.includes('(Uncharted Territory)')) {
-                newName += ' (Uncharted Territory)';
-            }
+            newName = `${biome} (Uncharted Territory)`;
         } else if (isVisited) {
-            // Reveal it
-            if (unknownPattern.test(newName)) {
-                newName = newName.replace(unknownPattern, '(Discovered)');
-            } else if (!newName.includes('(Discovered)')) {
-                newName += ' (Discovered)';
-            }
+            newName = `${biome} (Discovered)`;
         } else {
-            // Hidden (Distance 2)
             newName = 'Uncharted Territory';
         }
 
         const updatedHex = {
             ...hex,
             ...generatedData,
+            biome, // Explicitly preserve or set
+            visualVariant: variant, // Explicitly preserve or set
             visited: isVisited,
             generated: true,
             inLineOfSight: isVisible,
