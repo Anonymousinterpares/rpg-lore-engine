@@ -111,6 +111,18 @@ export class MovementEngine {
 
         if (!newHex) return { success: false, newHex: null, requiresGeneration: false, message: 'Failed to create movement destination.', timeCost: 0 };
 
+        // Ocean Blocking Logic
+        if (newHex.biome === 'Ocean') {
+            // TODO: Future boat/ship implementation could allow movement here.
+            return {
+                success: false,
+                newHex: null,
+                requiresGeneration: false,
+                message: 'You cannot walk into the deep ocean without a vessel.',
+                timeCost: 0
+            };
+        }
+
         // Mark as visited
         newHex.visited = true;
         this.mapManager.setHex(newHex);

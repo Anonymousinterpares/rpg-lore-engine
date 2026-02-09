@@ -60,7 +60,7 @@ async function verifyMultiplayer() {
         mode: "EXPLORATION",
         location: { hexId: "0,0", coordinates: [0, 0], droppedItems: [] },
         worldTime: { hour: 10, minute: 0, day: 1, month: 1, year: 1492, totalTurns: 1 },
-        worldMap: { grid_id: "main", hexes: {} },
+        worldMap: { grid_id: "main", hexes: {}, coastlines: [] },
         subLocations: [],
         worldNpcs: [],
         activeQuests: [],

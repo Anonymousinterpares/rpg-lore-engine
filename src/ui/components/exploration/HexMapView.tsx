@@ -19,6 +19,7 @@ interface HexData {
     interest_points?: { name: string }[];
     // Add inLineOfSight to interface if we pass it down, or infer from logic
     inLineOfSight?: boolean;
+    oceanDirection?: 'N' | 'S' | 'E' | 'W' | 'NE' | 'SE' | 'NW' | 'SW';
 }
 
 interface HexMapViewProps {
@@ -158,6 +159,17 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                                         src={`/assets/biomes/${biomeBase}_${hex.visualVariant}.png`}
                                         className={styles.biomeImage}
                                         alt=""
+                                        style={hex.biome === 'Coast' ? {
+                                            transform: `rotate(${(() => {
+                                                switch (hex.oceanDirection) {
+                                                    case 'E': case 'SE': case 'NE': return '0deg';
+                                                    case 'W': case 'SW': case 'NW': return '180deg';
+                                                    case 'N': return '-90deg';
+                                                    case 'S': return '90deg';
+                                                    default: return '0deg';
+                                                }
+                                            })()})`
+                                        } : {}}
                                         onError={(e) => {
                                             const img = e.target as HTMLImageElement;
                                             // If we failed to find the specific variant, try variant 1 as a universal fallback

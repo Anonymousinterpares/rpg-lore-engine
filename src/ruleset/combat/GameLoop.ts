@@ -271,6 +271,23 @@ export class GameLoop {
             }
         }
 
+        // 1.1 Coastline Seeding Logic (Rare event at distance)
+        const distFromOrigin = Math.sqrt(centerCoords[0] ** 2 + centerCoords[1] ** 2);
+        if (distFromOrigin > 30) {
+            const coastlines = this.state.worldMap.coastlines || [];
+            if (coastlines.length < 5) {
+                const isNearExisting = coastlines.some(cl => {
+                    const dx = cl.originHex[0] - centerCoords[0];
+                    const dy = cl.originHex[1] - centerCoords[1];
+                    return Math.sqrt(dx * dx + dy * dy) < 50;
+                });
+
+                if (!isNearExisting && Math.random() < 0.001) {
+                    this.seedCoastline(centerCoords);
+                }
+            }
+        }
+
         // 2. Handle Neighbors (Distance 1) - Visible on Map
         const neighbors = this.hexMapManager.getNeighbors(centerCoords);
         neighbors.forEach(neighbor => {
@@ -334,6 +351,27 @@ export class GameLoop {
         });
     }
 
+    private seedCoastline(centerCoords: [number, number]) {
+        const equations: ('q' | 'q+r' | 'q-r')[] = ['q', 'q+r', 'q-r'];
+        const eq = equations[Math.floor(Math.random() * equations.length)];
+        const threshold = eq === 'q' ? centerCoords[0] : (eq === 'q+r' ? centerCoords[0] + centerCoords[1] : centerCoords[0] - centerCoords[1]);
+        const oceanSide = Math.random() > 0.5 ? 'positive' : 'negative';
+
+        if (!this.state.worldMap.coastlines) {
+            this.state.worldMap.coastlines = [];
+        }
+
+        this.state.worldMap.coastlines.push({
+            id: `coast_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+            equation: eq,
+            threshold: threshold,
+            oceanSide: oceanSide,
+            originHex: [...centerCoords]
+        });
+
+        console.log(`[SYSTEM] Narrative Seed: A vast coastline was defined at ${centerCoords[0]}, ${centerCoords[1]}.`);
+    }
+
     private generateAndSaveHex(coords: [number, number], hex: any, isVisited: boolean, isVisible: boolean) {
         const neighbors = this.hexMapManager.getNeighbors(coords);
         const clusterSizes: any = {};
@@ -344,7 +382,7 @@ export class GameLoop {
             clusterSizes[b] = neighborWithBiome ? this.hexMapManager.getClusterSize(neighborWithBiome) : 0;
         }
 
-        const generatedData = HexGenerator.generateHex(coords, neighbors, clusterSizes, this.biomePool);
+        const generatedData = HexGenerator.generateHex(coords, neighbors, clusterSizes, this.biomePool, this.state.worldMap.coastlines || []);
 
         // Name logic
         let newName = generatedData.name || '';

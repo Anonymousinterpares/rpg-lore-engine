@@ -192,7 +192,8 @@ export class CharacterFactory {
                     grid_id: 'world_map',
                     hexes,
                     discoveredHexIds: ['0,0'],
-                    lastGeneratedTurn: 0
+                    lastGeneratedTurn: 0,
+                    coastlines: []
                 };
             })(),
             subLocations: [],

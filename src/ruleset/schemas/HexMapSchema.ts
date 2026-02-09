@@ -5,6 +5,16 @@ import { SkillNameSchema } from './BaseSchemas';
 export const HexDirectionSchema = z.enum(['N', 'S', 'NE', 'NW', 'SE', 'SW']);
 export type HexDirection = z.infer<typeof HexDirectionSchema>;
 
+export const CoastlineSchema = z.object({
+    id: z.string(),
+    equation: z.enum(['q', 'q+r', 'q-r']),
+    threshold: z.number(),
+    oceanSide: z.enum(['positive', 'negative']),
+    originHex: z.tuple([z.number(), z.number()])
+});
+
+export type Coastline = z.infer<typeof CoastlineSchema>;
+
 export const ResourceNodeSchema = z.object({
     id: z.string(),
     resourceType: z.enum(['Ore', 'Herb', 'Wood', 'Hide', 'Gem', 'Arcane']),
@@ -45,14 +55,16 @@ export const HexSchema = z.object({
     inLineOfSight: z.boolean().default(false),
     playerName: z.string().optional(),
     namingSource: z.enum(['engine', 'llm', 'player', 'npc']).default('engine'),
-    visualVariant: z.number().int().min(1).max(5).default(1)
+    visualVariant: z.number().int().min(1).max(5).default(1),
+    oceanDirection: z.enum(['N', 'S', 'E', 'W', 'NE', 'SE', 'NW', 'SW']).optional()
 });
 
 export type Hex = z.infer<typeof HexSchema>;
 
 export const MapRegistrySchema = z.object({
     grid_id: z.string(),
-    hexes: z.record(z.string(), HexSchema)
+    hexes: z.record(z.string(), HexSchema),
+    coastlines: z.array(CoastlineSchema).default([])
 });
 
 export type MapRegistry = z.infer<typeof MapRegistrySchema>;

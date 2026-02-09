@@ -21,8 +21,8 @@ async function runExpansionSimulation() {
 
     console.log('Simulating 10 hex generation rolls next to Forest cluster (size 7):');
     for (let i = 0; i < 10; i++) {
-        const biome = BiomeGenerationEngine.selectBiome(neighbors, clusterSizes);
-        process.stdout.write(`${biome} `);
+        const result = BiomeGenerationEngine.selectBiome([0, 0], neighbors, clusterSizes, []);
+        process.stdout.write(`${result.biome} `);
     }
     console.log('\n(Expect higher chance of Forest, but penalty if size reaches 8)\n');
 
