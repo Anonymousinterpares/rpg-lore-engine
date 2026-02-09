@@ -28,6 +28,7 @@ import { LoreService } from '../agents/LoreService';
 import { CombatResolutionEngine } from './CombatResolutionEngine';
 import { CombatAI } from './CombatAI';
 import { CombatLogFormatter } from './CombatLogFormatter';
+import { WeatherEngine } from './WeatherEngine';
 import { z } from 'zod';
 
 type Combatant = z.infer<typeof CombatantSchema>;
@@ -186,9 +187,9 @@ export class GameLoop {
         // Execute narrator suggested effects
         this.applyNarratorEffects(narratorResponse);
 
-        // Advance World Time (5 minutes per narrative turn)
-        if (this.state.mode === 'EXPLORATION') {
-            this.state.worldTime = WorldClockEngine.advanceTime(this.state.worldTime, 5);
+        // Advance World Time (5 minutes per narrative turn) with interval processing
+        if (this.state.mode === 'EXPLORATION' && !encounter) {
+            await this.advanceTimeAndProcess(5);
         }
 
         // Scribe processing (summarization)
@@ -200,6 +201,45 @@ export class GameLoop {
     }
 
     /**
+     * Centralized time advancement that processes intervals (Encounters, Weather)
+     */
+    private async advanceTimeAndProcess(totalMinutes: number, isResting: boolean = false): Promise<Encounter | null> {
+        let remainingMinutes = totalMinutes;
+        const INTERVAL = 30; // Check every 30 minutes
+        let resultEncounter: Encounter | null = null;
+
+        while (remainingMinutes > 0) {
+            const step = Math.min(remainingMinutes, INTERVAL);
+
+            // Advance clock state
+            this.state.worldTime = WorldClockEngine.advanceTime(this.state.worldTime, step);
+            remainingMinutes -= step;
+
+            // Updated Weather logic
+            if (this.state.weather.durationMinutes > 0) {
+                this.state.weather.durationMinutes -= step;
+            }
+            if (this.state.weather.durationMinutes <= 0) {
+                this.state.weather = WeatherEngine.generateWeather(this.state.worldTime);
+            }
+
+            // Encounter check every interval (if exploration)
+            if (this.state.mode === 'EXPLORATION' && !resultEncounter) {
+                const currentHex = this.hexMapManager.getHex(this.state.location.hexId);
+                const encounter = this.director.checkEncounter(this.state, currentHex || {});
+                if (encounter) {
+                    resultEncounter = encounter;
+                    // Note: If encounter found, we stop the time advancement loop? 
+                    // Usually yes, you get jumped during your activity.
+                    break;
+                }
+            }
+        }
+
+        return resultEncounter;
+    }
+
+    /**
      * Handles technical system commands (/stats, /rest, /move, etc.)
      */
     private handleCommand(intent: ParsedIntent): string {
@@ -207,12 +247,26 @@ export class GameLoop {
             case 'stats':
                 return `Name: ${this.state.character.name} | HP: ${this.state.character.hp.current}/${this.state.character.hp.max} | Level: ${this.state.character.level} | Location: ${this.state.location.hexId}`;
             case 'rest':
-                const restResult = intent.args?.[0] === 'long'
+                const isLong = intent.args?.[0] === 'long';
+                const restResult = isLong
                     ? RestingEngine.longRest(this.state.character)
                     : RestingEngine.shortRest(this.state.character);
 
-                this.state.worldTime = WorldClockEngine.advanceTime(this.state.worldTime, restResult.timeCost);
+                // Special handling for Ambush during rest
+                this.advanceTimeAndProcess(restResult.timeCost, true).then(encounter => {
+                    if (encounter) {
+                        this.initializeCombat(encounter);
+                        // We'd need a way to notify the UI about the ambush here
+                    }
+                });
                 return restResult.message;
+            case 'wait':
+                const waitMins = parseInt(intent.args?.[0] || '60', 10);
+                const waitResult = RestingEngine.wait(waitMins);
+                this.advanceTimeAndProcess(waitResult.timeCost, false).then(encounter => {
+                    if (encounter) this.initializeCombat(encounter);
+                });
+                return waitResult.message;
             case 'save':
                 this.emitStateUpdate();
                 return 'Game saved.';
@@ -230,7 +284,7 @@ export class GameLoop {
                 if (result.success && result.newHex) {
                     this.state.location.coordinates = result.newHex.coordinates;
                     this.state.location.hexId = `${result.newHex.coordinates[0]},${result.newHex.coordinates[1]}`;
-                    this.state.worldTime = WorldClockEngine.advanceTime(this.state.worldTime, result.timeCost);
+                    this.advanceTimeAndProcess(result.timeCost);
                     this.trackTutorialEvent('moved_hex');
                 }
                 return result.message;
@@ -1224,6 +1278,10 @@ export class GameLoop {
         // Transition back to exploration or game over
         if (victory) {
             this.state.mode = 'EXPLORATION';
+
+            // Mark hex as cleared for the 4-hour window
+            if (!this.state.clearedHexes) this.state.clearedHexes = {};
+            this.state.clearedHexes[this.state.location.hexId] = this.state.worldTime.totalTurns;
 
             // Calculate time passed (Round * 6s) + 5 minutes recovery
             const combatSeconds = (this.state.combat?.round || 0) * 6;

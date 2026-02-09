@@ -68,4 +68,15 @@ export class RestingEngine {
             timeCost: 480
         };
     }
+
+    /**
+     * Executes a Wait (Pass Time)
+     * No healing, just time cost.
+     */
+    public static wait(minutes: number): RestResult {
+        return {
+            message: `You wait for ${minutes} minutes.`,
+            timeCost: minutes
+        };
+    }
 }

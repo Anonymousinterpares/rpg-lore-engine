@@ -17,8 +17,23 @@ const TimeDisplay: React.FC = () => {
 
     return (
         <div className={styles.timeDisplay}>
-            <Clock size={16} className={styles.clockIcon} />
-            <span className={styles.timeText}>{timeStr}</span>
+            <div className={styles.timeSection}>
+                <Clock size={16} className={styles.clockIcon} />
+                <span className={styles.timeText}>{timeStr}</span>
+            </div>
+
+            <div className={styles.weatherSection}>
+                <img
+                    src={`/assets/weather/${state.weather.type.toLowerCase()}.png`}
+                    alt={state.weather.type}
+                    className={styles.weatherIcon}
+                    onError={(e) => {
+                        // Fallback if image doesn't exist yet
+                        (e.target as HTMLImageElement).style.display = 'none';
+                    }}
+                />
+                <span className={styles.weatherLabel}>{state.weather.type}</span>
+            </div>
         </div>
     );
 };

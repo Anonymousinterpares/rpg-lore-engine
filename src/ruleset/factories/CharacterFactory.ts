@@ -221,6 +221,9 @@ export class CharacterFactory {
             lastNarrative: '',
             conversationHistory: [],
             triggeredEvents: [],
+            weather: { type: 'Clear', durationMinutes: 0, intensity: 1.0 },
+            travelPace: 'Normal',
+            clearedHexes: {},
             settings: {
                 permadeath: false,
                 variantEncumbrance: false,

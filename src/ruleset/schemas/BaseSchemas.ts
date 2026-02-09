@@ -40,3 +40,20 @@ export const SkillNameSchema = z.enum([
   'Sleight of Hand', 'Stealth', 'Survival'
 ]);
 export type SkillName = z.infer<typeof SkillNameSchema>;
+
+export const WeatherTypeSchema = z.enum([
+  'Clear', 'Rain', 'Storm', 'Fog', 'Snow', 'Blizzard'
+]);
+export type WeatherType = z.infer<typeof WeatherTypeSchema>;
+
+export const WeatherSchema = z.object({
+  type: WeatherTypeSchema,
+  durationMinutes: z.number().default(0), // Minutes remaining for this weather
+  intensity: z.number().default(1.0) // For future variation
+});
+export type Weather = z.infer<typeof WeatherSchema>;
+
+export const TravelPaceSchema = z.enum([
+  'Slow', 'Normal', 'Fast'
+]);
+export type TravelPace = z.infer<typeof TravelPaceSchema>;

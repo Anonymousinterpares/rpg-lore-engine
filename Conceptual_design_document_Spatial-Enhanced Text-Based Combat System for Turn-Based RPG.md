@@ -1,131 +1,197 @@
-# Conceptual Design Document: Spatial-Enhanced Text-Based Combat System for Turn-Based RPG
+# Master Design Document: Spatial-Enhanced Text-Based Combat & Environment System
 
-# Introduction
-This document outlines a sophisticated yet purely text-based combat system for a turn-based RPG. The core innovation lies in introducing an invisible spatial layer to combat encounters, enabling tactical depth through positioning, distances, obstacles, and environmental interactions—all without any visual representation. Combat remains driven by descriptive text narratives, player choices, and action buttons, preserving the classic text RPG feel while elevating strategic decision-making.
-The system builds on a foundation of choice-based branching interactions, where the game engine internally simulates a battlefield grid. This simulation informs valid actions, hit probabilities, enemy behaviors, and narrative descriptions. Dynamic, context-aware descriptions enhance immersion, making each fight feel unique and responsive to spatial dynamics.
+# 1. Introduction
+This document outlines the comprehensive design for a text-based RPG engine that merges vivid narrative with deep, deterministic simulation. The system introduces an **invisible spatial layer** (20x20 grid) to combat, ensuring that positioning, range, and environmental features matter without requiring a distinct visual interface. It replaces random chance with a **Simulationist Model** where Time, Weather, Biome, and Magic directly dictate gameplay outcomes.
 
-# Goals
-The primary objectives of this combat system are:
+# 2. Core Pillars
+1.  **Spatial Depth**: Combat occurs on a simulated grid with Cover, LOS, and Flanking, narrated to the player.
+2.  **Environmental Determinism**: Weather (Blizzards, Storms) and Time (Night/Day) hard-modify combat stats and travel safety.
+3.  **Tactical Navigation**: Movement is Click-to-Move only, preventing narrative hallucinations. Pacing choices (Stealth vs Fast) matter.
+4.  **Strategic Recovery**: "Resting" is distinct from "Waiting". Resting carries a high risk of Ambush unless mitigated by Magic or Sentries.
+5.  **Arcane Supremacy**: Spells are not just damage; they are mechanical overrides (e.g., *Tiny Hut* = 100% Safety).
 
-- Enhance Tactical Depth: Move beyond pure statistical exchanges by incorporating positioning, movement, cover, flanking, and line-of-sight mechanics, rewarding thoughtful decisions.
-- Maintain Text Purity and Accessibility: Keep all player-facing elements as text descriptions, choices, and buttons—no graphics, grids, or maps—to ensure lightweight performance, broad device compatibility, and strong accessibility.
-- Increase Immersion and Narrative Richness: Use vivid, context-specific descriptions to convey spatial relationships and environmental details, helping players visualize the scene in their mind.
-- Boost Replayability: Procedural generation of battlefields ensures varied encounters, while spatial awareness creates emergent situations.
-- Support Scalable Enemy Intelligence: Allow enemies of different levels to exhibit increasingly sophisticated tactics based on the same spatial information.
-- Preserve Player Agency and Pacing: Offer meaningful choices each turn without overwhelming complexity, while dynamically limiting invalid options to prevent frustration.
+---
 
-# Core Concepts
+# 3. The Environmental Foundation
 
-## Invisible Battlefield Simulation
-At the heart of the system is an internal simulation of a battlefield as an abstract grid (lenght x width -> 20 units x 20 units). This grid tracks:
+## 3.1 Advanced Weather System
+The `WeatherEngine` simulates dynamic weather based on the current Season and Biome.
 
-- Positions of all entities (player and enemies).
-- Procedural obstacles and environmental features (e.g., boulders, bushes, pits, elevations).
-- Relative spatial relationships (distances, directions, line-of-sight, flanking angles).
+### Weather Types & Effects
+| Weather | Visual/Narrative | Mechanical Effects |
+| :--- | :--- | :--- |
+| **Clear/Sunny** | Bright, far visibility. | Base state. No modifiers. |
+| **Rain** | Gray sheets, wet ground. | **Disadvantage** on Perception (Hearing). Extinguishes non-magical fires. |
+| **Storm** | Thunder, lightning flashes. | **-2 Passive Perception**. Loud noise masks movement (Stealth Advantage). Risk of Lightning Strike (1% per turn). |
+| **Fog/Mist** | Thick, obscuring air. | **Heavily Obscured**: Disadvantage on Attacks > 5ft. Range limits. |
+| **Snow/Blizzard** | Whiteout, biting cold. | **Difficult Terrain** (Half Speed). Visibility reduced to 15ft. **Future**: Constitution Check vs Exhaustion (DC 10 + 1 per hour). |
 
-The player never sees the grid; instead, all information is translated into narrative text and choice options.
+### Seasonal Logic
+*   **Winter**: High probability of Snow (40%) and Blizzards (10%).
+*   **Summer**: High probability of Rain (30%) and Storms (15%).
+*   **Transition**: Varies by month.
+*   **Duration**: Weather states persist for `1d6` hours before re-rolling.
 
-## Battlefield advantages/disadvantages
+### UI Implementation Strategy
+*   **Display Location**: Integrated into the **Top Header TimeDisplay** (Center).
+*   **Visuals**: Small 24x24 or 32x32 icon (Weather Type) + Text Label (e.g., "Blizzard").
+*   **Asset Source**: Images loaded from `/public/assets/weather/{weather_type}.png`.
+*   **Reasoning**: Keep the background black for maximum text legibility (Accessibility). The Header is the "Dashboard" of World State.
 
-- there should be global advantages/disadvantages applied, based on criteria such as:
-    * daytime vs nighttime -> if nighttime, perception disadvantage, range of sight, accuracy etc disadvantages -> this MUST BE analysed to siecify each and every modifier which could be affected in current mechanics, IN LINE WITH d&d RULES! HERE, SPELLS LIKE DARKVISION could have actual effect, negating this modifier for given entity. this could be applied for every such spell, skill or ability
-    * weather  modifiers: e.g. fog should act similarily to nighttime BUT darkvision would NOT have effect, similar to rain and so on
-    * plain hext type : e.g. forest should add negative modifier to ranged attacks
+### LLM Context Update
+The `ContextBuilder` **MUST** inject the current weather state into the Prompt Context for every narrative generation.
+*   **Format**: `[Current Weather: Heavy Rain - Visibility Low - Sound Masked]`
+*   **Requirement**: The Narrator must describe the sensory details (sound of rain, cold wind) in every travel/combat description.
 
-## Hex type-dependent factors
+---
 
-Besides modifiers being effect of given hex type (biome), hex type should also depend on what types of obstacles are used (e.g. volcanic should have lava obstacles which could hurt entity standing in direct viccinity)
+# 4. Navigation & Exploration
 
-## Procedural Battlefield Generation
-Each combat begins with the automatic creation of a unique battlefield:
+## 4.1 Robust Click-to-Move
+To ensure absolute state consistency, Narrative Movement ("I go north") is processed via the exact same engine logic as clicking the Map.
 
-### Random placement of the player and enemies within set areas:
+1.  **Input**: Player clicks target Hex OR types "move north".
+2.  **Validation**: Engine checks `HexMapManager.canTraverse(current, target)`.
+3.  **Execution**:
+    *   Update `GameState` coordinates.
+    *   Deduct Time based on **Travel Pace**.
+    *   Narrator describes the visual transition.
+    *   **Encounter Check** runs immediately.
 
-Battlefield should be divided into 3 sections -> player's party starting section (here, all entities belonging to player's party should be placed randomly, with check preventing collisions with each other and with obstacles), enemy's party starting section at the opposite side of the combat area (same conditions as for plauyuer's party) ; main combat area - the biggest area where entities can move and take actions. here there hsould be most of obstacles placed.
+## 4.2 Travel Pacing ($M_{activity}$)
+Players can toggle their Travel Pace, trading speed for safety.
 
-### Generation of a variable number of obstacles (within defined min-max ranges) of varying sizes and types.
-- Obstacle types include blocking terrain (impassable), cover (defensive bonuses), hazards (risks during movement), or tactical features (high ground for range advantages or low ground for disadvantages).
-- Connectivity checks ensure all entities can potentially reach each other, preventing unfair dead-ends.
+| Pace | Speed | Time/Hex | Encounter Mod | Mechanical Effect |
+| :--- | :--- | :--- | :--- | :--- |
+| **Slow (Stealth)** | 0.5x | 8 hours | **0.5x** | Engine makes a **Stealth Check** vs Biome Passive Perception. Success = Avoid non-scripted encounters. |
+| **Normal** | 1.0x | 4 hours | **1.0x** | Baseline. Standard Passive Perception. |
+| **Fast** | 1.33x | 3 hours | **1.5x** | **-5 Penalty** to Passive Perception. High risk of Ambush (Surprise Round). |
 
-This procedural approach guarantees fresh layouts and encourages adaptation.
+### Future Mechanics: Stealth Depth
+*   **Current Iteration**: Stealth Check vs Fixed Biome DC (e.g., Forest = 12).
+*   **Future Goal**: Stealth Check vs **Specific Monster Passive Perception**. Logic: The Director pre-rolls the "Potential Encounter" (e.g., Owlbear, PP 15) *before* the check. If Player Stealth < 15, Encounter triggers.
 
-## Spatial Awareness Mechanics
-The engine continuously evaluates spatial relationships to influence gameplay:
+---
 
-- Distances and Ranges: Measured in abstract units; actions have range limits (e.g., melee requires adjacency, ranged attacks have diminishing accuracy).
-- Line-of-Sight (LOS): Direct paths may be blocked or partially obstructed by obstacles, reducing hit chances or preventing certain actions.
-- Cover and Concealment: Entities near obstacles gain defensive bonuses or become harder to target.
-- Flanking and Orientation: Attacking from side or rear arcs grants accuracy bonuses; entities may have implicit facing directions.
-- Movement Costs: Traversing obstacles or long distances consumes action resources, simulating effort and risk.
+# 5. Encounter Mechanics & Probability
 
-These factors are calculated before each turn to determine valid options and probabilities.
+## 5.1 The Probability Formula
+Encounters are checked every **30 minutes** of game time.
 
-## Choice-Based Player Interaction
-Player turns combine familiar action buttons with dynamically generated movement choices:
+$$ P_{encounter} = (P_{base} \times M_{biome} \times M_{time} \times M_{activity}) - P_{cleared} $$
 
-- Core action buttons (Melee Attack, Cast Spell, Use Skill, Dash, Defend, Disengage) remain always visible but are enabled/disabled based on spatial validity, with tooltips showing estimated success rates.
-- A separate list of contextual movement options (typically 4–7) is presented as numbered or labeled choices. These describe flavorful maneuvers derived from valid paths on the invisible grid (e.g., "Sidestep to flank the goblin," "Cautious advance through the bushes toward the orc," "Retreat to high ground").
-Selecting a movement option repositions the player, potentially altering distances, cover, or flanking opportunities.
+*   **Base Chance ($P_{base}$)**: 5% per 30 minutes (0.05).
+*   **Time Modifier ($M_{time}$)**:
+    *   Day (Sunrise-Sunset): **1.0x**
+    *   Night (Sunset-Sunrise): **2.0x** (Nocturnal predators).
+*   **Cleared Hex Logic ($P_{cleared}$)**:
+    *   Victorious combat triggers "Zone Control".
+    *   **Safety Duration**: 4 Hours.
+    *   Effect: Probability reduced by **90%** during this window.
 
-This hybrid approach preserves quick access to standard actions while offering rich positional choices.
+## 5.2 Biome Danger Tiers ($M_{biome}$)
 
-## Enemy Artificial Intelligence
-Enemies operate on programmed behaviors scaled by level (already implemented --> CHECK IS REQUIRED!), all informed by the same spatial simulation:
+| Tier | Biomes | Multiplier | Passive Perception (DC) |
+| :--- | :--- | :--- | :--- |
+| **Safe** | *Urban*, *Farmland*, *Roads (Future)* | **0.5x** | 10 (City Watch) |
+| **Standard** | *Plains*, *Coast*, *Hills*, *Forest* | **1.0x** | 12 (Wildlife) |
+| **Dangerous** | *Swamp*, *Mountain*, *Desert*, *Ocean*, *Tundra*, *Jungle* | **2.0x** | 14 (Predators) |
+| **Deadly** | *Volcanic*, *Ruins* | **3.0x** | 16 (Monsters) |
 
-Low-Level Enemies: Simple aggressive patterns (charge the nearest threat, prioritize melee).
-Mid-Level Enemies: Tactical awareness (seek cover when injured, maintain optimal range, avoid hazards).
-High-Level Enemies: Advanced strategies (coordinate with allies, bait the player into obstacles, perform feints, or execute multi-turn plans such as pinning while another flanks).
+## 5.3 Magic & Safety Overrides
+Spells provide hard mechanical overrides to these probabilities.
 
-All enemy decisions consider current distances, LOS, cover availability, and player positioning, leading to believable and challenging opposition.
--> NECESSARY ADJUSTMENT OF NPC AI TO TAKE THESE INTO ACCOUNT!
+| Spell | Level | Duration | Encounter Effect | Combat Effect (If Encounter Occurs) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Alarm** | 1 | 8h | None (Normal chance) | **Prevents Surprise**. Party wakes up fully armed/armored. |
+| **Rope Trick** | 2 | 1h | **0% Chance** | Perfect safety for Short Rest (Extradimensional). |
+| **Tiny Hut** | 3 | 8h | **0% Chance** | Impenetrable dome. Long Rest safe haven. |
+| **Invisibility** | 2 | 1h | **0.5x Chance** | Harder to spot, but smell/sound remain. |
+| **Sanctum** | 7 | 24h | **0% Chance** | Invisible, hidden mansion. Absolute safety. |
 
-## Narrative Description Layer
-A descriptive engine translates raw spatial and action data into flavorful text:
+---
 
-- Situation Summaries: Each turn begins with a vivid 1–2 sentence overview of the battlefield, highlighting key positional relationships, obstacles, and threats.
-- Action Resolutions: Enemy and player actions are narrated with context-aware details (e.g., "The orc barrels through the underbrush to close the gap before swinging its axe" vs. "The orc hurls a javelin from behind the boulder, the shot partially deflected").
-- Movement Flavor: Chosen movement options are described immersively, reinforcing consequences (e.g., "You weave between the rocks, emerging at the goblin's side for a perfect flank").
+# 6. Resting & Recovery System
 
-This layer ensures the invisible battlefield feels alive and tangible.
+The "Rest" interaction is split into two distinct modes with separate UI flows.
 
-## Detailed Functionalities
-(IMPORTANT: combat orchestration needs to be adjusted -> each output of combat LLM narrator to be considered as a separate phase & next steo should await until LLM narrative output is finished to be shown gradually -> each input appears gradually and this animation should finish first before next step starts!!!!!)
+## 6.1 WAIT (Pass Time)
+*   **Purpose**: Await a specific time (e.g., Nightfall) or meet an NPC.
+*   **UI**: Time Slider (10m to 24h).
+*   **Logic**:
+    *   Time advances.
+    *   Weather checks run.
+    *   **Encounter Checks** run normally.
+    *   **No HP/Resource Recovery**.
 
-1. Combat Initiation (Triggered by encounter logic outside combat.)
-2) Battlefield is procedurally generated.
-3) Initial positions assigned; first situation summary presented.
-4) 1st turn begins (Player or other entity, depending on initiative score dice roll results, as currently programmed) 
+## 6.2 REST (Recovery)
+*   **Purpose**: Recover HP/Slots (Short/Long Rest logic).
+*   **UI**: Toggle [Short Rest (1h)] or [Long Rest (8h)].
+*   **Logic**:
+    *   Time advances (1h or 8h).
+    *   **High Risk Activity**: Campfire smoke/light attracts attention (**1.5x Encounter Chance**).
+*   **The Ambush System**:
+    *   If an encounter generates during a Rest, it is an **Ambush**.
+    *   **Surprise Round**: Enemy takes a full turn before Player.
+    *   **Counter-Measures**:
+        *   *Alarm* spell negates Surprise.
+        *   **Sentry Duty**: Player assigns a watcher. Sentry makes a Perception Check vs Enemy Stealth. Success = No Surprise.
 
+---
 
-### Player Turn Structure
+# 7. Spatial Combat System (The Invisible Grid)
 
-It begins with computed valid options and probabilities.
-Situation Presentation: Narrative description + concise summary of ranges and key modifiers.
-Choice Phase:
-Movement options list (contextual maneuvers).
-Standard action buttons (dynamically enabled with probability previews).
+## 7.1 The Simulation
+*   **Grid**: 20x20 abstract units.
+*   **Zones**:
+    *   *Player Start*: 3x5 area (Bottom Center).
+    *   *Enemy Start*: Opposite edge or Surrounding (if Ambush).
+*   **Terrain**: Procedurally generated obstacles (Trees, Rocks, Lava) based on Biome.
 
-Resolution: Selected movement or action is validated and applied; results narrated (damage, status effects, new positions).
-Turn End: Spatial state updates; enemy phase begins.
+## 7.2 Turn Structure
+1.  **Situation Report**: Narrator describes range and cover.
+2.  **Player Choice**:
+    *   **Standard Actions**: Attack, Cast, Dash, Disengage.
+    *   **Contextual Maneuvers**: "Dash to Boulder (Cover)", "Flank Orc B".
+3.  **Resolution**: Engine monitors grid state -> Calculates Hit/Damage -> Narrates outcome.
+4.  **Enemy AI**: Logic scaled by Level (Low=Aggressive, High=Tactical).
 
-### Enemy/NPC Ally Phase
+## 7.3 Combat Orchestration (Technical Rule)
+**Strict Phase Control**: The Narrator output must complete fully (animation finished) before the User Input UI unlocks. This preserves the "Turn-Based" pacing and prevents text spam.
 
-NPC act sequentially in initiative order.
-Each enemy evaluates spatial options, selects optimal behavior based on level.
-Actions and movements are resolved.
-Given NPC turn phase ends with LLM summary of what NPC has chosen to do and what what the outcome, including updated situation summary -> next entity (NPC or player) proceedss.
+---
 
-## Action Dependencies and Modifiers
+# 8. Enemy Artificial Intelligence
+Enemies rely on the same spatial data as players.
 
-- Melee Attack: Requires adjacency; enhanced by flanking, reduced by target cover.
-- Ranged/Spell Attacks: Affected by distance decay, LOS obstructions, and cover. IMPORTANT -> ranged attack is NOT implemented. There should be a CHECK if player has ranged weapon equipped - if yes, ranged attack should be an available option. If not, button should be inactive.
-- Dash: Temporarily increases movement options, NEEDED to adjust by adding the cost of defense.
-- Defend: Sacrifices offense for protection, possibly improved by nearby cover.
-- Disengage: Safe retreat that increases distance, avoiding opportunity attacks.
-All outcomes incorporate pre-calculated probabilities influenced by spatial factors.
+*   **Low Level (Beasts/Zombies)**: Charge nearest target. Ignore cover.
+*   **Mid Level (Bandits/Soldiers)**: Seek Cover if HP < 50%. Flank if possible. Focus fire.
+*   **High Level (Mages/Bosses)**:
+    *   Use Environment (Push player into Lava).
+    *   Kiting (Shoot & Move).
+    *   Setup Ambushes (Hide behind obstacles).
 
-## Combat Conclusion
+---
 
-Ends when one side is defeated or flees.
-Rewards, experience, and narrative epilogue provided.
-Battlefield state discarded; return to exploration/overworld.
+# 9. Implementation Roadmap
+
+## Phase 1: Environment & Logic (Weeks 1-2)
+*   [ ] **WeatherEngine**: Implement seasonal probabilities and effect states.
+*   [ ] **Encounter Probability 2.0**: Code the formula.
+*   [ ] **Resting Overhaul**: Split UI into Wait/Rest tabs. Implement Ambush logic.
+*   [ ] **Weather UI**: Add icon/text to `TimeDisplay` header.
+
+## Phase 2: Navigation & Safety (Week 3)
+*   [ ] **Click-to-Move**: Enforce strict engine validation for all movement.
+*   [ ] **Pacing UI**: Add Slow/Normal/Fast toggle to map screen.
+*   [ ] **Magic Integrations**: Add `CampState` to track active safety spells (*Tiny Hut*, etc.).
+
+## Phase 3: Spatial Combat Core (Month 2)
+*   [ ] **Grid Data Structure**: Create the 20x20 simulation class.
+*   [ ] **Procedural Deployment**: logic for obstacle scattering and zone assignment.
+*   [ ] **Contextual Menu**: Generate dynamic move options based on grid analysis.
+
+## Phase 4: Future Expansions
+*   [ ] **Advanced Weather Effects**: Implementation of Constitution checks for extreme weather (Heat/Cold).
+*   [ ] **Specific Monster Stealth**: Migrating from Biome DC to specific Monster Sheet Stealth stats for checks.
+*   [ ] **Global Road System**: Defining "Road" hexes with distinct safety tiers.

@@ -22,7 +22,24 @@ const XP_THRESHOLDS: Record<number, { easy: number, medium: number, hard: number
 
 export class EncounterDirector {
     private director = new DirectorAgent();
-    private encounterChance: number = 0.15; // 15% chance per turn/travel
+    private baseChance: number = 0.05; // 5% base chance per 30 min interval
+
+    private BIOME_MULTIPLIERS: Record<string, number> = {
+        'Urban': 0.5,
+        'Farmland': 0.5,
+        'Plains': 1.0,
+        'Forest': 1.1,
+        'Hills': 1.1,
+        'Coast': 1.0,
+        'Swamp': 2.0,
+        'Mountain': 1.8,
+        'Desert': 1.5,
+        'Tundra': 1.5,
+        'Jungle': 2.2,
+        'Volcanic': 3.0,
+        'Ruins': 3.0,
+        'Ocean': 1.5
+    };
 
     /**
      * Checks for a random encounter.
@@ -30,11 +47,54 @@ export class EncounterDirector {
     public checkEncounter(state: GameState, hex: any): Encounter | null {
         if (state.mode !== 'EXPLORATION') return null;
 
-        if (Math.random() < this.encounterChance) {
+        const chance = this.calculateFinalProbability(state, hex);
+
+        if (Math.random() < chance) {
             const difficulty = state.settings?.gameplay?.difficulty || 'normal';
             return this.generateEncounter(hex.biome, state.character.level, difficulty as any);
         }
         return null;
+    }
+
+    /**
+     * Calculates the final probability P_encounter
+     */
+    public calculateFinalProbability(state: GameState, hex: any): number {
+        const mBiome = this.BIOME_MULTIPLIERS[hex.biome] || 1.0;
+
+        // Time Multiplier: Night = 2x
+        const hour = state.worldTime.hour;
+        const mTime = (hour < 6 || hour > 20) ? 2.0 : 1.0;
+
+        // Activity Multiplier: Slow = 0.5x, Normal = 1.0x, Fast = 1.5x
+        const activity = state.travelPace || 'Normal';
+        const mActivity = activity === 'Slow' ? 0.5 : activity === 'Fast' ? 1.5 : 1.0;
+
+        // Weather Multiplier (Storm/Blizzard increase danger/obscuration)
+        let mWeather = 1.0;
+        if (state.weather.type === 'Storm') mWeather = 1.2;
+        if (state.weather.type === 'Blizzard') mWeather = 1.5;
+
+        // Cleared Hex Modifier
+        let pCleared = 0;
+        if (state.clearedHexes && state.clearedHexes[hex.id]) {
+            const lastCleared = state.clearedHexes[hex.id];
+            const currentTime = state.worldTime.totalTurns; // turns as proxy
+            // If cleared in last 4 hours (2400 turns given 10 turns = 1 min? No, 10 turns = 1 min is 6s each.
+            // 4 hours = 240 mins = 2400 turns.
+            if (currentTime - lastCleared < 2400) {
+                pCleared = 0.9; // 90% reduction
+            }
+        }
+
+        let pRaw = (this.baseChance * mBiome * mTime * mActivity * mWeather);
+
+        // Apply reduction
+        if (pCleared > 0) {
+            pRaw *= (1 - pCleared);
+        }
+
+        return pRaw;
     }
 
     private generateEncounter(biome: string, level: number, difficulty: 'easy' | 'normal' | 'hard' = 'normal'): Encounter {

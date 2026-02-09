@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { WeatherSchema, TravelPaceSchema } from './BaseSchemas';
 import { PlayerCharacterSchema } from './PlayerCharacterSchema';
 import { WorldClockSchema } from './WorldClockSchema';
 import { MapRegistrySchema } from './HexMapSchema';
@@ -155,6 +156,11 @@ export const FullSaveStateSchema = z.object({
         isRead: z.boolean().default(false),
         createdAt: z.number()
     })).default([]),
+
+    // --- Environmental ---
+    weather: WeatherSchema.default({ type: 'Clear', durationMinutes: 0 }),
+    travelPace: TravelPaceSchema.default('Normal'),
+    clearedHexes: z.record(z.string(), z.number()).default({}), // hexId -> timestamp (in turns or game min)
 
     // --- Settings ---
     settings: CampaignSettingsSchema

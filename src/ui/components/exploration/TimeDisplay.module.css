@@ -13,6 +13,36 @@
     border-bottom: 2px solid #ffd700;
 }
 
+.timeSection {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.weatherSection {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 12px;
+    border-left: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.weatherIcon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.4));
+}
+
+.weatherLabel {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #ffd700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
 .clockIcon {
     color: #ffd700;
     filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));

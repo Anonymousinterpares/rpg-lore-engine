@@ -24,6 +24,7 @@ export interface BaseContext {
         biome: string;
         description: string;
     };
+    weather: string;
     storySummary: string;
     recentHistory: any[];
 }
@@ -89,6 +90,7 @@ export class ContextBuilder {
                 biome: this.getCurrentHex(state).biome || 'Unknown Biome',
                 description: this.getCurrentHex(state).description || ''
             },
+            weather: state.weather.type,
             storySummary: state.storySummary,
             recentHistory: recentHistory.slice(-5) // Smart trim: only last 5
         };
