@@ -18,6 +18,7 @@ interface MainViewportProps {
 }
 
 import { useGameState } from '../../hooks/useGameState';
+import { useCallback, useEffect } from 'react';
 
 const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
     const { state, processCommand, isLoading, endGame, engine, startGame, loadGame, loadLastSave } = useGameState();
@@ -25,6 +26,17 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
     const [showRestModal, setShowRestModal] = useState(false);
 
     const isCombat = state?.mode === 'COMBAT';
+
+    // Fail-safe: Ensure Rest modal closes if combat starts
+    useEffect(() => {
+        if (isCombat && showRestModal) {
+            setShowRestModal(false);
+        }
+    }, [isCombat, showRestModal]);
+
+    const handleRestCancel = useCallback(() => {
+        setShowRestModal(false);
+    }, []);
     const isGameOver = state?.mode === 'GAME_OVER';
 
     const narrativeText = state?.lastNarrative || state?.storySummary ||
@@ -112,7 +124,7 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
             {showRestModal && (
                 <RestWaitModal
                     engine={engine}
-                    onCancel={() => setShowRestModal(false)}
+                    onCancel={handleRestCancel}
                 />
             )}
 
