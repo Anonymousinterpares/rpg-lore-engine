@@ -44,10 +44,10 @@ export class EncounterDirector {
     /**
      * Checks for a random encounter.
      */
-    public checkEncounter(state: GameState, hex: any): Encounter | null {
+    public checkEncounter(state: GameState, hex: any, isResting: boolean = false): Encounter | null {
         if (state.mode !== 'EXPLORATION') return null;
 
-        const chance = this.calculateFinalProbability(state, hex);
+        const chance = this.calculateFinalProbability(state, hex, isResting);
 
         if (Math.random() < chance) {
             const difficulty = state.settings?.gameplay?.difficulty || 'normal';
@@ -59,7 +59,7 @@ export class EncounterDirector {
     /**
      * Calculates the final probability P_encounter
      */
-    public calculateFinalProbability(state: GameState, hex: any): number {
+    public calculateFinalProbability(state: GameState, hex: any, isResting: boolean = false): number {
         const mBiome = this.BIOME_MULTIPLIERS[hex.biome] || 1.0;
 
         // Time Multiplier: Night = 2x
@@ -75,6 +75,9 @@ export class EncounterDirector {
         if (state.weather.type === 'Storm') mWeather = 1.2;
         if (state.weather.type === 'Blizzard') mWeather = 1.5;
 
+        // Rest Multiplier: Being stationary and vulnerable
+        let mRest = isResting ? 1.5 : 1.0;
+
         // Cleared Hex Modifier
         let pCleared = 0;
         if (state.clearedHexes && state.clearedHexes[hex.id]) {
@@ -87,7 +90,7 @@ export class EncounterDirector {
             }
         }
 
-        let pRaw = (this.baseChance * mBiome * mTime * mActivity * mWeather);
+        let pRaw = (this.baseChance * mBiome * mTime * mActivity * mWeather * mRest);
 
         // Apply reduction
         if (pCleared > 0) {

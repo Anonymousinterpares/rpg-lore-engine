@@ -55,13 +55,6 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
         processCommand(input);
     };
 
-    const handleRestConfirm = (action: 'rest' | 'wait', duration: number) => {
-        setShowRestModal(false);
-        // Send command: /rest [duration] or /wait [duration]
-        // Note: GameLoop needs to handle /rest with numeric args
-        processCommand(`/${action} ${duration}`);
-    };
-
     const handleLoadGame = (saveId: string) => {
         loadGame(saveId);
         setShowLoadModal(false);
@@ -118,7 +111,7 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
 
             {showRestModal && (
                 <RestWaitModal
-                    onConfirm={handleRestConfirm}
+                    engine={engine}
                     onCancel={() => setShowRestModal(false)}
                 />
             )}

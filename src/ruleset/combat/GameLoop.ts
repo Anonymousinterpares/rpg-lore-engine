@@ -203,7 +203,7 @@ export class GameLoop {
     /**
      * Centralized time advancement that processes intervals (Encounters, Weather)
      */
-    private async advanceTimeAndProcess(totalMinutes: number, isResting: boolean = false): Promise<Encounter | null> {
+    public async advanceTimeAndProcess(totalMinutes: number, isResting: boolean = false): Promise<Encounter | null> {
         let remainingMinutes = totalMinutes;
         const INTERVAL = 30; // Check every 30 minutes
         let resultEncounter: Encounter | null = null;
@@ -226,7 +226,7 @@ export class GameLoop {
             // Encounter check every interval (if exploration)
             if (this.state.mode === 'EXPLORATION' && !resultEncounter) {
                 const currentHex = this.hexMapManager.getHex(this.state.location.hexId);
-                const encounter = this.director.checkEncounter(this.state, currentHex || {});
+                const encounter = this.director.checkEncounter(this.state, currentHex || {}, isResting);
                 if (encounter) {
                     resultEncounter = encounter;
                     // Note: If encounter found, we stop the time advancement loop? 
@@ -237,6 +237,22 @@ export class GameLoop {
         }
 
         return resultEncounter;
+    }
+
+    /**
+     * Applies the mechanical benefits of resting after time has passed.
+     */
+    public completeRest(durationMinutes: number): string {
+        let restResult;
+        if (durationMinutes >= 480) {
+            restResult = RestingEngine.longRest(this.state.character);
+        } else if (durationMinutes >= 60) {
+            restResult = RestingEngine.shortRest(this.state.character);
+        } else {
+            restResult = RestingEngine.wait(durationMinutes);
+        }
+        this.emitStateUpdate();
+        return restResult.message;
     }
 
     /**
@@ -520,7 +536,7 @@ export class GameLoop {
         this.emitStateUpdate();
     }
 
-    private async initializeCombat(encounter: Encounter) {
+    public async initializeCombat(encounter: Encounter) {
         this.state.mode = 'COMBAT';
         const combatants: Combatant[] = [];
 
