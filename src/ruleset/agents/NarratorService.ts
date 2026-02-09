@@ -156,6 +156,7 @@ ${profile.basePrompt || ''}
 ## CURRENT CONTEXT
 - Mode: ${context.mode}
 - Time: ${context.timeOfDay}
+- Date: ${context.dateString} (${context.season})
 - Location: ${context.location.name} (${context.location.biome})
 - Description: ${context.location.description}
 - Player: ${context.player.name}, Level ${context.player.level} ${context.player.class} (${context.player.hpStatus})

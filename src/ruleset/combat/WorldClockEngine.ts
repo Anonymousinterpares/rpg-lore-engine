@@ -86,6 +86,14 @@ export class WorldClockEngine {
     }
 
     /**
+     * Returns a simple date string for narrative context.
+     */
+    public static formatDate(clock: WorldClock): string {
+        const monthName = this.MONTH_NAMES[clock.month - 1] || `Month ${clock.month}`;
+        return `${clock.day} of ${monthName}, Year ${clock.year}`;
+    }
+
+    /**
      * Returns the seasonal sunrise and sunset hours for a given month.
      */
     public static getSeasonConfig(month: number): { sunrise: number, sunset: number } {

@@ -25,6 +25,8 @@ export interface BaseContext {
         description: string;
     };
     weather: string;
+    season: string;
+    dateString: string;
     storySummary: string;
     recentHistory: any[];
 }
@@ -91,6 +93,8 @@ export class ContextBuilder {
                 description: this.getCurrentHex(state).description || ''
             },
             weather: state.weather.type,
+            season: this.getSeason(state.worldTime.month),
+            dateString: WorldClockEngine.formatDate(state.worldTime),
             storySummary: state.storySummary,
             recentHistory: recentHistory.slice(-5) // Smart trim: only last 5
         };
@@ -174,6 +178,13 @@ export class ContextBuilder {
         const pad = (n: number) => n.toString().padStart(2, '0');
         const exact = `${pad(clock.hour)}:${pad(clock.minute)}`;
         return `${phase} (${exact})`;
+    }
+
+    private static getSeason(month: number): string {
+        if (month >= 3 && month <= 5) return 'Spring';
+        if (month >= 6 && month <= 8) return 'Summer';
+        if (month >= 9 && month <= 11) return 'Autumn';
+        return 'Winter';
     }
 
     private static getFactionDisposition(standing: number): FactionDisposition {

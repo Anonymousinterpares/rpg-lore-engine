@@ -223,6 +223,9 @@ export class GameLoop {
                 this.state.weather = WeatherEngine.generateWeather(this.state.worldTime);
             }
 
+            // Emit update so UI refreshes (Time, Weather, etc.)
+            this.emitStateUpdate();
+
             // Encounter check every interval (if exploration)
             if (this.state.mode === 'EXPLORATION' && !resultEncounter) {
                 const currentHex = this.hexMapManager.getHex(this.state.location.hexId);
