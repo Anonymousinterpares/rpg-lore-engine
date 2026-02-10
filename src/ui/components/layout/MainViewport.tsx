@@ -9,21 +9,22 @@ import CombatActionBar from '../combat/CombatActionBar';
 import LoadingOverlay from '../common/LoadingOverlay';
 import TurnBanner from '../combat/TurnBanner';
 import CombatOverlay from '../combat/CombatOverlay';
+import CombatantStatusCard from '../combat/CombatantStatusCard';
 import GameOverScreen from '../menu/GameOverScreen';
 import SaveLoadModal from '../menu/SaveLoadModal';
 import RestWaitModal from '../exploration/RestWaitModal';
+import { useGameState } from '../../hooks/useGameState';
+import { useCallback, useEffect } from 'react';
 
 interface MainViewportProps {
     className?: string;
 }
 
-import { useGameState } from '../../hooks/useGameState';
-import { useCallback, useEffect } from 'react';
-
 const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
     const { state, processCommand, isLoading, endGame, engine, startGame, loadGame, loadLastSave } = useGameState();
     const [showLoadModal, setShowLoadModal] = useState(false);
     const [showRestModal, setShowRestModal] = useState(false);
+    const [inspectedCombatantId, setInspectedCombatantId] = useState<string | null>(null);
 
     const isCombat = state?.mode === 'COMBAT';
 
@@ -37,6 +38,11 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
     const handleRestCancel = useCallback(() => {
         setShowRestModal(false);
     }, []);
+
+    const handleInspect = (id: string) => {
+        setInspectedCombatantId(prev => prev === id ? null : id);
+    };
+
     const isGameOver = state?.mode === 'GAME_OVER';
 
     const narrativeText = state?.lastNarrative || state?.storySummary ||
@@ -97,6 +103,9 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
         setShowLoadModal(true);
     };
 
+    const inspectedCombatant = state?.combat?.combatants.find(c => c.id === inspectedCombatantId);
+    const playerCombatant = state?.combat?.combatants.find(c => c.isPlayer);
+
     return (
         <main className={`${styles.viewport} ${className} ${isCombat ? styles.combatMode : ''}`}>
             {/* Loading Overlay */}
@@ -137,8 +146,21 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
                             currentTurnId={state.combat.combatants[state.combat.currentTurnIndex]?.id || ''}
                             selectedTargetId={state.combat.selectedTargetId}
                             onSelectTarget={(id) => processCommand(`/target ${id}`)}
+                            onInspect={handleInspect}
                         />
                     </div>
+
+                    {inspectedCombatant && playerCombatant && (
+                        <div className={styles.inspectorContainer}>
+                            <CombatantStatusCard
+                                combatant={inspectedCombatant}
+                                playerPos={playerCombatant.position}
+                                cover="None" // TODO: Calculate from engine/grid
+                                lighting="Bright" // TODO: Calculate from weather/time
+                                onClose={() => setInspectedCombatantId(null)}
+                            />
+                        </div>
+                    )}
                 </>
             )}
 

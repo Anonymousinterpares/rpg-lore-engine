@@ -16,6 +16,7 @@ interface InitiativeTrackerProps {
     currentTurnId: string;
     selectedTargetId?: string;
     onSelectTarget?: (id: string) => void;
+    onInspect?: (id: string) => void;
     className?: string;
 }
 
@@ -24,6 +25,7 @@ const InitiativeTracker: React.FC<InitiativeTrackerProps> = ({
     currentTurnId,
     selectedTargetId,
     onSelectTarget,
+    onInspect,
     className = ''
 }) => {
     return (
@@ -44,6 +46,18 @@ const InitiativeTracker: React.FC<InitiativeTrackerProps> = ({
                             <div className={styles.info}>
                                 <span className={styles.name}>{c.name}</span>
                                 <span className={styles.init}>({c.initiative})</span>
+                                {!c.isPlayer && (
+                                    <button
+                                        className={styles.inspectBtn}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onInspect?.(c.id);
+                                        }}
+                                        title="View Details"
+                                    >
+                                        i
+                                    </button>
+                                )}
                             </div>
                             <div className={styles.hpContainer}>
                                 <div className={styles.hpBar} style={{ width: `${hpPercent}%` }} />

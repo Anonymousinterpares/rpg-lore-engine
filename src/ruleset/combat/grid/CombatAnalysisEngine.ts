@@ -182,13 +182,13 @@ export class CombatAnalysisEngine {
             let closest: GridPosition | null = null;
             let minDist = Infinity;
 
-            reachable.forEach(pos => {
+            for (const pos of reachable) {
                 const dist = this.gridManager.getDistance(pos, enemy.position);
                 if (dist < minDist) {
                     minDist = dist;
                     closest = pos;
                 }
-            });
+            }
 
             if (closest !== null && minDist <= 1) {
                 const targetPos: GridPosition = closest; // Explicit type assertion
@@ -221,18 +221,18 @@ export class CombatAnalysisEngine {
         let farthest: GridPosition | null = null;
         let maxDist = 0;
 
-        reachable.forEach(pos => {
+        for (const pos of reachable) {
             let minEnemyDist = Infinity;
-            enemies.forEach(enemy => {
+            for (const enemy of enemies) {
                 const dist = this.gridManager.getDistance(pos, enemy.position);
                 minEnemyDist = Math.min(minEnemyDist, dist);
-            });
+            }
 
             if (minEnemyDist > maxDist) {
                 maxDist = minEnemyDist;
                 farthest = pos;
             }
-        });
+        }
 
         if (farthest !== null && maxDist > this.gridManager.getDistance(combatant.position, enemies[0]?.position || { x: 10, y: 10 })) {
             const targetPos: GridPosition = farthest; // Explicit type assertion

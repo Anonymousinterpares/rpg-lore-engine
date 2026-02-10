@@ -1277,7 +1277,35 @@ export class GameLoop {
         const action = CombatAI.decideAction(actor, this.state.combat);
         const pcCombatant = this.state.combat.combatants.find(c => c.isPlayer);
 
-        if (action.type === 'ATTACK' && action.targetId) {
+        if (action.type === 'MOVE' && action.targetId) {
+            const target = this.state.combat.combatants.find(c => c.id === action.targetId);
+            if (target && this.combatManager && this.state.combat.grid) {
+                // Use GridManager to find path
+                const gridManager = new CombatGridManager(this.state.combat.grid);
+                const path = gridManager.findPath(actor.position, target.position, this.state.combat.combatants);
+
+                if (path && path.length > 1) {
+                    // Move as far as possible
+                    // path[0] is start, path[1] is first step.
+                    // We need to move up to movementRemaining steps.
+                    // Actually, we should move to the optimal range (adjacent).
+                    // Simple logic: Move towards target until movement runs out or adjacent.
+
+                    const steps = Math.min(actor.movementRemaining, path.length - 2); // -1 for start, -1 for target occupancy (can't step on target)
+
+                    if (steps > 0) {
+                        const dest = path[steps];
+                        const moveMsg = this.combatManager.moveCombatant(actor, dest);
+                        this.addCombatLog(moveMsg);
+                        // Deduct action? No, movement is separate resource.
+                        // But we engaged "Dash" if we used action? 
+                        // For now, standard move.
+                    } else {
+                        this.addCombatLog(`${actor.name} shuffles but cannot get closer.`);
+                    }
+                }
+            }
+        } else if (action.type === 'ATTACK' && action.targetId) {
             const target = this.state.combat.combatants.find(c => c.id === action.targetId);
             if (!target) return;
 
