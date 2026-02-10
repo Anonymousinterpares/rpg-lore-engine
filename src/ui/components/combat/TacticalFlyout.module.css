@@ -147,6 +147,90 @@
     line-height: 1.3;
 }
 
+.groupItem {
+    cursor: default !important;
+}
+
+.groupItem:hover {
+    transform: none !important;
+    border-color: var(--parchment-border) !important;
+    background: rgba(0, 0, 0, 0.03) !important;
+}
+
+.subGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px dashed var(--parchment-border);
+}
+
+.subItem {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-sm);
+    background: rgba(139, 115, 85, 0.05);
+    border: 1px solid var(--parchment-border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.subItem:hover {
+    background: rgba(201, 162, 39, 0.15);
+    border-color: var(--parchment-accent);
+    transform: translateY(-2px);
+}
+
+.subLabel {
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: var(--parchment-text);
+    margin-bottom: 2px;
+}
+
+.subDescription {
+    font-size: 0.75rem;
+    color: var(--parchment-text);
+    opacity: 0.7;
+}
+
+.subBadges {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-xs);
+}
+
+.proBadge,
+.conBadge {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.proBadge {
+    background: rgba(34, 197, 94, 0.1);
+    color: #2e7d32;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.conBadge {
+    background: rgba(239, 68, 68, 0.1);
+    color: #c62828;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
 .emptyState {
     text-align: center;
     padding: var(--spacing-xl);

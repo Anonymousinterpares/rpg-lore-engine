@@ -4,16 +4,26 @@ import { Weather } from '../../schemas/BaseSchemas';
 import { BIOME_TACTICAL_DATA } from '../BiomeRegistry';
 import { NarrativeGenerator } from './NarrativeGenerator';
 
+export interface TacticalSubOption {
+    id: string;
+    label: string;           // e.g., "⚡ Sprint to Cover"
+    description: string;     // e.g., "30ft move, 20ft remaining"
+    command: string;          // e.g., "/move 34 12 sprint"
+    pros?: string[];
+    cons?: string[];
+}
+
 export interface TacticalOption {
     id: string;
     label: string;
     description: string;
     targetPosition: GridPosition;
-    type: 'SAFETY' | 'FLANKING' | 'AGGRESSION' | 'RETREAT';
+    type: 'SAFETY' | 'FLANKING' | 'AGGRESSION' | 'RETREAT' | 'COVER';
     command: string;
     pros?: string[];
     cons?: string[];
     risk?: string;
+    subOptions?: TacticalSubOption[];
 }
 
 export class CombatAnalysisEngine {
@@ -46,8 +56,8 @@ export class CombatAnalysisEngine {
         // 4. Retreat Options (Fade, Withdraw, Vanish)
         options.push(...this.getRetreatOptions(combatant, reachable, enemies, allies, biome, weather));
 
-        // 5. Environmental Awareness (Informational)
-        options.push(...this.getEnvironmentalAwareness(combatant, biome, weather));
+        // 5. Environmental Awareness (Cover Approaches)
+        options.push(...this.getCoverOptions(combatant, reachable, allCombatants, biome, weather));
 
         return options;
     }
@@ -244,7 +254,8 @@ export class CombatAnalysisEngine {
         });
 
         if (farthest) {
-            const nar = NarrativeGenerator.generate('fade_back', combatant, null, biome, weather, '', maxDist);
+            const actualMoveDist = this.gridManager.getDistance(combatant.position, farthest);
+            const nar = NarrativeGenerator.generate('fade_back', combatant, null, biome, weather, '', actualMoveDist, maxDist);
             const targetPos: GridPosition = farthest;
             options.push({
                 id: 'retreat_fade',
@@ -274,36 +285,107 @@ export class CombatAnalysisEngine {
         return options;
     }
 
-    private getEnvironmentalAwareness(combatant: Combatant, biome: string, weather: Weather): TacticalOption[] {
-        const options: TacticalOption[] = [];
+    private getCoverOptions(
+        combatant: Combatant,
+        reachable: GridPosition[],
+        allCombatants: Combatant[],
+        biome: string,
+        weather: Weather
+    ): TacticalOption[] {
         const features = this.gridManager.getAllFeatures();
-
-        // Find nearest protective features that are NOT reachable (awareness)
-        const awarenessFeatures = features
-            .filter((f: TerrainFeature) => f.coverBonus !== 'NONE' || f.blocksVision)
-            .map((f: TerrainFeature) => ({
+        const coverFeatures = features
+            .filter(f => f.coverBonus !== 'NONE')
+            .map(f => ({
                 feature: f,
-                dist: this.gridManager.getDistance(combatant.position, f.position)
+                dist: this.gridManager.getDistance(combatant.position, f.position),
+                featureName: this.getFeatureName(f, biome)
             }))
-            .filter((item: { feature: TerrainFeature, dist: number }) => item.dist > combatant.movementRemaining) // Only beyond movement range
-            .sort((a: { dist: number }, b: { dist: number }) => a.dist - b.dist)
-            .slice(0, 2);
+            .sort((a, b) => a.dist - b.dist)
+            .slice(0, 4); // Top 4 nearest covers
 
-        awarenessFeatures.forEach((item: { feature: TerrainFeature, dist: number }) => {
+        return coverFeatures.map(item => {
+            const fullSpeed = combatant.movementRemaining;
+            const halfSpeed = Math.floor(fullSpeed / 2);
             const relDir = this.gridManager.getRelativeDirection(combatant.position, item.feature.position);
-            const nar = NarrativeGenerator.generate('cover_awareness', combatant, item.feature, biome, weather, relDir, item.dist);
-            options.push({
-                id: `awareness_${item.feature.id}`,
-                label: nar.label,
-                description: nar.description,
-                targetPosition: item.feature.position,
-                type: 'SAFETY',
-                command: '', // Non-movable
-                pros: [`Distance: ${item.dist * 5}ft`, `Direction: ${relDir}`]
-            });
-        });
 
-        return options;
+            // Calculate approach positions for each mode
+            const sprintPos = this.getApproachPositionWithRange(
+                combatant.position, item.feature.position, fullSpeed, allCombatants);
+            const normalPos = sprintPos;
+            const evasivePos = this.getApproachPositionWithRange(
+                combatant.position, item.feature.position, halfSpeed, allCombatants);
+
+            const sprintDist = sprintPos ? this.gridManager.getDistance(combatant.position, sprintPos) : 0;
+            const evasiveDist = evasivePos ? this.gridManager.getDistance(combatant.position, evasivePos) : 0;
+            const sprintRemaining = Math.max(0, item.dist - sprintDist);
+            const evasiveRemaining = Math.max(0, item.dist - evasiveDist);
+
+            const coverLabel = item.feature.coverBonus === 'FULL' ? 'Full Cover'
+                : item.feature.coverBonus === 'THREE_QUARTERS' ? '¾ Cover (+5 AC)'
+                    : 'Half Cover (+2 AC)';
+
+            return {
+                id: `cover_${item.feature.id}`,
+                label: `${item.featureName} — ${coverLabel}`,
+                description: `${relDir}, ${item.dist * 5}ft away${sprintRemaining === 0 ? ' — ✓ Reachable' : ''}`,
+                targetPosition: item.feature.position,
+                type: 'COVER',
+                command: '', // Parent item is informational/grouping only
+                subOptions: [
+                    {
+                        id: `cover_sprint_${item.feature.id}`,
+                        label: '⚡ Sprint to Cover',
+                        description: sprintRemaining === 0
+                            ? `${sprintDist * 5}ft (arrive!)`
+                            : `${sprintDist * 5}ft move, ${sprintRemaining * 5}ft remaining`,
+                        command: sprintPos ? `/move ${sprintPos.x} ${sprintPos.y} sprint` : '',
+                        cons: ['-2 AC']
+                    },
+                    {
+                        id: `cover_approach_${item.feature.id}`,
+                        label: '🏃 Approach Cover',
+                        description: sprintRemaining === 0
+                            ? `${sprintDist * 5}ft (arrive!)`
+                            : `${sprintDist * 5}ft move, ${sprintRemaining * 5}ft remaining`,
+                        command: normalPos ? `/move ${normalPos.x} ${normalPos.y}` : ''
+                    },
+                    {
+                        id: `cover_evasive_${item.feature.id}`,
+                        label: '🐍 Evasive Approach',
+                        description: evasiveRemaining === 0
+                            ? `${evasiveDist * 5}ft (arrive!)`
+                            : `${evasiveDist * 5}ft move, ${evasiveRemaining * 5}ft remaining`,
+                        command: evasivePos ? `/move ${evasivePos.x} ${evasivePos.y} evasive` : '',
+                        pros: ['+2 vs Ranged']
+                    }
+                ]
+            };
+        });
+    }
+
+    private getFeatureName(feature: TerrainFeature, biome: string): string {
+        const biomeData = BIOME_TACTICAL_DATA[biome] || BIOME_TACTICAL_DATA['Forest'];
+        return biomeData.features[feature.type] || feature.type;
+    }
+
+    private getApproachPositionWithRange(
+        start: GridPosition,
+        target: GridPosition,
+        maxRange: number,
+        occupants: Combatant[]
+    ): GridPosition | null {
+        const path = this.gridManager.findPath(start, target, occupants);
+        if (!path || path.length <= 1) return null;
+
+        // Find how many steps we can take (excluding the target cell itself as it's occupied by a feature)
+        // A feature is NOT an occupant in the pathfinder sense usually, but path[path.length-1] is the target.
+        const stepsToCover = path.length - 1;
+        const actualSteps = Math.min(maxRange, stepsToCover);
+
+        // If we reach the cover, we stay adjacent to it or on it? 
+        // Ruleset says: move to the cover. If feature is walkable, we can be on it.
+        // Let's assume we move as far as the path allowed.
+        return path[actualSteps];
     }
 
     private getApproachPosition(reachable: GridPosition[], target: GridPosition, idealDist: number): GridPosition | null {
@@ -326,10 +408,5 @@ export class CombatAnalysisEngine {
             case 'Half': return 2;
             default: return 0;
         }
-    }
-
-    private getFeatureName(feature: TerrainFeature, biome: string): string {
-        const biomeData = BIOME_TACTICAL_DATA[biome] || BIOME_TACTICAL_DATA['Forest'];
-        return biomeData.features[feature.type] || feature.type;
     }
 }

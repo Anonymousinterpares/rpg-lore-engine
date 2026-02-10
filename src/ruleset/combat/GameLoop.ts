@@ -950,6 +950,9 @@ export class GameLoop {
             this.state.combat.turnActions.push(logMsg);
             resultMsg = logMsg;
 
+            // Restore damage application for player attacks
+            this.applyCombatDamage(target, result.damage);
+
         } else if (intent.command === 'dodge') {
             currentCombatant.statusEffects.push({
                 id: 'dodge',
@@ -959,8 +962,10 @@ export class GameLoop {
                 sourceId: currentCombatant.id
             });
             resultMsg = `${currentCombatant.name} takes a defensive stance. Attacks against them will have disadvantage until the start of their next turn.`;
+            this.state.combat.turnActions.push(resultMsg);
         } else if (intent.command === 'dash') {
             resultMsg = `${currentCombatant.name} dashes, doubling their movement speed for this turn.`;
+            this.state.combat.turnActions.push(resultMsg);
         } else if (intent.command === 'disengage') {
             currentCombatant.statusEffects.push({
                 id: 'disengage',
@@ -970,18 +975,30 @@ export class GameLoop {
                 sourceId: currentCombatant.id
             });
             resultMsg = `${currentCombatant.name} focuses on defense while moving, preventing opportunity attacks.`;
+            this.state.combat.turnActions.push(resultMsg);
         } else if (intent.command === 'hide') {
             const d20 = Dice.d20();
             const stealth = d20 + MechanicsEngine.getModifier(currentCombatant.stats.DEX || 10);
             resultMsg = `${currentCombatant.name} attempts to hide! (Roll: ${stealth})`;
+            this.state.combat.turnActions.push(resultMsg);
         } else if (intent.command === 'use') {
             const abilityName = intent.args?.[0] || intent.originalInput.replace(/^use /i, '').trim();
             resultMsg = this.useAbility(abilityName);
+            this.state.combat.turnActions.push(resultMsg);
         } else if (intent.command === 'move') {
             const x = parseInt(intent.args?.[0] || '0');
             const y = parseInt(intent.args?.[1] || '0');
+            const mode = intent.args?.[2]; // sprint | evasive
+
+            if (mode === 'sprint') {
+                currentCombatant.statusEffects.push({ id: 'sprint_reckless', name: 'Reckless Sprint', type: 'DEBUFF', duration: 1, sourceId: currentCombatant.id });
+            } else if (mode === 'evasive') {
+                currentCombatant.statusEffects.push({ id: 'evasive_movement', name: 'Evasive Movement', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
+            }
+
             const combatManager = new CombatManager(this.state);
             resultMsg = combatManager.moveCombatant(currentCombatant, { x, y });
+            this.state.combat.turnActions.push(resultMsg);
         } else if (intent.command === 'end turn') {
             // Only players explicitly end turn via command. AI handles it internally.
             if (!currentCombatant.isPlayer) return "";

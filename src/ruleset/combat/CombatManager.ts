@@ -1,7 +1,8 @@
-import { CombatState, Combatant, GridPosition } from '../schemas/CombatSchema';
+import { CombatState, Combatant, GridPosition, TerrainFeature } from '../schemas/CombatSchema';
 import { GameState } from '../schemas/FullSaveStateSchema';
 import { TerrainGenerator } from './grid/TerrainGenerator';
 import { CombatGridManager } from './grid/CombatGridManager';
+import { BIOME_TACTICAL_DATA } from './BiomeRegistry';
 import { CombatFactory } from './CombatFactory';
 import { Encounter } from './EncounterDirector';
 import { DataManager } from '../data/DataManager';
@@ -93,7 +94,14 @@ export class CombatManager {
                 turn: 1
             }],
             events: [],
-            turnActions: []
+            turnActions: [],
+            selectedTargetId: undefined,
+            lastRoll: undefined,
+            activeBanner: {
+                type: 'NAME',
+                text: 'Combat Started',
+                visible: true
+            }
         };
 
         this.gridManager = new CombatGridManager(grid);
@@ -125,15 +133,39 @@ export class CombatManager {
 
         const distance = path.length - 1; // Number of steps
         if (distance > combatant.movementRemaining) {
-            return `Too far! You only have ${combatant.movementRemaining} cells of movement left.`;
+            return `Too far! You only have ${combatant.movementRemaining * 5}ft of movement left.`;
         }
+
+        const direction = this.gridManager.getRelativeDirection(combatant.position, targetPos);
+        const distanceFt = distance * 5;
+
+        // Find nearby features at destination for flavor
+        const feature = this.gridManager.getFeatureAt(targetPos);
+        const featureSuffix = feature
+            ? `, taking position near a ${this.getFeatureName(feature, this.state.location.subLocationId || 'Plains')}`
+            : '';
+
+        // Find nearest enemy for context
+        const enemies = this.state.combat?.combatants.filter(c => !c.isPlayer && c.type === 'enemy' && c.hp.current > 0) || [];
+        const nearestEnemy = enemies.reduce((closest, e) => {
+            const d = this.gridManager!.getDistance(targetPos, e.position);
+            return (!closest || d < closest.dist) ? { name: e.name, dist: d } : closest;
+        }, null as { name: string, dist: number } | null);
+
+        const enemyContext = nearestEnemy
+            ? ` (${nearestEnemy.dist * 5}ft from ${nearestEnemy.name})`
+            : '';
 
         combatant.position = targetPos;
         combatant.movementRemaining -= distance;
 
-        return `${combatant.name} moves to (${targetPos.x}, ${targetPos.y}).`;
+        return `${combatant.name} moves ${distanceFt}ft ${direction}${featureSuffix}${enemyContext}.`;
     }
 
+    private getFeatureName(feature: TerrainFeature, biome: string): string {
+        const biomeData = BIOME_TACTICAL_DATA[biome] || BIOME_TACTICAL_DATA['Forest'];
+        return biomeData.features[feature.type] || feature.type;
+    }
     /**
      * Orchestrates end of turn and next turn transitions.
      */

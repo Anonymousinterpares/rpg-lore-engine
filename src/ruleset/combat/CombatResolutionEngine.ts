@@ -35,10 +35,22 @@ export class CombatResolutionEngine {
         forceDisadvantage: boolean = false
     ): CombatActionResult {
         const hasDodgeDisadvantage = target.statusEffects.some(e => e.id === 'dodge');
+        const isSprinting = target.statusEffects.some(e => e.id === 'sprint_reckless');
+        const isEvasive = target.statusEffects.some(e => e.id === 'evasive_movement');
+
         const d20 = (hasDodgeDisadvantage || forceDisadvantage) ? Dice.disadvantage() : Dice.d20();
         const isCrit = d20 === 20;
+
+        // Calculate effective AC
+        let effectiveAC = target.ac;
+        if (isSprinting) effectiveAC -= 2;
+
+        // Evasive: +2 AC vs ranged attacks only
+        const isRanged = attacker.tactical?.isRanged || false; // Note: may need better check for PC
+        if (isEvasive && (isRanged || forceDisadvantage)) effectiveAC += 2;
+
         const total = d20 + attackBonus;
-        const hit = isCrit || total >= target.ac;
+        const hit = isCrit || total >= effectiveAC;
 
         let damage = 0;
         let message = '';
@@ -115,10 +127,22 @@ export class CombatResolutionEngine {
         } else if (category === 'DAMAGE' || category === 'DEBUFF' || category === 'CONTROL') {
             // Default to Spell Attack if no save and it's offensive
             const hasDisadvantage = target.statusEffects.some(e => e.id === 'dodge');
+            const isSprinting = target.statusEffects.some(e => e.id === 'sprint_reckless');
+            const isEvasive = target.statusEffects.some(e => e.id === 'evasive_movement');
+
             const d20 = hasDisadvantage ? Dice.disadvantage() : Dice.d20();
             const isCrit = d20 === 20;
+
+            // Calculate effective AC
+            let effectiveAC = target.ac;
+            if (isSprinting) effectiveAC -= 2;
+
+            // Evasive: +2 AC vs aimed spells (ranged category spells that aren't AoE)
+            const isAimed = !spell.save;
+            if (isEvasive && isAimed) effectiveAC += 2;
+
             const total = d20 + spellAttackBonus;
-            const hit = isCrit || total >= target.ac;
+            const hit = isCrit || total >= effectiveAC;
 
             type = isCrit ? 'CRIT' : (hit ? 'HIT' : 'MISS');
             success = hit;

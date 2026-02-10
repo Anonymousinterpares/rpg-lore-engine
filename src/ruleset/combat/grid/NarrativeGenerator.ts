@@ -13,7 +13,8 @@ export class NarrativeGenerator {
         biome: string,
         weather: Weather,
         relativeDir: string,
-        distance?: number
+        distance?: number,
+        resultDistance?: number
     ): { label: string, description: string } {
         const biomeData = BIOME_TACTICAL_DATA[biome] || BIOME_TACTICAL_DATA['Forest'];
         const targetName = target ? ('name' in target ? target.name : ('type' in target ? (biomeData.features[target.type] || target.type) : 'the location')) : '';

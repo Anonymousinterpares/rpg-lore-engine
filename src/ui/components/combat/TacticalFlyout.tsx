@@ -2,11 +2,11 @@ import React from 'react';
 import styles from './TacticalFlyout.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
 import { X, Shield, Zap, Sword, Move, Target } from 'lucide-react';
-import { TacticalOption } from '../../../ruleset/combat/grid/CombatAnalysisEngine';
+import { TacticalOption, TacticalSubOption } from '../../../ruleset/combat/grid/CombatAnalysisEngine';
 
 interface TacticalFlyoutProps {
     options: TacticalOption[];
-    onSelect: (option: TacticalOption) => void;
+    onSelect: (option: TacticalOption | TacticalSubOption) => void;
     onClose: () => void;
 }
 
@@ -41,8 +41,8 @@ export const TacticalFlyout: React.FC<TacticalFlyoutProps> = ({
                 {options.map((option) => (
                     <div
                         key={option.id}
-                        className={`${styles.item} ${parchmentStyles.button}`}
-                        onClick={() => onSelect(option)}
+                        className={`${styles.item} ${parchmentStyles.button} ${option.subOptions ? styles.groupItem : ''}`}
+                        onClick={() => !option.subOptions && onSelect(option)}
                     >
                         <div className={styles.iconContainer}>
                             {getOptionIcon(option.type)}
@@ -66,6 +66,28 @@ export const TacticalFlyout: React.FC<TacticalFlyoutProps> = ({
                                     })}
                                     {option.cons?.map((con, i) => (
                                         <span key={`con-${i}`} className={styles.conBadge}>{con}</span>
+                                    ))}
+                                </div>
+                            )}
+
+                            {option.subOptions && (
+                                <div className={styles.subGrid}>
+                                    {option.subOptions.map(sub => (
+                                        <div
+                                            key={sub.id}
+                                            className={styles.subItem}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onSelect(sub);
+                                            }}
+                                        >
+                                            <div className={styles.subLabel}>{sub.label}</div>
+                                            <div className={styles.subDescription}>{sub.description}</div>
+                                            <div className={styles.subBadges}>
+                                                {sub.pros?.map((p, i) => <span key={i} className={styles.proBadge}>{p}</span>)}
+                                                {sub.cons?.map((c, i) => <span key={i} className={styles.conBadge}>{c}</span>)}
+                                            </div>
+                                        </div>
                                     ))}
                                 </div>
                             )}

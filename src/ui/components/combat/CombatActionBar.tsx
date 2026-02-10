@@ -5,7 +5,7 @@ import { SpellbookFlyout } from './SpellbookFlyout';
 import { AbilitiesFlyout } from './AbilitiesFlyout';
 import { Sword, Sparkles, Shield, Zap, Move, ChevronRight, FastForward, Star, Target } from 'lucide-react';
 import { useGameState } from '../../hooks/useGameState';
-import { TacticalOption } from '../../../ruleset/combat/grid/CombatAnalysisEngine';
+import { TacticalOption, TacticalSubOption } from '../../../ruleset/combat/grid/CombatAnalysisEngine';
 import { TacticalFlyout } from './TacticalFlyout';
 import { AbilityParser, CombatAbility } from '../../../ruleset/combat/AbilityParser';
 import { DataManager } from '../../../ruleset/data/DataManager';
@@ -108,9 +108,11 @@ export const CombatActionBar: React.FC = () => {
         setShowAbilities(false);
     };
 
-    const handleSelectTactical = (option: TacticalOption) => {
-        processCommand(option.command);
-        setShowTactics(false);
+    const handleSelectTactical = (option: TacticalOption | TacticalSubOption) => {
+        if (option.command) {
+            processCommand(option.command);
+            setShowTactics(false);
+        }
     };
 
     return (
