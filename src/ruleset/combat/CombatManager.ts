@@ -61,7 +61,20 @@ export class CombatManager {
             const posIndex = Math.min(i, grid.enemyStartZone.length - 1);
             const pos = grid.enemyStartZone[posIndex] || { x: 68, y: 40 };
 
-            const monster = CombatFactory.fromMonster(monsterData || { name: monsterName, hp: { average: 15 }, ac: 10, stats: {} } as any, `enemy_${i}`);
+            const monster = CombatFactory.fromMonster(monsterData || {
+                name: monsterName,
+                hp: { average: 15, formula: '2d8+2' },
+                ac: 10,
+                stats: { STR: 10, DEX: 10, CON: 10, INT: 10, WIS: 10, CHA: 10 },
+                cr: 0,
+                size: 'Medium',
+                type: 'beast',
+                alignment: 'unaligned',
+                speed: 'walk: 30 ft.',
+                actions: [],
+                traits: [],
+                legendaryActions: []
+            } as any, `enemy_${i}`);
             monster.initiative = Dice.d20() + (monsterData ? MechanicsEngine.getModifier(monsterData.stats['DEX'] || 10) : 0);
             monster.position = pos;
             combatants.push(monster);

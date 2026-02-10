@@ -55,7 +55,7 @@ export class CombatFactory {
         let normalRange = 0;
         let longRange = 0;
 
-        monster.actions.forEach(action => {
+        (monster.actions || []).forEach(action => {
             const desc = action.description.toLowerCase();
             const name = action.name.toLowerCase();
 

@@ -27,48 +27,58 @@ export class DataManager {
         // Load Races
         const raceModules = import.meta.glob('../../../data/race/*.json');
         for (const path in raceModules) {
-            const mod: any = await raceModules[path]();
-            // Default export or the JSON object itself
-            const race = mod.default || mod;
-            if (race.name) {
-                this.races[race.name] = race;
+            try {
+                const mod: any = await raceModules[path]();
+                const race = mod.default || mod;
+                if (race.name) {
+                    this.races[race.name] = race;
+                }
+            } catch (e) {
+                console.warn(`[DataManager] Failed to load race from ${path}:`, e);
             }
         }
 
         // Load Classes
         const classModules = import.meta.glob('../../../data/class/*.json');
         for (const path in classModules) {
-            const mod: any = await classModules[path]();
-            const cls = mod.default || mod;
-            if (cls.name) {
-                this.classes[cls.name] = cls;
+            try {
+                const mod: any = await classModules[path]();
+                const cls = mod.default || mod;
+                if (cls.name) {
+                    this.classes[cls.name] = cls;
+                }
+            } catch (e) {
+                console.warn(`[DataManager] Failed to load class from ${path}:`, e);
             }
         }
 
         // Load Backgrounds
         const bgModules = import.meta.glob('../../../data/backgrounds/*.json');
         for (const path in bgModules) {
-            const mod: any = await bgModules[path]();
-            const bg = mod.default || mod;
-            // Backgrounds use 'id' or 'name' as key? Schema has 'id' and 'name'.
-            // Let's use 'name' for display consistency, or 'id' for internal reference.
-            // Using Name for now as it matches directory keying usually.
-            if (bg.name) {
-                this.backgrounds[bg.name] = bg;
+            try {
+                const mod: any = await bgModules[path]();
+                const bg = mod.default || mod;
+                if (bg.name) {
+                    this.backgrounds[bg.name] = bg;
+                }
+            } catch (e) {
+                console.warn(`[DataManager] Failed to load background from ${path}:`, e);
             }
         }
 
         // Load Items
         const itemModules = import.meta.glob('../../../data/item/*.json');
         for (const path in itemModules) {
-            const mod: any = await itemModules[path]();
-            const item = mod.default || mod;
-            if (item.name) {
-                // Index by name
-                this.items[item.name] = item;
-                // Index by lowercase name (and potential ID format)
-                this.items[item.name.toLowerCase()] = item;
-                this.items[item.name.toLowerCase().replace(/ /g, '_')] = item;
+            try {
+                const mod: any = await itemModules[path]();
+                const item = mod.default || mod;
+                if (item.name) {
+                    this.items[item.name] = item;
+                    this.items[item.name.toLowerCase()] = item;
+                    this.items[item.name.toLowerCase().replace(/ /g, '_')] = item;
+                }
+            } catch (e) {
+                console.warn(`[DataManager] Failed to load item from ${path}:`, e);
             }
         }
 
@@ -106,13 +116,9 @@ export class DataManager {
 
     public static getItem(idOrName: string): Item | undefined {
         const key = idOrName.toLowerCase();
-        // Try exact match first
         if (this.items[idOrName]) return this.items[idOrName];
-        // Try lowercase key
         if (this.items[key]) return this.items[key];
-        // Try replacing underscores with spaces (common in IDs)
         if (this.items[key.replace(/_/g, ' ')]) return this.items[key.replace(/_/g, ' ')];
-
         return undefined;
     }
 
@@ -123,11 +129,15 @@ export class DataManager {
         if (Object.keys(this.spells).length > 0) return;
         const spellModules = import.meta.glob('../../../data/spell/*.json');
         for (const path in spellModules) {
-            const mod: any = await spellModules[path]();
-            const spell = mod.default || mod;
-            if (spell.name) {
-                this.spells[spell.name] = spell;
-                this.spellLookup[spell.name.toLowerCase()] = spell;
+            try {
+                const mod: any = await spellModules[path]();
+                const spell = mod.default || mod;
+                if (spell.name) {
+                    this.spells[spell.name] = spell;
+                    this.spellLookup[spell.name.toLowerCase()] = spell;
+                }
+            } catch (e) {
+                console.warn(`[DataManager] Failed to load spell from ${path}:`, e);
             }
         }
     }
@@ -165,7 +175,7 @@ export class DataManager {
                     this.monsterLookup[monster.name.toLowerCase()] = monster;
                 }
             } catch (e) {
-                console.error(`[DataManager] Failed to load monster from ${path}:`, e);
+                console.warn(`[DataManager] Skipped monster file ${path} (may be blocked by browser extension)`);
             }
         }
     }
