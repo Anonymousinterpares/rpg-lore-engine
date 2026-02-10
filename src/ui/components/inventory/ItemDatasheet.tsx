@@ -12,7 +12,7 @@ interface Item {
     weight: number;
     description?: string;
     cost?: { gp: number, sp: number, cp: number };
-    damage?: string;
+    damage?: string | { dice: string, type: string };
     ac?: number;
     properties?: string[];
 }
@@ -68,7 +68,7 @@ const ItemDatasheet: React.FC<ItemDatasheetProps> = ({ item, onClose }) => {
                             {item.damage && (
                                 <div className={styles.statLine}>
                                     <Sword size={14} />
-                                    <strong>Damage:</strong> {item.damage}
+                                    <strong>Damage:</strong> {typeof item.damage === 'object' ? `${item.damage.dice} ${item.damage.type}` : item.damage}
                                 </div>
                             )}
                             {item.ac !== undefined && (
