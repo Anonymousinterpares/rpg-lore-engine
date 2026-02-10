@@ -494,10 +494,27 @@ export class GameLoop {
                 this.emitStateUpdate();
                 return 'Game saved.';
             case 'move':
+                // COMBAT MODE HANDLING
                 if (this.state.mode === 'COMBAT') {
-                    return "You cannot travel while in combat! Finish the fight or flee.";
+                    // Check if args are coordinates (x y) as sent by Tactical System
+                    const arg0 = intent.args?.[0];
+                    const arg1 = intent.args?.[1];
+
+                    if (arg0 && !isNaN(parseInt(arg0)) && arg1 && !isNaN(parseInt(arg1))) {
+                        const x = parseInt(arg0);
+                        const y = parseInt(arg1);
+                        const currentCombatant = this.state.combat?.combatants[this.state.combat?.currentTurnIndex || 0];
+
+                        if (!currentCombatant) return "Error: No active combatant.";
+                        if (!currentCombatant.isPlayer) return "It is not your turn.";
+
+                        return this.combatManager.moveCombatant(currentCombatant, { x, y });
+                    }
+
+                    return "In combat, use /move x y to reposition, or specific tactical commands.";
                 }
 
+                // EXPLORATION MODE HANDLING
                 const char = this.state.character;
                 const currentWeight = char.inventory.items.reduce((sum, i) => sum + (i.weight * (i.quantity || 1)), 0);
                 const capacity = (char.stats.STR || 10) * 15;
@@ -521,7 +538,14 @@ export class GameLoop {
                 return result.message;
             case 'moveto':
                 if (this.state.mode === 'COMBAT') {
-                    return "You cannot travel while in combat! Finish the fight or flee.";
+                    const targetQ = parseInt(intent.args?.[0] || '0', 10);
+                    const targetR = parseInt(intent.args?.[1] || '0', 10);
+                    const currentCombatant = this.state.combat?.combatants[this.state.combat?.currentTurnIndex || 0];
+
+                    if (!currentCombatant) return "Error: No active combatant.";
+                    if (!currentCombatant.isPlayer) return "It is not your turn.";
+
+                    return this.combatManager.moveCombatant(currentCombatant, { x: targetQ, y: targetR });
                 }
 
                 const moveChar = this.state.character;
