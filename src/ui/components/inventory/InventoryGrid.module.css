@@ -90,6 +90,47 @@
     }
 }
 
+.lootBtn {
+    margin-top: 4px;
+    background: rgba(255, 215, 0, 0.08);
+    /* Gold hint */
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    color: rgba(255, 215, 0, 0.6);
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.hasLoot {
+    border-color: #d4a017;
+    color: #fff;
+    background: rgba(212, 160, 23, 0.25);
+    box-shadow: 0 0 12px rgba(212, 160, 23, 0.4);
+    animation: pulse-gold 2s infinite;
+}
+
+@keyframes pulse-gold {
+    0% {
+        box-shadow: 0 0 0px rgba(212, 160, 23, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 15px rgba(212, 160, 23, 0.7);
+    }
+
+    100% {
+        box-shadow: 0 0 0px rgba(212, 160, 23, 0.4);
+    }
+}
+
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));

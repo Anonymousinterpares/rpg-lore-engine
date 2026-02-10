@@ -33,6 +33,9 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter }) => {
         } else if (action === 'pickup') {
             engine.pickupItem(item.instanceId);
             updateState();
+        } else if (action === 'pickupLoot') {
+            engine.pickupCombatLoot!(item.instanceId);
+            updateState();
         }
     };
 
@@ -44,6 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter }) => {
                 gold={gold as any}
                 capacity={capacity}
                 droppedItems={state?.location?.droppedItems as any}
+                combatLoot={state?.location?.combatLoot as any}
                 maxSlots={20}
                 onItemAction={handleItemAction}
                 className={styles.inventoryGrid}

@@ -167,7 +167,8 @@ export class CharacterFactory {
             location: {
                 hexId: '0,0',
                 coordinates: [0, 0],
-                droppedItems: []
+                droppedItems: [],
+                combatLoot: []
             },
             worldTime: { day: 1, hour: 9, minute: 0, month: 1, year: 1489, totalTurns: 0 },
             worldMap: (() => {

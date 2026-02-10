@@ -17,6 +17,7 @@ import { StoryScribe } from './StoryScribe';
 import { EncounterDirector } from './EncounterDirector';
 import { FactionEngine } from './FactionEngine';
 import { Dice } from './Dice';
+import { LootEngine } from './LootEngine';
 import { DataManager } from '../data/DataManager';
 import { Monster } from '../schemas/MonsterSchema';
 import { Encounter } from './EncounterDirector';
@@ -914,9 +915,27 @@ export class GameLoop {
             const inventoryEntry = mainHandId ? pc.inventory.items.find(i => i.instanceId === mainHandId) : null;
             const mainHandItem = inventoryEntry ? DataManager.getItem(inventoryEntry.id) : null;
 
-            // Equipment Validation
+            // Equipment & Ammo Validation
             if (isRanged && !CombatUtils.isRangedWeapon(mainHandItem)) {
                 return "You do not have a ranged weapon equipped in your main hand!";
+            }
+
+            // --- AMMO / THROWN LOGIC ---
+            let ammoItem: any = null;
+            if (isRanged) {
+                const requiredAmmo = CombatUtils.getRequiredAmmunition(mainHandItem?.name || '');
+                if (requiredAmmo) {
+                    ammoItem = pc.inventory.items.find(i => i.name === requiredAmmo);
+                    if (!ammoItem || (ammoItem.quantity || 0) <= 0) {
+                        return `You have no ${requiredAmmo}s! Ranged attack with ${mainHandItem?.name} requires ammunition.`;
+                    }
+                } else if (CombatUtils.isThrownWeapon(mainHandItem)) {
+                    // Thrown weapon logic: must be equipped (already checked)
+                    // We will consume it after the attack
+                } else {
+                    // It's a ranged weapon but doesn't require ammo (e.g. a spell? No, handled separately)
+                    // Or it's a ranged weapon without a mapping yet.
+                }
             }
 
             const strMod = MechanicsEngine.getModifier(pc.stats.STR || 10);
@@ -982,6 +1001,22 @@ export class GameLoop {
                 statMod,
                 forceDisadvantage
             );
+
+            // --- CONSUMPTION ---
+            if (isRanged) {
+                if (ammoItem) {
+                    ammoItem.quantity = (ammoItem.quantity || 1) - 1;
+                    if (ammoItem.quantity <= 0) {
+                        pc.inventory.items = pc.inventory.items.filter(i => i.instanceId !== ammoItem.instanceId);
+                        this.addCombatLog(`You are out of ${ammoItem.name}s!`);
+                    }
+                } else if (CombatUtils.isThrownWeapon(mainHandItem)) {
+                    // Unequip and remove from inventory
+                    pc.inventory.items = pc.inventory.items.filter(i => i.instanceId !== inventoryEntry?.instanceId);
+                    pc.equipmentSlots.mainHand = undefined;
+                    this.addCombatLog(`You threw your ${mainHandItem?.name || 'weapon'}!`);
+                }
+            }
 
             // Record roll and emit event
             combatState.lastRoll = (result.details?.roll || 0) + (result.details?.modifier || 0);
@@ -1523,56 +1558,71 @@ export class GameLoop {
                 let attackBonus = strMod + 2;
                 let damageFormula = "1d6";
                 let dmgBonus = strMod;
+                let forceDisadvantage = false;
+                let rangePrefix = "";
 
                 if (monsterData && monsterData.actions && monsterData.actions.length > 0) {
                     const preference = actor.tactical.isRanged ? 'range' : 'reach';
                     const actionData = monsterData.actions.find(a => a.description.toLowerCase().includes(preference)) || monsterData.actions[0];
-                    attackBonus = actionData.attackBonus !== undefined ? actionData.attackBonus : (actor.tactical.isRanged ? dexMod + 2 : strMod + 2);
-                    if (actionData.damage) {
-                        damageFormula = actionData.damage;
-                        dmgBonus = 0;
-                    } else {
-                        damageFormula = "1d6";
-                        dmgBonus = actor.tactical.isRanged ? dexMod : strMod;
+
+                    // --- NPC AMMO / THROWN LOGIC ---
+                    if (actor.tactical.isRanged) {
+                        const ammoType = CombatUtils.getRequiredAmmunition(actionData.name || '');
+                        const isThrown = actionData.description.toLowerCase().includes('thrown');
+
+                        if (ammoType) {
+                            if (actor.virtualAmmo === undefined) actor.virtualAmmo = 20;
+                            if (actor.virtualAmmo <= 0) {
+                                this.addCombatLog(`${actor.name} reaches for an ${ammoType} but finds their quiver empty!`);
+                                break;
+                            }
+                            actor.virtualAmmo--;
+                        } else if (isThrown) {
+                            if (actor.thrownActionUsed) {
+                                this.addCombatLog(`${actor.name} has no more ${actionData.name}s to throw!`);
+                                break;
+                            }
+                            actor.thrownActionUsed = true;
+                        }
                     }
-                }
 
-                // Range Verification
-                let forceDisadvantage = false;
-                let rangePrefix = "";
-                const gridManager = new CombatGridManager(this.state.combat.grid!);
-                const distance = gridManager.getDistance(actor.position, target.position);
+                    attackBonus = actionData.attackBonus !== undefined ? actionData.attackBonus : (actor.tactical.isRanged ? dexMod + 2 : strMod + 2);
+                    damageFormula = actionData.damage || damageFormula;
+                    dmgBonus = actor.tactical.isRanged ? dexMod : strMod;
 
-                if (actor.tactical.isRanged) {
-                    if (actor.tactical.range) {
-                        const normalCells = Math.ceil(actor.tactical.range.normal / 5);
-                        if (distance > normalCells) {
+                    // Range & Threatened Disadvantage
+                    const gridManager = new CombatGridManager(this.state.combat.grid!);
+                    const distance = gridManager.getDistance(actor.position, target.position);
+
+                    if (actor.tactical.isRanged) {
+                        if (actor.tactical.range && distance > Math.ceil(actor.tactical.range.normal / 5)) {
                             forceDisadvantage = true;
                             rangePrefix = "(Long Range! Disadvantage) ";
                         }
+                        const isThreatened = this.state.combat.combatants.some(c =>
+                            c.type !== actor.type && c.hp.current > 0 && gridManager.getDistance(actor.position, c.position) === 1
+                        );
+                        if (isThreatened) {
+                            forceDisadvantage = true;
+                            rangePrefix += "(Threatened! Disadvantage) ";
+                        }
                     }
-                    const isThreatened = this.state.combat.combatants.some(c =>
-                        c.type !== actor.type && c.hp.current > 0 && gridManager.getDistance(actor.position, c.position) === 1
-                    );
-                    if (isThreatened) {
-                        forceDisadvantage = true;
-                        rangePrefix += "(Threatened! Disadvantage) ";
-                    }
+
+                    const result = CombatResolutionEngine.resolveAttack(actor, target, attackBonus, damageFormula, dmgBonus, forceDisadvantage);
+
+                    this.state.combat.lastRoll = (result.details?.roll || 0) + (result.details?.modifier || 0);
+                    this.emitCombatEvent(result.type, target.id, result.damage || 0);
+                    this.applyCombatDamage(target, result.damage);
+                    if (target.isPlayer) this.state.character.hp.current = target.hp.current;
+
+                    const logMsg = rangePrefix + CombatLogFormatter.format(result, actor.name, target.name, actor.tactical.isRanged);
+                    this.addCombatLog(logMsg);
+                    this.state.combat.turnActions.push(logMsg); // Capture for summary
+
+                    break; // One attack per turn for most NPCs
+                } else {
+                    break; // No action decided
                 }
-
-                const result = CombatResolutionEngine.resolveAttack(actor, target, attackBonus, damageFormula, dmgBonus, forceDisadvantage);
-                this.state.combat.lastRoll = (result.details?.roll || 0) + (result.details?.modifier || 0);
-                this.emitCombatEvent(result.type, target.id, result.damage || 0);
-                this.applyCombatDamage(target, result.damage);
-                if (target.isPlayer) this.state.character.hp.current = target.hp.current;
-
-                const logMsg = rangePrefix + CombatLogFormatter.format(result, actor.name, target.name, actor.tactical.isRanged);
-                this.addCombatLog(logMsg);
-                this.state.combat.turnActions.push(logMsg); // Capture for summary
-
-                break; // One attack per turn for most NPCs
-            } else {
-                break; // No action decided
             }
         }
     }
@@ -1717,6 +1767,39 @@ export class GameLoop {
             char.xp += totalXP;
             this.addCombatLog(`You gained ${totalXP} Experience Points! (Total: ${char.xp})`);
 
+            // --- Generate Combat Loot ---
+            const defeatedEnemies = this.state.combat.combatants.filter(c => c.type === 'enemy');
+            const totalLoot: any[] = [];
+            let totalGold = 0;
+
+            for (const enemy of defeatedEnemies) {
+                const monsterData = DataManager.getMonster(enemy.name);
+                if (monsterData) {
+                    const loot = LootEngine.processDefeat(monsterData);
+                    totalLoot.push(...loot.items);
+                    totalGold += loot.gold.gp; // Assuming gp for simplicity in summary
+                    // Add all currencies
+                    char.inventory.gold.cp += loot.gold.cp;
+                    char.inventory.gold.sp += loot.gold.sp;
+                    char.inventory.gold.gp += loot.gold.gp;
+                    char.inventory.gold.pp += loot.gold.pp;
+                }
+            }
+
+            if (totalGold > 0 || totalLoot.length > 0) {
+                this.addCombatLog(`Loot found: ${totalGold}gp and ${totalLoot.length} items!`);
+
+                // Add instanceIds to loot items if missing
+                const processedLoot = totalLoot.map(item => ({
+                    ...item,
+                    equipped: false,
+                    instanceId: item.instanceId || `loot_${Date.now()}_${Math.random()}`
+                }));
+
+                if (!this.state.location.combatLoot) this.state.location.combatLoot = [];
+                this.state.location.combatLoot.push(...processedLoot);
+            }
+
             // Check for Level Up
             const nextThreshold = MechanicsEngine.getNextLevelXP(char.level);
             if (char.xp >= nextThreshold && char.level < 20) {
@@ -1756,6 +1839,38 @@ export class GameLoop {
             this.state.mode = 'GAME_OVER';
             this.emitStateUpdate();
         }
+    }
+
+    public pickupCombatLoot(instanceId: string) {
+        if (!this.state.location.combatLoot) return;
+
+        const itemIndex = this.state.location.combatLoot.findIndex(i => i.instanceId === instanceId);
+        if (itemIndex === -1) return;
+
+        const item = this.state.location.combatLoot[itemIndex];
+
+        // Weight check
+        const currentWeight = this.state.character.inventory.items.reduce((sum, i) => sum + (i.weight * (i.quantity || 1)), 0);
+        const itemWeight = item.weight * (item.quantity || 1);
+        const maxWeight = (this.state.character.stats.STR || 10) * 15;
+
+        if (currentWeight + itemWeight > maxWeight) {
+            this.addCombatLog(`Too heavy! You cannot carry any more.`);
+            return;
+        }
+
+        // Add to inventory
+        const existing = this.state.character.inventory.items.find(i => i.id === item.id && i.type !== 'Weapon' && i.type !== 'Armor');
+        if (existing) {
+            existing.quantity = (existing.quantity || 1) + (item.quantity || 1);
+        } else {
+            this.state.character.inventory.items.push({ ...item, equipped: false });
+        }
+
+        // Remove from loot
+        this.state.location.combatLoot.splice(itemIndex, 1);
+        this.addCombatLog(`Picked up ${item.name}.`);
+        this.emitStateUpdate();
     }
 
     private recalculateAC() {

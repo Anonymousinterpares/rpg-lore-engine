@@ -58,7 +58,7 @@ async function verifyMultiplayer() {
         },
         companions: [],
         mode: "EXPLORATION",
-        location: { hexId: "0,0", coordinates: [0, 0], droppedItems: [] },
+        location: { hexId: "0,0", coordinates: [0, 0], droppedItems: [], combatLoot: [] },
         worldTime: { hour: 10, minute: 0, day: 1, month: 1, year: 1492, totalTurns: 1 },
         worldMap: { grid_id: "main", hexes: {}, coastlines: [] },
         subLocations: [],

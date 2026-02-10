@@ -1,39 +1,27 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import { Monster } from '../schemas/MonsterSchema';
 import { Currency, CurrencyEngine } from './CurrencyEngine';
 import { Dice } from './Dice';
+import { DataManager } from '../data/DataManager';
 
-const MAPPINGS_DIR = path.join(__dirname, '..', '..', '..', 'data', 'mappings');
-const ITEM_DIR = path.join(__dirname, '..', '..', '..', 'data', 'item');
+// Static Imports for browser compatibility (Vite handles this)
+import weaponMappingData from '../../../data/mappings/weapon_action_mapping.json';
+import armorMappingData from '../../../data/mappings/armor_ac_mapping.json';
+import lootTiersData from '../../../data/mappings/loot_tiers.json';
 
 export interface LootResult {
     gold: Currency;
-    items: any[]; // Using any for Item as we'll load raw JSON
+    items: any[];
 }
 
 export class LootEngine {
-    private static weaponMapping: Record<string, string> | null = null;
-    private static armorMapping: any | null = null;
-    private static lootTiers: any | null = null;
-
-    private static loadMappings() {
-        if (!this.weaponMapping) {
-            this.weaponMapping = JSON.parse(fs.readFileSync(path.join(MAPPINGS_DIR, 'weapon_action_mapping.json'), 'utf-8'));
-        }
-        if (!this.armorMapping) {
-            this.armorMapping = JSON.parse(fs.readFileSync(path.join(MAPPINGS_DIR, 'armor_ac_mapping.json'), 'utf-8'));
-        }
-        if (!this.lootTiers) {
-            this.lootTiers = JSON.parse(fs.readFileSync(path.join(MAPPINGS_DIR, 'loot_tiers.json'), 'utf-8'));
-        }
-    }
+    private static weaponMapping = weaponMappingData as Record<string, string>;
+    private static armorMapping = armorMappingData as any;
+    private static lootTiers = lootTiersData as any;
 
     /**
      * Determines what equipment (weapons/armor) a monster drops.
      */
     public static getEquipmentDrops(monster: Monster): any[] {
-        this.loadMappings();
         const drops: any[] = [];
         const type = monster.type.toLowerCase();
 
@@ -42,8 +30,8 @@ export class LootEngine {
             for (const action of monster.actions) {
                 const itemFile = this.weaponMapping[action.name];
                 if (itemFile) {
-                    const item = this.loadItem(itemFile);
-                    if (item) drops.push(item);
+                    const item = DataManager.getItem(itemFile);
+                    if (item) drops.push(JSON.parse(JSON.stringify(item))); // Clone to avoid mutation
                 }
             }
         }
@@ -53,8 +41,8 @@ export class LootEngine {
             const ac = monster.ac;
             const mapping = this.armorMapping.mappings.find((m: any) => ac >= m.minAC && ac <= m.maxAC);
             if (mapping && mapping.item) {
-                const item = this.loadItem(mapping.item);
-                if (item) drops.push(item);
+                const item = DataManager.getItem(mapping.item);
+                if (item) drops.push(JSON.parse(JSON.stringify(item)));
             }
         }
 
@@ -65,7 +53,6 @@ export class LootEngine {
      * Generates random treasure (gold + bonus items) based on CR.
      */
     public static getTreasureDrops(cr: number): LootResult {
-        this.loadMappings();
         const gold: Currency = { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 };
         const items: any[] = [];
 
@@ -115,29 +102,14 @@ export class LootEngine {
         };
     }
 
-    private static loadItem(fileName: string): any | null {
-        try {
-            const filePath = path.join(ITEM_DIR, `${fileName}.json`);
-            if (fs.existsSync(filePath)) {
-                return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-            }
-        } catch (e) {
-            console.error(`Failed to load item: ${fileName}`, e);
-        }
-        return null;
-    }
-
     private static getRandomItemOfValue(maxValueInCopper: number): any | null {
-        // In a real implementation, we'd have an index of items by value.
-        // For now, we'll pick a few common treasure items or return null.
-        // A better way would be to scan ITEM_DIR occasionally.
         const commonTreasure = ['Amulet', 'Pouch', 'Flask_or_tankard', 'Mirror__steel'];
         const selection = commonTreasure[Math.floor(Math.random() * commonTreasure.length)];
-        const item = this.loadItem(selection);
+        const item = DataManager.getItem(selection);
 
         if (item && item.cost) {
             const value = CurrencyEngine.toCopper(item.cost);
-            if (value <= maxValueInCopper) return item;
+            if (value <= maxValueInCopper) return JSON.parse(JSON.stringify(item));
         }
         return null;
     }
@@ -153,7 +125,8 @@ export class LootEngine {
             cost: this.getScrollCost(level),
             description: `A magic scroll containing the spell ${spellName}.`,
             quantity: 1,
-            equipped: false
+            equipped: false,
+            instanceId: `scroll_${Date.now()}_${Math.random()}`
         };
     }
 
@@ -162,3 +135,4 @@ export class LootEngine {
         return { cp: 0, sp: 0, ep: 0, gp: costs[level] || 50, pp: 0 };
     }
 }
+

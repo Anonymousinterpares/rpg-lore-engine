@@ -56,6 +56,14 @@ export const FullSaveStateSchema = z.object({
             quantity: z.number(),
             weight: z.number(),
             instanceId: z.string()
+        })).optional().default([]),
+        combatLoot: z.array(z.object({
+            id: z.string(),
+            name: z.string(),
+            type: z.string(),
+            quantity: z.number(),
+            weight: z.number(),
+            instanceId: z.string()
         })).optional().default([])
     }),
     worldTime: WorldClockSchema,

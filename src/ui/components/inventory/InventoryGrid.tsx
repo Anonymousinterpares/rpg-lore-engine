@@ -22,6 +22,7 @@ interface InventoryGridProps {
     gold: { gp: number, sp: number, cp: number };
     capacity: number;
     droppedItems?: Item[];
+    combatLoot?: Item[];
     maxSlots?: number;
     onItemClick?: (item: Item) => void;
     onItemAction?: (action: string, item: Item) => void;
@@ -33,6 +34,7 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
     gold,
     capacity,
     droppedItems = [],
+    combatLoot = [],
     maxSlots = 20,
     onItemClick,
     onItemAction,
@@ -41,11 +43,13 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
     const [contextMenu, setContextMenu] = useState<{ x: number, y: number, item: Item } | null>(null);
     const [datasheetItem, setDatasheetItem] = useState<any>(null);
     const [showDropped, setShowDropped] = useState(false);
+    const [showLoot, setShowLoot] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     const totalWeight = items.reduce((sum, item) => sum + (item.weight * (item.quantity || 1)), 0);
     const isOverweight = totalWeight > capacity;
     const hasDroppedItems = (droppedItems || []).length > 0;
+    const hasCombatLoot = (combatLoot || []).length > 0;
 
     const getItemIcon = (type: string) => {
         const t = (type || '').toLowerCase();
@@ -142,14 +146,27 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                 ))}
             </div>
 
-            <button
-                className={`${styles.droppedItemsBtn} ${hasDroppedItems ? styles.hasItems : ''}`}
-                onClick={() => hasDroppedItems && setShowDropped(!showDropped)}
-                title={hasDroppedItems ? "View items at current location" : "No items on the ground"}
-            >
-                <Package size={14} />
-                {hasDroppedItems ? `Dropped Items (${droppedItems?.length})` : 'No items nearby'}
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: 'var(--spacing-sm)' }}>
+                {hasCombatLoot && (
+                    <button
+                        className={`${styles.lootBtn} ${styles.hasLoot}`}
+                        onClick={() => setShowLoot(!showLoot)}
+                        title="View loot from recent combat"
+                    >
+                        <Coins size={14} />
+                        Combat Loot ({combatLoot?.length})
+                    </button>
+                )}
+
+                <button
+                    className={`${styles.droppedItemsBtn} ${hasDroppedItems ? styles.hasItems : ''}`}
+                    onClick={() => hasDroppedItems && setShowDropped(!showDropped)}
+                    title={hasDroppedItems ? "View items at current location" : "No items on the ground"}
+                >
+                    <Package size={14} />
+                    {hasDroppedItems ? `Dropped Items (${droppedItems?.length})` : 'No items nearby'}
+                </button>
+            </div>
 
             {showDropped && hasDroppedItems && (
                 <DroppedItemsPanel
@@ -160,6 +177,21 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                         if (droppedItems.length <= itemsToPick.length) setShowDropped(false);
                     }}
                     onAction={onItemAction}
+                />
+            )}
+
+            {showLoot && hasCombatLoot && (
+                <DroppedItemsPanel
+                    items={combatLoot!}
+                    onClose={() => setShowLoot(false)}
+                    onPickup={(itemsToPick: Item[]) => {
+                        itemsToPick.forEach((item: Item) => onItemAction?.('pickupLoot', item));
+                        if (combatLoot!.length <= itemsToPick.length) setShowLoot(false);
+                    }}
+                    onAction={(action, item) => {
+                        if (action === 'pickup') onItemAction?.('pickupLoot', item);
+                        else onItemAction?.(action, item);
+                    }}
                 />
             )}
 

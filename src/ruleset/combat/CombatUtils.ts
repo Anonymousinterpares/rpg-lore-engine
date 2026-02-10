@@ -129,4 +129,24 @@ export class CombatUtils {
         // If no long range defined, it's same as normal
         return this.getWeaponRange(item);
     }
+    /**
+     * Gets the name of the ammunition item required for a given weapon.
+     */
+    public static getRequiredAmmunition(weaponName: string): string | null {
+        const name = weaponName.toLowerCase();
+        if (name.includes('longbow') || name.includes('shortbow')) return 'Arrow';
+        if (name.includes('crossbow')) return 'Crossbow bolt';
+        if (name.includes('blowgun')) return 'Blowgun needle';
+        if (name.includes('sling')) return 'Sling bullet';
+        return null;
+    }
+
+    /**
+     * Determines if a weapon is a thrown weapon that should be consumed on ranged attack.
+     */
+    public static isThrownWeapon(item: any): boolean {
+        if (!item || item.type !== 'Weapon') return false;
+        const properties = item.properties || [];
+        return properties.some((p: string) => p.toLowerCase().includes('thrown'));
+    }
 }

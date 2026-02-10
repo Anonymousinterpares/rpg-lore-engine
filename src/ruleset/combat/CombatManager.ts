@@ -158,21 +158,33 @@ export class CombatManager {
             ? `, taking position near a ${this.getFeatureName(feature, this.state.location.subLocationId || 'Plains')}`
             : '';
 
-        // Find nearest enemy for context
-        const enemies = this.state.combat?.combatants.filter(c => !c.isPlayer && c.type === 'enemy' && c.hp.current > 0) || [];
-        const nearestEnemy = enemies.reduce((closest, e) => {
+        // Context: show distance to the RELEVANT opponent, not to allies
+        let relevantTargets: Combatant[];
+        if (combatant.type === 'enemy') {
+            // Enemy moving -> show distance to player or companions
+            relevantTargets = this.state.combat?.combatants.filter(
+                c => (c.isPlayer || c.type === 'companion') && c.hp.current > 0
+            ) || [];
+        } else {
+            // Player or ally moving -> show distance to nearest enemy
+            relevantTargets = this.state.combat?.combatants.filter(
+                c => c.type === 'enemy' && c.hp.current > 0
+            ) || [];
+        }
+
+        const nearestOpponent = relevantTargets.reduce((closest, e) => {
             const d = this.gridManager!.getDistance(targetPos, e.position);
             return (!closest || d < closest.dist) ? { name: e.name, dist: d } : closest;
         }, null as { name: string, dist: number } | null);
 
-        const enemyContext = nearestEnemy
-            ? ` (${nearestEnemy.dist * 5}ft from ${nearestEnemy.name})`
+        const opponentContext = nearestOpponent
+            ? ` (${nearestOpponent.dist * 5}ft from ${nearestOpponent.name})`
             : '';
 
         combatant.position = targetPos;
         combatant.movementRemaining -= distance;
 
-        return `${combatant.name} moves ${distanceFt}ft ${direction}${featureSuffix}${enemyContext}.`;
+        return `${combatant.name} moves ${distanceFt}ft ${direction}${featureSuffix}${opponentContext}.`;
     }
 
     private getFeatureName(feature: TerrainFeature, biome: string): string {

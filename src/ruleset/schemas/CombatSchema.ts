@@ -88,6 +88,10 @@ export const CombatantSchema = z.object({
 
     // Links/Metadata
     sourceId: z.string().optional(), // ID of the caster who summoned this combatant
+
+    // NPC Realism Tracking
+    virtualAmmo: z.number().optional(),
+    thrownActionUsed: z.boolean().optional()
 });
 
 export type Combatant = z.infer<typeof CombatantSchema>;
