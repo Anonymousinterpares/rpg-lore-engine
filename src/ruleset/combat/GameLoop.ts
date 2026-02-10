@@ -35,6 +35,7 @@ import { BiomePoolManager } from './BiomeRegistry';
 import { CombatManager } from './CombatManager';
 import { CombatGridManager } from './grid/CombatGridManager';
 import { CombatUtils } from './CombatUtils';
+import { CombatAnalysisEngine, TacticalOption } from './grid/CombatAnalysisEngine';
 import { z } from 'zod';
 
 type Combatant = z.infer<typeof CombatantSchema>;
@@ -1530,6 +1531,30 @@ export class GameLoop {
 
     public getState(): GameState {
         return this.state;
+    }
+
+    /**
+     * Public API to get contextual tactical options for the player.
+     * Used by the UI to display narrative maneuvers.
+     */
+    public getTacticalOptions(): TacticalOption[] {
+        if (!this.state.combat || !this.state.combat.grid) return [];
+
+        const player = this.state.combat.combatants.find(c => c.isPlayer);
+        if (!player) return [];
+
+        const gridManager = new CombatGridManager(this.state.combat.grid);
+        const analysisEngine = new CombatAnalysisEngine(gridManager);
+
+        // Get the current hex biome for context
+        const currentHex = this.hexMapManager.getHex(this.state.location.hexId);
+        const biome = currentHex?.biome || 'Plains';
+
+        return analysisEngine.getContextualOptions(
+            player,
+            this.state.combat.combatants,
+            biome
+        );
     }
 
 

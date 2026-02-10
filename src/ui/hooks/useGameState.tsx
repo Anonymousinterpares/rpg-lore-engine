@@ -3,6 +3,7 @@ import { GameLoop } from '../../ruleset/combat/GameLoop';
 import { GameState } from '../../ruleset/combat/GameStateManager';
 import { BrowserStorageProvider } from '../../ruleset/combat/BrowserStorageProvider';
 import { DataManager } from '../../ruleset/data/DataManager';
+import { TacticalOption } from '../../ruleset/combat/grid/CombatAnalysisEngine';
 
 interface GameContextType {
     state: GameState | null;
@@ -15,6 +16,7 @@ interface GameContextType {
     updateState: () => void;
     loadGame: (saveId: string) => void;
     loadLastSave: () => void;
+    getTacticalOptions: () => TacticalOption[];
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -94,6 +96,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, [state, loadGame]);
 
+    const getTacticalOptions = useCallback((): TacticalOption[] => {
+        if (!engine) return [];
+        return engine.getTacticalOptions();
+    }, [engine]);
+
     useEffect(() => {
         if (isActive && engine) {
             // Subscribe to engine state updates
@@ -121,7 +128,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
             processCommand,
             updateState,
             loadGame,
-            loadLastSave
+            loadLastSave,
+            getTacticalOptions
         }}>
             {children}
         </GameContext.Provider>
