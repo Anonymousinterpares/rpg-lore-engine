@@ -194,6 +194,54 @@ export class CombatGridManager {
         }
         return path;
     }
+
+    /**
+     * Gets all reachable positions for a combatant based on their movement speed.
+     * Uses a simple BFS/Flood Fill for the UI highlight.
+     */
+    public getReachablePositions(start: GridPosition, movement: number, occupants: Combatant[] = []): GridPosition[] {
+        const reachable: GridPosition[] = [];
+        const queue: { pos: GridPosition, dist: number }[] = [{ pos: start, dist: 0 }];
+        const visited = new Set<string>();
+        visited.add(`${start.x},${start.y}`);
+
+        while (queue.length > 0) {
+            const { pos, dist } = queue.shift()!;
+
+            if (dist > 0) reachable.push(pos);
+            if (dist >= movement) continue;
+
+            for (let dx = -1; dx <= 1; dx++) {
+                for (let dy = -1; dy <= 1; dy++) {
+                    if (dx === 0 && dy === 0) continue;
+                    const next: GridPosition = { x: pos.x + dx, y: pos.y + dy };
+                    const key = `${next.x},${next.y}`;
+
+                    if (this.isWalkable(next, occupants) && !visited.has(key)) {
+                        visited.add(key);
+                        queue.push({ pos: next, dist: dist + 1 });
+                    }
+                }
+            }
+        }
+        return reachable;
+    }
+
+    /**
+     * Gets all positions within a certain range (Chebyshev distance).
+     */
+    public getPositionsInRange(start: GridPosition, range: number): GridPosition[] {
+        const inRange: GridPosition[] = [];
+        for (let x = start.x - range; x <= start.x + range; x++) {
+            for (let y = start.y - range; y <= start.y + range; y++) {
+                const pos = { x, y };
+                if (this.isWithinBounds(pos) && (x !== start.x || y !== start.y)) {
+                    inRange.push(pos);
+                }
+            }
+        }
+        return inRange;
+    }
 }
 
 class Node {

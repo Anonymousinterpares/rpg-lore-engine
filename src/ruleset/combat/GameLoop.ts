@@ -773,6 +773,9 @@ export class GameLoop {
         const biome = this.hexMapManager.getHex(this.state.location.hexId)?.biome || 'Plains';
         await this.combatManager.initializeCombat(encounter, biome);
         this.emitStateUpdate();
+
+        // CRITICAL FIX: Trigger combat queue so AI acts if it wins initiative
+        await this.processCombatQueue();
     }
 
     private handleCombatAction(intent: ParsedIntent): string {
@@ -851,6 +854,11 @@ export class GameLoop {
         } else if (intent.command === 'use') {
             const abilityName = intent.args?.[0] || intent.originalInput.replace(/^use /i, '').trim();
             resultMsg = this.useAbility(abilityName);
+        } else if (intent.command === 'move') {
+            const x = parseInt(intent.args?.[0] || '0');
+            const y = parseInt(intent.args?.[1] || '0');
+            const combatManager = new CombatManager(this.state);
+            resultMsg = combatManager.moveCombatant(currentCombatant, { x, y });
         } else if (intent.command === 'end turn') {
             // Only players explicitly end turn via command. AI handles it internally.
             if (!currentCombatant.isPlayer) return "";

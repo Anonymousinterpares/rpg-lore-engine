@@ -65,8 +65,12 @@ export class CombatManager {
             monster.position = pos;
             combatants.push(monster);
 
-            // Register discovery
-            LoreService.registerMonsterEncounter(monsterName, this.state, () => { });
+            // Register discovery (with safety wrapper to prevent JSON crashes)
+            try {
+                LoreService.registerMonsterEncounter(monsterName, this.state, () => { });
+            } catch (error) {
+                console.error(`[LoreService] Failed to register encounter for ${monsterName}:`, error);
+            }
         }
 
         // 3. Sort by Initiative
