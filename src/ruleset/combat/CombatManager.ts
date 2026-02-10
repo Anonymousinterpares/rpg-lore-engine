@@ -36,7 +36,7 @@ export class CombatManager {
         // Add Player
         const pc = CombatFactory.fromPlayer(this.state.character);
         pc.initiative = Dice.d20() + MechanicsEngine.getModifier(this.state.character.stats.DEX || 10);
-        pc.position = grid.playerStartZone[0] || { x: 2, y: 10 };
+        pc.position = grid.playerStartZone[0] || { x: 10, y: 40 };
         combatants.push(pc);
 
         // Add Companions
@@ -46,7 +46,7 @@ export class CombatManager {
 
             // Deployment: Pick unique positions from player zone
             const posIndex = Math.min(i + 1, grid.playerStartZone.length - 1);
-            companion.position = grid.playerStartZone[posIndex] || { x: 2 + i, y: 11 + i };
+            companion.position = grid.playerStartZone[posIndex] || { x: 10 + i, y: 41 + i };
             combatants.push(companion);
         }
 
@@ -58,7 +58,7 @@ export class CombatManager {
 
             // Deployment: Pick unique positions from enemy zone
             const posIndex = Math.min(i, grid.enemyStartZone.length - 1);
-            const pos = grid.enemyStartZone[posIndex] || { x: 17, y: 10 };
+            const pos = grid.enemyStartZone[posIndex] || { x: 68, y: 40 };
 
             const monster = CombatFactory.fromMonster(monsterData || { name: monsterName, hp: { average: 15 }, ac: 10, stats: {} } as any, `enemy_${i}`);
             monster.initiative = Dice.d20() + (monsterData ? MechanicsEngine.getModifier(monsterData.stats['DEX'] || 10) : 0);

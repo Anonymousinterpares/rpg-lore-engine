@@ -30,9 +30,15 @@ export class IntentRouter {
         const combatKeywords = ['attack', 'dodge', 'dash', 'disengage', 'hide', 'end turn', 'use'];
         if (inCombat && combatKeywords.some(k => trimmed.toLowerCase().includes(k))) {
             const cmd = combatKeywords.find(k => trimmed.toLowerCase().includes(k));
+
+            // Extract args: remove the matched keyword and split the rest
+            const remaining = trimmed.toLowerCase().replace(cmd!, '').trim();
+            const args = remaining ? remaining.split(/\s+/) : [];
+
             return {
                 type: 'COMBAT_ACTION',
                 command: cmd,
+                args,
                 originalInput: input
             };
         }
