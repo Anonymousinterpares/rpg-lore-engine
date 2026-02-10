@@ -508,6 +508,32 @@ export class GameLoop {
                         if (!currentCombatant) return "Error: No active combatant.";
                         if (!currentCombatant.isPlayer) return "It is not your turn.";
 
+                        // Handle Special Move Modes
+                        const mode = intent.args?.[2]; // sprint | evasive
+                        if (mode === 'sprint') {
+                            if (currentCombatant.resources.actionSpent) {
+                                return "Cannot Sprint: You have already used your action this turn.";
+                            }
+                            // Sprint = Dash (Add Speed) + Reckless (-2 AC)
+                            currentCombatant.movementRemaining += currentCombatant.movementSpeed;
+                            currentCombatant.resources.actionSpent = true;
+                            currentCombatant.statusEffects.push({
+                                id: 'sprint_reckless',
+                                name: 'Reckless Sprint',
+                                type: 'DEBUFF',
+                                duration: 1,
+                                sourceId: currentCombatant.id
+                            });
+                        } else if (mode === 'evasive') {
+                            currentCombatant.statusEffects.push({
+                                id: 'evasive_movement',
+                                name: 'Evasive Movement',
+                                type: 'BUFF',
+                                duration: 1,
+                                sourceId: currentCombatant.id
+                            });
+                        }
+
                         return this.combatManager.moveCombatant(currentCombatant, { x, y });
                     }
 
