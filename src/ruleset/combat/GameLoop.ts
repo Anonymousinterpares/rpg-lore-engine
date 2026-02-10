@@ -884,7 +884,9 @@ export class GameLoop {
             if (!target) return "No target found.";
 
             const pc = this.state.character;
-            const mainHandItem = pc.equipmentSlots.mainHand ? DataManager.getItem(pc.equipmentSlots.mainHand) : null;
+            const mainHandId = pc.equipmentSlots.mainHand;
+            const inventoryEntry = mainHandId ? pc.inventory.items.find(i => i.instanceId === mainHandId) : null;
+            const mainHandItem = inventoryEntry ? DataManager.getItem(inventoryEntry.id) : null;
 
             // Equipment Validation
             if (isRanged && !CombatUtils.isRangedWeapon(mainHandItem)) {
