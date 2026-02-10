@@ -54,8 +54,40 @@ export const CombatActionBar: React.FC = () => {
     const hasUsedAction = player?.resources?.actionSpent || false;
 
     const mainHandId = state.character.equipmentSlots.mainHand;
-    const mainHandItem = mainHandId ? state.character.inventory.items.find(i => i.instanceId === mainHandId) : null;
+    const inventoryItem = mainHandId ? state.character.inventory.items.find(i => i.instanceId === mainHandId) : null;
+    const definitionItem = inventoryItem ? DataManager.getItem(inventoryItem.id) as any : null;
+
+    // Merge: Use definition for stats (fresh), inventory for state (instanceId, equipped)
+    // This provides a safety layer in case an item instance is missing data
+    const mainHandItem = (inventoryItem && definitionItem ? { ...definitionItem, ...inventoryItem, range: definitionItem.range, properties: definitionItem.properties } : null) as any;
+
     const isRangedEquipped = CombatUtils.isRangedWeapon(mainHandItem);
+
+    // Dynamic Tooltip Calculation for Ranged Attack
+    const getRangedTooltip = () => {
+        if (!isRangedEquipped) return "No ranged weapon equipped";
+        if (!state.combat?.selectedTargetId) return "Select a target to see range info";
+
+        const target = state.combat.combatants.find(c => c.id === state.combat?.selectedTargetId);
+        if (!target || !player) return "Perform a ranged weapon attack";
+
+        // Simple Hex distance calculation: max(|dq|, |dr|, |dq+dr|)
+        const dq = target.position.x - player.position.x;
+        const dr = target.position.y - player.position.y;
+        const distanceCells = Math.max(Math.abs(dq), Math.abs(dr), Math.abs(dq + dr));
+        const distanceFt = distanceCells * 5;
+
+        const normalRange = mainHandItem?.range?.normal || 0;
+        const maxRange = mainHandItem?.range?.long || normalRange;
+
+        if (distanceFt <= normalRange) {
+            return `Normal Shot (${distanceFt}ft). No penalties.`;
+        } else if (distanceFt <= maxRange) {
+            return `Long Shot (${distanceFt}ft). Attack has Disadvantage.`;
+        } else {
+            return `Target too far (${distanceFt}ft)! Max range is ${maxRange}ft.`;
+        }
+    };
 
     const handleAction = (command: string) => {
         processCommand(command);
@@ -100,7 +132,7 @@ export const CombatActionBar: React.FC = () => {
                     onClick={() => handleAction('attack ranged')}
                     disabled={!isPlayerTurn || hasUsedAction || !isRangedEquipped}
                     disabledReason={!isPlayerTurn ? "Not your turn" : (hasUsedAction ? "Action already used" : "No ranged weapon equipped")}
-                    tooltip="Perform a ranged weapon attack"
+                    tooltip={getRangedTooltip()}
                 />
                 <ActionButton
                     icon={<Sparkles size={24} />}

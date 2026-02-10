@@ -47,6 +47,7 @@ export class CharacterFactory {
             const weight = itemData?.weight || 0;
 
             return {
+                ...itemData,
                 name: name,
                 id: eq.id,
                 type: itemData?.type || 'Misc',

@@ -664,6 +664,7 @@ export class GameLoop {
 
                     for (let i = 0; i < additions; i++) {
                         charToUpdate.inventory.items.push({
+                            ...itemDef,
                             id: itemDef.name,
                             instanceId: `${itemDef.name.toLowerCase().replace(/ /g, '_')}_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
                             name: itemDef.name,
@@ -902,15 +903,22 @@ export class GameLoop {
             const gridManager = new CombatGridManager(this.state.combat.grid!);
             const distance = gridManager.getDistance(currentCombatant.position, target.position);
 
-            const rangeCells = CombatUtils.getWeaponRange(mainHandItem);
+            const normalRangeCells = CombatUtils.getWeaponRange(mainHandItem);
+            const maxRangeCells = CombatUtils.getWeaponMaxRange(mainHandItem);
 
-            if (distance > rangeCells) {
-                return `Target is too far away! (${distance} cells). Your weapon range is ${rangeCells} cell(s).`;
+            if (distance > maxRangeCells) {
+                return `Target is too far away! (${distance} cells). Your weapon maximum range is ${maxRangeCells} cell(s).`;
             }
 
-            // Threatened Rule: Disadvantage if an enemy is adjacent
+            // Determine Advantage/Disadvantage
             let forceDisadvantage = false;
-            let threatenedPrefix = "";
+            let rangePrefix = "";
+
+            // 1. Long Range Rule
+            if (isRanged && distance > normalRangeCells) {
+                forceDisadvantage = true;
+                rangePrefix = "(Long Range! Disadvantage) ";
+            }
             if (isRanged) {
                 const isThreatened = combatState.combatants.some(c =>
                     c.type === 'enemy' &&
@@ -919,7 +927,7 @@ export class GameLoop {
                 );
                 if (isThreatened) {
                     forceDisadvantage = true;
-                    threatenedPrefix = "(Threatened! Disadvantage) ";
+                    rangePrefix += "(Threatened! Disadvantage) ";
                 }
             }
 
@@ -937,7 +945,7 @@ export class GameLoop {
             this.emitCombatEvent(result.type, target.id, result.damage || 0);
 
             this.applyCombatDamage(target, result.damage);
-            resultMsg = threatenedPrefix + CombatLogFormatter.format(result, currentCombatant.name, target.name);
+            resultMsg = rangePrefix + CombatLogFormatter.format(result, currentCombatant.name, target.name);
 
         } else if (intent.command === 'dodge') {
             currentCombatant.statusEffects.push({
@@ -1422,12 +1430,64 @@ export class GameLoop {
             if (!target) return;
 
             const strMod = MechanicsEngine.getModifier(actor.stats['STR'] || 10);
+            const dexMod = MechanicsEngine.getModifier(actor.stats['DEX'] || 10);
+
+            // 1. NPC Action Selection based on tactics
+            const monsterData = DataManager.getMonster(actor.name);
+            let attackBonus = strMod + 2;
+            let damageFormula = "1d6";
+            let dmgBonus = strMod;
+
+            if (monsterData && monsterData.actions && monsterData.actions.length > 0) {
+                const preference = actor.tactical.isRanged ? 'range' : 'reach';
+                const actionData = monsterData.actions.find(a => a.description.toLowerCase().includes(preference)) || monsterData.actions[0];
+
+                attackBonus = actionData.attackBonus !== undefined ? actionData.attackBonus : (actor.tactical.isRanged ? dexMod + 2 : strMod + 2);
+
+                if (actionData.damage) {
+                    damageFormula = actionData.damage;
+                    dmgBonus = 0; // Modifier is already in the formula
+                } else {
+                    damageFormula = "1d6";
+                    dmgBonus = actor.tactical.isRanged ? dexMod : strMod;
+                }
+            }
+
+            // 2. Spatial Disadvantage logic for NPCs
+            let forceDisadvantage = false;
+            let rangePrefix = "";
+            const gridManager = new CombatGridManager(this.state.combat.grid!);
+            const distance = gridManager.getDistance(actor.position, target.position);
+
+            if (actor.tactical.isRanged) {
+                // Long Range Rule
+                if (actor.tactical.range) {
+                    const normalCells = Math.ceil(actor.tactical.range.normal / 5);
+                    if (distance > normalCells) {
+                        forceDisadvantage = true;
+                        rangePrefix = "(Long Range! Disadvantage) ";
+                    }
+                }
+
+                // Threatened Rule (Ranged in melee)
+                const isThreatened = this.state.combat.combatants.some(c =>
+                    c.type !== actor.type &&
+                    c.hp.current > 0 &&
+                    gridManager.getDistance(actor.position, c.position) === 1
+                );
+                if (isThreatened) {
+                    forceDisadvantage = true;
+                    rangePrefix += "(Threatened! Disadvantage) ";
+                }
+            }
+
             const result = CombatResolutionEngine.resolveAttack(
                 actor,
                 target,
-                strMod + 2, // Generic monster bonus
-                "1d6", // Generic damage
-                strMod
+                attackBonus,
+                damageFormula,
+                dmgBonus,
+                forceDisadvantage
             );
 
             // Record roll and emit event

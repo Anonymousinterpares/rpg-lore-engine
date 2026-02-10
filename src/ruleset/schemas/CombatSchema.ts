@@ -30,6 +30,10 @@ export const CombatantTacticalSchema = z.object({
     cover: z.enum(['None', 'Half', 'Three-Quarters', 'Full']).default('None'),
     reach: z.number().default(5),
     isRanged: z.boolean().default(false),
+    range: z.object({
+        normal: z.number(),
+        long: z.number()
+    }).optional(),
     isGrappledBy: z.string().optional(), // ID of grappler
     isGrappling: z.string().optional() // ID of target
 });

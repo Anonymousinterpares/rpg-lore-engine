@@ -81,7 +81,7 @@ const ItemDatasheet: React.FC<ItemDatasheetProps> = ({ item, onClose }) => {
                             {item.range && (
                                 <div className={styles.statLine}>
                                     <Target size={14} />
-                                    <strong>Range:</strong> {item.range.normal}{item.range.long ? `/${item.range.long}` : ''} ft
+                                    <strong>Range:</strong> {item.range.normal}ft (Normal) / {item.range.long || item.range.normal}ft (Max)
                                 </div>
                             )}
                         </div>

@@ -115,4 +115,18 @@ export class CombatUtils {
         // 3. Melee reach default
         return 1;
     }
+
+    /**
+     * Gets the maximum range of a weapon (long range) in grid cells.
+     */
+    public static getWeaponMaxRange(item: any): number {
+        if (!item) return 1;
+
+        if (item.range && typeof item.range.long === 'number') {
+            return Math.ceil(item.range.long / 5);
+        }
+
+        // If no long range defined, it's same as normal
+        return this.getWeaponRange(item);
+    }
 }

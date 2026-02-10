@@ -71,8 +71,11 @@ export class CombatAI {
         // 4. Range Verification (Tactical Phase)
         const distance = gridManager.getDistance(actor.position, primaryTarget.position);
 
-        // Use tactical reach (converted to cells)
-        const reach = actor.tactical.isRanged ? 20 : Math.ceil((actor.tactical.reach || 5) / 5);
+        // Use tactical reach/range (converted to cells)
+        let reach = actor.tactical.isRanged ? 20 : Math.ceil((actor.tactical.reach || 5) / 5);
+        if (actor.tactical.range) {
+            reach = Math.ceil(actor.tactical.range.long / 5);
+        }
 
         if (distance <= reach) {
             // Target is in range -> ATTACK
