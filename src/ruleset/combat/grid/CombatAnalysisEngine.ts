@@ -305,19 +305,23 @@ export class CombatAnalysisEngine {
 
         return coverFeatures.map(item => {
             const fullSpeed = combatant.movementRemaining;
+            const sprintSpeed = combatant.movementSpeed * 2; // Sprint = Dash (2x base speed)
             const halfSpeed = Math.floor(fullSpeed / 2);
             const relDir = this.gridManager.getRelativeDirection(combatant.position, item.feature.position);
 
             // Calculate approach positions for each mode
             const sprintPos = this.getApproachPositionWithRange(
+                combatant.position, item.feature.position, sprintSpeed, allCombatants);
+            const normalPos = this.getApproachPositionWithRange(
                 combatant.position, item.feature.position, fullSpeed, allCombatants);
-            const normalPos = sprintPos;
             const evasivePos = this.getApproachPositionWithRange(
                 combatant.position, item.feature.position, halfSpeed, allCombatants);
 
             const sprintDist = sprintPos ? this.gridManager.getDistance(combatant.position, sprintPos) : 0;
+            const normalDist = normalPos ? this.gridManager.getDistance(combatant.position, normalPos) : 0;
             const evasiveDist = evasivePos ? this.gridManager.getDistance(combatant.position, evasivePos) : 0;
             const sprintRemaining = Math.max(0, item.dist - sprintDist);
+            const normalRemaining = Math.max(0, item.dist - normalDist);
             const evasiveRemaining = Math.max(0, item.dist - evasiveDist);
 
             const coverLabel = item.feature.coverBonus === 'FULL' ? 'Full Cover'
@@ -344,9 +348,9 @@ export class CombatAnalysisEngine {
                     {
                         id: `cover_approach_${item.feature.id}`,
                         label: '🏃 Approach Cover',
-                        description: sprintRemaining === 0
-                            ? `${sprintDist * 5}ft (arrive!)`
-                            : `${sprintDist * 5}ft move, ${sprintRemaining * 5}ft remaining`,
+                        description: normalRemaining === 0
+                            ? `${normalDist * 5}ft (arrive!)`
+                            : `${normalDist * 5}ft move, ${normalRemaining * 5}ft remaining`,
                         command: normalPos ? `/move ${normalPos.x} ${normalPos.y}` : ''
                     },
                     {

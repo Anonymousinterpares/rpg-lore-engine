@@ -901,15 +901,30 @@ export class GameLoop {
             const attackBonus = statMod + prof;
             const damageFormula = (mainHandItem as any)?.damage?.dice || "1d8";
 
-            // Bug Fix #2: Spatial Range Validation
+            // Spatial Range Validation
             const gridManager = new CombatGridManager(this.state.combat.grid!);
             const distance = gridManager.getDistance(currentCombatant.position, target.position);
 
-            const normalRangeCells = CombatUtils.getWeaponRange(mainHandItem);
-            const maxRangeCells = CombatUtils.getWeaponMaxRange(mainHandItem);
+            let normalRangeCells: number;
+            let maxRangeCells: number;
+            if (isRanged) {
+                normalRangeCells = CombatUtils.getWeaponRange(mainHandItem);
+                maxRangeCells = CombatUtils.getWeaponMaxRange(mainHandItem);
+            } else {
+                // Melee: 1 cell (5ft), or 2 cells (10ft) for Reach weapons
+                const hasReach = (mainHandItem as any)?.properties?.some(
+                    (p: string) => p.toLowerCase().includes('reach')
+                );
+                normalRangeCells = hasReach ? 2 : 1;
+                maxRangeCells = normalRangeCells;
+            }
 
             if (distance > maxRangeCells) {
-                return `Target is too far away! (${distance} cells). Your weapon maximum range is ${maxRangeCells} cell(s).`;
+                const distFt = distance * 5;
+                const rangeFt = maxRangeCells * 5;
+                return isRanged
+                    ? `Target is too far away! (${distFt}ft). Your weapon maximum range is ${rangeFt}ft.`
+                    : `Target is out of melee reach! (${distFt}ft away, melee reach is ${rangeFt}ft). Move closer first.`;
             }
 
             // Determine Advantage/Disadvantage
@@ -991,6 +1006,8 @@ export class GameLoop {
             const mode = intent.args?.[2]; // sprint | evasive
 
             if (mode === 'sprint') {
+                // Sprint = Dash + Reckless: double remaining movement but -2 AC
+                currentCombatant.movementRemaining = currentCombatant.movementSpeed * 2;
                 currentCombatant.statusEffects.push({ id: 'sprint_reckless', name: 'Reckless Sprint', type: 'DEBUFF', duration: 1, sourceId: currentCombatant.id });
             } else if (mode === 'evasive') {
                 currentCombatant.statusEffects.push({ id: 'evasive_movement', name: 'Evasive Movement', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
@@ -1388,6 +1405,7 @@ export class GameLoop {
                         ? `${this.state.combat.turnActions.join(". ")}`
                         : `${actor.name} waits for an opening.`;
                     this.addCombatLog(npcSummary);
+                    this.state.lastNarrative = npcSummary; // Push NPC actions to the narrative panel
 
                     // Pacing delay after action
                     await new Promise(resolve => setTimeout(resolve, 1000));

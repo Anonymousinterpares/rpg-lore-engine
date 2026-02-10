@@ -13,16 +13,17 @@ export class TerrainGenerator {
         const rng = this.createRNG(seed);
 
         // Standard Deployment Zones (Proportionally scaled for 80x80)
+        // Compact 4x4 deployment zones (~20ft square) centered on y-midline
         const playerStartZone: GridPosition[] = [];
-        for (let x = 0; x < 20; x++) {
-            for (let y = 32; y < 48; y++) {
+        for (let x = 2; x < 6; x++) {
+            for (let y = 38; y < 42; y++) {
                 playerStartZone.push({ x, y });
             }
         }
 
         const enemyStartZone: GridPosition[] = [];
-        for (let x = 60; x < 80; x++) {
-            for (let y = 32; y < 48; y++) {
+        for (let x = 74; x < 78; x++) {
+            for (let y = 38; y < 42; y++) {
                 enemyStartZone.push({ x, y });
             }
         }
@@ -138,11 +139,11 @@ export class TerrainGenerator {
     }
 
     private static isInStartZone(pos: GridPosition): boolean {
-        // Player zone: x [0,19], y [32,47]
-        // Enemy zone: x [60,79], y [32,47]
-        if (pos.y >= 32 && pos.y <= 47) {
-            if (pos.x >= 0 && pos.x <= 19) return true;
-            if (pos.x >= 60 && pos.x <= 79) return true;
+        // Player zone: x [2,5], y [38,41]
+        // Enemy zone: x [74,77], y [38,41]
+        if (pos.y >= 38 && pos.y <= 41) {
+            if (pos.x >= 2 && pos.x <= 5) return true;
+            if (pos.x >= 74 && pos.x <= 77) return true;
         }
         return false;
     }

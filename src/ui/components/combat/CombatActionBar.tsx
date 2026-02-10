@@ -52,6 +52,7 @@ export const CombatActionBar: React.FC = () => {
     const player = state.combat.combatants.find(c => c.id === 'player');
     const isPlayerTurn = state.combat.combatants[state.combat.currentTurnIndex]?.isPlayer;
     const hasUsedAction = player?.resources?.actionSpent || false;
+    const hasMovement = (player?.movementRemaining ?? 0) > 0;
 
     const mainHandId = state.character.equipmentSlots.mainHand;
     const inventoryItem = mainHandId ? state.character.inventory.items.find(i => i.instanceId === mainHandId) : null;
@@ -167,8 +168,8 @@ export const CombatActionBar: React.FC = () => {
                     hotkey="Q"
                     onClick={() => { setShowTactics(!showTactics); setShowSpells(false); setShowAbilities(false); }}
                     active={showTactics}
-                    disabled={!isPlayerTurn}
-                    disabledReason={!isPlayerTurn ? "Not your turn" : ""}
+                    disabled={!isPlayerTurn || !hasMovement}
+                    disabledReason={!isPlayerTurn ? "Not your turn" : !hasMovement ? "No movement remaining" : ""}
                     tooltip="Analyze field for tactical maneuvers"
                 />
                 <ActionButton
