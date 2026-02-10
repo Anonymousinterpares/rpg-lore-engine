@@ -242,6 +242,33 @@ export class CombatGridManager {
         }
         return inRange;
     }
+
+    /**
+     * Calculates the cardinal or relative direction from one point to another.
+     */
+    public getRelativeDirection(from: GridPosition, to: GridPosition): string {
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+
+        if (dx === 0 && dy === 0) return 'here';
+
+        // Use 8-point cardinal as baseline
+        if (Math.abs(dx) > Math.abs(dy) * 2) return dx > 0 ? 'East' : 'West';
+        if (Math.abs(dy) > Math.abs(dx) * 2) return dy > 0 ? 'South' : 'North';
+
+        if (dx > 0 && dy > 0) return 'South-East';
+        if (dx > 0 && dy < 0) return 'North-East';
+        if (dx < 0 && dy > 0) return 'South-West';
+        return 'North-West';
+    }
+
+    /**
+     * Gets the exact path distance using A* (number of moves).
+     */
+    public getDistanceVector(from: GridPosition, to: GridPosition, occupants: Combatant[] = []): number {
+        const path = this.findPath(from, to, occupants);
+        return path ? path.length - 1 : Infinity;
+    }
 }
 
 class Node {

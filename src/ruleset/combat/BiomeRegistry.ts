@@ -6,6 +6,88 @@ import biomeManifest from '../data/biome-manifest.json';
  */
 const BIOME_VARIANTS: Record<string, number[]> = biomeManifest.variants;
 
+export interface BiomeTacticalProps {
+    passivePerception: number;
+    dangerMultiplier: number;
+    dangerTier: 'Safe' | 'Standard' | 'Dangerous' | 'Deadly';
+    features: Record<string, string>;
+}
+
+export const BIOME_TACTICAL_DATA: Record<string, BiomeTacticalProps> = {
+    'Volcanic': {
+        passivePerception: 16,
+        dangerMultiplier: 3.0,
+        dangerTier: 'Deadly',
+        features: { TREE: 'Dead Charred Tree', WALL: 'Obsidian Ridge', RUBBLE: 'Cooling Magma Rock', WATER: 'Lava Flow' }
+    },
+    'Ruins': {
+        passivePerception: 16,
+        dangerMultiplier: 3.0,
+        dangerTier: 'Deadly',
+        features: { TREE: 'Dead Tree', WALL: 'Crumbling Wall', RUBBLE: 'Toppled Statue', WATER: 'Flooded Cellar' }
+    },
+    'Swamp': {
+        passivePerception: 14,
+        dangerMultiplier: 2.0,
+        dangerTier: 'Dangerous',
+        features: { TREE: 'Mangrove', WALL: 'Sunken Barrier', RUBBLE: 'Overgrown Stone', WATER: 'Murky Pool' }
+    },
+    'Mountain': {
+        passivePerception: 14,
+        dangerMultiplier: 2.0,
+        dangerTier: 'Dangerous',
+        features: { TREE: 'Twisted Pine', WALL: 'Cliff Face', RUBBLE: 'Boulder', WATER: 'Mountain Spring' }
+    },
+    'Desert': {
+        passivePerception: 14,
+        dangerMultiplier: 2.0,
+        dangerTier: 'Dangerous',
+        features: { TREE: 'Cactus', WALL: 'Sandstone Slab', RUBBLE: 'Sand Pile', WATER: 'Oasis' }
+    },
+    'Jungle': {
+        passivePerception: 14,
+        dangerMultiplier: 2.0,
+        dangerTier: 'Dangerous',
+        features: { TREE: 'Giant Fern', WALL: 'Vine Wall', RUBBLE: 'Mossy Rock', WATER: 'Tropical Stream' }
+    },
+    'Tundra': {
+        passivePerception: 14,
+        dangerMultiplier: 2.0,
+        dangerTier: 'Dangerous',
+        features: { TREE: 'Frozen Fir', WALL: 'Ice Wall', RUBBLE: 'Snow Mound', WATER: 'Frozen Pond' }
+    },
+    'Ocean': {
+        passivePerception: 14,
+        dangerMultiplier: 2.0,
+        dangerTier: 'Dangerous',
+        features: { TREE: 'Coral Spire', WALL: 'Reef Wall', RUBBLE: 'Shipwreck', WATER: 'Whirlpool' }
+    },
+    'Coast': {
+        passivePerception: 14,
+        dangerMultiplier: 2.0,
+        dangerTier: 'Dangerous',
+        features: { TREE: 'Palm', WALL: 'Dune Ridge', RUBBLE: 'Driftwood', WATER: 'Tide Pool' }
+    },
+    'Forest': {
+        passivePerception: 12,
+        dangerMultiplier: 1.0,
+        dangerTier: 'Standard',
+        features: { TREE: 'Ancient Oak', WALL: 'Thicket Wall', RUBBLE: 'Mossy Rock', WATER: 'Stream' }
+    },
+    'Plains': {
+        passivePerception: 12,
+        dangerMultiplier: 1.0,
+        dangerTier: 'Standard',
+        features: { TREE: 'Lone Oak', WALL: 'Stone Fence', RUBBLE: 'Field Stone', WATER: 'Puddle' }
+    },
+    'Urban': {
+        passivePerception: 10,
+        dangerMultiplier: 0.5,
+        dangerTier: 'Safe',
+        features: { TREE: 'Decorative Elm', WALL: 'Brick Wall', RUBBLE: 'Crate', WATER: 'Open Sewer' }
+    }
+};
+
 /**
  * Utility to manage the pooling logic requested by the user.
  * It tracks used variants per biome type for a specific generation session.

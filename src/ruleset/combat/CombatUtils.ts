@@ -73,4 +73,46 @@ export class CombatUtils {
 
         return 5; // Default fallback for single targets if units missing
     }
+
+    /**
+     * Determines if an item is a ranged weapon based on its properties OR the presence of a range data with normal > 5.
+     */
+    public static isRangedWeapon(item: any): boolean {
+        if (!item || item.type !== 'Weapon') return false;
+
+        // 1. Direct mechanical range check
+        if (item.range && item.range.normal > 5) return true;
+
+        // 2. Property check
+        const properties = item.properties || [];
+        return (
+            properties.includes('Range') ||
+            properties.includes('Ammunition') ||
+            properties.some((p: string) => p.toLowerCase().includes('ranged'))
+        );
+    }
+
+    /**
+     * Gets the range of a weapon in grid cells.
+     * Uses the new 'range.normal' field if available, falls back to parsing properties, then to reach.
+     */
+    public static getWeaponRange(item: any): number {
+        if (!item) return 1;
+
+        // 1. Use the new standard range field (e.g. { normal: 80, long: 320 })
+        if (item.range && typeof item.range.normal === 'number') {
+            return Math.ceil(item.range.normal / 5);
+        }
+
+        // 2. Fallback to property parsing
+        if (item.properties) {
+            const rangeProp = item.properties.find((p: string) => typeof p === 'string' && p.toLowerCase().startsWith('range'));
+            if (rangeProp) {
+                return this.parseRange(rangeProp);
+            }
+        }
+
+        // 3. Melee reach default
+        return 1;
+    }
 }

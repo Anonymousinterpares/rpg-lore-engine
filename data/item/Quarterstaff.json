@@ -16,5 +16,8 @@
   "properties": [
     "Versatile",
     "Monk"
-  ]
+  ],
+  "range": {
+    "normal": 5
+  }
 }

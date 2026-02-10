@@ -16,5 +16,8 @@
   "properties": [
     "Reach",
     "Special"
-  ]
+  ],
+  "range": {
+    "normal": 10
+  }
 }

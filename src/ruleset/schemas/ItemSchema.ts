@@ -26,7 +26,11 @@ export const WeaponSchema = BaseItemSchema.extend({
         dice: DiceRollSchema,
         type: DamageTypeSchema
     }),
-    properties: z.array(z.string()) // e.g., "Finesse", "Heavy"
+    properties: z.array(z.string()), // e.g., "Finesse", "Heavy"
+    range: z.object({
+        normal: z.number(),
+        long: z.number().optional()
+    }).optional()
 });
 
 export const ArmorSchema = BaseItemSchema.extend({

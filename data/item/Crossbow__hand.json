@@ -17,5 +17,9 @@
     "Ammunition",
     "Light",
     "Loading"
-  ]
+  ],
+  "range": {
+    "normal": 30,
+    "long": 120
+  }
 }

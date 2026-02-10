@@ -16,5 +16,8 @@
   "properties": [
     "Heavy",
     "Two-Handed"
-  ]
+  ],
+  "range": {
+    "normal": 5
+  }
 }

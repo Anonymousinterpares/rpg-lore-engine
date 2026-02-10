@@ -17,5 +17,8 @@
     "Heavy",
     "Reach",
     "Two-Handed"
-  ]
+  ],
+  "range": {
+    "normal": 10
+  }
 }

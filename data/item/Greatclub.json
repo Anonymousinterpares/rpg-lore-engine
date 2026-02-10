@@ -15,5 +15,8 @@
   },
   "properties": [
     "Two-Handed"
-  ]
+  ],
+  "range": {
+    "normal": 5
+  }
 }

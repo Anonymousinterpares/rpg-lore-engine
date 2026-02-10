@@ -18,5 +18,9 @@
     "Light",
     "Loading",
     "Two-Handed"
-  ]
+  ],
+  "range": {
+    "normal": 100,
+    "long": 400
+  }
 }

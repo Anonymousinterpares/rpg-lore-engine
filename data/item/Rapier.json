@@ -15,5 +15,8 @@
   },
   "properties": [
     "Finesse"
-  ]
+  ],
+  "range": {
+    "normal": 5
+  }
 }

@@ -53,6 +53,17 @@ export const TacticalFlyout: React.FC<TacticalFlyoutProps> = ({
                                 <span className={styles.typeTag}>{option.type}</span>
                             </div>
                             <p className={styles.description}>{option.description}</p>
+
+                            {(option.pros || option.cons) && (
+                                <div className={styles.badges}>
+                                    {option.pros?.map((pro, i) => (
+                                        <span key={`pro-${i}`} className={styles.proBadge}>+{pro}</span>
+                                    ))}
+                                    {option.cons?.map((con, i) => (
+                                        <span key={`con-${i}`} className={styles.conBadge}>{con}</span>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 ))}

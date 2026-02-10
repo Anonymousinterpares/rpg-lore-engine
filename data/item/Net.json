@@ -16,5 +16,9 @@
   "properties": [
     "Thrown",
     "Special"
-  ]
+  ],
+  "range": {
+    "normal": 5,
+    "long": 15
+  }
 }

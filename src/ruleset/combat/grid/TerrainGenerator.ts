@@ -34,6 +34,7 @@ export class TerrainGenerator {
                 this.addCluster(features, 'DIFFICULT', 8, rng, width, height, { blocksMovement: false });
                 break;
             case 'mountain':
+            case 'mountains':
                 this.addCluster(features, 'WALL', 6, rng, width, height, { blocksMovement: true, blocksVision: true, coverBonus: 'FULL' });
                 this.addCluster(features, 'RUBBLE', 10, rng, width, height, { coverBonus: 'THREE_QUARTERS' });
                 break;
@@ -44,10 +45,38 @@ export class TerrainGenerator {
             case 'ruins':
                 this.addCluster(features, 'WALL', 10, rng, width, height, { blocksMovement: true, blocksVision: true, coverBonus: 'FULL' });
                 this.addCluster(features, 'RUBBLE', 15, rng, width, height, { coverBonus: 'HALF' });
+                this.addCluster(features, 'PIT', 5, rng, width, height, { blocksMovement: true });
                 break;
+            case 'volcanic':
+                this.addCluster(features, 'LAVA', 12, rng, width, height, { blocksMovement: true, blocksVision: false });
+                this.addCluster(features, 'WALL', 8, rng, width, height, { blocksMovement: true, blocksVision: true, coverBonus: 'HALF' });
+                break;
+            case 'jungle':
+                this.addCluster(features, 'TREE', 20, rng, width, height, { blocksVision: true, coverBonus: 'THREE_QUARTERS' });
+                this.addCluster(features, 'DIFFICULT', 15, rng, width, height, {});
+                break;
+            case 'desert':
+                this.addCluster(features, 'RUBBLE', 10, rng, width, height, { coverBonus: 'HALF' });
+                this.addCluster(features, 'PIT', 4, rng, width, height, { blocksMovement: true });
+                break;
+            case 'tundra':
+                this.addCluster(features, 'RUBBLE', 10, rng, width, height, { coverBonus: 'HALF' });
+                this.addCluster(features, 'WALL', 4, rng, width, height, { blocksMovement: true, blocksVision: true, coverBonus: 'FULL' });
+                break;
+            case 'coast':
+            case 'ocean':
+                this.addCluster(features, 'WATER', 15, rng, width, height, { blocksMovement: true });
+                this.addCluster(features, 'RUBBLE', 6, rng, width, height, { coverBonus: 'HALF' });
+                break;
+            case 'urban':
+                this.addCluster(features, 'WALL', 12, rng, width, height, { blocksMovement: true, blocksVision: true, coverBonus: 'FULL' });
+                this.addCluster(features, 'RUBBLE', 8, rng, width, height, { coverBonus: 'HALF' });
+                break;
+            case 'plains':
             default:
-                // Plains or unknown biomes get sparse occasional cover
+                // Sparse cover
                 this.addCluster(features, 'RUBBLE', 4, rng, width, height, { coverBonus: 'HALF' });
+                this.addCluster(features, 'TREE', 1, rng, width, height, { blocksVision: true, coverBonus: 'HALF' });
                 break;
         }
 

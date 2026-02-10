@@ -17,5 +17,8 @@
     "Finesse",
     "Light",
     "Monk"
-  ]
+  ],
+  "range": {
+    "normal": 5
+  }
 }

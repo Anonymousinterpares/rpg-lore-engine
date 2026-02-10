@@ -16,5 +16,9 @@
   "properties": [
     "Finesse",
     "Thrown"
-  ]
+  ],
+  "range": {
+    "normal": 20,
+    "long": 60
+  }
 }

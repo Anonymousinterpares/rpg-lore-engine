@@ -17,5 +17,9 @@
     "Ammunition",
     "Heavy",
     "Two-Handed"
-  ]
+  ],
+  "range": {
+    "normal": 150,
+    "long": 600
+  }
 }

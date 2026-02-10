@@ -15,5 +15,8 @@
   },
   "properties": [
     "Monk"
-  ]
+  ],
+  "range": {
+    "normal": 5
+  }
 }

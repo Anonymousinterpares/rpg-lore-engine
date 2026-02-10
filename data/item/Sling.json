@@ -15,5 +15,9 @@
   },
   "properties": [
     "Ammunition"
-  ]
+  ],
+  "range": {
+    "normal": 30,
+    "long": 120
+  }
 }

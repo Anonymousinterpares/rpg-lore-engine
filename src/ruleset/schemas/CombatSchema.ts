@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AbilityScoreSchema, SizeSchema } from './BaseSchemas';
+import { AbilityScoreSchema, SizeSchema, WeatherSchema } from './BaseSchemas';
 
 export const GridPositionSchema = z.object({
     x: z.number().min(0).max(19),
@@ -137,6 +137,7 @@ export const CombatStateSchema = z.object({
     logs: z.array(CombatLogEntrySchema).default([]),
     events: z.array(CombatEventSchema).default([]),
     grid: CombatGridSchema.optional(),
+    weather: WeatherSchema.optional(),
     isAmbush: z.boolean().default(false),
     selectedTargetId: z.string().optional(),
     lastRoll: z.number().optional(),

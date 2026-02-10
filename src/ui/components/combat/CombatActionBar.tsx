@@ -3,13 +3,14 @@ import styles from './CombatActionBar.module.css';
 import { ActionButton } from './ActionButton';
 import { SpellbookFlyout } from './SpellbookFlyout';
 import { AbilitiesFlyout } from './AbilitiesFlyout';
-import { Sword, Sparkles, Shield, Zap, Move, ChevronRight, FastForward, Star } from 'lucide-react';
+import { Sword, Sparkles, Shield, Zap, Move, ChevronRight, FastForward, Star, Target } from 'lucide-react';
 import { useGameState } from '../../hooks/useGameState';
 import { TacticalOption } from '../../../ruleset/combat/grid/CombatAnalysisEngine';
 import { TacticalFlyout } from './TacticalFlyout';
 import { AbilityParser, CombatAbility } from '../../../ruleset/combat/AbilityParser';
 import { DataManager } from '../../../ruleset/data/DataManager';
 import { Spell } from '../../../ruleset/schemas/SpellSchema';
+import { CombatUtils } from '../../../ruleset/combat/CombatUtils';
 
 export const CombatActionBar: React.FC = () => {
     const { state, engine, processCommand, updateState, getTacticalOptions } = useGameState();
@@ -52,6 +53,10 @@ export const CombatActionBar: React.FC = () => {
     const isPlayerTurn = state.combat.combatants[state.combat.currentTurnIndex]?.isPlayer;
     const hasUsedAction = player?.resources?.actionSpent || false;
 
+    const mainHandId = state.character.equipmentSlots.mainHand;
+    const mainHandItem = mainHandId ? DataManager.getItem(mainHandId) : null;
+    const isRangedEquipped = CombatUtils.isRangedWeapon(mainHandItem);
+
     const handleAction = (command: string) => {
         processCommand(command);
     };
@@ -88,6 +93,17 @@ export const CombatActionBar: React.FC = () => {
                     disabledReason={!isPlayerTurn ? "Not your turn" : "Action already used"}
                     tooltip="Perform a weapon attack"
                 />
+                {isRangedEquipped && (
+                    <ActionButton
+                        icon={<Target size={24} />}
+                        label="Ranged"
+                        hotkey="R"
+                        onClick={() => handleAction('attack ranged')}
+                        disabled={!isPlayerTurn || hasUsedAction}
+                        disabledReason={!isPlayerTurn ? "Not your turn" : "Action already used"}
+                        tooltip="Perform a ranged weapon attack"
+                    />
+                )}
                 <ActionButton
                     icon={<Sparkles size={24} />}
                     label="Spells"

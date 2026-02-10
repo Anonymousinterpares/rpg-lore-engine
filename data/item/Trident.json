@@ -16,5 +16,9 @@
   "properties": [
     "Thrown",
     "Versatile"
-  ]
+  ],
+  "range": {
+    "normal": 20,
+    "long": 60
+  }
 }

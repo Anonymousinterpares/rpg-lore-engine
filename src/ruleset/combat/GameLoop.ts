@@ -791,34 +791,64 @@ export class GameLoop {
         }
 
         if (intent.command === 'attack') {
-            const combatState = this.state.combat;
+            const combatState = this.state.combat!;
+            const isRanged = intent.args?.[0] === 'ranged';
             const targets = combatState.combatants.filter(c => c.type === 'enemy' && c.hp.current > 0);
             if (targets.length === 0) return "No valid targets.";
 
             // Use selected target if valid, otherwise default to first
             let target = targets.find(t => t.id === combatState.selectedTargetId);
             if (!target) target = targets[0];
+            if (!target) return "No target found.";
 
             const pc = this.state.character;
+            const mainHandItem = pc.equipmentSlots.mainHand ? DataManager.getItem(pc.equipmentSlots.mainHand) : null;
+
+            // Equipment Validation
+            if (isRanged && !CombatUtils.isRangedWeapon(mainHandItem)) {
+                return "You do not have a ranged weapon equipped in your main hand!";
+            }
+
             const strMod = MechanicsEngine.getModifier(pc.stats.STR || 10);
+            const dexMod = MechanicsEngine.getModifier(pc.stats.DEX || 10);
             const prof = MechanicsEngine.getProficiencyBonus(pc.level);
+
+            const statMod = isRanged ? dexMod : strMod;
+            const attackBonus = statMod + prof;
+            const damageFormula = (mainHandItem as any)?.damage?.dice || "1d8";
 
             // Bug Fix #2: Spatial Range Validation
             const gridManager = new CombatGridManager(this.state.combat.grid!);
             const distance = gridManager.getDistance(currentCombatant.position, target.position);
-            const reach = currentCombatant.tactical.reach || 5;
-            const reachCells = Math.ceil(reach / 5);
 
-            if (distance > reachCells) {
-                return `Target is too far away! (${distance} cells). Your reach is only ${reachCells} cell(s).`;
+            const rangeCells = CombatUtils.getWeaponRange(mainHandItem);
+
+            if (distance > rangeCells) {
+                return `Target is too far away! (${distance} cells). Your weapon range is ${rangeCells} cell(s).`;
+            }
+
+            // Threatened Rule: Disadvantage if an enemy is adjacent
+            let forceDisadvantage = false;
+            let threatenedPrefix = "";
+            if (isRanged) {
+                const isThreatened = combatState.combatants.some(c =>
+                    c.type === 'enemy' &&
+                    c.hp.current > 0 &&
+                    gridManager.getDistance(currentCombatant.position, c.position) === 1
+                );
+                if (isThreatened) {
+                    forceDisadvantage = true;
+                    threatenedPrefix = "(Threatened! Disadvantage) ";
+                }
             }
 
             const result = CombatResolutionEngine.resolveAttack(
                 currentCombatant,
                 target,
-                strMod + prof,
-                "1d8", // Placeholder weapon dice
-                strMod
+                attackBonus,
+                damageFormula,
+                statMod,
+                forceDisadvantage
             );
 
             // Record roll and emit event
@@ -826,7 +856,7 @@ export class GameLoop {
             this.emitCombatEvent(result.type, target.id, result.damage || 0);
 
             this.applyCombatDamage(target, result.damage);
-            resultMsg = CombatLogFormatter.format(result, currentCombatant.name, target.name);
+            resultMsg = threatenedPrefix + CombatLogFormatter.format(result, currentCombatant.name, target.name);
 
         } else if (intent.command === 'dodge') {
             currentCombatant.statusEffects.push({
@@ -1553,7 +1583,8 @@ export class GameLoop {
         return analysisEngine.getContextualOptions(
             player,
             this.state.combat.combatants,
-            biome
+            biome,
+            this.state.combat.weather || { type: 'Clear', durationMinutes: 0, intensity: 1.0 }
         );
     }
 

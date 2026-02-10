@@ -17,5 +17,9 @@
     "Thrown",
     "Versatile",
     "Monk"
-  ]
+  ],
+  "range": {
+    "normal": 20,
+    "long": 60
+  }
 }

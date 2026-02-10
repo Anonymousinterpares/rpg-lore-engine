@@ -16,5 +16,9 @@
   "properties": [
     "Thrown",
     "Monk"
-  ]
+  ],
+  "range": {
+    "normal": 30,
+    "long": 120
+  }
 }

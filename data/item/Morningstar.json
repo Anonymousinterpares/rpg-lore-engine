@@ -13,5 +13,8 @@
     "dice": "1d8",
     "type": "Piercing"
   },
-  "properties": []
+  "properties": [],
+  "range": {
+    "normal": 5
+  }
 }

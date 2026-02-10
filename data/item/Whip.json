@@ -16,5 +16,8 @@
   "properties": [
     "Finesse",
     "Reach"
-  ]
+  ],
+  "range": {
+    "normal": 10
+  }
 }

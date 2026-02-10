@@ -17,5 +17,9 @@
     "Ammunition",
     "Loading",
     "Two-Handed"
-  ]
+  ],
+  "range": {
+    "normal": 80,
+    "long": 320
+  }
 }

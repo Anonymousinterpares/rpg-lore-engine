@@ -16,5 +16,9 @@
   "properties": [
     "Ammunition",
     "Loading"
-  ]
+  ],
+  "range": {
+    "normal": 25,
+    "long": 100
+  }
 }

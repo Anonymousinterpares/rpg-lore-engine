@@ -16,5 +16,8 @@
   "properties": [
     "Light",
     "Monk"
-  ]
+  ],
+  "range": {
+    "normal": 5
+  }
 }

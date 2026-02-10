@@ -16,5 +16,8 @@
   "properties": [
     "Finesse",
     "Light"
-  ]
+  ],
+  "range": {
+    "normal": 5
+  }
 }

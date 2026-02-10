@@ -16,5 +16,9 @@
   "properties": [
     "Ammunition",
     "Two-Handed"
-  ]
+  ],
+  "range": {
+    "normal": 80,
+    "long": 320
+  }
 }

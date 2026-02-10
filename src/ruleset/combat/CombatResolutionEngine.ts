@@ -31,10 +31,11 @@ export class CombatResolutionEngine {
         target: Combatant,
         attackBonus: number,
         damageFormula: string,
-        statMod: number
+        statMod: number,
+        forceDisadvantage: boolean = false
     ): CombatActionResult {
-        const hasDisadvantage = target.statusEffects.some(e => e.id === 'dodge');
-        const d20 = hasDisadvantage ? Dice.disadvantage() : Dice.d20();
+        const hasDodgeDisadvantage = target.statusEffects.some(e => e.id === 'dodge');
+        const d20 = (hasDodgeDisadvantage || forceDisadvantage) ? Dice.disadvantage() : Dice.d20();
         const isCrit = d20 === 20;
         const total = d20 + attackBonus;
         const hit = isCrit || total >= target.ac;

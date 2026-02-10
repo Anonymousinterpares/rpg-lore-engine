@@ -15,5 +15,8 @@
   },
   "properties": [
     "Versatile"
-  ]
+  ],
+  "range": {
+    "normal": 5
+  }
 }
