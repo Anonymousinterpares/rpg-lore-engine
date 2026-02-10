@@ -54,7 +54,7 @@ export const CombatActionBar: React.FC = () => {
     const hasUsedAction = player?.resources?.actionSpent || false;
 
     const mainHandId = state.character.equipmentSlots.mainHand;
-    const mainHandItem = mainHandId ? DataManager.getItem(mainHandId) : null;
+    const mainHandItem = mainHandId ? state.character.inventory.items.find(i => i.instanceId === mainHandId) : null;
     const isRangedEquipped = CombatUtils.isRangedWeapon(mainHandItem);
 
     const handleAction = (command: string) => {
@@ -93,17 +93,15 @@ export const CombatActionBar: React.FC = () => {
                     disabledReason={!isPlayerTurn ? "Not your turn" : "Action already used"}
                     tooltip="Perform a weapon attack"
                 />
-                {isRangedEquipped && (
-                    <ActionButton
-                        icon={<Target size={24} />}
-                        label="Ranged"
-                        hotkey="R"
-                        onClick={() => handleAction('attack ranged')}
-                        disabled={!isPlayerTurn || hasUsedAction}
-                        disabledReason={!isPlayerTurn ? "Not your turn" : "Action already used"}
-                        tooltip="Perform a ranged weapon attack"
-                    />
-                )}
+                <ActionButton
+                    icon={<Target size={24} />}
+                    label="Ranged"
+                    hotkey="R"
+                    onClick={() => handleAction('attack ranged')}
+                    disabled={!isPlayerTurn || hasUsedAction || !isRangedEquipped}
+                    disabledReason={!isPlayerTurn ? "Not your turn" : (hasUsedAction ? "Action already used" : "No ranged weapon equipped")}
+                    tooltip="Perform a ranged weapon attack"
+                />
                 <ActionButton
                     icon={<Sparkles size={24} />}
                     label="Spells"

@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './ItemDatasheet.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
-import { X, Weight, Coins, Shield, Sword } from 'lucide-react';
+import { X, Weight, Coins, Shield, Sword, Target } from 'lucide-react';
 import ReactDOM from 'react-dom';
 import { useGameState } from '../../hooks/useGameState';
 
@@ -15,6 +15,7 @@ interface Item {
     damage?: string | { dice: string, type: string };
     ac?: number;
     properties?: string[];
+    range?: { normal: number, long?: number };
 }
 
 interface ItemDatasheetProps {
@@ -75,6 +76,12 @@ const ItemDatasheet: React.FC<ItemDatasheetProps> = ({ item, onClose }) => {
                                 <div className={styles.statLine}>
                                     <Shield size={14} />
                                     <strong>AC Bonus:</strong> +{item.ac}
+                                </div>
+                            )}
+                            {item.range && (
+                                <div className={styles.statLine}>
+                                    <Target size={14} />
+                                    <strong>Range:</strong> {item.range.normal}{item.range.long ? `/${item.range.long}` : ''} ft
                                 </div>
                             )}
                         </div>
