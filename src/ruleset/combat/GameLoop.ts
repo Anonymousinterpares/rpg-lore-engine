@@ -977,9 +977,8 @@ export class GameLoop {
                 sourceId: currentCombatant.id
             });
             resultMsg = `${currentCombatant.name} takes a defensive stance. Attacks against them will have disadvantage until the start of their next turn.`;
-            this.state.combat.turnActions.push(resultMsg);
-        } else if (intent.command === 'dash') {
-            resultMsg = `${currentCombatant.name} dashes, doubling their movement speed for this turn.`;
+            currentCombatant.resources.actionSpent = true; // Consumes action
+            resultMsg = `${currentCombatant.name} takes a defensive stance. Attacks against them will have disadvantage until the start of their next turn.`;
             this.state.combat.turnActions.push(resultMsg);
         } else if (intent.command === 'disengage') {
             currentCombatant.statusEffects.push({
@@ -1445,126 +1444,111 @@ export class GameLoop {
     private async performAITurn(actor: Combatant) {
         if (!this.state.combat) return;
 
-        // 1. Decide Action
-        const action = CombatAI.decideAction(actor, this.state.combat);
-        const pcCombatant = this.state.combat.combatants.find(c => c.isPlayer);
+        // Simplified Multi-Action Turn: MOVE then (potentially) ATTACK
+        // D&D standard: Combatants can move then take an action.
 
-        if (action.type === 'MOVE' && action.targetId) {
-            const target = this.state.combat.combatants.find(c => c.id === action.targetId);
-            if (target && this.combatManager && this.state.combat.grid) {
-                // Use GridManager to find path
-                const gridManager = new CombatGridManager(this.state.combat.grid);
-                const path = gridManager.findPath(actor.position, target.position, this.state.combat.combatants);
+        let actionsTaken = 0;
+        const maxLoop = 2; // Prevent infinite loops if AI is indecisive
 
-                if (path && path.length > 1) {
-                    // Move as far as possible
-                    // path[0] is start, path[1] is first step.
-                    // We need to move up to movementRemaining steps.
-                    // Actually, we should move to the optimal range (adjacent).
-                    // Simple logic: Move towards target until movement runs out or adjacent.
+        while (actionsTaken < maxLoop && actor.hp.current > 0) {
+            const action = CombatAI.decideAction(actor, this.state.combat);
 
-                    const steps = Math.min(actor.movementRemaining, path.length - 2); // -1 for start, -1 for target occupancy (can't step on target)
+            if (action.type === 'MOVE' && action.targetId) {
+                const target = this.state.combat.combatants.find(c => c.id === action.targetId);
+                if (target && this.combatManager && this.state.combat.grid) {
+                    const gridManager = new CombatGridManager(this.state.combat.grid);
+                    const path = gridManager.findPath(actor.position, target.position, this.state.combat.combatants);
 
-                    if (steps > 0) {
-                        const dest = path[steps];
-                        const moveMsg = this.combatManager.moveCombatant(actor, dest);
-                        this.addCombatLog(moveMsg);
-                        // Deduct action? No, movement is separate resource.
-                        // But we engaged "Dash" if we used action? 
-                        // For now, standard move.
+                    if (path && path.length > 1) {
+                        // If we are too far, maybe Dash (Sprint)?
+                        // But NPCs currently have simple movement.
+                        // Let's just move as far as standard movement allows.
+                        const steps = Math.min(actor.movementRemaining, path.length - 2);
+
+                        if (steps > 0) {
+                            const dest = path[steps];
+                            const moveMsg = this.combatManager.moveCombatant(actor, dest);
+                            this.addCombatLog(moveMsg);
+                            this.state.combat.turnActions.push(moveMsg); // Capture for summary
+                        } else if (actor.movementRemaining > 0) {
+                            // Can't move closer despite having movement? 
+                            // This might happen if target is surrounded or path is blocked by 1-cell gap.
+                            break;
+                        } else {
+                            break; // No movement left
+                        }
                     } else {
-                        this.addCombatLog(`${actor.name} shuffles but cannot get closer.`);
+                        break; // No path
                     }
-                }
-            }
-        } else if (action.type === 'ATTACK' && action.targetId) {
-            const target = this.state.combat.combatants.find(c => c.id === action.targetId);
-            if (!target) return;
-
-            const strMod = MechanicsEngine.getModifier(actor.stats['STR'] || 10);
-            const dexMod = MechanicsEngine.getModifier(actor.stats['DEX'] || 10);
-
-            // 1. NPC Action Selection based on tactics
-            const monsterData = DataManager.getMonster(actor.name);
-            let attackBonus = strMod + 2;
-            let damageFormula = "1d6";
-            let dmgBonus = strMod;
-
-            if (monsterData && monsterData.actions && monsterData.actions.length > 0) {
-                const preference = actor.tactical.isRanged ? 'range' : 'reach';
-                const actionData = monsterData.actions.find(a => a.description.toLowerCase().includes(preference)) || monsterData.actions[0];
-
-                attackBonus = actionData.attackBonus !== undefined ? actionData.attackBonus : (actor.tactical.isRanged ? dexMod + 2 : strMod + 2);
-
-                if (actionData.damage) {
-                    damageFormula = actionData.damage;
-                    dmgBonus = 0; // Modifier is already in the formula
                 } else {
-                    damageFormula = "1d6";
-                    dmgBonus = actor.tactical.isRanged ? dexMod : strMod;
+                    break;
                 }
-            }
+                actionsTaken++;
+                // Continue loop to see if we satisfy attack range now
+            } else if (action.type === 'ATTACK' && action.targetId) {
+                const target = this.state.combat.combatants.find(c => c.id === action.targetId);
+                if (!target) break;
 
-            // 2. Spatial Disadvantage logic for NPCs
-            let forceDisadvantage = false;
-            let rangePrefix = "";
-            const gridManager = new CombatGridManager(this.state.combat.grid!);
-            const distance = gridManager.getDistance(actor.position, target.position);
+                const strMod = MechanicsEngine.getModifier(actor.stats['STR'] || 10);
+                const dexMod = MechanicsEngine.getModifier(actor.stats['DEX'] || 10);
 
-            if (actor.tactical.isRanged) {
-                // Long Range Rule
-                if (actor.tactical.range) {
-                    const normalCells = Math.ceil(actor.tactical.range.normal / 5);
-                    if (distance > normalCells) {
-                        forceDisadvantage = true;
-                        rangePrefix = "(Long Range! Disadvantage) ";
+                // NPC Action Selection logic
+                const monsterData = DataManager.getMonster(actor.name);
+                let attackBonus = strMod + 2;
+                let damageFormula = "1d6";
+                let dmgBonus = strMod;
+
+                if (monsterData && monsterData.actions && monsterData.actions.length > 0) {
+                    const preference = actor.tactical.isRanged ? 'range' : 'reach';
+                    const actionData = monsterData.actions.find(a => a.description.toLowerCase().includes(preference)) || monsterData.actions[0];
+                    attackBonus = actionData.attackBonus !== undefined ? actionData.attackBonus : (actor.tactical.isRanged ? dexMod + 2 : strMod + 2);
+                    if (actionData.damage) {
+                        damageFormula = actionData.damage;
+                        dmgBonus = 0;
+                    } else {
+                        damageFormula = "1d6";
+                        dmgBonus = actor.tactical.isRanged ? dexMod : strMod;
                     }
                 }
 
-                // Threatened Rule (Ranged in melee)
-                const isThreatened = this.state.combat.combatants.some(c =>
-                    c.type !== actor.type &&
-                    c.hp.current > 0 &&
-                    gridManager.getDistance(actor.position, c.position) === 1
-                );
-                if (isThreatened) {
-                    forceDisadvantage = true;
-                    rangePrefix += "(Threatened! Disadvantage) ";
+                // Range Verification
+                let forceDisadvantage = false;
+                let rangePrefix = "";
+                const gridManager = new CombatGridManager(this.state.combat.grid!);
+                const distance = gridManager.getDistance(actor.position, target.position);
+
+                if (actor.tactical.isRanged) {
+                    if (actor.tactical.range) {
+                        const normalCells = Math.ceil(actor.tactical.range.normal / 5);
+                        if (distance > normalCells) {
+                            forceDisadvantage = true;
+                            rangePrefix = "(Long Range! Disadvantage) ";
+                        }
+                    }
+                    const isThreatened = this.state.combat.combatants.some(c =>
+                        c.type !== actor.type && c.hp.current > 0 && gridManager.getDistance(actor.position, c.position) === 1
+                    );
+                    if (isThreatened) {
+                        forceDisadvantage = true;
+                        rangePrefix += "(Threatened! Disadvantage) ";
+                    }
                 }
+
+                const result = CombatResolutionEngine.resolveAttack(actor, target, attackBonus, damageFormula, dmgBonus, forceDisadvantage);
+                this.state.combat.lastRoll = (result.details?.roll || 0) + (result.details?.modifier || 0);
+                this.emitCombatEvent(result.type, target.id, result.damage || 0);
+                this.applyCombatDamage(target, result.damage);
+                if (target.isPlayer) this.state.character.hp.current = target.hp.current;
+
+                const logMsg = rangePrefix + CombatLogFormatter.format(result, actor.name, target.name, actor.tactical.isRanged);
+                this.addCombatLog(logMsg);
+                this.state.combat.turnActions.push(logMsg); // Capture for summary
+
+                break; // One attack per turn for most NPCs
+            } else {
+                break; // No action decided
             }
-
-            const result = CombatResolutionEngine.resolveAttack(
-                actor,
-                target,
-                attackBonus,
-                damageFormula,
-                dmgBonus,
-                forceDisadvantage
-            );
-
-            // Record roll and emit event
-            this.state.combat.lastRoll = (result.details?.roll || 0) + (result.details?.modifier || 0);
-            this.emitCombatEvent(result.type, target.id, result.damage || 0);
-
-            this.applyCombatDamage(target, result.damage);
-
-            // Sync PC state if player was hit
-            if (target.isPlayer) {
-                this.state.character.hp.current = target.hp.current;
-            }
-
-            const logMsg = rangePrefix + CombatLogFormatter.format(result, actor.name, target.name, actor.tactical.isRanged);
-            this.state.combat.turnActions.push(logMsg);
-        } else if (action.type === 'MOVE') {
-            // Movement is already logged in performAITurn via moveCombatant
-            // No need to double log here unless we want to capture it in turnActions
-        } else {
-            // Fallback for other actions
-            const fallback = `${actor.name} waits for an opening.`;
-            this.state.combat.turnActions.push(fallback);
         }
-
-        this.emitStateUpdate();
     }
 
     public useAbility(abilityName: string): string {

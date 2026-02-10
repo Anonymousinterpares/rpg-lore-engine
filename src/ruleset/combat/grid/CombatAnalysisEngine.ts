@@ -45,7 +45,7 @@ export class CombatAnalysisEngine {
         const allies = allCombatants.filter(c => (c.isPlayer || c.type === 'companion' || c.type === 'summon') && c.id !== combatant.id);
 
         // 1. Aggression Options (Charge, Stalk, Press)
-        options.push(...this.getAggressionOptions(combatant, reachable, enemies, biome, weather));
+        options.push(...this.getAggressionOptions(combatant, reachable, enemies, allCombatants, biome, weather));
 
         // 2. Positioning & Safety (Hunker, High Ground, Corner Peek)
         options.push(...this.getSafetyOptions(combatant, reachable, enemies, biome, weather));
@@ -66,6 +66,7 @@ export class CombatAnalysisEngine {
         combatant: Combatant,
         reachable: GridPosition[],
         enemies: Combatant[],
+        allCombatants: Combatant[],
         biome: string,
         weather: Weather
     ): TacticalOption[] {
@@ -75,20 +76,26 @@ export class CombatAnalysisEngine {
             const dist = this.gridManager.getDistance(combatant.position, enemy.position);
             const pathDist = this.gridManager.getDistanceVector(combatant.position, enemy.position);
 
-            // A1. Charge (Strict linear move, disabled in Blizzard)
+            // A1. Charge (Strict linear move, now uses Sprint speed for consistency)
             if (pathDist > 6 && pathDist === dist && weather.type !== 'Blizzard' && weather.type !== 'Snow') {
-                const targetPos = this.getApproachPosition(reachable, enemy.position, 1);
-                if (targetPos) {
-                    const actualMoveDist = this.gridManager.getDistance(combatant.position, targetPos);
+                const sprintSpeed = combatant.movementSpeed * 2;
+                const targetPos = this.getApproachPosition(reachable, enemy.position, 1); // getApproachPosition uses reachable which might be 1x? need to check
+
+                // Let's recalculate reachable for aggression if we want 2x range for Charge
+                const reachableAggro = this.gridManager.getReachablePositions(combatant.position, sprintSpeed, allCombatants);
+                const betterTargetPos = this.getApproachPosition(reachableAggro, enemy.position, 1);
+
+                if (betterTargetPos) {
+                    const actualMoveDist = this.gridManager.getDistance(combatant.position, betterTargetPos);
                     const nar = NarrativeGenerator.generate('charge', combatant, enemy.position, biome, weather, '', actualMoveDist);
                     options.push({
                         id: `charge_${enemy.id}`,
                         label: nar.label,
                         description: nar.description,
-                        targetPosition: targetPos,
+                        targetPosition: betterTargetPos,
                         type: 'AGGRESSION',
-                        command: `/move ${targetPos.x} ${targetPos.y}`,
-                        pros: ['Move Max Speed'],
+                        command: `/move ${betterTargetPos.x} ${betterTargetPos.y} sprint`,
+                        pros: ['Move Max Speed (2x)'],
                         cons: ['Reckless (-2 AC)']
                     });
                 }
@@ -242,7 +249,10 @@ export class CombatAnalysisEngine {
     ): TacticalOption[] {
         const options: TacticalOption[] = [];
 
-        // Farthest point from enemies
+        // Farthest point from enemies - Only show if in melee or close (<= 2 cells / 10ft)
+        const isNearEnemy = enemies.some(e => this.gridManager.getDistance(combatant.position, e.position) <= 2);
+        if (!isNearEnemy) return [];
+
         let farthest: GridPosition | null = null;
         let maxDist = 0;
         reachable.forEach(pos => {

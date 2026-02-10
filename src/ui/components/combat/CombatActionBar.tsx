@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { CombatGridManager } from '../../../ruleset/combat/grid/CombatGridManager';
 import styles from './CombatActionBar.module.css';
 import { ActionButton } from './ActionButton';
 import { SpellbookFlyout } from './SpellbookFlyout';
@@ -53,6 +54,11 @@ export const CombatActionBar: React.FC = () => {
     const isPlayerTurn = state.combat.combatants[state.combat.currentTurnIndex]?.isPlayer;
     const hasUsedAction = player?.resources?.actionSpent || false;
     const hasMovement = (player?.movementRemaining ?? 0) > 0;
+
+    const gridManager = state.combat.grid ? new CombatGridManager(state.combat.grid) : null;
+    const isAdjacentToEnemy = player && gridManager ? state.combat.combatants.some(c =>
+        c.type === 'enemy' && c.hp.current > 0 && gridManager.getDistance(player.position, c.position) === 1
+    ) : false;
 
     const mainHandId = state.character.equipmentSlots.mainHand;
     const inventoryItem = mainHandId ? state.character.inventory.items.find(i => i.instanceId === mainHandId) : null;
@@ -168,8 +174,8 @@ export const CombatActionBar: React.FC = () => {
                     hotkey="Q"
                     onClick={() => { setShowTactics(!showTactics); setShowSpells(false); setShowAbilities(false); }}
                     active={showTactics}
-                    disabled={!isPlayerTurn || !hasMovement}
-                    disabledReason={!isPlayerTurn ? "Not your turn" : !hasMovement ? "No movement remaining" : ""}
+                    disabled={!isPlayerTurn || !hasMovement || hasUsedAction}
+                    disabledReason={!isPlayerTurn ? "Not your turn" : !hasMovement ? "No movement remaining" : hasUsedAction ? "Action already used" : ""}
                     tooltip="Analyze field for tactical maneuvers"
                 />
                 <ActionButton
@@ -182,21 +188,12 @@ export const CombatActionBar: React.FC = () => {
                     tooltip="Take a defensive stance"
                 />
                 <ActionButton
-                    icon={<Zap size={24} />}
-                    label="Dash"
-                    hotkey="5"
-                    onClick={() => handleAction('dash')}
-                    disabled={!isPlayerTurn || hasUsedAction}
-                    disabledReason={!isPlayerTurn ? "Not your turn" : "Action already used"}
-                    tooltip="Move double your speed"
-                />
-                <ActionButton
                     icon={<ChevronRight size={24} />}
                     label="Disengage"
                     hotkey="6"
                     onClick={() => handleAction('disengage')}
-                    disabled={!isPlayerTurn || hasUsedAction}
-                    disabledReason={!isPlayerTurn ? "Not your turn" : "Action already used"}
+                    disabled={!isPlayerTurn || hasUsedAction || !isAdjacentToEnemy}
+                    disabledReason={!isPlayerTurn ? "Not your turn" : hasUsedAction ? "Action already used" : !isAdjacentToEnemy ? "Must be next to an enemy" : ""}
                     tooltip="Move without provoking opportunity attacks"
                 />
             </div>
