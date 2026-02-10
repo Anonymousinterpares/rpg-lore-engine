@@ -150,7 +150,8 @@ export const CombatStateSchema = z.object({
         text: z.string().optional(),
         visible: z.boolean().default(false)
     }).optional(),
-    lastActionMessage: z.string().optional()
+    lastActionMessage: z.string().optional(),
+    turnActions: z.array(z.string()).default([])
 });
 
 export type CombatState = z.infer<typeof CombatStateSchema>;

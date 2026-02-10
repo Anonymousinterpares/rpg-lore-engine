@@ -46,6 +46,9 @@ export class CombatAnalysisEngine {
         // 4. Retreat Options (Fade, Withdraw, Vanish)
         options.push(...this.getRetreatOptions(combatant, reachable, enemies, allies, biome, weather));
 
+        // 5. Environmental Awareness (Informational)
+        options.push(...this.getEnvironmentalAwareness(combatant, biome, weather));
+
         return options;
     }
 
@@ -66,7 +69,8 @@ export class CombatAnalysisEngine {
             if (pathDist > 6 && pathDist === dist && weather.type !== 'Blizzard' && weather.type !== 'Snow') {
                 const targetPos = this.getApproachPosition(reachable, enemy.position, 1);
                 if (targetPos) {
-                    const nar = NarrativeGenerator.generate('charge', combatant, enemy, biome, weather, '', pathDist);
+                    const actualMoveDist = this.gridManager.getDistance(combatant.position, targetPos);
+                    const nar = NarrativeGenerator.generate('charge', combatant, enemy.position, biome, weather, '', actualMoveDist);
                     options.push({
                         id: `charge_${enemy.id}`,
                         label: nar.label,
@@ -84,7 +88,8 @@ export class CombatAnalysisEngine {
             if (pathDist > 4) {
                 const targetPos = this.getApproachPosition(reachable, enemy.position, 1);
                 if (targetPos) {
-                    const nar = NarrativeGenerator.generate('stalk', combatant, enemy, biome, weather, '', pathDist);
+                    const actualMoveDist = this.gridManager.getDistance(combatant.position, targetPos);
+                    const nar = NarrativeGenerator.generate('stalk', combatant, enemy.position, biome, weather, '', actualMoveDist);
                     options.push({
                         id: `stalk_${enemy.id}`,
                         label: nar.label,
@@ -265,6 +270,38 @@ export class CombatAnalysisEngine {
                 pros: ['Hide Check vs Biome DC']
             });
         }
+
+        return options;
+    }
+
+    private getEnvironmentalAwareness(combatant: Combatant, biome: string, weather: Weather): TacticalOption[] {
+        const options: TacticalOption[] = [];
+        const features = this.gridManager.getAllFeatures();
+
+        // Find nearest protective features that are NOT reachable (awareness)
+        const awarenessFeatures = features
+            .filter((f: TerrainFeature) => f.coverBonus !== 'NONE' || f.blocksVision)
+            .map((f: TerrainFeature) => ({
+                feature: f,
+                dist: this.gridManager.getDistance(combatant.position, f.position)
+            }))
+            .filter((item: { feature: TerrainFeature, dist: number }) => item.dist > combatant.movementRemaining) // Only beyond movement range
+            .sort((a: { dist: number }, b: { dist: number }) => a.dist - b.dist)
+            .slice(0, 2);
+
+        awarenessFeatures.forEach((item: { feature: TerrainFeature, dist: number }) => {
+            const relDir = this.gridManager.getRelativeDirection(combatant.position, item.feature.position);
+            const nar = NarrativeGenerator.generate('cover_awareness', combatant, item.feature, biome, weather, relDir, item.dist);
+            options.push({
+                id: `awareness_${item.feature.id}`,
+                label: nar.label,
+                description: nar.description,
+                targetPosition: item.feature.position,
+                type: 'SAFETY',
+                command: '', // Non-movable
+                pros: [`Distance: ${item.dist * 5}ft`, `Direction: ${relDir}`]
+            });
+        });
 
         return options;
     }

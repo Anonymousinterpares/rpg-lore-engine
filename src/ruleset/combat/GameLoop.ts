@@ -946,8 +946,9 @@ export class GameLoop {
             combatState.lastRoll = (result.details?.roll || 0) + (result.details?.modifier || 0);
             this.emitCombatEvent(result.type, target.id, result.damage || 0);
 
-            this.applyCombatDamage(target, result.damage);
-            resultMsg = rangePrefix + CombatLogFormatter.format(result, currentCombatant.name, target.name);
+            const logMsg = rangePrefix + CombatLogFormatter.format(result, currentCombatant.name, target.name, isRanged);
+            this.state.combat.turnActions.push(logMsg);
+            resultMsg = logMsg;
 
         } else if (intent.command === 'dodge') {
             currentCombatant.statusEffects.push({
@@ -984,7 +985,13 @@ export class GameLoop {
         } else if (intent.command === 'end turn') {
             // Only players explicitly end turn via command. AI handles it internally.
             if (!currentCombatant.isPlayer) return "";
-            resultMsg = `${currentCombatant.name} ends their turn.`;
+
+            const summary = this.state.combat.turnActions.length > 0
+                ? `${this.state.combat.turnActions.join(", then ")} before ending their turn.`
+                : `${currentCombatant.name} ends their turn.`;
+
+            resultMsg = summary;
+            this.state.combat.turnActions = []; // Clear for next turn
         }
 
         this.addCombatLog(resultMsg);
@@ -1329,6 +1336,7 @@ export class GameLoop {
                 actor.resources.actionSpent = false;
                 actor.resources.bonusActionSpent = false;
                 actor.movementRemaining = actor.movementSpeed;
+                this.state.combat.turnActions = []; // NEW: Clear action list for the new turn
 
                 // --- 2. Determine Banner Type ---
                 let bannerType: 'PLAYER' | 'ENEMY' | 'NAME' = 'PLAYER';
@@ -1358,14 +1366,21 @@ export class GameLoop {
                     // Execute AI Logic
                     await this.performAITurn(actor);
 
+                    // Compile NPC Turn Summary if multiple actions occurred, or just log the turn end
+                    const npcSummary = this.state.combat.turnActions.length > 0
+                        ? `${this.state.combat.turnActions.join(". ")}`
+                        : `${actor.name} waits for an opening.`;
+                    this.addCombatLog(npcSummary);
+
                     // Pacing delay after action
                     await new Promise(resolve => setTimeout(resolve, 1000));
 
                     // Move to NEXT in loop
                     if (!this.state.combat) break;
 
-                    const msg = this.combatManager.advanceTurn();
-                    this.addCombatLog(msg);
+                    const nextMsg = this.combatManager.advanceTurn();
+                    this.addCombatLog(nextMsg);
+                    this.state.combat.turnActions = [];
                 }
             }
         }
@@ -1503,11 +1518,15 @@ export class GameLoop {
                 this.state.character.hp.current = target.hp.current;
             }
 
-            const logMsg = CombatLogFormatter.format(result, actor.name, target.name);
-            this.addCombatLog(logMsg);
+            const logMsg = rangePrefix + CombatLogFormatter.format(result, actor.name, target.name, actor.tactical.isRanged);
+            this.state.combat.turnActions.push(logMsg);
+        } else if (action.type === 'MOVE') {
+            // Movement is already logged in performAITurn via moveCombatant
+            // No need to double log here unless we want to capture it in turnActions
         } else {
             // Fallback for other actions
-            this.addCombatLog(`${actor.name} waits for an opening.`);
+            const fallback = `${actor.name} waits for an opening.`;
+            this.state.combat.turnActions.push(fallback);
         }
 
         this.emitStateUpdate();

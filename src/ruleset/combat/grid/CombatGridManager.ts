@@ -269,6 +269,13 @@ export class CombatGridManager {
         const path = this.findPath(from, to, occupants);
         return path ? path.length - 1 : Infinity;
     }
+
+    /**
+     * Returns all terrain features on the grid.
+     */
+    public getAllFeatures(): TerrainFeature[] {
+        return this.grid.features;
+    }
 }
 
 class Node {

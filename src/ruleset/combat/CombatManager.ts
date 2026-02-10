@@ -92,7 +92,8 @@ export class CombatManager {
                 message: `Combat started in the ${biome}!`,
                 turn: 1
             }],
-            events: []
+            events: [],
+            turnActions: []
         };
 
         this.gridManager = new CombatGridManager(grid);

@@ -20,6 +20,24 @@ export class CombatLogFormatter {
             "{attacker} scores a massive critical hit on {target}!",
             "Brutality! {attacker} crushes {target} with a critical strike!"
         ],
+        RANGED_HIT: [
+            "{attacker} fires at {target} and the arrow finds its mark!",
+            "{attacker}'s projectile strikes {target} cleanly.",
+            "{attacker} looses an arrow that hits {target} with a thud.",
+            "A precise shot by {attacker} pierces {target}'s defenses."
+        ],
+        RANGED_MISS: [
+            "{attacker} fires at {target} but the arrow sails past.",
+            "{target} ducks as {attacker}'s shot whisks overhead.",
+            "{attacker}'s projectile thumps into the ground near {target}.",
+            "{attacker} looses a shot but {target} avoids it easily."
+        ],
+        RANGED_CRIT: [
+            "{attacker} looses a perfectly aimed shot that pierces {target}'s vital spot!",
+            "Deadly aim! {attacker}'s arrow finds the narrowest gap in {target}'s armor!",
+            "{attacker} fires a devastating shot that sends {target} reeling!",
+            "Critical hit! {attacker}'s projectile strikes with ultimate precision!"
+        ],
         SAVE_SUCCESS: [
             "{target} resists the effects of {attacker}'s spell.",
             "{target} successfully withstands the magical assault.",
@@ -43,8 +61,13 @@ export class CombatLogFormatter {
     /**
      * Formats a combat result into a flavored string
      */
-    public static format(result: CombatActionResult, attackerName: string, targetName: string): string {
-        const pool = this.templates[result.type as keyof typeof this.templates] || ["{attacker} acted on {target}."];
+    public static format(result: CombatActionResult, attackerName: string, targetName: string, isRanged: boolean = false): string {
+        let type = result.type;
+        if (isRanged && (type === 'HIT' || type === 'MISS' || type === 'CRIT')) {
+            type = `RANGED_${type}`;
+        }
+
+        const pool = this.templates[type as keyof typeof this.templates] || ["{attacker} acted on {target}."];
         const template = pool[Math.floor(Math.random() * pool.length)];
 
         let msg = template

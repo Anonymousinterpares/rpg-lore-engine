@@ -7,7 +7,7 @@ import { CombatantSchema } from '../schemas/FullSaveStateSchema';
 type Combatant = z.infer<typeof CombatantSchema>;
 
 export interface CombatActionResult {
-    type: 'HIT' | 'MISS' | 'CRIT' | 'SAVE_SUCCESS' | 'SAVE_FAIL' | 'HEAL' | 'EFFECT';
+    type: 'HIT' | 'MISS' | 'CRIT' | 'RANGED_HIT' | 'RANGED_MISS' | 'RANGED_CRIT' | 'SAVE_SUCCESS' | 'SAVE_FAIL' | 'HEAL' | 'EFFECT';
     damage: number;
     heal: number;
     message: string;
