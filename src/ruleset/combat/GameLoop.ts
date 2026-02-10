@@ -620,6 +620,63 @@ export class GameLoop {
                 this.state.travelPace = newPace;
                 this.emitStateUpdate();
                 return `Travel pace set to ${newPace}.`;
+            case 'item_add':
+                if (!intent.args || intent.args.length === 0) return "Usage: /item_add {name} {count}";
+
+                let itemName = '';
+                let itemCount = 1;
+
+                // Check if the last argument is a quantity
+                const lastArg = intent.args[intent.args.length - 1];
+                const parsedCount = parseInt(lastArg, 10);
+
+                if (!isNaN(parsedCount) && intent.args.length > 1) {
+                    itemCount = parsedCount;
+                    itemName = intent.args.slice(0, -1).join(' ');
+                } else {
+                    // Entire args is the name
+                    itemName = intent.args.join(' ');
+                }
+
+                const itemDef = DataManager.getItem(itemName);
+                if (!itemDef) return `Item not found: ${itemName}`;
+
+                const charToUpdate = this.state.character;
+                const currentCarriedWeight = charToUpdate.inventory.items.reduce((sum, i) => sum + (i.weight * (i.quantity || 1)), 0);
+                const maxCapacity = (charToUpdate.stats.STR || 10) * 15;
+                const newItemsWeight = itemDef.weight * itemCount;
+
+                if (currentCarriedWeight + newItemsWeight > maxCapacity) {
+                    return "weight limit exceeded";
+                }
+
+                // Add to inventory
+                const existingInvItem = charToUpdate.inventory.items.find(i => i.id === itemDef.name); // Using name as ID based on DataManager indexing
+                const isStackable = !['weapon', 'armor', 'shield'].some(t => itemDef.type.toLowerCase().includes(t));
+
+                if (existingInvItem && isStackable) {
+                    existingInvItem.quantity = (existingInvItem.quantity || 1) + itemCount;
+                } else {
+                    // For non-stackables or new items, add them
+                    // If count > 1 for non-stackables, we add multiple entries
+                    const additions = isStackable ? 1 : itemCount;
+                    const qtyPerAddition = isStackable ? itemCount : 1;
+
+                    for (let i = 0; i < additions; i++) {
+                        charToUpdate.inventory.items.push({
+                            id: itemDef.name,
+                            instanceId: `${itemDef.name.toLowerCase().replace(/ /g, '_')}_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+                            name: itemDef.name,
+                            type: itemDef.type,
+                            weight: itemDef.weight,
+                            quantity: qtyPerAddition,
+                            equipped: false
+                        });
+                    }
+                }
+
+                this.emitStateUpdate();
+                return `[SYSTEM] Added ${itemCount}x ${itemDef.name} to inventory.`;
             default:
                 return `Unknown command: /${intent.command}`;
         }
