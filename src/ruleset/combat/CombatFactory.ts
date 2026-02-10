@@ -109,7 +109,9 @@ export class CombatFactory {
             cover: 'None' as const,
             reach: maxReach,
             isRanged: isRanged,
-            range: isRanged ? { normal: normalRange, long: longRange } : undefined
+            range: isRanged ? { normal: normalRange, long: longRange } : undefined,
+            virtualAmmo: isRanged ? 20 : undefined,
+            thrownActionUsed: isRanged ? false : undefined
         };
     }
 

@@ -122,6 +122,26 @@ export const CombatActionBar: React.FC = () => {
         }
     };
 
+    const getMeleeTooltip = () => {
+        if (!player) return "Perform a weapon attack";
+        const mainHandId = state.character.equipmentSlots.mainHand;
+        const inventoryEntry = mainHandId ? state.character.inventory.items.find(i => i.instanceId === mainHandId) : null;
+        const item = inventoryEntry ? DataManager.getItem(inventoryEntry.id) : null;
+        const hasUnarmedSkill = state.character.skillProficiencies.includes('Unarmed Combat');
+
+        if (!item) {
+            return hasUnarmedSkill
+                ? `Unarmed Strike (1d4 + STR + Prof) [Trained]`
+                : `Unarmed Strike (1d4 + STR)`;
+        }
+
+        if (CombatUtils.isRangedWeapon(item)) {
+            return `⚠️ Improvised melee with ${item.name} (1d4 Bludgeoning, Disadvantage)`;
+        }
+
+        return `Attack with ${item.name} (${(item as any).damage?.dice || '1d8'})`;
+    };
+
     return (
         <div className={styles.actionBar}>
             <div className={styles.group}>
@@ -132,7 +152,7 @@ export const CombatActionBar: React.FC = () => {
                     onClick={() => handleAction('attack')}
                     disabled={!isPlayerTurn || hasUsedAction}
                     disabledReason={!isPlayerTurn ? "Not your turn" : "Action already used"}
-                    tooltip="Perform a weapon attack"
+                    tooltip={getMeleeTooltip()}
                 />
                 <ActionButton
                     icon={<Target size={24} />}

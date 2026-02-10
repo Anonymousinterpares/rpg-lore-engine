@@ -35,14 +35,41 @@ export class NarrativeGenerator {
                     label: `Stalk`,
                     description: `Creep through the ${biomeData.dangerTier === 'Safe' ? 'undergrowth' : 'shadows'} towards ${targetName}.${remainingText}`
                 };
+            case 'press':
+                return {
+                    label: `Press the Attack`,
+                    description: `Close in on ${targetName}, maintaining pressure and denying retreat.`
+                };
 
-            // ... [existing cases kept mostly same, but using distance where appropriate] ...
+            // Category B: Supportive / Formation
+            case 'phalanx':
+                return {
+                    label: `Form Phalanx`,
+                    description: `Move shoulder-to-shoulder with ${targetName} for mutual protection.`
+                };
+            case 'flank':
+                return {
+                    label: `Flank`,
+                    description: `Circle around ${targetName} to catch them between you and your ally.`
+                };
+
+            // Category C: Defensive
+            case 'hunker_down':
+                return {
+                    label: `Hunker Down`,
+                    description: `Take cover behind the ${targetName}, bracing for incoming fire.`
+                };
 
             // Category D: Retreat
             case 'fade_back':
                 return {
                     label: `Fade Back`,
                     description: `Retreat ${distText} away from the melee.`
+                };
+            case 'vanish':
+                return {
+                    label: `Vanish`,
+                    description: `Use the ${weather.type === 'Fog' ? 'fog' : 'chaos of battle'} to disappear from sight.`
                 };
 
             // Category E: Environmental Awareness (Informational)

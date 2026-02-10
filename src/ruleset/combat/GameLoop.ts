@@ -533,6 +533,20 @@ export class GameLoop {
                                 duration: 1,
                                 sourceId: currentCombatant.id
                             });
+                        } else if (mode === 'press') {
+                            // Press = Advantage on next melee (costs half move remaining)
+                            currentCombatant.movementRemaining = Math.floor(currentCombatant.movementRemaining / 2);
+                            currentCombatant.statusEffects.push({ id: 'press_advantage', name: 'Pressing Attack', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
+                        } else if (mode === 'stalk') {
+                            // Stalk = Stealth vs Passive Perception
+                            currentCombatant.movementRemaining = Math.floor(currentCombatant.movementRemaining / 2);
+                            currentCombatant.statusEffects.push({ id: 'stalking', name: 'Stalking', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
+                        } else if (mode === 'flank') {
+                            currentCombatant.statusEffects.push({ id: 'flanking', name: 'Flanking', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
+                        } else if (mode === 'phalanx') {
+                            currentCombatant.statusEffects.push({ id: 'phalanx_formation', name: 'Phalanx Formation', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
+                        } else if (mode === 'hunker') {
+                            currentCombatant.statusEffects.push({ id: 'hunkered_down', name: 'Hunkered Down', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
                         }
 
                         return this.combatManager.moveCombatant(currentCombatant, { x, y });
@@ -943,8 +957,28 @@ export class GameLoop {
             const prof = MechanicsEngine.getProficiencyBonus(pc.level);
 
             const statMod = isRanged ? dexMod : strMod;
-            const attackBonus = statMod + prof;
-            const damageFormula = (mainHandItem as any)?.damage?.dice || "1d8";
+            let attackBonus = statMod + prof;
+            let damageFormula = (mainHandItem as any)?.damage?.dice || "1d8";
+            let dmgBonus = statMod;
+            let forceDisadvantage = false;
+
+            // --- MELEE REWORK (Unarmed / Improvised) ---
+            const hasUnarmedSkill = pc.skillProficiencies.includes('Unarmed Combat');
+
+            if (!mainHandItem && !isRanged) {
+                // Unarmed Strike
+                damageFormula = "1d4";
+                attackBonus = strMod + (hasUnarmedSkill ? prof : 0);
+                dmgBonus = strMod + (hasUnarmedSkill ? 2 : 0);
+                this.addCombatLog(`You strike with your bare hands!`);
+            } else if (mainHandItem && !isRanged && CombatUtils.isRangedWeapon(mainHandItem)) {
+                // Ranged as Improvised Melee
+                damageFormula = "1d4";
+                attackBonus = strMod + prof;
+                dmgBonus = strMod;
+                forceDisadvantage = true;
+                this.addCombatLog(`You swing your ${mainHandItem.name} like a club! (Improvised)`);
+            }
 
             // Spatial Range Validation
             const gridManager = new CombatGridManager(this.state.combat.grid!);
@@ -973,7 +1007,7 @@ export class GameLoop {
             }
 
             // Determine Advantage/Disadvantage
-            let forceDisadvantage = false;
+            forceDisadvantage = false;
             let rangePrefix = "";
 
             // 1. Long Range Rule
@@ -998,7 +1032,8 @@ export class GameLoop {
                 target,
                 attackBonus,
                 damageFormula,
-                statMod,
+                dmgBonus,
+                isRanged,
                 forceDisadvantage
             );
 
@@ -1071,6 +1106,18 @@ export class GameLoop {
                 currentCombatant.statusEffects.push({ id: 'sprint_reckless', name: 'Reckless Sprint', type: 'DEBUFF', duration: 1, sourceId: currentCombatant.id });
             } else if (mode === 'evasive') {
                 currentCombatant.statusEffects.push({ id: 'evasive_movement', name: 'Evasive Movement', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
+            } else if (mode === 'press') {
+                currentCombatant.movementRemaining = Math.floor(currentCombatant.movementRemaining / 2);
+                currentCombatant.statusEffects.push({ id: 'press_advantage', name: 'Pressing Attack', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
+            } else if (mode === 'stalk') {
+                currentCombatant.movementRemaining = Math.floor(currentCombatant.movementRemaining / 2);
+                currentCombatant.statusEffects.push({ id: 'stalking', name: 'Stalking', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
+            } else if (mode === 'flank') {
+                currentCombatant.statusEffects.push({ id: 'flanking', name: 'Flanking', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
+            } else if (mode === 'phalanx') {
+                currentCombatant.statusEffects.push({ id: 'phalanx_formation', name: 'Phalanx Formation', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
+            } else if (mode === 'hunker') {
+                currentCombatant.statusEffects.push({ id: 'hunkered_down', name: 'Hunkered Down', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
             }
 
             const combatManager = new CombatManager(this.state);
@@ -1571,7 +1618,7 @@ export class GameLoop {
                         const isThrown = actionData.description.toLowerCase().includes('thrown');
 
                         if (ammoType) {
-                            if (actor.virtualAmmo === undefined) actor.virtualAmmo = 20;
+                            if (actor.virtualAmmo === undefined) actor.virtualAmmo = 20; // Safety fallback
                             if (actor.virtualAmmo <= 0) {
                                 this.addCombatLog(`${actor.name} reaches for an ${ammoType} but finds their quiver empty!`);
                                 break;

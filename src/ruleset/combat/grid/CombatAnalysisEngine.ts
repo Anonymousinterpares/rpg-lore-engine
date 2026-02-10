@@ -113,7 +113,7 @@ export class CombatAnalysisEngine {
                         description: nar.description,
                         targetPosition: targetPos,
                         type: 'AGGRESSION',
-                        command: `/move ${targetPos.x} ${targetPos.y}`,
+                        command: `/move ${targetPos.x} ${targetPos.y} stalk`,
                         pros: ['Stealth Check vs Biome DC', 'Potential Advantage'],
                         cons: ['Half Speed']
                     });
@@ -131,7 +131,7 @@ export class CombatAnalysisEngine {
                         description: nar.description,
                         targetPosition: targetPos,
                         type: 'AGGRESSION',
-                        command: `/move ${targetPos.x} ${targetPos.y}`
+                        command: `/move ${targetPos.x} ${targetPos.y} press`
                     });
                 }
             }
@@ -172,7 +172,7 @@ export class CombatAnalysisEngine {
                 description: nar.description,
                 targetPosition: c.pos,
                 type: 'SAFETY',
-                command: `/move ${c.pos.x} ${c.pos.y}`,
+                command: `/move ${c.pos.x} ${c.pos.y} hunker`,
                 pros: [c.feature.coverBonus === 'FULL' ? '+5 AC' : '+2 AC']
             });
         });
@@ -209,7 +209,7 @@ export class CombatAnalysisEngine {
                         description: nar.description,
                         targetPosition: pos,
                         type: 'FLANKING',
-                        command: `/move ${pos.x} ${pos.y}`,
+                        command: `/move ${pos.x} ${pos.y} flank`,
                         pros: ['Advantage on Melee']
                     });
                 }
@@ -228,7 +228,7 @@ export class CombatAnalysisEngine {
                         description: nar.description,
                         targetPosition: adjToAlly,
                         type: 'FLANKING',
-                        command: `/move ${adjToAlly.x} ${adjToAlly.y}`,
+                        command: `/move ${adjToAlly.x} ${adjToAlly.y} phalanx`,
                         pros: ['+1 AC from Cover'],
                         cons: ['AoE Vulnerability']
                     });

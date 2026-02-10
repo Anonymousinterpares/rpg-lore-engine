@@ -32,22 +32,36 @@ export class CombatResolutionEngine {
         attackBonus: number,
         damageFormula: string,
         statMod: number,
+        isRanged: boolean = false,
         forceDisadvantage: boolean = false
     ): CombatActionResult {
         const hasDodgeDisadvantage = target.statusEffects.some(e => e.id === 'dodge');
         const isSprinting = target.statusEffects.some(e => e.id === 'sprint_reckless');
         const isEvasive = target.statusEffects.some(e => e.id === 'evasive_movement');
+        const isPhalanxTarget = target.statusEffects.some(e => e.id === 'phalanx_formation');
+        const isHunkered = target.statusEffects.some(e => e.id === 'hunkered_down');
 
-        const d20 = (hasDodgeDisadvantage || forceDisadvantage) ? Dice.disadvantage() : Dice.d20();
+        const hasPressAdvantage = attacker.statusEffects.some(e => e.id === 'press_advantage');
+        const isUnseen = attacker.statusEffects.some(e => e.id === 'unseen');
+        const isFlanking = attacker.statusEffects.some(e => e.id === 'flanking');
+
+        const attackAdvantage = (!isRanged && (hasPressAdvantage || isUnseen || isFlanking));
+        const finalAdvantage = (attackAdvantage && !hasDodgeDisadvantage && !forceDisadvantage) ? 'advantage' : 'none';
+        const finalDisadvantage = (hasDodgeDisadvantage || forceDisadvantage) ? 'disadvantage' : 'none';
+
+        const d20 = (finalAdvantage === 'advantage') ? Dice.advantage() :
+            (finalDisadvantage === 'disadvantage') ? Dice.disadvantage() : Dice.d20();
         const isCrit = d20 === 20;
 
         // Calculate effective AC
         let effectiveAC = target.ac;
         if (isSprinting) effectiveAC -= 2;
+        if (isPhalanxTarget) effectiveAC += 1;
+        if (isHunkered) effectiveAC += 2; // Flat half-cover bonus for now
 
         // Evasive: +2 AC vs ranged attacks only
-        const isRanged = attacker.tactical?.isRanged || false; // Note: may need better check for PC
-        if (isEvasive && (isRanged || forceDisadvantage)) effectiveAC += 2;
+        const isRangedAttacker = isRanged || (attacker.tactical?.isRanged || false);
+        if (isEvasive && (isRangedAttacker || forceDisadvantage)) effectiveAC += 2;
 
         const total = d20 + attackBonus;
         const hit = isCrit || total >= effectiveAC;
