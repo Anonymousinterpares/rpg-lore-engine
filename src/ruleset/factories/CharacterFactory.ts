@@ -100,9 +100,10 @@ export class CharacterFactory {
         }
 
         const now = new Date().toISOString();
+        const newSaveId = uuidv4();
 
         return {
-            saveId: uuidv4(),
+            saveId: newSaveId,
             saveVersion: 1,
             createdAt: now,
             lastSavedAt: now,
@@ -191,7 +192,7 @@ export class CharacterFactory {
                     hexes[key] = neighbor;
                 });
                 return {
-                    grid_id: 'world_map',
+                    grid_id: newSaveId,
                     hexes,
                     discoveredHexIds: ['0,0'],
                     lastGeneratedTurn: 0,

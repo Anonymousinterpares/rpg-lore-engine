@@ -63,6 +63,11 @@ const App: React.FC = () => {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, []);
 
+    // Initial load of the save registry to ensure menus are populated immediately
+    useEffect(() => {
+        getSaveRegistry().then(setSaveRegistry);
+    }, [getSaveRegistry]);
+
     const confirmAction = (message: string) => {
         if (!isActive) return true;
         return window.confirm(message);

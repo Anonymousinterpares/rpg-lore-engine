@@ -55,7 +55,7 @@ export const HexSchema = z.object({
     inLineOfSight: z.boolean().default(false),
     playerName: z.string().optional(),
     namingSource: z.enum(['engine', 'llm', 'player', 'npc']).default('engine'),
-    visualVariant: z.number().int().min(1).max(5).default(1),
+    visualVariant: z.number().int().min(1).max(20).default(1),
     oceanDirection: z.enum(['N', 'S', 'E', 'W', 'NE', 'SE', 'NW', 'SW']).optional()
 });
 

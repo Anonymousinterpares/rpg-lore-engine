@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { GameLoop } from '../../ruleset/combat/GameLoop';
-import { GameState } from '../../ruleset/combat/GameStateManager';
+import { GameStateManager, GameState } from '../../ruleset/combat/GameStateManager';
 import { NetworkStorageProvider } from '../../ruleset/combat/NetworkStorageProvider';
 import { IStorageProvider } from '../../ruleset/combat/IStorageProvider';
 import { DataManager } from '../../ruleset/data/DataManager';
@@ -94,21 +94,19 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const loadGame = useCallback(async (saveId: string) => {
         setIsLoading(true);
         try {
-            const tempEngine = new GameLoop(state || ({} as GameState), '/', storage);
-            await tempEngine.initialize();
-            const newState = await tempEngine.getStateManager().loadGame(saveId);
+            const manager = new GameStateManager('/', storage);
+            const newState = await manager.loadGame(saveId);
             if (newState) {
                 await startGame(newState);
             }
         } finally {
             setIsLoading(false);
         }
-    }, [state, storage, startGame]);
+    }, [storage, startGame]);
 
     const loadLastSave = useCallback(async () => {
-        const tempEngine = new GameLoop(state || ({} as GameState), '/', storage);
-        await tempEngine.initialize();
-        const registry = await tempEngine.getStateManager().getSaveRegistry();
+        const manager = new GameStateManager('/', storage);
+        const registry = await manager.getSaveRegistry();
         if (registry.slots.length > 0) {
             // Sort by date to find the most recent
             const lastSave = [...registry.slots].sort((a, b) =>
@@ -116,7 +114,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
             )[0];
             await loadGame(lastSave.id);
         }
-    }, [state, storage, loadGame]);
+    }, [storage, loadGame]);
 
     const saveGame = useCallback(async (slotName: string, summary?: string, thumbnail?: string) => {
         if (engine && state) {
@@ -126,16 +124,17 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [engine, state, updateState]);
 
     const deleteSave = useCallback(async (saveId: string) => {
-        const tempEngine = engine || new GameLoop(state || ({} as GameState), '/', storage);
-        if (!engine) await tempEngine.initialize();
-        return await tempEngine.getStateManager().deleteSave(saveId);
-    }, [engine, state, storage]);
+        if (engine) {
+            return await engine.getStateManager().deleteSave(saveId);
+        }
+        const manager = new GameStateManager('/', storage);
+        return await manager.deleteSave(saveId);
+    }, [engine, storage]);
 
     const getSaveRegistry = useCallback(async () => {
-        const tempEngine = new GameLoop(state || ({} as GameState), '/', storage);
-        await tempEngine.initialize();
-        return await tempEngine.getStateManager().getSaveRegistry();
-    }, [state, storage]);
+        const manager = new GameStateManager('/', storage);
+        return await manager.getSaveRegistry();
+    }, [storage]);
 
     const getTacticalOptions = useCallback((): TacticalOption[] => {
         if (!engine) return [];
