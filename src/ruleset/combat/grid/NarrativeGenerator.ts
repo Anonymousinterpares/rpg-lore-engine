@@ -49,17 +49,17 @@ export class NarrativeGenerator {
             case 'charge':
                 return {
                     label: `Charge!`,
-                    description: `Charge headlong at ${targetName}! ⚡ 2× move, −2 AC.`
+                    description: `Charge headlong at ${targetName}! ⚡ 2× move, −2 AC. ${remainingText}`
                 };
             case 'stalk':
                 return {
                     label: `Stalk`,
-                    description: `Creep through the undergrowth towards ${targetName}. 🤫 ½ speed, Stealth check → Advantage if unseen.`
+                    description: `Creep through the undergrowth towards ${targetName}. 🤫 ½ speed, Stealth check → Advantage if unseen. ${remainingText}`
                 };
             case 'press':
                 return {
                     label: `Press the Attack`,
-                    description: `Close in on ${targetName}, maintaining pressure and denying retreat. ⚔️ Advantage on next melee. ½ movement.`
+                    description: `Close in on ${targetName}, maintaining pressure and denying retreat. ⚔️ Advantage on next melee. ½ movement. ${remainingText}`
                 };
 
             // Category B: Supportive / Formation

@@ -78,7 +78,7 @@ export class CombatAnalysisEngine {
             const pathDist = this.gridManager.getDistanceVector(combatant.position, enemy.position);
 
             // A1. Charge (Strict linear move, now uses Sprint speed for consistency)
-            if (pathDist > 6 && pathDist === dist && weather.type !== 'Blizzard' && weather.type !== 'Snow') {
+            if (dist >= 4 && pathDist === dist && weather.type !== 'Blizzard' && weather.type !== 'Snow') {
                 const sprintSpeed = combatant.movementSpeed * 2;
                 const targetPos = this.getApproachPosition(reachable, enemy.position, 1); // getApproachPosition uses reachable which might be 1x? need to check
 
@@ -88,7 +88,7 @@ export class CombatAnalysisEngine {
 
                 if (betterTargetPos) {
                     const actualMoveDist = this.gridManager.getDistance(combatant.position, betterTargetPos);
-                    const nar = NarrativeGenerator.generate('charge', combatant, enemy.position, biome, weather, '', actualMoveDist);
+                    const nar = NarrativeGenerator.generate('charge', combatant, enemy, biome, weather, '', actualMoveDist);
                     options.push({
                         id: `charge_${enemy.id}`,
                         label: nar.label,
@@ -103,11 +103,11 @@ export class CombatAnalysisEngine {
             }
 
             // A2. Stalk (Stealthy approach)
-            if (pathDist > 4) {
+            if (dist >= 3) {
                 const targetPos = this.getApproachPosition(reachable, enemy.position, 1);
                 if (targetPos) {
                     const actualMoveDist = this.gridManager.getDistance(combatant.position, targetPos);
-                    const nar = NarrativeGenerator.generate('stalk', combatant, enemy.position, biome, weather, '', actualMoveDist);
+                    const nar = NarrativeGenerator.generate('stalk', combatant, enemy, biome, weather, '', actualMoveDist);
                     options.push({
                         id: `stalk_${enemy.id}`,
                         label: nar.label,
@@ -122,7 +122,7 @@ export class CombatAnalysisEngine {
             }
 
             // A3. Press (Close engagement)
-            if (dist <= 2) {
+            if (dist <= 4) {
                 const targetPos = this.getApproachPosition(reachable, enemy.position, 1);
                 if (targetPos) {
                     // Check if direct path is blocked for "Vault" or "Flank" context
