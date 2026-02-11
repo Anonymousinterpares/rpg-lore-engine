@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { GameLoop } from '../../ruleset/combat/GameLoop';
 import { GameState } from '../../ruleset/combat/GameStateManager';
-import { BrowserStorageProvider } from '../../ruleset/combat/BrowserStorageProvider';
+import { NetworkStorageProvider } from '../../ruleset/combat/NetworkStorageProvider';
+import { IStorageProvider } from '../../ruleset/combat/IStorageProvider';
 import { DataManager } from '../../ruleset/data/DataManager';
 import { TacticalOption } from '../../ruleset/combat/grid/CombatAnalysisEngine';
 
@@ -10,12 +11,14 @@ interface GameContextType {
     engine: GameLoop | null;
     isActive: boolean;
     isLoading: boolean;
-    startGame: (initialState: GameState) => void;
+    startGame: (initialState: GameState) => Promise<void>;
     endGame: () => void;
     processCommand: (command: string) => Promise<void>;
     updateState: () => void;
-    loadGame: (saveId: string) => void;
-    loadLastSave: () => void;
+    loadGame: (saveId: string) => Promise<void>;
+    loadLastSave: () => Promise<void>;
+    saveGame: (slotName: string, summary?: string, thumbnail?: string) => Promise<void>;
+    getSaveRegistry: () => Promise<any>;
     getTacticalOptions: () => TacticalOption[];
 }
 
@@ -27,6 +30,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [isActive, setIsActive] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
+    // Choose storage based on environment or settings
+    const [storage] = useState<IStorageProvider>(new NetworkStorageProvider());
+
     const updateState = useCallback(() => {
         if (engine) {
             setState({ ...engine.getState() });
@@ -34,29 +40,38 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [engine]);
 
     const startGame = useCallback(async (initialState: GameState) => {
-        DataManager.initialize();
-        const newEngine = new GameLoop(initialState, '/', new BrowserStorageProvider());
-        setEngine(newEngine);
-        setState(initialState);
-        setIsActive(true);
+        setIsLoading(true);
+        try {
+            await DataManager.initialize();
+            const newEngine = new GameLoop(initialState, '/', storage);
+            await newEngine.initialize();
 
-        // Auto-trigger opening narration for new games (turn 0)
-        if (initialState.worldTime.totalTurns === 0 && initialState.conversationHistory.length === 0) {
-            console.log('[GameProvider] New game detected, triggering opening narration...');
-            setIsLoading(true);
-            // Use setTimeout to ensure state is set before processing
-            setTimeout(async () => {
-                try {
-                    await newEngine.processTurn('__OPENING_SCENE__');
-                    setState({ ...newEngine.getState() });
-                } catch (e) {
-                    console.error('[GameProvider] Failed to generate opening narration:', e);
-                } finally {
-                    setIsLoading(false);
-                }
-            }, 100);
+            setEngine(newEngine);
+            setState(initialState);
+            setIsActive(true);
+
+            // Auto-trigger opening narration for new games (turn 0)
+            if (initialState.worldTime.totalTurns === 0 && initialState.conversationHistory.length === 0) {
+                console.log('[GameProvider] New game detected, triggering opening narration...');
+                setIsLoading(true);
+                // Use setTimeout to ensure state is set before processing
+                setTimeout(async () => {
+                    try {
+                        await newEngine.processTurn('__OPENING_SCENE__');
+                        setState({ ...newEngine.getState() });
+                    } catch (e) {
+                        console.error('[GameProvider] Failed to generate opening narration:', e);
+                    } finally {
+                        setIsLoading(false);
+                    }
+                }, 100);
+            }
+        } catch (e) {
+            console.error('[GameProvider] Failed to start game:', e);
+        } finally {
+            setIsLoading(false);
         }
-    }, []);
+    }, [storage]);
 
     const endGame = useCallback(() => {
         setIsActive(false);
@@ -75,26 +90,45 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, [engine]);
 
-    const loadGame = useCallback((saveId: string) => {
-        // Instantiate a temporary GameLoop to use its state manager for loading
-        const tempEngine = new GameLoop(state || ({} as GameState), '/', new BrowserStorageProvider());
-        const newState = tempEngine.getStateManager().loadGame(saveId);
-        if (newState) {
-            startGame(newState);
+    const loadGame = useCallback(async (saveId: string) => {
+        setIsLoading(true);
+        try {
+            const tempEngine = new GameLoop(state || ({} as GameState), '/', storage);
+            await tempEngine.initialize();
+            const newState = await tempEngine.getStateManager().loadGame(saveId);
+            if (newState) {
+                await startGame(newState);
+            }
+        } finally {
+            setIsLoading(false);
         }
-    }, [state, startGame]);
+    }, [state, storage, startGame]);
 
-    const loadLastSave = useCallback(() => {
-        const tempEngine = new GameLoop(state || ({} as GameState), '/', new BrowserStorageProvider());
-        const registry = tempEngine.getStateManager().getSaveRegistry();
+    const loadLastSave = useCallback(async () => {
+        const tempEngine = new GameLoop(state || ({} as GameState), '/', storage);
+        await tempEngine.initialize();
+        const registry = await tempEngine.getStateManager().getSaveRegistry();
         if (registry.slots.length > 0) {
             // Sort by date to find the most recent
             const lastSave = [...registry.slots].sort((a, b) =>
                 new Date(b.lastSaved).getTime() - new Date(a.lastSaved).getTime()
             )[0];
-            loadGame(lastSave.id);
+            await loadGame(lastSave.id);
         }
-    }, [state, loadGame]);
+    }, [state, storage, loadGame]);
+
+    const saveGame = useCallback(async (slotName: string, summary?: string, thumbnail?: string) => {
+        if (engine && state) {
+            await engine.getStateManager().saveGame(state, slotName, summary, thumbnail);
+            updateState();
+        }
+    }, [engine, state, updateState]);
+
+    const getSaveRegistry = useCallback(async () => {
+        const tempEngine = new GameLoop(state || ({} as GameState), '/', storage);
+        await tempEngine.initialize();
+        return await tempEngine.getStateManager().getSaveRegistry();
+    }, [state, storage]);
 
     const getTacticalOptions = useCallback((): TacticalOption[] => {
         if (!engine) return [];
@@ -129,6 +163,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
             updateState,
             loadGame,
             loadLastSave,
+            saveGame,
+            getSaveRegistry,
             getTacticalOptions
         }}>
             {children}

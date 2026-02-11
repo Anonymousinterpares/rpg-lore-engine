@@ -4,74 +4,174 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 6000;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(2px);
 }
 
 .modal {
-    width: 600px;
-    max-width: 90vw;
-    height: 700px;
-    max-height: 85vh;
+    width: 700px;
+    max-width: 95vw;
+    height: 80vh;
+    max-height: 800px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    /* Parchment panel styles are applied via composition/class in TSX, 
+       but we ensure basic layout here */
 }
 
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--spacing-lg);
-    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--parchment-border);
+    margin-bottom: var(--spacing-md);
 }
 
 .headerTitle {
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
-    color: var(--glass-accent);
+    color: var(--parchment-header);
 }
 
 .headerTitle h2 {
     font-family: var(--font-primary);
     margin: 0;
-    color: var(--glass-text);
+    color: #4a3c31;
+    /* Dark brown ink */
+    font-size: 1.8rem;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .closeButton {
     background: none;
     border: none;
-    color: var(--glass-text-dim);
+    color: var(--parchment-text);
+    opacity: 0.6;
     cursor: pointer;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
+    padding: var(--spacing-sm);
 }
 
 .closeButton:hover {
-    color: #ff4444;
+    opacity: 1;
+    color: #8b0000;
+    /* Dark red for cancel actions */
+    transform: scale(1.1);
+}
+
+/* New Save Section - Fixed at top */
+.createSection {
+    background: rgba(139, 115, 85, 0.1);
+    border: 1px dashed var(--parchment-border);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    border-radius: var(--radius-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.createControls {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.nameInput {
+    flex: 1;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-family: var(--font-narrative);
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--parchment-border);
+    border-radius: var(--radius-sm);
+    color: #2c2520;
+}
+
+.nameInput:focus {
+    outline: none;
+    border-color: var(--parchment-accent);
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 5px rgba(139, 115, 85, 0.2);
+}
+
+.createButton {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: var(--parchment-accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.createButton:hover:not(:disabled) {
+    background: #8b7355;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.createButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #a89f91;
 }
 
 .slotList {
     flex: 1;
-    padding: var(--spacing-lg);
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: var(--spacing-md);
+    padding-right: var(--spacing-sm);
+    /* Space for scrollbar */
+}
+
+/* Custom Scrollbar for Parchment */
+.slotList::-webkit-scrollbar {
+    width: 8px;
+}
+
+.slotList::-webkit-scrollbar-track {
+    background: rgba(139, 115, 85, 0.1);
+    border-radius: 4px;
+}
+
+.slotList::-webkit-scrollbar-thumb {
+    background: rgba(139, 115, 85, 0.4);
+    border-radius: 4px;
+}
+
+.slotList::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 115, 85, 0.6);
 }
 
 .slotItem {
     display: flex;
     align-items: stretch;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid var(--parchment-border);
     border-radius: var(--radius-sm);
     transition: all 0.2s ease;
     overflow: hidden;
+    position: relative;
+}
+
+.slotItem:hover {
+    background: rgba(255, 255, 255, 0.7);
+    border-color: var(--parchment-accent);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .slotMain {
@@ -80,37 +180,43 @@
     cursor: pointer;
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
-}
-
-.slotItem:hover {
-    border-color: var(--glass-accent);
-    background: rgba(255, 255, 255, 0.1);
+    gap: var(--spacing-xs);
 }
 
 .slotHeader {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: baseline;
+    margin-bottom: var(--spacing-xs);
 }
 
 .slotName {
     font-family: var(--font-primary);
     font-weight: bold;
-    color: var(--glass-text);
-    font-size: 1.1rem;
+    color: #2c2520;
+    /* Dark Ink */
+    font-size: 1.2rem;
 }
 
 .charInfo {
     font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: var(--glass-accent);
+    font-size: 0.85rem;
+    color: #5d4037;
+    /* Brown Ink */
+    font-weight: 600;
 }
 
 .slotMeta {
     display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.slotInfoPane {
+    display: flex;
     gap: var(--spacing-lg);
     flex-wrap: wrap;
+    color: #6b5b4e;
 }
 
 .metaItem {
@@ -119,35 +225,79 @@
     gap: var(--spacing-xs);
     font-family: var(--font-mono);
     font-size: 0.75rem;
-    color: var(--glass-text-dim);
+}
+
+.slotSummary {
+    margin: var(--spacing-xs) 0 0 0;
+    font-size: 0.9rem;
+    color: #4a3c31;
+    line-height: 1.4;
+    font-style: italic;
+    opacity: 0.9;
+    font-family: var(--font-narrative);
+    border-top: 1px dashed rgba(139, 115, 85, 0.2);
+    padding-top: var(--spacing-xs);
+}
+
+.slotRight {
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid var(--parchment-border);
+    width: 140px;
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.thumbnailContainer {
+    width: 100%;
+    height: 100px;
+    /* Fixed height for thumbnail area */
+    overflow: hidden;
+    background: #2c2520;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.thumbnailContainer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+}
+
+.saveThumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.9;
+    transition: opacity 0.2s ease;
+}
+
+.slotItem:hover .saveThumbnail {
+    opacity: 1;
 }
 
 .deleteButton {
-    width: 50px;
-    background: rgba(255, 0, 0, 0.1);
+    flex: 1;
+    background: transparent;
     border: none;
-    border-left: 1px solid var(--glass-border);
-    color: #ff4444;
+    border-top: 1px solid var(--parchment-border);
+    color: #a84444;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+    font-size: 0.8rem;
+    gap: var(--spacing-xs);
+    font-family: var(--font-ui);
 }
 
 .deleteButton:hover {
-    background: #ff4444;
-    color: #000;
-}
-
-.newSaveSlot {
-    justify-content: center;
-    gap: var(--spacing-md);
-    padding: var(--spacing-lg);
-    color: var(--glass-accent);
-    font-family: var(--font-mono);
-    font-weight: bold;
-    border-style: dashed;
+    background: rgba(255, 0, 0, 0.05);
+    color: #d00000;
 }
 
 .emptyState {
@@ -157,5 +307,11 @@
     align-items: center;
     justify-content: center;
     gap: var(--spacing-md);
-    color: var(--glass-text-dim);
+    color: rgba(139, 115, 85, 0.5);
+    min-height: 200px;
+}
+
+.emptyState p {
+    font-family: var(--font-primary);
+    font-size: 1.2rem;
 }

@@ -260,6 +260,48 @@ RULES:
         return prompt;
     }
 
+    /**
+     * Generates a narrative summary of the current session for save metadata.
+     */
+    public static async generateSaveSummary(state: GameState): Promise<string> {
+        const profile = AgentManager.getAgentProfile('NARRATOR');
+        const providerConfig = LLM_PROVIDERS.find(p => p.id === profile.providerId);
+        const modelConfig = providerConfig?.models.find(m => m.id === profile.modelId);
+
+        if (!providerConfig || !modelConfig) return "The adventure continues...";
+
+        // Take last 5 conversation history entries for context
+        const recentHistory = state.conversationHistory.slice(-5).map(h => `${h.role}: ${h.content}`).join('\n');
+
+        const systemPrompt = `You are a legendary bard. 
+Summarize the current state and recent events of the adventure in 2-3 evocative sentences. 
+This summary will be used by the player to identify their save game. 
+Focus on the location, the player's current goal, and the most recent achievement or dilemma.
+Keep it strictly under 50 words.
+
+## RECENT HISTORY
+${recentHistory || 'The journey has just begun.'}`;
+
+        try {
+            const rawResponse = await LLMClient.generateCompletion(
+                providerConfig,
+                modelConfig,
+                {
+                    systemPrompt,
+                    userMessage: "Write a short summary for this save game.",
+                    temperature: 0.7,
+                    maxTokens: 150,
+                    responseFormat: 'text'
+                }
+            );
+
+            return this.extractJson(rawResponse).replace(/\{[\s\S]*\}/, '').trim() || rawResponse.trim();
+        } catch (e) {
+            console.error('[NarratorService] Save summary failed:', e);
+            return "The adventure continues at " + state.location.hexId;
+        }
+    }
+
     private static extractJson(text: string): string {
         // Try to find JSON object in the response
         const jsonMatch = text.match(/\{[\s\S]*\}/);

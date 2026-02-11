@@ -9,7 +9,8 @@ export const SaveSlotMetadataSchema = z.object({
     lastSaved: z.string(), // ISO Timestamp
     playTimeSeconds: z.number(),
     locationSummary: z.string(),
-    thumbnail: z.string().optional()
+    narrativeSummary: z.string().optional(),
+    thumbnail: z.string().optional() // Base64 data URL
 });
 
 export const SaveRegistrySchema = z.object({

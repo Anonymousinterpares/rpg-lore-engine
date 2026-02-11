@@ -28,14 +28,13 @@ const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests
         setContextMenu({ id, x, y });
     };
 
-    const handleMove = (destination: string | [number, number]) => {
+    const handleMove = async (destination: string | [number, number]) => {
         if (engine) {
             if (typeof destination === 'string') {
-                engine.processTurn(`/move ${destination}`);
+                await engine.processTurn(`/move ${destination}`);
             } else {
-                engine.processTurn(`/moveto ${destination[0]} ${destination[1]}`);
+                await engine.processTurn(`/moveto ${destination[0]} ${destination[1]}`);
             }
-            updateState();
             setContextMenu(null);
         }
     };

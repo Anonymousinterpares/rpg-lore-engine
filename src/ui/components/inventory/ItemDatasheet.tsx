@@ -27,10 +27,13 @@ const ItemDatasheet: React.FC<ItemDatasheetProps> = ({ item, onClose }) => {
     const { engine, updateState } = useGameState();
 
     React.useEffect(() => {
-        if (engine) {
-            engine.trackTutorialEvent(`examined_item:${item.name}`);
-            updateState();
-        }
+        const trackEvent = async () => {
+            if (engine) {
+                await engine.trackTutorialEvent(`examined_item:${item.name}`);
+                updateState();
+            }
+        };
+        trackEvent();
     }, [engine, item.name, updateState]);
 
     // Render into portal to document.body to avoid stacking issues

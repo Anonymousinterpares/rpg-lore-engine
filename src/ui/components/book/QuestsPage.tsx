@@ -12,10 +12,9 @@ const QuestsPage: React.FC = () => {
     const quests = state.activeQuests || [];
     const filteredQuests = quests.filter(q => q.status === activeTab);
 
-    const markAsRead = (questId: string) => {
+    const markAsRead = async (questId: string) => {
         if (engine) {
-            engine.markQuestAsRead(questId);
-            updateState();
+            await engine.markQuestAsRead(questId);
         }
     };
 

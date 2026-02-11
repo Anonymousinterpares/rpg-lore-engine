@@ -2,8 +2,11 @@
   "name": "rpg-lore-engine",
   "version": "1.0.0",
   "description": "Strictly typed D&D 5e lore engine with Zod validation.",
+  "type": "module",
   "main": "index.js",
   "scripts": {
+    "server": "npx tsx server.ts",
+    "server:tsnode": "npx ts-node --esm server.ts",
     "validate": "ts-node src/ruleset/scripts/validate.ts",
     "docs:gen": "ts-node src/ruleset/scripts/generateDocs.ts",
     "sync-biomes": "node scripts/sync-biomes.mjs",
@@ -33,6 +36,7 @@
     "postcss": "^8.5.6",
     "rollup-plugin-node-polyfills": "^0.2.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.7.0",
     "typescript": "^5.3.3",
     "vite": "^7.3.1"
   }

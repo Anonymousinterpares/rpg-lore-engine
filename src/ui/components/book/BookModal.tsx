@@ -30,9 +30,8 @@ const BookModalContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         }, 400); // Match CSS transition
     };
 
-    const handleTabClick = (id: string) => {
-        if (engine) engine.trackTutorialEvent(`viewed_page:${id}`);
-        updateState();
+    const handleTabClick = async (id: string) => {
+        if (engine) await engine.trackTutorialEvent(`viewed_page:${id}`);
 
         if (id === activePageId) return;
         setAnimating('in');
@@ -44,11 +43,13 @@ const BookModalContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 
     // Track initial page
     useEffect(() => {
-        if (activePageId && engine) {
-            engine.trackTutorialEvent(`viewed_page:${activePageId}`);
-            updateState();
-        }
-    }, [activePageId, engine, updateState]);
+        const trackPage = async () => {
+            if (activePageId && engine) {
+                await engine.trackTutorialEvent(`viewed_page:${activePageId}`);
+            }
+        };
+        trackPage();
+    }, [activePageId, engine]);
 
     // Close on ESC
     useEffect(() => {

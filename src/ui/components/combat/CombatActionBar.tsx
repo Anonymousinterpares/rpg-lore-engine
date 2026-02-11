@@ -96,28 +96,28 @@ export const CombatActionBar: React.FC = () => {
         }
     };
 
-    const handleAction = (command: string) => {
-        processCommand(command);
+    const handleAction = async (command: string) => {
+        await processCommand(command);
     };
 
-    const handleCastSpell = (spell: Spell) => {
+    const handleCastSpell = async (spell: Spell) => {
         if (!engine || !state?.combat) return;
 
         // Use the public castSpell API instead of processCommand
         const targetId = state.combat.selectedTargetId;
-        engine.castSpell(spell.name, targetId);
-        updateState();
+        await engine.castSpell(spell.name, targetId);
+        // updateState(); // Subscriber in context handles this now
         setShowSpells(false);
     };
 
-    const handleUseAbility = (ability: CombatAbility) => {
-        processCommand(`/use ${ability.name}`);
+    const handleUseAbility = async (ability: CombatAbility) => {
+        await processCommand(`/use ${ability.name}`);
         setShowAbilities(false);
     };
 
-    const handleSelectTactical = (option: TacticalOption | TacticalSubOption) => {
+    const handleSelectTactical = async (option: TacticalOption | TacticalSubOption) => {
         if (option.command) {
-            processCommand(option.command);
+            await processCommand(option.command);
             setShowTactics(false);
         }
     };

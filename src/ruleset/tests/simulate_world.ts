@@ -5,13 +5,13 @@ import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
 import * as fs from 'fs';
 import * as path from 'path';
 
-function runWorldSimulation() {
+async function runWorldSimulation() {
     console.log('--- Starting World Enrichment Simulation ---');
 
     const manager = new WorldEnrichmentManager(process.cwd());
 
     // 1. Test NPC Loading
-    const npc = manager.loadNPC('elara_innkeeper');
+    const npc = await manager.loadNPC('elara_innkeeper');
     if (npc) {
         console.log(`Loaded NPC: ${npc.name} (Standing: ${npc.relationship.standing})`);
         console.log(`Greeting: ${npc.dialogue_triggers[0]}`);
@@ -20,7 +20,7 @@ function runWorldSimulation() {
     }
 
     // 2. Test Sub-Location Loading
-    const dungeon = manager.loadSubLocation('old_crypt');
+    const dungeon = await manager.loadSubLocation('old_crypt');
     if (dungeon) {
         console.log(`Loaded Sub-Location: ${dungeon.name} (${dungeon.type})`);
         const room = dungeon.rooms[dungeon.initialRoomId];
@@ -62,4 +62,4 @@ function runWorldSimulation() {
     console.log('\n--- Simulation Finished ---');
 }
 
-runWorldSimulation();
+runWorldSimulation().catch(console.error);

@@ -1,23 +1,27 @@
 import React from 'react';
 import styles from './MainMenu.module.css';
-import { Play, FolderOpen, Settings, Users, LogOut } from 'lucide-react';
+import { Play, FolderOpen, Settings, Users, LogOut, Save } from 'lucide-react';
 
 interface MainMenuProps {
     onNewGame: () => void;
+    onSaveGame?: () => void;
     onLoadGame: () => void;
     onSettings: () => void;
     onMultiplayer: () => void;
     onQuit: () => void;
     className?: string;
+    isActive?: boolean;
 }
 
 const MainMenu: React.FC<MainMenuProps> = ({
     onNewGame,
+    onSaveGame,
     onLoadGame,
     onSettings,
     onMultiplayer,
     onQuit,
-    className = ''
+    className = '',
+    isActive = false
 }) => {
     return (
         <div className={`${styles.container} ${className}`}>
@@ -31,6 +35,13 @@ const MainMenu: React.FC<MainMenuProps> = ({
                         <Play size={20} />
                         <span>New Adventure</span>
                     </button>
+
+                    {isActive && onSaveGame && (
+                        <button className={`${styles.menuButton} ${styles.saveButton}`} onClick={onSaveGame}>
+                            <Save size={20} />
+                            <span>Save Adventure</span>
+                        </button>
+                    )}
 
                     <button className={styles.menuButton} onClick={onLoadGame}>
                         <FolderOpen size={20} />

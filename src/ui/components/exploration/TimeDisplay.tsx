@@ -13,9 +13,9 @@ const TimeDisplay: React.FC = () => {
 
     const timeStr = WorldClockEngine.formatTime(state.worldTime);
 
-    const handlePaceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handlePaceChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
         if (engine) {
-            engine.processTurn(`/pace ${e.target.value}`);
+            await engine.processTurn(`/pace ${e.target.value}`);
         }
     };
 

@@ -21,10 +21,31 @@ interface MainViewportProps {
 }
 
 const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
-    const { state, processCommand, isLoading, endGame, engine, startGame, loadGame, loadLastSave } = useGameState();
+    const { state, processCommand, isLoading, endGame, engine, startGame, loadGame, loadLastSave, getSaveRegistry } = useGameState();
     const [showLoadModal, setShowLoadModal] = useState(false);
     const [showRestModal, setShowRestModal] = useState(false);
     const [inspectedCombatantId, setInspectedCombatantId] = useState<string | null>(null);
+    const [saveSlots, setSaveSlots] = useState<any[]>([]);
+
+    // Refresh registry when modal opens
+    useEffect(() => {
+        const fetchRegistry = async () => {
+            if (showLoadModal && engine) {
+                const registry = await getSaveRegistry();
+                const slots = registry.slots.map((s: any) => ({
+                    id: s.id,
+                    name: s.slotName || 'Quick Save',
+                    charName: s.characterName,
+                    level: s.characterLevel,
+                    location: s.locationSummary,
+                    lastSaved: new Date(s.lastSaved).toLocaleString(),
+                    playTime: `${Math.floor(s.playTimeSeconds / 60)}m`
+                }));
+                setSaveSlots(slots);
+            }
+        };
+        fetchRegistry();
+    }, [showLoadModal, engine, getSaveRegistry]);
 
     const isCombat = state?.mode === 'COMBAT';
 
@@ -64,35 +85,21 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
         "Rest"
     ];
 
-    const handlePlayerInput = (input: string) => {
+    const handlePlayerInput = async (input: string) => {
         if (input.toLowerCase() === 'rest') {
             setShowRestModal(true);
             return;
         }
-        processCommand(input);
+        await processCommand(input);
     };
 
-    const handleLoadGame = (saveId: string) => {
-        loadGame(saveId);
+    const handleLoadGame = async (saveId: string) => {
+        await loadGame(saveId);
         setShowLoadModal(false);
     };
 
-    const getSaveSlots = () => {
-        if (!engine) return [];
-        const registry = engine.getStateManager().getSaveRegistry();
-        return registry.slots.map((s: any) => ({
-            id: s.id,
-            name: s.slotName || 'Quick Save',
-            charName: s.characterName,
-            level: s.characterLevel,
-            location: s.locationSummary,
-            lastSaved: new Date(s.lastSaved).toLocaleString(),
-            playTime: `${Math.floor(s.playTimeSeconds / 60)}m`
-        }));
-    };
-
-    const handleLoadLastSave = () => {
-        loadLastSave();
+    const handleLoadLastSave = async () => {
+        await loadLastSave();
     };
 
     const handleReturnToMenu = () => {
@@ -122,7 +129,7 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
             {showLoadModal && (
                 <SaveLoadModal
                     mode="load"
-                    slots={getSaveSlots()}
+                    slots={saveSlots}
                     onAction={handleLoadGame}
                     onDelete={() => { }} // No-op for now
                     onClose={() => setShowLoadModal(false)}
@@ -145,7 +152,7 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
                             combatants={state.combat.combatants}
                             currentTurnId={state.combat.combatants[state.combat.currentTurnIndex]?.id || ''}
                             selectedTargetId={state.combat.selectedTargetId}
-                            onSelectTarget={(id) => processCommand(`/target ${id}`)}
+                            onSelectTarget={async (id) => await processCommand(`/target ${id}`)}
                             onInspect={handleInspect}
                         />
                     </div>

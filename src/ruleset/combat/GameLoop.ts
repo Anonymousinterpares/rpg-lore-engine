@@ -65,9 +65,14 @@ export class GameLoop {
         this.hexMapManager = new HexMapManager(basePath, this.state.worldMap, 'world_01', storage);
         this.movementEngine = new MovementEngine(this.hexMapManager);
         this.combatManager = new CombatManager(this.state);
+    }
 
-        // Save initial combat state to UI
-        this.emitStateUpdate();
+    /**
+     * Centralized initialization for async components.
+     */
+    public async initialize(): Promise<void> {
+        // Bootstrap registries from storage
+        await this.hexMapManager.initialize();
 
         // Initialize factions if empty
         if (!this.state.factions || this.state.factions.length === 0) {
@@ -81,7 +86,7 @@ export class GameLoop {
         // Initialize starting hex if it doesn't exist
         const startHexKey = this.state.location.hexId;
         if (!this.hexMapManager.getHex(startHexKey)) {
-            this.hexMapManager.setHex({
+            await this.hexMapManager.setHex({
                 coordinates: this.state.location.coordinates,
                 generated: true,
                 visited: true,
@@ -98,7 +103,10 @@ export class GameLoop {
         }
 
         // Ensure neighbors of the current location are generated (Exploration Bootstrap)
-        this.expandHorizon(this.state.location.coordinates);
+        await this.expandHorizon(this.state.location.coordinates);
+
+        // Initial state sync to UI
+        await this.emitStateUpdate();
     }
 
     /**
@@ -133,8 +141,8 @@ export class GameLoop {
     /**
      * Centralized method to save state and notify the UI.
      */
-    private emitStateUpdate() {
-        this.stateManager.saveGame(this.state);
+    private async emitStateUpdate() {
+        await this.stateManager.saveGame(this.state);
         this.notifyListeners();
     }
 
@@ -152,15 +160,15 @@ export class GameLoop {
 
         // 1. Logic Phase (Deterministic)
         if (intent.type === 'COMMAND') {
-            systemResponse = this.handleCommand(intent);
+            systemResponse = await this.handleCommand(intent);
         } else if (intent.type === 'COMBAT_ACTION' && this.state.mode === 'COMBAT') {
-            systemResponse = this.handleCombatAction(intent);
+            systemResponse = await this.handleCombatAction(intent);
         }
 
         // If we are in combat, we skip the immediate Narrator generation to avoid latency
         if (this.state.mode === 'COMBAT') {
             this.state.lastNarrative = systemResponse; // Update narrative box with current combat action
-            this.emitStateUpdate();
+            await this.emitStateUpdate();
             return systemResponse;
         }
 
@@ -219,7 +227,7 @@ export class GameLoop {
         // Scribe processing (summarization)
         await this.scribe.processTurn(this.state, this.contextManager.getRecentHistory(10));
 
-        this.emitStateUpdate();
+        await this.emitStateUpdate();
 
         return systemResponse ? `${systemResponse}\n\n${narratorOutput}` : narratorOutput;
     }
@@ -248,7 +256,7 @@ export class GameLoop {
             }
 
             // Emit update so UI refreshes (Time, Weather, etc.)
-            this.emitStateUpdate();
+            await this.emitStateUpdate();
 
             // Encounter check every interval (if exploration)
             if (this.state.mode === 'EXPLORATION' && !resultEncounter) {
@@ -268,7 +276,7 @@ export class GameLoop {
      * Programmatically expands the map discovery around a coordinate.
      * Progressively "uncovers" a hex and reveals its neighbors.
      */
-    private expandHorizon(centerCoords: [number, number]) {
+    private async expandHorizon(centerCoords: [number, number]) {
         // 1. Handle Current Hex (Distance 0)
         const centerKey = `${centerCoords[0]},${centerCoords[1]}`;
         const centerHex = this.hexMapManager.getHex(centerKey);
@@ -283,30 +291,13 @@ export class GameLoop {
 
             if (needsRegen) {
                 // Fully generate the hex
-                this.generateAndSaveHex(centerCoords, centerHex, true, true);
+                await this.generateAndSaveHex(centerCoords, centerHex, true, true);
             }
         }
-
-        // 1.1 Coastline Seeding Logic (Rare event at distance)
-        const distFromOrigin = Math.sqrt(centerCoords[0] ** 2 + centerCoords[1] ** 2);
-        if (distFromOrigin > 30) {
-            const coastlines = this.state.worldMap.coastlines || [];
-            if (coastlines.length < 5) {
-                const isNearExisting = coastlines.some(cl => {
-                    const dx = cl.originHex[0] - centerCoords[0];
-                    const dy = cl.originHex[1] - centerCoords[1];
-                    return Math.sqrt(dx * dx + dy * dy) < 50;
-                });
-
-                if (!isNearExisting && Math.random() < 0.001) {
-                    this.seedCoastline(centerCoords);
-                }
-            }
-        }
-
+        // ...
         // 2. Handle Neighbors (Distance 1) - Visible on Map
         const neighbors = this.hexMapManager.getNeighbors(centerCoords);
-        neighbors.forEach(neighbor => {
+        for (const neighbor of neighbors) {
             const nKey = `${neighbor.coordinates[0]},${neighbor.coordinates[1]}`;
             const nHex = this.hexMapManager.getHex(nKey); // Refetch to be safe
             if (nHex) {
@@ -314,57 +305,35 @@ export class GameLoop {
                 // If it's not generated, generate it
                 const nName = nHex.name || '';
                 if (!nHex.generated || nName === 'Uncharted Territory' || nName.includes('(Unknown)')) {
-                    this.generateAndSaveHex(neighbor.coordinates, nHex, false, true); // visited=false, inLOS=true
+                    await this.generateAndSaveHex(neighbor.coordinates, nHex, false, true); // visited=false, inLOS=true
                 } else if (!nHex.inLineOfSight) {
                     // Update LOS status if already generated
                     nHex.inLineOfSight = true;
-                    this.hexMapManager.setHex(nHex);
+                    await this.hexMapManager.setHex(nHex);
                 }
             }
-        });
+        }
 
         // 3. Handle Distance 2 (Horizon) - Hidden on Map, Known to Engine
-        // We need to iterate neighbors of neighbors
-        const distance2Coords: string[] = [];
-        neighbors.forEach(n => {
-            const nn = this.hexMapManager.getNeighbors(n.coordinates);
-            nn.forEach(target => {
-                const key = `${target.coordinates[0]},${target.coordinates[1]}`;
-                if (key !== centerKey && !neighbors.some(nb => `${nb.coordinates[0]},${nb.coordinates[1]}` === key)) {
-                    // Unique Distance 2 hex
-                    distance2Coords.push(key);
-                }
-            });
-        });
-
-        // Ensure D2 hexes exist as placeholders or generated (but hidden)
-        // For now, we just ensure they are registered so the engine knows about them
-        // The implementation in ensureNeighborsRegistered handles the placeholders
-        // We might want to pre-generate them here too so the Narrator knows what they are?
-        // YES.
-
-        // Optimized: Just ensure neighbors of neighbors are registered
-        // Note: ensureNeighborsRegistered creates placeholders.
-        // We then selectively generate them if we want the narrator to know.
-
-        neighbors.forEach(n => {
-            this.hexMapManager.ensureNeighborsRegistered(n.coordinates);
-        });
+        // ...
+        for (const n of neighbors) {
+            await this.hexMapManager.ensureNeighborsRegistered(n.coordinates);
+        }
 
         // Loop through D2 placeholders and generate them (but keep inLineOfSight=false)
-        neighbors.forEach(n => {
+        for (const n of neighbors) {
             const secondLayer = this.hexMapManager.getNeighbors(n.coordinates);
-            secondLayer.forEach(d2 => {
+            for (const d2 of secondLayer) {
                 const d2Key = `${d2.coordinates[0]},${d2.coordinates[1]}`;
-                if (d2Key === centerKey) return; // Skip center
+                if (d2Key === centerKey) continue; // Skip center
 
                 const d2Hex = this.hexMapManager.getHex(d2Key);
                 if (d2Hex && !d2Hex.generated) {
                     // Generate but DO NOT REVEAL
-                    this.generateAndSaveHex(d2.coordinates, d2Hex, false, false);
+                    await this.generateAndSaveHex(d2.coordinates, d2Hex, false, false);
                 }
-            });
-        });
+            }
+        }
     }
 
     private seedCoastline(centerCoords: [number, number]) {
@@ -388,7 +357,7 @@ export class GameLoop {
         console.log(`[SYSTEM] Narrative Seed: A vast coastline was defined at ${centerCoords[0]}, ${centerCoords[1]}.`);
     }
 
-    private generateAndSaveHex(coords: [number, number], hex: any, isVisited: boolean, isVisible: boolean) {
+    private async generateAndSaveHex(coords: [number, number], hex: any, isVisited: boolean, isVisible: boolean) {
         let biome = hex.biome;
         let variant = hex.visualVariant;
         let generatedData: any = {};
@@ -429,7 +398,7 @@ export class GameLoop {
             name: newName
         };
 
-        this.hexMapManager.setHex(updatedHex);
+        await this.hexMapManager.setHex(updatedHex);
     }
 
     /**
@@ -451,7 +420,7 @@ export class GameLoop {
     /**
      * Handles technical system commands (/stats, /rest, /move, etc.)
      */
-    private handleCommand(intent: ParsedIntent): string {
+    private async handleCommand(intent: ParsedIntent): Promise<string> {
         switch (intent.command) {
             case 'stats':
                 return `Name: ${this.state.character.name} | HP: ${this.state.character.hp.current}/${this.state.character.hp.max} | Level: ${this.state.character.level} | Location: ${this.state.location.hexId}`;
@@ -477,22 +446,20 @@ export class GameLoop {
                 }
 
                 // Special handling for Ambush during rest
-                this.advanceTimeAndProcess(restResult.timeCost, true).then(encounter => {
-                    if (encounter) {
-                        this.initializeCombat(encounter);
-                        // We'd need a way to notify the UI about the ambush here
-                    }
-                });
+                const encounter = await this.advanceTimeAndProcess(restResult.timeCost, true);
+                if (encounter) {
+                    await this.initializeCombat(encounter);
+                    // We'd need a way to notify the UI about the ambush here
+                }
                 return restResult.message;
             case 'wait':
                 const waitMins = parseInt(intent.args?.[0] || '60', 10);
                 const waitResult = RestingEngine.wait(waitMins);
-                this.advanceTimeAndProcess(waitResult.timeCost, false).then(encounter => {
-                    if (encounter) this.initializeCombat(encounter);
-                });
+                const waitEncounter = await this.advanceTimeAndProcess(waitResult.timeCost, false);
+                if (waitEncounter) await this.initializeCombat(waitEncounter);
                 return waitResult.message;
             case 'save':
-                this.emitStateUpdate();
+                await this.emitStateUpdate();
                 return 'Game saved.';
             case 'move':
                 // COMBAT MODE HANDLING
@@ -587,10 +554,10 @@ export class GameLoop {
                     this.state.location.hexId = `${result.newHex.coordinates[0]},${result.newHex.coordinates[1]}`;
 
                     // Programmatic Discovery
-                    this.expandHorizon(result.newHex.coordinates);
+                    await this.expandHorizon(result.newHex.coordinates);
 
-                    this.advanceTimeAndProcess(result.timeCost);
-                    this.trackTutorialEvent('moved_hex');
+                    await this.advanceTimeAndProcess(result.timeCost);
+                    await this.trackTutorialEvent('moved_hex');
                 }
                 return result.message;
             case 'moveto':
@@ -623,10 +590,10 @@ export class GameLoop {
                     this.state.location.hexId = `${moveResult.newHex.coordinates[0]},${moveResult.newHex.coordinates[1]}`;
 
                     // Programmatic Discovery
-                    this.expandHorizon(moveResult.newHex.coordinates);
+                    await this.expandHorizon(moveResult.newHex.coordinates);
 
-                    this.advanceTimeAndProcess(moveResult.timeCost);
-                    this.trackTutorialEvent('moved_hex');
+                    await this.advanceTimeAndProcess(moveResult.timeCost);
+                    await this.trackTutorialEvent('moved_hex');
                 }
                 return moveResult.message;
             case 'look':
@@ -740,7 +707,7 @@ export class GameLoop {
         }
     }
 
-    public pickupItem(instanceId: string): string {
+    public async pickupItem(instanceId: string): Promise<string> {
         const char = this.state.character;
         const droppedItems = this.state.location.droppedItems || [];
         const itemIndex = droppedItems.findIndex(i => i.instanceId === instanceId);
@@ -756,7 +723,6 @@ export class GameLoop {
         }
 
         // Add to inventory (stack if possible, but for now just add)
-        // Check if item already exists in inventory to stack
         const existingItem = char.inventory.items.find(i => i.id === item.id);
         if (existingItem && !['weapon', 'armor', 'shield'].some(t => item.type.toLowerCase().includes(t))) {
             existingItem.quantity = (existingItem.quantity || 1) + (item.quantity || 1);
@@ -770,11 +736,11 @@ export class GameLoop {
         // Remove from dropped items
         droppedItems.splice(itemIndex, 1);
 
-        this.emitStateUpdate();
+        await this.emitStateUpdate();
         return `Picked up ${item.name}.`;
     }
 
-    public dropItem(instanceId: string): string {
+    public async dropItem(instanceId: string): Promise<string> {
         const char = this.state.character;
         const itemIndex = char.inventory.items.findIndex(i => i.instanceId === instanceId);
 
@@ -802,11 +768,11 @@ export class GameLoop {
             }
         });
 
-        this.emitStateUpdate();
+        await this.emitStateUpdate();
         return `Dropped ${item.name}.`;
     }
 
-    public equipItem(instanceId: string): string {
+    public async equipItem(instanceId: string): Promise<string> {
         const char = this.state.character;
         const item = char.inventory.items.find(i => i.instanceId === instanceId);
 
@@ -820,7 +786,7 @@ export class GameLoop {
                     (char.equipmentSlots as any)[slot] = undefined;
                 }
             });
-            this.emitStateUpdate();
+            await this.emitStateUpdate();
             return `Unequipped ${item.name}.`;
         } else {
             // Equip
@@ -845,26 +811,26 @@ export class GameLoop {
 
             // Recalculate AC if armor or shield
             if (slot === 'armor' || slot === 'offHand') {
-                this.recalculateAC();
+                await this.recalculateAC();
             }
 
-            this.emitStateUpdate();
+            await this.emitStateUpdate();
             return `Equipped ${item.name}.`;
         }
     }
 
-    public markQuestAsRead(questId: string) {
+    public async markQuestAsRead(questId: string) {
         const quest = this.state.activeQuests?.find(q => q.id === questId);
         if (quest && quest.isNew) {
             quest.isNew = false;
-            this.emitStateUpdate();
+            await this.emitStateUpdate();
         }
     }
 
     /**
      * Tracks tutorial-related events and updates quest progress.
      */
-    public trackTutorialEvent(eventId: string) {
+    public async trackTutorialEvent(eventId: string) {
         if (!this.state.triggeredEvents) this.state.triggeredEvents = [];
         if (this.state.triggeredEvents.includes(eventId)) return;
 
@@ -906,25 +872,25 @@ export class GameLoop {
             }
         }
 
-        this.emitStateUpdate();
+        await this.emitStateUpdate();
     }
 
     public async initializeCombat(encounter: Encounter) {
         try {
             const biome = this.hexMapManager.getHex(this.state.location.hexId)?.biome || 'Plains';
             await this.combatManager.initializeCombat(encounter, biome);
-            this.emitStateUpdate();
+            await this.emitStateUpdate();
 
             // CRITICAL FIX: Trigger combat queue so AI acts if it wins initiative
             await this.processCombatQueue();
         } catch (error) {
             console.error("[GameLoop] Failed to start combat:", error);
             this.state.lastNarrative = `[System Error] Failed to initialize combat encounter. Reverting to exploration mode. (Error: ${error instanceof Error ? error.message : String(error)})`;
-            this.emitStateUpdate();
+            await this.emitStateUpdate();
         }
     }
 
-    private handleCombatAction(intent: ParsedIntent): string {
+    private async handleCombatAction(intent: ParsedIntent): Promise<string> {
         if (!this.state.combat) return "Not in combat.";
 
         const currentCombatant = this.state.combat.combatants[this.state.combat.currentTurnIndex];
@@ -1084,7 +1050,7 @@ export class GameLoop {
             resultMsg = logMsg;
 
             // Restore damage application for player attacks
-            this.applyCombatDamage(target, result.damage);
+            await this.applyCombatDamage(target, result.damage);
 
         } else if (intent.command === 'dodge') {
             currentCombatant.statusEffects.push({
@@ -1096,7 +1062,6 @@ export class GameLoop {
             });
             resultMsg = `${currentCombatant.name} takes a defensive stance. Attacks against them will have disadvantage until the start of their next turn.`;
             currentCombatant.resources.actionSpent = true; // Consumes action
-            resultMsg = `${currentCombatant.name} takes a defensive stance. Attacks against them will have disadvantage until the start of their next turn.`;
             this.state.combat.turnActions.push(resultMsg);
         } else if (intent.command === 'disengage') {
             currentCombatant.statusEffects.push({
@@ -1167,9 +1132,9 @@ export class GameLoop {
         // After player action, we don't advance the turn immediately if the action 
         // didn't explicitly end the turn. The player might still want to move or use bonus action.
         if (intent.command === 'end turn') {
-            this.advanceCombatTurn();
+            await this.advanceCombatTurn();
         } else {
-            this.emitStateUpdate();
+            await this.emitStateUpdate();
         }
 
         return resultMsg;
@@ -1179,7 +1144,7 @@ export class GameLoop {
      * Public API for UI to trigger spellcasting. 
      * Bypasses the intent router / chat command logic.
      */
-    public castSpell(spellName: string, targetId?: string): string {
+    public async castSpell(spellName: string, targetId?: string): Promise<string> {
         const combat = this.state.combat;
         if (this.state.mode === 'COMBAT' && combat) {
             const currentCombatant = combat.combatants[combat.currentTurnIndex];
@@ -1190,17 +1155,17 @@ export class GameLoop {
             // Set target if provided
             if (targetId) combat.selectedTargetId = targetId;
 
-            const result = this.handleCast(currentCombatant, spellName);
+            const result = await this.handleCast(currentCombatant, spellName);
             this.addCombatLog(result);
             currentCombatant.resources.actionSpent = true;
-            this.emitStateUpdate();
+            await this.emitStateUpdate();
             return result;
         } else {
-            return this.handleExplorationCast(spellName);
+            return await this.handleExplorationCast(spellName);
         }
     }
 
-    private handleCast(caster: Combatant, spellName: string): string {
+    private async handleCast(caster: Combatant, spellName: string): Promise<string> {
         const spell = DataManager.getSpell(spellName);
         if (!spell) return `Unknown spell: ${spellName}`;
 
@@ -1268,7 +1233,7 @@ export class GameLoop {
             const result = CombatResolutionEngine.resolveSpell(caster, target, spell, spellAttackBonus, spellSaveDC);
 
             if (result.damage > 0) {
-                this.applyCombatDamage(target, result.damage);
+                await this.applyCombatDamage(target, result.damage);
                 this.emitCombatEvent(result.type, target.id, result.damage);
             }
             if (result.heal > 0) {
@@ -1297,7 +1262,7 @@ export class GameLoop {
 
         // 4. Handle Summoning
         if (spell.effect?.category === 'SUMMON') {
-            this.executeSummon(caster, spell);
+            await this.executeSummon(caster, spell);
             fullMessage += `Allies have arrived!`;
         }
 
@@ -1411,6 +1376,8 @@ export class GameLoop {
             // Find the caster again to keep the turn index synchronized
             this.state.combat.currentTurnIndex = this.state.combat.combatants.findIndex(c => c.id === caster.id);
         }
+
+        await this.emitStateUpdate();
     }
 
     private getOrdinal(n: number): string {
@@ -1420,7 +1387,7 @@ export class GameLoop {
         return 'th';
     }
 
-    private handleExplorationCast(spellName: string): string {
+    private async handleExplorationCast(spellName: string): Promise<string> {
         const spell = DataManager.getSpell(spellName);
         if (!spell) return `Unknown spell: ${spellName}`;
 
@@ -1441,6 +1408,7 @@ export class GameLoop {
             const heal = Dice.roll(spell.damage?.dice || '1d8') + MechanicsEngine.getModifier(pc.stats['WIS'] || pc.stats['CHA'] || pc.stats['INT'] || 10);
             pc.hp.current = Math.min(pc.hp.max, pc.hp.current + heal);
             if (spell.level > 0) pc.spellSlots[spell.level.toString()].current--;
+            await this.emitStateUpdate();
             return `You cast ${spell.name}, healing ${heal} HP. Current HP: ${pc.hp.current}/${pc.hp.max}`;
         }
 
@@ -1453,7 +1421,7 @@ export class GameLoop {
         return `You cast ${spell.name}, but its primary effects are best seen in the heat of battle.`;
     }
 
-    private applyCombatDamage(target: Combatant, damage: number) {
+    private async applyCombatDamage(target: Combatant, damage: number) {
         if (damage <= 0) return;
 
         CombatResolutionEngine.applyDamage(target, damage);
@@ -1472,6 +1440,8 @@ export class GameLoop {
                 this.addCombatLog(`${target.name} maintains concentration (rolled ${total} vs DC ${dc}).`);
             }
         }
+
+        await this.emitStateUpdate();
     }
 
     private async advanceCombatTurn() {
@@ -1492,7 +1462,7 @@ export class GameLoop {
         this.turnProcessing = true;
 
         try {
-            while (this.state.combat && !this.checkCombatEnd()) {
+            while (this.state.combat && !await this.checkCombatEnd()) {
                 const actor = this.state.combat.combatants[this.state.combat.currentTurnIndex];
 
                 // --- 1. Reset Turn Economy ---
@@ -1513,8 +1483,8 @@ export class GameLoop {
                 };
 
                 // Tick effects
-                this.processStartOfTurn(actor);
-                this.emitStateUpdate();
+                await this.processStartOfTurn(actor);
+                await this.emitStateUpdate();
 
                 // --- 3. Handle Control Flow ---
                 if (actor.isPlayer) {
@@ -1555,7 +1525,7 @@ export class GameLoop {
         }
     }
 
-    private processStartOfTurn(actor: Combatant) {
+    private async processStartOfTurn(actor: Combatant) {
         // Tick down status effects
         if (actor.statusEffects) {
             actor.statusEffects = actor.statusEffects.filter(effect => {
@@ -1569,6 +1539,7 @@ export class GameLoop {
 
         // NOTE: Standard conditions in the current schema are string identifiers.
         // If we want them to have durations, we should use statusEffects for those.
+        await this.emitStateUpdate();
     }
 
     private async performAITurn(actor: Combatant) {
@@ -1681,7 +1652,7 @@ export class GameLoop {
 
                     this.state.combat.lastRoll = (result.details?.roll || 0) + (result.details?.modifier || 0);
                     this.emitCombatEvent(result.type, target.id, result.damage || 0);
-                    this.applyCombatDamage(target, result.damage);
+                    await this.applyCombatDamage(target, result.damage);
                     if (target.isPlayer) this.state.character.hp.current = target.hp.current;
 
                     const logMsg = rangePrefix + CombatLogFormatter.format(result, actor.name, target.name, actor.tactical.isRanged);
@@ -1785,14 +1756,14 @@ export class GameLoop {
         }
     }
 
-    private checkCombatEnd(): boolean {
+    private async checkCombatEnd(): Promise<boolean> {
         if (!this.state.combat) return false;
 
         const enemiesAlive = this.state.combat.combatants.some(c => c.type === 'enemy' && c.hp.current > 0);
         const playersAlive = this.state.combat.combatants.some(c => c.type === 'player' && c.hp.current > 0);
 
         if (!enemiesAlive || !playersAlive) {
-            this.endCombat(!enemiesAlive);
+            await this.endCombat(!enemiesAlive);
             return true;
         }
 
@@ -1903,7 +1874,7 @@ export class GameLoop {
             // Clear combat state synchronously to avoid it persisting during async summary
             // But keep a reference for summary generation
             this.state.combat = undefined;
-            this.emitStateUpdate();
+            await this.emitStateUpdate();
 
             // Trigger LLM Summarization safely
             try {
@@ -1911,7 +1882,7 @@ export class GameLoop {
                 // Only update narrative if we are still in exploration and haven't started a NEW combat
                 if (this.state.mode === 'EXPLORATION' && !this.state.combat) {
                     this.state.lastNarrative = summary;
-                    this.emitStateUpdate();
+                    await this.emitStateUpdate();
                 }
             } catch (error) {
                 console.error("[GameLoop] Combat summary failed:", error);
@@ -1919,11 +1890,11 @@ export class GameLoop {
 
         } else {
             this.state.mode = 'GAME_OVER';
-            this.emitStateUpdate();
+            await this.emitStateUpdate();
         }
     }
 
-    public pickupCombatLoot(instanceId: string) {
+    public async pickupCombatLoot(instanceId: string) {
         if (!this.state.location.combatLoot) return;
 
         const itemIndex = this.state.location.combatLoot.findIndex(i => i.instanceId === instanceId);
@@ -1952,15 +1923,16 @@ export class GameLoop {
         // Remove from loot
         this.state.location.combatLoot.splice(itemIndex, 1);
         this.addCombatLog(`Picked up ${item.name}.`);
-        this.emitStateUpdate();
+        await this.emitStateUpdate();
     }
 
-    private recalculateAC() {
+    private async recalculateAC() {
         const char = this.state.character;
         let baseAC = 10 + Math.floor(((char.stats.DEX || 10) - 10) / 2);
 
         // Add armor stats if we add AC to items later
         this.state.character.ac = baseAC;
+        await this.emitStateUpdate();
     }
 
     public getState(): GameState {

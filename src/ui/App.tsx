@@ -17,9 +17,17 @@ import QuestsPage from './components/book/QuestsPage';
 import { BookProvider, BookPageData } from './context/BookContext';
 import { Book, Sparkles } from 'lucide-react';
 import NotificationOverlay from './components/common/NotificationOverlay';
+import SaveLoadModal from './components/menu/SaveLoadModal';
+import { SnapshotService } from './services/SnapshotService';
+import { NarratorService } from '../ruleset/agents/NarratorService';
 
 const App: React.FC = () => {
-    const { state, isActive, startGame, endGame } = useGameState();
+    const [showSaveModal, setShowSaveModal] = useState(false);
+    const [showLoadModal, setShowLoadModal] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const { state, isActive, startGame, endGame, saveGame, loadGame, getSaveRegistry } = useGameState();
+    const [saveRegistry, setSaveRegistry] = useState<any>({ slots: [] });
+
     const [showSettings, setShowSettings] = useState(false);
     const [showLobby, setShowLobby] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
@@ -27,6 +35,17 @@ const App: React.FC = () => {
     const [activeBookPageId, setActiveBookPageId] = useState<string>('character');
     const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
     const [codexDeepLink, setCodexDeepLink] = useState<{ category: string; entryId?: string } | undefined>(undefined);
+
+    // Refresh registry when modal opens
+    useEffect(() => {
+        const fetchRegistry = async () => {
+            if (showSaveModal || showLoadModal) {
+                const registry = await getSaveRegistry();
+                setSaveRegistry(registry);
+            }
+        };
+        fetchRegistry();
+    }, [showSaveModal, showLoadModal, getSaveRegistry]);
 
     // Close modals on Escape key
     useEffect(() => {
@@ -36,6 +55,8 @@ const App: React.FC = () => {
                 setShowSettings(false);
                 setShowLobby(false);
                 setBookOpen(false);
+                setShowSaveModal(false);
+                setShowLoadModal(false);
             }
         };
         window.addEventListener('keydown', handleKeyDown);
@@ -47,6 +68,47 @@ const App: React.FC = () => {
         return window.confirm(message);
     };
 
+    const handleSaveGameAsync = async (id: string, name?: string) => {
+        if (!state) return;
+
+        setIsSaving(true);
+        try {
+            // 1. Capture Snapshot
+            const snapshot = SnapshotService.captureMapSnapshot(state);
+
+            // 2. Generate Narrative Summary via LLM
+            const summary = await NarratorService.generateSaveSummary(state);
+
+            // 3. Save
+            let slotName = 'Adventure';
+            if (id === 'new') {
+                slotName = name || `Chronicle ${new Date().toLocaleDateString()}`;
+            } else {
+                slotName = saveRegistry.slots.find((s: any) => s.id === id)?.slotName || 'Adventure';
+            }
+
+            await saveGame(slotName, summary, snapshot);
+
+            // 4. Update Registry & UI
+            const newRegistry = await getSaveRegistry();
+            setSaveRegistry(newRegistry);
+
+            // Optional: Keep modal open or show success? For now, close it as per standard flow
+            setShowSaveModal(false);
+        } catch (e) {
+            console.error("Save failed:", e);
+            alert("Failed to save chronicle.");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    const handleLoadGameAction = async (id: string) => {
+        await loadGame(id);
+        setShowLoadModal(false);
+        setShowMenu(false);
+    };
+
     const handleNewGame = () => {
         if (confirmAction("Starting a new adventure will stop the current game without saving. Proceed?")) {
             setIsCreatingCharacter(true);
@@ -54,14 +116,15 @@ const App: React.FC = () => {
         }
     };
 
-    const handleCharacterComplete = (state: any) => {
+    const handleCharacterComplete = async (state: any) => {
         setIsCreatingCharacter(false);
-        startGame(state);
+        await startGame(state);
     };
 
-    const handleLoadGame = () => {
-        if (confirmAction("Loading a chronicle will stop the current game without saving (if not already saved). Proceed?")) {
-            console.log("Load Game not implemented yet - functionality coming in next update");
+    const handleLoadGameRequest = () => {
+        if (confirmAction("Loading a chronicle will stop the current game without saving. Proceed?")) {
+            setShowLoadModal(true);
+            setShowMenu(false);
         }
     };
 
@@ -192,8 +255,10 @@ const App: React.FC = () => {
                 ) : !isActive ? (
                     <>
                         <MainMenu
+                            isActive={isActive}
                             onNewGame={handleNewGame}
-                            onLoadGame={handleLoadGame}
+                            onSaveGame={() => setShowSaveModal(true)}
+                            onLoadGame={() => setShowLoadModal(true)}
                             onMultiplayer={() => setShowLobby(true)}
                             onSettings={openSettings}
                             onQuit={() => window.close()}
@@ -248,8 +313,10 @@ const App: React.FC = () => {
                         {showMenu && (
                             <div className={styles.modalOverlay}>
                                 <MainMenu
+                                    isActive={isActive}
                                     onNewGame={handleNewGame}
-                                    onLoadGame={handleLoadGame}
+                                    onSaveGame={() => { setShowSaveModal(true); setShowMenu(false); }}
+                                    onLoadGame={handleLoadGameRequest}
                                     onMultiplayer={() => { setShowLobby(true); setShowMenu(false); }}
                                     onSettings={() => { openSettings(); setShowMenu(false); }}
                                     onQuit={handleQuit}
@@ -276,6 +343,57 @@ const App: React.FC = () => {
                         initialPages={bookPages}
                         activePageId={activeBookPageId}
                     />
+                )}
+                {showSaveModal && (
+                    <SaveLoadModal
+                        mode="save"
+                        slots={saveRegistry.slots.map((s: any) => ({
+                            id: s.id,
+                            name: s.slotName,
+                            charName: s.characterName,
+                            level: s.characterLevel,
+                            location: s.locationSummary,
+                            lastSaved: new Date(s.lastSaved).toLocaleString(),
+                            playTime: `${Math.floor(s.playTimeSeconds / 3600)}h ${Math.floor((s.playTimeSeconds % 3600) / 60)}m`,
+                            narrativeSummary: s.narrativeSummary,
+                            thumbnail: s.thumbnail
+                        }))}
+                        onAction={handleSaveGameAsync}
+                        onDelete={(id) => {
+                            console.log("Delete not fully wired but metadata removed:", id);
+                            // This would call gameStateManager.deleteSave
+                        }}
+                        onClose={() => setShowSaveModal(false)}
+                    />
+                )}
+                {showLoadModal && (
+                    <SaveLoadModal
+                        mode="load"
+                        slots={saveRegistry.slots.map((s: any) => ({
+                            id: s.id,
+                            name: s.slotName,
+                            charName: s.characterName,
+                            level: s.characterLevel,
+                            location: s.locationSummary,
+                            lastSaved: new Date(s.lastSaved).toLocaleString(),
+                            playTime: `${Math.floor(s.playTimeSeconds / 3600)}h ${Math.floor((s.playTimeSeconds % 3600) / 60)}m`,
+                            narrativeSummary: s.narrativeSummary,
+                            thumbnail: s.thumbnail
+                        }))}
+                        onAction={handleLoadGameAction}
+                        onDelete={(id) => {
+                            console.log("Delete not fully wired but metadata removed:", id);
+                        }}
+                        onClose={() => setShowLoadModal(false)}
+                    />
+                )}
+                {isSaving && (
+                    <div className={styles.savingOverlay}>
+                        <div className={styles.savingContent}>
+                            <Sparkles className={styles.savingIcon} />
+                            <span>Summarizing Chronicle...</span>
+                        </div>
+                    </div>
                 )}
             </div>
         </BookProvider>

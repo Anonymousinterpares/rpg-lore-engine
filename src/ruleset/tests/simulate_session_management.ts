@@ -101,12 +101,14 @@ async function verifySessionManagement() {
     } as any;
 
     // 2. Test Saving
+    // 2. Test Saving
     console.log("Testing Save...");
-    gsm.saveGame(dummyState, "Test Slot");
+    await gsm.saveGame(dummyState, "Test Slot");
 
     // 3. Test Loading
+    // 3. Test Loading
     console.log("Testing Load...");
-    const loaded = gsm.loadGame("test-save-1");
+    const loaded = await gsm.loadGame("test-save-1");
     if (loaded && loaded.character.name === "Lirael") {
         console.log("✅ Load successful.");
     } else {
@@ -142,7 +144,8 @@ async function verifySessionManagement() {
 
     // 5. Test Registry
     console.log("Testing Registry...");
-    const saves = gsm.getSaveRegistry().slots;
+    const registry = await gsm.getSaveRegistry();
+    const saves = registry.slots;
     console.log("Available saves:", saves.map((s: any) => s.slotName));
     if (saves.some((s: any) => s.id === "test-save-1")) {
         console.log("✅ Registry correctly listed saves.");

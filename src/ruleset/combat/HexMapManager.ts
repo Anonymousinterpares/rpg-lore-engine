@@ -12,14 +12,19 @@ export class HexMapManager {
         this.storage = storage || new FileStorageProvider();
         this.mapPath = path.join(basePath, 'data', 'world', `${gridId}.json`);
         this.registry = registry;
+    }
 
+    /**
+     * Bootstraps the registry from storage if empty.
+     */
+    public async initialize(): Promise<void> {
         // If the registry is empty, try to bootstrap it from the local file if it exists
         // This ensures Option A still respects pre-existing world data during development
-        if (Object.keys(this.registry.hexes).length === 0 && this.storage.exists(this.mapPath)) {
-            const data = this.storage.read(this.mapPath) as string;
+        if (Object.keys(this.registry.hexes).length === 0 && await this.storage.exists(this.mapPath)) {
+            const data = await this.storage.read(this.mapPath) as string;
             const fileRegistry = JSON.parse(data);
             this.registry.hexes = fileRegistry.hexes;
-            this.registry.grid_id = fileRegistry.grid_id || gridId;
+            this.registry.grid_id = fileRegistry.grid_id || this.registry.grid_id;
         }
     }
 
@@ -33,10 +38,10 @@ export class HexMapManager {
     /**
      * Adds or updates a hex in the registry
      */
-    public setHex(hex: Hex) {
+    public async setHex(hex: Hex): Promise<void> {
         const key = `${hex.coordinates[0]},${hex.coordinates[1]}`;
         this.registry.hexes[key] = hex;
-        this.save();
+        await this.save();
     }
 
     /**
@@ -65,8 +70,8 @@ export class HexMapManager {
     /**
      * Persists the current registry to disk
      */
-    private save() {
-        this.storage.write(this.mapPath, JSON.stringify(this.registry, null, 2));
+    private async save(): Promise<void> {
+        await this.storage.write(this.mapPath, JSON.stringify(this.registry, null, 2));
     }
 
 
@@ -113,7 +118,7 @@ export class HexMapManager {
      * Ensures all 6 neighbors of a coordinate exist in the registry.
      * If they don't, creates minimal placeholders.
      */
-    public ensureNeighborsRegistered(coords: [number, number]) {
+    public async ensureNeighborsRegistered(coords: [number, number]): Promise<void> {
         const directions: HexDirection[] = ['N', 'S', 'NE', 'NW', 'SE', 'SW'];
         for (const dir of directions) {
             const neighborCoords = HexMapManager.getNewCoords(coords, dir);
@@ -136,6 +141,6 @@ export class HexMapManager {
                 this.registry.hexes[key] = placeholder;
             }
         }
-        this.save();
+        await this.save();
     }
 }

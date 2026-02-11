@@ -21,21 +21,17 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter }) => {
     const strScore = state?.character?.stats?.STR || 10;
     const capacity = strScore * 15;
 
-    const handleItemAction = (action: string, item: any) => {
+    const handleItemAction = async (action: string, item: any) => {
         if (!engine) return;
 
         if (action === 'drop') {
-            engine.dropItem(item.instanceId);
-            updateState();
+            await engine.dropItem(item.instanceId);
         } else if (action === 'equip') {
-            engine.equipItem(item.instanceId);
-            updateState();
+            await engine.equipItem(item.instanceId);
         } else if (action === 'pickup') {
-            engine.pickupItem(item.instanceId);
-            updateState();
+            await engine.pickupItem(item.instanceId);
         } else if (action === 'pickupLoot') {
-            engine.pickupCombatLoot!(item.instanceId);
-            updateState();
+            await engine.pickupCombatLoot!(item.instanceId);
         }
     };
 

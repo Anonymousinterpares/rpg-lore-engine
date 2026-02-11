@@ -37,22 +37,22 @@ const RestWaitModal: React.FC<RestWaitModalProps> = ({ engine, onCancel }) => {
     };
 
     useEffect(() => {
-        if (!isCountingDown || remainingMinutes <= 0) {
-            if (isCountingDown && remainingMinutes <= 0) {
-                // Done!
-                const action = activeTab;
-                if (action === 'rest') {
-                    engine.completeRest(totalMinutesToPass);
-                } else {
-                    // Wait doesn't need completion benefits, just time passed (already done in step)
-                    engine.advanceTimeAndProcess(0); // Trigger final state update
-                }
-                onCancel();
-            }
-            return;
-        }
-
         const tick = async () => {
+            if (!isCountingDown || remainingMinutes <= 0) {
+                if (isCountingDown && remainingMinutes <= 0) {
+                    // Done!
+                    const action = activeTab;
+                    if (action === 'rest') {
+                        await engine.completeRest(totalMinutesToPass);
+                    } else {
+                        // Wait doesn't need completion benefits, just time passed (already done in step)
+                        await engine.advanceTimeAndProcess(0); // Trigger final state update
+                    }
+                    onCancel();
+                }
+                return;
+            }
+
             const step = 30;
             const encounter = await engine.advanceTimeAndProcess(step, activeTab === 'rest');
 

@@ -3,25 +3,30 @@ import * as path from 'path';
 import { IStorageProvider } from './IStorageProvider';
 
 export class FileStorageProvider implements IStorageProvider {
-    exists(filePath: string): boolean {
-        return fs.existsSync(filePath);
+    async exists(filePath: string): Promise<boolean> {
+        try {
+            await fs.promises.access(filePath);
+            return true;
+        } catch {
+            return false;
+        }
     }
 
-    read(filePath: string): string {
-        return fs.readFileSync(filePath, 'utf-8');
+    async read(filePath: string): Promise<string> {
+        return await fs.promises.readFile(filePath, 'utf-8');
     }
 
-    write(filePath: string, data: string): void {
+    async write(filePath: string, data: string): Promise<void> {
         const dir = path.dirname(filePath);
         if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
+            await fs.promises.mkdir(dir, { recursive: true });
         }
-        fs.writeFileSync(filePath, data, 'utf-8');
+        await fs.promises.writeFile(filePath, data, 'utf-8');
     }
 
-    mkdir(dirPath: string): void {
+    async mkdir(dirPath: string): Promise<void> {
         if (!fs.existsSync(dirPath)) {
-            fs.mkdirSync(dirPath, { recursive: true });
+            await fs.promises.mkdir(dirPath, { recursive: true });
         }
     }
 }

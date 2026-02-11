@@ -17,17 +17,17 @@ export class BrowserStorageProvider implements IStorageProvider {
         }
     }
 
-    exists(path: string): boolean {
+    async exists(path: string): Promise<boolean> {
         return this.memoryMap.has(path);
     }
 
-    read(path: string): string {
+    async read(path: string): Promise<string> {
         const data = this.memoryMap.get(path);
         if (data === undefined) throw new Error(`File not found: ${path}`);
         return data;
     }
 
-    write(path: string, data: string): void {
+    async write(path: string, data: string): Promise<void> {
         this.memoryMap.set(path, data);
         try {
             localStorage.setItem(`rpg_save_${path}`, data);
@@ -36,7 +36,7 @@ export class BrowserStorageProvider implements IStorageProvider {
         }
     }
 
-    mkdir(_path: string): void {
+    async mkdir(_path: string): Promise<void> {
         // No-op for browser memory storage
     }
 }
