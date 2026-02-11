@@ -18,6 +18,7 @@ interface GameContextType {
     loadGame: (saveId: string) => Promise<void>;
     loadLastSave: () => Promise<void>;
     saveGame: (slotName: string, summary?: string, thumbnail?: string) => Promise<void>;
+    deleteSave: (saveId: string) => Promise<boolean>;
     getSaveRegistry: () => Promise<any>;
     getTacticalOptions: () => TacticalOption[];
 }
@@ -124,6 +125,12 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, [engine, state, updateState]);
 
+    const deleteSave = useCallback(async (saveId: string) => {
+        const tempEngine = engine || new GameLoop(state || ({} as GameState), '/', storage);
+        if (!engine) await tempEngine.initialize();
+        return await tempEngine.getStateManager().deleteSave(saveId);
+    }, [engine, state, storage]);
+
     const getSaveRegistry = useCallback(async () => {
         const tempEngine = new GameLoop(state || ({} as GameState), '/', storage);
         await tempEngine.initialize();
@@ -164,6 +171,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
             loadGame,
             loadLastSave,
             saveGame,
+            deleteSave,
             getSaveRegistry,
             getTacticalOptions
         }}>

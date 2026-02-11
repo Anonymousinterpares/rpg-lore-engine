@@ -25,7 +25,7 @@ const App: React.FC = () => {
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [showLoadModal, setShowLoadModal] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const { state, isActive, startGame, endGame, saveGame, loadGame, getSaveRegistry } = useGameState();
+    const { state, isActive, startGame, endGame, saveGame, deleteSave, loadGame, getSaveRegistry } = useGameState();
     const [saveRegistry, setSaveRegistry] = useState<any>({ slots: [] });
 
     const [showSettings, setShowSettings] = useState(false);
@@ -78,13 +78,18 @@ const App: React.FC = () => {
 
             // 2. Generate Narrative Summary via LLM
             const summary = await NarratorService.generateSaveSummary(state);
-
-            // 3. Save
+            // 3. Save Logic
             let slotName = 'Adventure';
             if (id === 'new') {
-                slotName = name || `Chronicle ${new Date().toLocaleDateString()}`;
+                slotName = name || 'new save';
             } else {
-                slotName = saveRegistry.slots.find((s: any) => s.id === id)?.slotName || 'Adventure';
+                const existingSlot = saveRegistry.slots.find((s: any) => s.id === id);
+                slotName = existingSlot?.slotName || 'Adventure';
+
+                // If we are overwriting a different session ID, cleanup the old one
+                if (state.saveId !== id) {
+                    await deleteSave(id);
+                }
             }
 
             await saveGame(slotName, summary, snapshot);

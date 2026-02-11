@@ -1,14 +1,14 @@
 {
-  "saveId": "87a533bb-c888-4610-aa8a-da01b303be0b",
+  "saveId": "81e3b169-92ce-48d2-8fef-857e0629b6e7",
   "saveVersion": 1,
-  "createdAt": "2026-02-11T21:10:35.406Z",
-  "lastSavedAt": "2026-02-11T21:10:35.406Z",
+  "createdAt": "2026-02-11T22:35:45.617Z",
+  "lastSavedAt": "2026-02-11T22:35:45.617Z",
   "playTimeSeconds": 0,
   "character": {
     "name": "Dam",
     "level": 1,
     "race": "Dragonborn",
-    "class": "Ranger",
+    "class": "Barbarian",
     "conditions": [],
     "stats": {
       "STR": 17,
@@ -20,18 +20,17 @@
     },
     "savingThrowProficiencies": [
       "STR",
-      "DEX"
+      "CON"
     ],
     "skillProficiencies": [
       "Deception",
       "Stealth",
-      "Insight",
-      "Perception",
-      "Nature"
+      "Intimidation",
+      "Survival"
     ],
     "hp": {
-      "current": 11,
-      "max": 11,
+      "current": 2,
+      "max": 13,
       "temp": 0
     },
     "deathSaves": {
@@ -41,10 +40,16 @@
     "hitDice": {
       "current": 1,
       "max": 1,
-      "dieType": "1d10"
+      "dieType": "1d12"
     },
     "spellSlots": {},
-    "featureUsages": {},
+    "featureUsages": {
+      "Rage": {
+        "current": 1,
+        "max": 2,
+        "usageType": "LONG_REST"
+      }
+    },
     "cantripsKnown": [],
     "knownSpells": [],
     "preparedSpells": [],
@@ -53,7 +58,7 @@
     "ac": 12,
     "inventory": {
       "gold": {
-        "cp": 6,
+        "cp": 1,
         "sp": 0,
         "ep": 0,
         "gp": 15,
@@ -75,7 +80,7 @@
           "id": "Crowbar",
           "quantity": 1,
           "equipped": false,
-          "instanceId": "b107dc6c-d115-4ef7-816b-e2ed9aa1048d"
+          "instanceId": "b7259ab0-9c33-4e2c-b8a6-0aa87b1c6006"
         },
         {
           "name": "Clothes, common",
@@ -91,7 +96,7 @@
           "id": "Clothes, common",
           "quantity": 1,
           "equipped": false,
-          "instanceId": "d6ad8360-d115-421e-a2d3-f7d0e0db17d3"
+          "instanceId": "9b3c64f3-2c6a-4be6-94a8-84c1b57d12b5"
         },
         {
           "name": "Pouch",
@@ -108,17 +113,130 @@
           "id": "Pouch",
           "quantity": 1,
           "equipped": false,
-          "instanceId": "4a9cb6ed-c980-439c-9033-5e18e80471f9"
+          "instanceId": "6fc482a7-d434-4b43-b897-c0d8ac5edbd2"
+        },
+        {
+          "name": "Shortbow",
+          "type": "Weapon",
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 25,
+            "pp": 0
+          },
+          "weight": 2,
+          "damage": {
+            "dice": "1d6",
+            "type": "Piercing"
+          },
+          "properties": [
+            "Ammunition",
+            "Two-Handed"
+          ],
+          "range": {
+            "normal": 80,
+            "long": 320
+          },
+          "id": "Shortbow",
+          "instanceId": "shortbow_1770849495113_150",
+          "quantity": 1,
+          "equipped": true
+        },
+        {
+          "name": "Arrow",
+          "type": "Adventuring Gear",
+          "cost": {
+            "cp": 5,
+            "sp": 0,
+            "ep": 0,
+            "gp": 0,
+            "pp": 0
+          },
+          "weight": 1,
+          "id": "Arrow",
+          "instanceId": "arrow_1770849499506_929",
+          "quantity": 14,
+          "equipped": false
+        },
+        {
+          "name": "Scimitar",
+          "type": "Weapon",
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 25,
+            "pp": 0
+          },
+          "weight": 3,
+          "damage": {
+            "dice": "1d6",
+            "type": "Slashing"
+          },
+          "properties": [
+            "Finesse",
+            "Light"
+          ],
+          "range": {
+            "normal": 5
+          },
+          "equipped": false,
+          "instanceId": "loot_1770849668286_0.4869646144814992"
+        },
+        {
+          "name": "Shortbow",
+          "type": "Weapon",
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 25,
+            "pp": 0
+          },
+          "weight": 2,
+          "damage": {
+            "dice": "1d6",
+            "type": "Piercing"
+          },
+          "properties": [
+            "Ammunition",
+            "Two-Handed"
+          ],
+          "range": {
+            "normal": 80,
+            "long": 320
+          },
+          "equipped": false,
+          "instanceId": "loot_1770849668286_0.6232963888072429"
+        },
+        {
+          "name": "Chain Shirt",
+          "type": "Armor",
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 50,
+            "pp": 0
+          },
+          "weight": 20,
+          "acCalculated": "13",
+          "stealthDisadvantage": false,
+          "equipped": false,
+          "instanceId": "loot_1770849668286_0.06359351501513433"
         }
       ]
     },
-    "equipmentSlots": {},
+    "equipmentSlots": {
+      "mainHand": "shortbow_1770849495113_150"
+    },
     "attunedItems": [],
     "xp": 50,
     "inspiration": false,
     "knownEntities": {
       "monsters": [
-        "Boar"
+        "Goblin"
       ],
       "items": []
     },
@@ -177,12 +295,12 @@
     "combatLoot": []
   },
   "worldTime": {
-    "hour": 9,
-    "minute": 11,
+    "hour": 17,
+    "minute": 51,
     "day": 1,
     "month": 1,
     "year": 1489,
-    "totalTurns": 110
+    "totalTurns": 5310
   },
   "worldMap": {
     "grid_id": "world_map",
@@ -195,7 +313,7 @@
         "name": "Initial Landing Site",
         "generated": true,
         "biome": "Plains",
-        "description": "A vast expanse of hills.",
+        "description": "A vast expanse of forest.",
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -217,43 +335,6 @@
           0,
           1
         ],
-        "name": "Plains (Uncharted Territory)",
-        "generated": true,
-        "biome": "Plains",
-        "description": "A vast expanse of plains.",
-        "traversable_sides": {
-          "N": true,
-          "S": true,
-          "NE": true,
-          "NW": true,
-          "SE": true,
-          "SW": true
-        },
-        "interest_points": [],
-        "resourceNodes": [
-          {
-            "id": "node_8c1pfb1lb",
-            "resourceType": "Hide",
-            "itemId": "Raw_Hide",
-            "quantityRemaining": 3,
-            "respawnDays": 7,
-            "skillCheck": {
-              "skill": "Nature",
-              "dc": 10
-            }
-          }
-        ],
-        "openedContainers": {},
-        "visited": false,
-        "inLineOfSight": true,
-        "namingSource": "engine",
-        "visualVariant": 4
-      },
-      "0,-1": {
-        "coordinates": [
-          0,
-          -1
-        ],
         "name": "Farmland (Uncharted Territory)",
         "generated": true,
         "biome": "Farmland",
@@ -267,34 +348,22 @@
           "SW": true
         },
         "interest_points": [],
-        "resourceNodes": [
-          {
-            "id": "node_vnrgaf3ul",
-            "resourceType": "Hide",
-            "itemId": "Raw_Hide",
-            "quantityRemaining": 2,
-            "respawnDays": 7,
-            "skillCheck": {
-              "skill": "Nature",
-              "dc": 10
-            }
-          }
-        ],
+        "resourceNodes": [],
         "openedContainers": {},
         "visited": false,
         "inLineOfSight": true,
         "namingSource": "engine",
         "visualVariant": 5
       },
-      "1,0": {
+      "0,-1": {
         "coordinates": [
-          1,
-          0
+          0,
+          -1
         ],
-        "name": "Plains (Uncharted Territory)",
+        "name": "Ruins (Uncharted Territory)",
         "generated": true,
-        "biome": "Plains",
-        "description": "A vast expanse of plains.",
+        "biome": "Ruins",
+        "description": "A vast expanse of ruins.",
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -306,10 +375,10 @@
         "interest_points": [],
         "resourceNodes": [
           {
-            "id": "node_3x7nil3za",
-            "resourceType": "Hide",
-            "itemId": "Raw_Hide",
-            "quantityRemaining": 2,
+            "id": "node_flv2rbc95",
+            "resourceType": "Ore",
+            "itemId": "Gold_Ore",
+            "quantityRemaining": 1,
             "respawnDays": 7,
             "skillCheck": {
               "skill": "Nature",
@@ -321,7 +390,32 @@
         "visited": false,
         "inLineOfSight": true,
         "namingSource": "engine",
-        "visualVariant": 3
+        "visualVariant": 17
+      },
+      "1,0": {
+        "coordinates": [
+          1,
+          0
+        ],
+        "name": "Forest (Uncharted Territory)",
+        "generated": true,
+        "biome": "Forest",
+        "description": "A vast expanse of forest.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 7
       },
       "-1,1": {
         "coordinates": [
@@ -353,10 +447,10 @@
           1,
           -1
         ],
-        "name": "Tundra (Uncharted Territory)",
+        "name": "Jungle (Uncharted Territory)",
         "generated": true,
-        "biome": "Tundra",
-        "description": "A vast expanse of tundra.",
+        "biome": "Jungle",
+        "description": "A vast expanse of jungle.",
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -368,10 +462,10 @@
         "interest_points": [],
         "resourceNodes": [
           {
-            "id": "node_txu2b8qf4",
-            "resourceType": "Wood",
-            "itemId": "Pine_Logs",
-            "quantityRemaining": 3,
+            "id": "node_l0be6nsag",
+            "resourceType": "Herb",
+            "itemId": "Silverleaf",
+            "quantityRemaining": 2,
             "respawnDays": 7,
             "skillCheck": {
               "skill": "Nature",
@@ -390,10 +484,10 @@
           -1,
           0
         ],
-        "name": "Farmland (Uncharted Territory)",
+        "name": "Jungle (Uncharted Territory)",
         "generated": true,
-        "biome": "Farmland",
-        "description": "A vast expanse of farmland.",
+        "biome": "Jungle",
+        "description": "A vast expanse of jungle.",
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -403,7 +497,19 @@
           "SW": true
         },
         "interest_points": [],
-        "resourceNodes": [],
+        "resourceNodes": [
+          {
+            "id": "node_1lhc9ff3m",
+            "resourceType": "Wood",
+            "itemId": "Ironwood",
+            "quantityRemaining": 2,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
         "openedContainers": {},
         "visited": false,
         "inLineOfSight": true,
@@ -417,12 +523,24 @@
         ],
         "generated": true,
         "visited": false,
-        "biome": "Hills",
+        "biome": "Mountains",
         "name": "Uncharted Territory",
-        "description": "A vast expanse of hills.",
+        "description": "A vast expanse of mountains.",
         "inLineOfSight": false,
         "interest_points": [],
-        "resourceNodes": [],
+        "resourceNodes": [
+          {
+            "id": "node_kqnuxw5th",
+            "resourceType": "Arcane",
+            "itemId": "Coal",
+            "quantityRemaining": 2,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
         "openedContainers": {},
         "namingSource": "engine",
         "visualVariant": 5,
@@ -442,27 +560,15 @@
         ],
         "generated": true,
         "visited": false,
-        "biome": "Forest",
+        "biome": "Tundra",
         "name": "Uncharted Territory",
-        "description": "A vast expanse of forest.",
+        "description": "A vast expanse of tundra.",
         "inLineOfSight": false,
         "interest_points": [],
-        "resourceNodes": [
-          {
-            "id": "node_gh97z33t7",
-            "resourceType": "Wood",
-            "itemId": "Oak_Logs",
-            "quantityRemaining": 1,
-            "respawnDays": 7,
-            "skillCheck": {
-              "skill": "Nature",
-              "dc": 10
-            }
-          }
-        ],
+        "resourceNodes": [],
         "openedContainers": {},
         "namingSource": "engine",
-        "visualVariant": 7,
+        "visualVariant": 5,
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -504,27 +610,15 @@
         ],
         "generated": true,
         "visited": false,
-        "biome": "Tundra",
+        "biome": "Plains",
         "name": "Uncharted Territory",
-        "description": "A vast expanse of tundra.",
+        "description": "A vast expanse of plains.",
         "inLineOfSight": false,
         "interest_points": [],
-        "resourceNodes": [
-          {
-            "id": "node_9fqyjezl2",
-            "resourceType": "Hide",
-            "itemId": "Thick_Hide",
-            "quantityRemaining": 3,
-            "respawnDays": 7,
-            "skillCheck": {
-              "skill": "Nature",
-              "dc": 10
-            }
-          }
-        ],
+        "resourceNodes": [],
         "openedContainers": {},
         "namingSource": "engine",
-        "visualVariant": 5,
+        "visualVariant": 4,
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -541,15 +635,27 @@
         ],
         "generated": true,
         "visited": false,
-        "biome": "Hills",
+        "biome": "Plains",
         "name": "Uncharted Territory",
-        "description": "A vast expanse of hills.",
+        "description": "A vast expanse of plains.",
         "inLineOfSight": false,
         "interest_points": [],
-        "resourceNodes": [],
+        "resourceNodes": [
+          {
+            "id": "node_cidhsxbnk",
+            "resourceType": "Herb",
+            "itemId": "Kingsbloom",
+            "quantityRemaining": 3,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
         "openedContainers": {},
         "namingSource": "engine",
-        "visualVariant": 2,
+        "visualVariant": 3,
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -566,15 +672,15 @@
         ],
         "generated": true,
         "visited": false,
-        "biome": "Farmland",
+        "biome": "Ruins",
         "name": "Uncharted Territory",
-        "description": "A vast expanse of farmland.",
+        "description": "A vast expanse of ruins.",
         "inLineOfSight": false,
         "interest_points": [],
         "resourceNodes": [],
         "openedContainers": {},
         "namingSource": "engine",
-        "visualVariant": 3,
+        "visualVariant": 20,
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -591,16 +697,16 @@
         ],
         "generated": true,
         "visited": false,
-        "biome": "Jungle",
+        "biome": "Plains",
         "name": "Uncharted Territory",
-        "description": "A vast expanse of jungle.",
+        "description": "A vast expanse of plains.",
         "inLineOfSight": false,
         "interest_points": [],
         "resourceNodes": [
           {
-            "id": "node_8v5893pyr",
-            "resourceType": "Wood",
-            "itemId": "Ironwood",
+            "id": "node_gmfzhp0yd",
+            "resourceType": "Herb",
+            "itemId": "Kingsbloom",
             "quantityRemaining": 1,
             "respawnDays": 7,
             "skillCheck": {
@@ -611,7 +717,7 @@
         ],
         "openedContainers": {},
         "namingSource": "engine",
-        "visualVariant": 5,
+        "visualVariant": 2,
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -628,27 +734,15 @@
         ],
         "generated": true,
         "visited": false,
-        "biome": "Farmland",
+        "biome": "Plains",
         "name": "Uncharted Territory",
-        "description": "A vast expanse of farmland.",
+        "description": "A vast expanse of plains.",
         "inLineOfSight": false,
         "interest_points": [],
-        "resourceNodes": [
-          {
-            "id": "node_tv8ezfolv",
-            "resourceType": "Arcane",
-            "itemId": "Hay",
-            "quantityRemaining": 1,
-            "respawnDays": 7,
-            "skillCheck": {
-              "skill": "Nature",
-              "dc": 10
-            }
-          }
-        ],
+        "resourceNodes": [],
         "openedContainers": {},
         "namingSource": "engine",
-        "visualVariant": 5,
+        "visualVariant": 1,
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -665,16 +759,16 @@
         ],
         "generated": true,
         "visited": false,
-        "biome": "Farmland",
+        "biome": "Forest",
         "name": "Uncharted Territory",
-        "description": "A vast expanse of farmland.",
+        "description": "A vast expanse of forest.",
         "inLineOfSight": false,
         "interest_points": [],
         "resourceNodes": [
           {
-            "id": "node_58w8azzvb",
-            "resourceType": "Hide",
-            "itemId": "Raw_Hide",
+            "id": "node_vlgi98ohw",
+            "resourceType": "Wood",
+            "itemId": "Oak_Logs",
             "quantityRemaining": 3,
             "respawnDays": 7,
             "skillCheck": {
@@ -685,7 +779,7 @@
         ],
         "openedContainers": {},
         "namingSource": "engine",
-        "visualVariant": 4,
+        "visualVariant": 7,
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -702,27 +796,15 @@
         ],
         "generated": true,
         "visited": false,
-        "biome": "Jungle",
+        "biome": "Forest",
         "name": "Uncharted Territory",
-        "description": "A vast expanse of jungle.",
+        "description": "A vast expanse of forest.",
         "inLineOfSight": false,
         "interest_points": [],
-        "resourceNodes": [
-          {
-            "id": "node_es5nvukdn",
-            "resourceType": "Wood",
-            "itemId": "Ironwood",
-            "quantityRemaining": 3,
-            "respawnDays": 7,
-            "skillCheck": {
-              "skill": "Nature",
-              "dc": 10
-            }
-          }
-        ],
+        "resourceNodes": [],
         "openedContainers": {},
         "namingSource": "engine",
-        "visualVariant": 4,
+        "visualVariant": 6,
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -739,15 +821,15 @@
         ],
         "generated": true,
         "visited": false,
-        "biome": "Tundra",
+        "biome": "Farmland",
         "name": "Uncharted Territory",
-        "description": "A vast expanse of tundra.",
+        "description": "A vast expanse of farmland.",
         "inLineOfSight": false,
         "interest_points": [],
         "resourceNodes": [],
         "openedContainers": {},
         "namingSource": "engine",
-        "visualVariant": 4,
+        "visualVariant": 5,
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -764,15 +846,15 @@
         ],
         "generated": true,
         "visited": false,
-        "biome": "Urban",
+        "biome": "Farmland",
         "name": "Uncharted Territory",
-        "description": "A vast expanse of urban.",
+        "description": "A vast expanse of farmland.",
         "inLineOfSight": false,
         "interest_points": [],
         "resourceNodes": [],
         "openedContainers": {},
         "namingSource": "engine",
-        "visualVariant": 13,
+        "visualVariant": 4,
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -857,8 +939,8 @@
       "isPlayerMember": false
     }
   ],
-  "storySummary": "started their journey as a Dragonborn Ranger with the Criminal background.",
-  "lastNarrative": "The morning sun casts long shadows across the vast plains where you stand. To your south, more plains stretch out, eventually giving way to distant hills and a hint of forest on the far horizon. Northward, the landscape transitions into farmland, with the promise of more tundra further still. To your east, the plains continue, while the west offers a gentle rise into low hills. In the far reaches of the north-west, a smudge on the horizon suggests a settlement or urban area, while the south-east hints at a jungle, an unexpected contrast to the chilly winter air. The air is crisp, carrying the scent of damp earth and distant, unknown foliage.",
+  "storySummary": "started their journey as a Dragonborn Barbarian with the Criminal background.",
+  "lastNarrative": "The plains wind carried the whispers of battle as Dam, a vision of defensive might, met a distant goblin’s challenge. Arrows flew like angry hornets, most finding only dust, until one of the goblin’s shafts found purchase in Dam's hide. But Dam, fueled by a primal rage, endured the barrage. The tide turned with a fierce twang, as Dam's final, true shot pierced the distance, felling the green-skinned menace and claiming a hard-won victory.",
   "conversationHistory": [
     {
       "role": "player",
@@ -867,29 +949,84 @@
     },
     {
       "role": "narrator",
-      "content": "A sharp, winter wind whips across your face, bringing with it the scent of dry grass and an unsettling, metallic tang. You blink, disoriented, as your eyes struggle to make sense of the vast, undulating plains stretching to an impossibly distant horizon. The sky above is a canvas of muted grey, but in the far distance, a low, guttural rumble echoes—a distant thunder, out of place in the morning chill, adding a layer of ominous foreboding to the already bewildering scene. You find yourself lying on a patch of frost-kissed earth, your heavy dragonborn scales prickling with the cold. How you came to be here, in this desolate expanse, is a question that hangs in the crisp air, unanswered by the swirling mists of your memory. Your name, Dam, is the only anchor in this sea of uncertainty. \n\nSuddenly, the ground trembles with a different kind of vibration. From a copse of gnarled, leafless trees to your left, a lone boar, its tusks glinting wickedly, charges forth with surprising speed, its beady eyes fixed on you. It snorts, digging at the earth, a clear challenge. Your path is blocked!\n\nWhat do you do?",
+      "content": "A throbbing ache behind your eyes is the first sensation, followed by the realization that you are lying on cold, damp earth. A thin layer of frost glitters on the stiff, brown grasses around you. The air, bitingly crisp, carries the scent of pine and something metallic, like old blood. You push yourself up, your dragonborn scales prickling with the chill, and find yourself in a vast, open plain. The morning sun, low and weak, casts long, distorted shadows, but offers little warmth. You have no memory of how you came to be here, only the name 'Dam' echoes in the void where your past should be.\n\nTo your south, the plains stretch towards distant, snow-capped mountains, their peaks gleaming like shattered crystal. Southeast, a dense, ancient forest looms, its dark canopy promising both shelter and peril. To the southwest, the land rises into rolling hills, while directly north, the jagged, broken stone of ancient ruins pierce the sky, their silence ominous. The jungles to your northeast and northwest appear as verdant, impenetrable walls. A strange, unfamiliar symbol, a crude carving of a coiled serpent, is etched into the ground a few feet from where you lay, almost swallowed by the frost.\n\nAs you stand, a gust of wind whips across the plains, carrying with it a swirl of dead leaves and a fine, gritty dust that stings your eyes. You feel a sudden, intense craving for water, your throat dry and raspy. What do you do?",
       "turnNumber": 0
     },
     {
       "role": "player",
-      "content": "end turn",
-      "turnNumber": 60
+      "content": "/item_add shortbow 1",
+      "turnNumber": 50
     },
     {
       "role": "narrator",
-      "content": "The morning sun casts long shadows across the vast plains where you stand. To your south, more plains stretch out, eventually giving way to distant hills and a hint of forest on the far horizon. Northward, the landscape transitions into farmland, with the promise of more tundra further still. To your east, the plains continue, while the west offers a gentle rise into low hills. In the far reaches of the north-west, a smudge on the horizon suggests a settlement or urban area, while the south-east hints at a jungle, an unexpected contrast to the chilly winter air. The air is crisp, carrying the scent of damp earth and distant, unknown foliage.",
-      "turnNumber": 60
+      "content": "The plains stretch out around you, a seemingly endless expanse of dry, winter-kissed grass. To the south, you discern the ordered lines of farmland, a stark contrast to the untamed wilderness you're currently in. Further south beyond the farmland, the distant silhouette of mountains rises, their peaks dusted with snow. To the southeast, a dense forest looms, dark and silent. The southwest reveals rolling hills, their gentle slopes hinting at hidden valleys. In the northeast and northwest, the thick, verdant canopy of a jungle dominates the horizon, suggesting a warmer, wetter climate than your current surroundings. Due north, the crumbling structures of ancient ruins stand sentinel against the morning sky, their secrets waiting to be unearthed. The rest of the distant horizon is shrouded in a pale, winter mist, obscuring whatever lies beyond. The air is crisp and cold, and the weak morning sun offers little warmth.",
+      "turnNumber": 50
+    },
+    {
+      "role": "player",
+      "content": "/item_add arrow 20",
+      "turnNumber": 100
+    },
+    {
+      "role": "narrator",
+      "content": "The morning sun casts long shadows across the plains as you stand amidst a vast expanse of forest. To the south, you see farmland, while enigmatic ruins lie to the north. Southeast, southwest, northeast, and northwest, the forest continues, dense and unexplored. In the distance, far to the south, mountains pierce the sky, and a stretch of tundra is visible to the southeast. More hills can be seen to the southwest, and plains to the far north. To the northwest, distant ruins hint at forgotten histories, while a far-off forest lies to the southwest and farmland to the northeast. The air is crisp, and the scent of pine needles fills your nostrils, a constant reminder of the wilderness surrounding you.",
+      "turnNumber": 100
+    },
+    {
+      "role": "player",
+      "content": "/target enemy_0",
+      "turnNumber": 5250
+    },
+    {
+      "role": "narrator",
+      "content": "You focus your gaze on the lone goblin, a small, green-skinned creature with beady eyes and a crude scimitar in its hand. It snarls, clearly agitated.",
+      "turnNumber": 5250
+    },
+    {
+      "role": "player",
+      "content": "/use Rage",
+      "turnNumber": 5250
+    },
+    {
+      "role": "narrator",
+      "content": "As the goblin readies itself for another attack, you let out a guttural roar, adrenaline surging through your veins. Your muscles tense, and a primal fury ignites within you. You feel a surge of power, shrugging off the pain of your previous wounds as you enter a berserker's rage.",
+      "turnNumber": 5250
+    },
+    {
+      "role": "player",
+      "content": "/move 0 35 hunker",
+      "turnNumber": 5250
+    },
+    {
+      "role": "narrator",
+      "content": "Dam, bloodied and breathing heavily, you hunker down amidst the sparse brush. The goblin, emboldened by your apparent vulnerability, cackles and prepares another attack. As you scan your surroundings, desperate for an advantage, your eyes catch a faint, almost imperceptible glint through the trees. It looks like a makeshift, abandoned lean-to, barely visible in the deep night. A faded red symbol, likely a cross, is just discernible on its tattered canvas. Could it be a first-aid station?",
+      "turnNumber": 5250
+    },
+    {
+      "role": "player",
+      "content": "/move 0 35 hunker",
+      "turnNumber": 5250
+    },
+    {
+      "role": "narrator",
+      "content": "Dam, bloodied and weary, hunkers down, trying to catch his breath. As you brace yourself against a gnarled tree root, your hand brushes against loose earth and a small, leather-bound satchel. It feels oddly out of place, almost as if it was intentionally hidden. Peeking inside, you find two vials of a glowing red liquid – healing potions! A surge of renewed determination, and perhaps a touch of luck, washes over you.",
+      "turnNumber": 5250
+    },
+    {
+      "role": "narrator",
+      "content": "The plains wind carried the whispers of battle as Dam, a vision of defensive might, met a distant goblin’s challenge. Arrows flew like angry hornets, most finding only dust, until one of the goblin’s shafts found purchase in Dam's hide. But Dam, fueled by a primal rage, endured the barrage. The tide turned with a fierce twang, as Dam's final, true shot pierced the distance, felling the green-skinned menace and claiming a hard-won victory.",
+      "turnNumber": 5310
     }
   ],
   "triggeredEvents": [],
   "weather": {
     "type": "Clear",
-    "durationMinutes": 360,
+    "durationMinutes": 90,
     "intensity": 1
   },
   "travelPace": "Normal",
   "clearedHexes": {
-    "0,0": 0
+    "0,0": 5250
   },
   "settings": {
     "permadeath": false,
@@ -917,26 +1054,26 @@
   },
   "codexEntries": [
     {
-      "id": "44e5f949-8851-47b7-b079-735ae73e7f27",
+      "id": "11224cdc-9db8-4b61-a5c7-6427ec0d045a",
       "category": "bestiary",
-      "entityId": "Boar",
-      "title": "The Ferocious Boar: A Behemoth of the Wilds",
-      "content": "The boar, a creature of immense strength and ferocity, is a staple of the untamed wilderness. Its massive, muscular body is covered in a thick, bristly hide that ranges from a deep, earthy brown to a stark, almost black hue. The boar's most distinctive feature is its pair of long, curved tusks, which can grow to impressive lengths and are used with deadly precision in combat. These tusks are not merely weapons, but also tools for foraging and digging, a testament to the boar's adaptability and resilience.\n\nThe boar's biology is a marvel of nature. Its powerful legs, ending in cloven hooves, allow it to move swiftly and silently through the underbrush, while its keen senses make it a formidable predator. The boar's diet is varied, consisting of roots, nuts, and berries, but it is not above hunting smaller creatures when the opportunity presents itself. This omnivorous nature has contributed to its reputation as a creature of cunning and opportunism.\n\nThe ecology of the boar is as complex as its biology. It is a solitary creature, preferring the company of its own kind only during the mating season. The boar's territory is fiercely guarded, and it will not hesitate to attack any creature that encroaches upon its domain. This territorial behavior has earned the boar a place in the folklore of many cultures, where it is often depicted as a symbol of strength and defiance.\n\nThe myths surrounding the boar are as varied as the cultures that tell them. In some tales, the boar is a noble creature, a guardian of the wilds that protects the innocent from the depredations of more dangerous beasts. In others, it is a symbol of the untamed, a creature that embodies the raw, primal power of nature. Regardless of the tale, the boar remains a creature of awe and respect, a testament to the power and mystery of the natural world.\n\n**Flavor Quote:** 'I've faced many beasts in my time, but none as fierce as the boar. It was a monster, a beast of pure muscle and rage. I thought I was a goner, but I managed to land a lucky blow and send it fleeing. I'll never forget the sight of those tusks, gleaming in the moonlight like the teeth of some ancient, slumbering god.' - Thaddeus Stoneheart, Veteran Adventurer",
+      "entityId": "Goblin",
+      "title": "Goblin: Scourge of the Shadows",
+      "content": "Goblins, often referred to as the 'Scourge of the Shadows,' are small, humanoid creatures known for their cunning and malevolence. They stand at an average height of three feet, with a slender, wiry build that allows them to move swiftly and silently through their preferred habitats of dark forests, caverns, and abandoned ruins. Their skin is a sickly green or gray, and their eyes glow with an eerie, malevolent light, often described as 'the gaze of a predator.' Goblins possess sharp, pointed ears and a set of jagged, yellowed teeth that are well-suited for their carnivorous diet. Their hands are equipped with long, claw-like fingernails, which they use for both combat and climbing. Goblins are known to live in tightly-knit tribes, led by a single, dominant alpha. They are omnivorous, but prefer the taste of human flesh, which they believe grants them strength and courage. Goblins are also known to be skilled craftsmen, creating crude but effective weapons and tools from whatever materials they can scavenge. They are often accompanied by their loyal, if not somewhat dim-witted, wolf-like companions, known as 'Goblin Hounds.' Goblins are said to be able to communicate with these beasts, using a series of growls and snarls that only they understand. **Rumored Ecology:** Goblins are believed to have a complex social structure, with a strict hierarchy that is maintained through a series of rituals and challenges. They are also said to possess a form of magic, though it is crude and unpredictable. This magic is often used for illusions and minor enchantments, but can also be used to create small, magical creatures known as 'Goblin Spawn.' **Common Myths:** One of the most persistent myths surrounding goblins is that they are able to steal the souls of their victims, trapping them in a state of eternal torment. Another myth suggests that goblins are able to shapeshift, taking on the form of their prey in order to catch them off guard. **Flavor Quote:** 'I've faced many foes in my time, but none as cunning or as cruel as the goblins. They're like shadows, always lurking, always waiting. And when they strike, they strike with the ferocity of a storm. I've seen them tear apart entire villages, leaving nothing but ruin and despair in their wake. But I've also seen them cower and flee when faced with a strong enough foe. They're not invincible, but they're not to be underestimated either. They're the scourge of the shadows, and they'll stop at nothing to claim their next victim.' - Thalion, Veteran Adventurer",
       "isNew": true,
-      "discoveredAt": 0
+      "discoveredAt": 5250
     }
   ],
   "notifications": [
     {
-      "id": "4816e84d-2a45-4e14-9627-d0202b984a3d",
+      "id": "9fbdaa29-1801-4ee5-9042-3841a91abb45",
       "type": "CODEX_ENTRY",
-      "message": "New codex entry created: The Ferocious Boar: A Behemoth of the Wilds",
+      "message": "New codex entry created: Goblin: Scourge of the Shadows",
       "data": {
         "category": "bestiary",
-        "entityId": "44e5f949-8851-47b7-b079-735ae73e7f27"
+        "entityId": "11224cdc-9db8-4b61-a5c7-6427ec0d045a"
       },
       "isRead": false,
-      "createdAt": 1770844244378
+      "createdAt": 1770849522729
     }
   ]
 }

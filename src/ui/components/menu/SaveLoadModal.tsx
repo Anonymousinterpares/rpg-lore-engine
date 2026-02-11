@@ -32,7 +32,7 @@ const SaveLoadModal: React.FC<SaveLoadModalProps> = ({
     onClose,
     className = ''
 }) => {
-    const [newSaveName, setNewSaveName] = useState(`Chronicle ${new Date().toLocaleDateString()}`);
+    const [newSaveName, setNewSaveName] = useState('');
     const [confirmOverwrite, setConfirmOverwrite] = useState<{ id: string, name: string } | null>(null);
 
     const handleNewSaveClick = () => {

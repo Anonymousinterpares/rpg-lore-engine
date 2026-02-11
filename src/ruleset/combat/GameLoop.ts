@@ -62,7 +62,7 @@ export class GameLoop {
     constructor(initialState: GameState, basePath: string, storage?: IStorageProvider) {
         this.state = initialState;
         this.stateManager = new GameStateManager(basePath, storage);
-        this.hexMapManager = new HexMapManager(basePath, this.state.worldMap, 'world_01', storage);
+        this.hexMapManager = new HexMapManager(basePath, this.state.worldMap, this.state.worldMap.grid_id || 'world_01', storage);
         this.movementEngine = new MovementEngine(this.hexMapManager);
         this.combatManager = new CombatManager(this.state);
     }
@@ -165,11 +165,15 @@ export class GameLoop {
             systemResponse = await this.handleCommand(intent);
         } else if (intent.type === 'COMBAT_ACTION' && this.state.mode === 'COMBAT') {
             systemResponse = await this.handleCombatAction(intent);
-        }
 
-        // If we are in combat, we skip the immediate Narrator generation to avoid latency
-        if (this.state.mode === 'COMBAT') {
-            this.state.lastNarrative = systemResponse; // Update narrative box with current combat action
+            // If combat ended during this action, retrieves the victory summary
+            // that was set in endCombat() instead of the last attack result.
+            if ((this.state.mode as any) === 'EXPLORATION') {
+                systemResponse = this.state.lastNarrative;
+            } else {
+                this.state.lastNarrative = systemResponse;
+            }
+
             await this.emitStateUpdate();
             return systemResponse;
         }
