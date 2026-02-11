@@ -28,48 +28,48 @@ export class NarrativeGenerator {
             case 'charge':
                 return {
                     label: `Charge!`,
-                    description: `Charge headlong at the ${targetName}!${remainingText}`
+                    description: `Charge headlong at ${targetName}! ⚡ 2× move, −2 AC.`
                 };
             case 'stalk':
                 return {
                     label: `Stalk`,
-                    description: `Creep through the ${biomeData.dangerTier === 'Safe' ? 'undergrowth' : 'shadows'} towards ${targetName}.${remainingText}`
+                    description: `Creep through the undergrowth towards ${targetName}. 🤫 ½ speed, Stealth check → Advantage if unseen.`
                 };
             case 'press':
                 return {
                     label: `Press the Attack`,
-                    description: `Close in on ${targetName}, maintaining pressure and denying retreat.`
+                    description: `Close in on ${targetName}, maintaining pressure and denying retreat. ⚔️ Advantage on next melee. ½ movement.`
                 };
 
             // Category B: Supportive / Formation
             case 'phalanx':
                 return {
-                    label: `Form Phalanx`,
-                    description: `Move shoulder-to-shoulder with ${targetName} for mutual protection.`
+                    label: `Phalanx Formation`,
+                    description: `Move shoulder-to-shoulder with your ally. 🛡️ +1 AC mutual. AoE vulnerable.`
                 };
             case 'flank':
                 return {
-                    label: `Flank`,
-                    description: `Circle around ${targetName} to catch them between you and your ally.`
+                    label: `Flank Enemy`,
+                    description: `Circle around ${targetName} to strike from a vulnerable angle. ⚔️ Melee Advantage while flanking.`
                 };
 
             // Category C: Defensive
             case 'hunker_down':
                 return {
                     label: `Hunker Down`,
-                    description: `Take cover behind the ${targetName}, bracing for incoming fire.`
+                    description: `Take cover behind the ${targetName}, bracing for incoming fire. 🛡️ Cover bonus depends on feature.`
                 };
 
             // Category D: Retreat
             case 'fade_back':
                 return {
                     label: `Fade Back`,
-                    description: `Retreat ${distText} away from the melee.`
+                    description: `Retreat ${distText} away from danger while staying oriented to the enemy. ⚠️ Provokes Opportunity Attacks.`
                 };
             case 'vanish':
                 return {
                     label: `Vanish`,
-                    description: `Use the ${weather.type === 'Fog' ? 'fog' : 'chaos of battle'} to disappear from sight.`
+                    description: `Use the fog to disappear from view. 🤫 Hide action vs Perception.`
                 };
 
             // Category E: Environmental Awareness (Informational)

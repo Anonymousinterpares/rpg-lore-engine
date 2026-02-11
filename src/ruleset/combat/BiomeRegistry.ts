@@ -6,11 +6,22 @@ import biomeManifest from '../data/biome-manifest.json';
  */
 const BIOME_VARIANTS: Record<string, number[]> = biomeManifest.variants;
 
+import { Hazard, TerrainType } from '../schemas/CombatSchema';
+
+export interface BiomeFeatureVariant {
+    name: string;
+    coverBonus: 'NONE' | 'QUARTER' | 'HALF' | 'THREE_QUARTERS' | 'FULL';
+    blocksMovement?: boolean;
+    blocksVision?: boolean;
+    isDestructible?: boolean;
+    hazard?: Hazard;
+}
+
 export interface BiomeTacticalProps {
     passivePerception: number;
     dangerMultiplier: number;
     dangerTier: 'Safe' | 'Standard' | 'Dangerous' | 'Deadly';
-    features: Record<string, string>;
+    features: Partial<Record<TerrainType, BiomeFeatureVariant[]>>;
 }
 
 export const BIOME_TACTICAL_DATA: Record<string, BiomeTacticalProps> = {
@@ -18,73 +29,286 @@ export const BIOME_TACTICAL_DATA: Record<string, BiomeTacticalProps> = {
         passivePerception: 16,
         dangerMultiplier: 3.0,
         dangerTier: 'Deadly',
-        features: { TREE: 'Dead Charred Tree', WALL: 'Obsidian Ridge', RUBBLE: 'Cooling Magma Rock', WATER: 'Lava Flow' }
+        features: {
+            LAVA: [
+                { name: 'Bubbling Fissure', coverBonus: 'NONE', hazard: { damageType: 'Fire', damageDice: '2d8', saveDC: 15, saveAbility: 'DEX', description: 'Fire erupts from the fissure!' } },
+                { name: 'Lava Flow', coverBonus: 'NONE', blocksMovement: true, hazard: { damageType: 'Fire', damageDice: '2d6', saveDC: 14, saveAbility: 'DEX', description: 'The lava scorches you!' } }
+            ],
+            RUBBLE: [
+                { name: 'Cooling Magma', coverBonus: 'HALF', blocksMovement: true, hazard: { damageType: 'Fire', damageDice: '1d6', saveDC: 12, saveAbility: 'DEX', description: 'The magma is still hot!' } },
+                { name: 'Glass Shard', coverBonus: 'QUARTER' },
+                { name: 'Pumice Pile', coverBonus: 'HALF' }
+            ],
+            TREE: [
+                { name: 'Smoldering Trunk', coverBonus: 'HALF', blocksVision: true, hazard: { damageType: 'Fire', damageDice: '1d4', saveDC: 10, saveAbility: 'DEX', description: 'The trunk radiates intense heat!' } },
+                { name: 'Charred Skeleton', coverBonus: 'QUARTER' }
+            ],
+            WALL: [
+                { name: 'Obsidian Ridge', coverBonus: 'FULL', blocksMovement: true, blocksVision: true },
+                { name: 'Basalt Column', coverBonus: 'THREE_QUARTERS', blocksMovement: true, blocksVision: true }
+            ]
+        }
     },
     'Ruins': {
         passivePerception: 16,
         dangerMultiplier: 3.0,
         dangerTier: 'Deadly',
-        features: { TREE: 'Dead Tree', WALL: 'Crumbling Wall', RUBBLE: 'Toppled Statue', WATER: 'Flooded Cellar' }
+        features: {
+            WALL: [
+                { name: 'Crumbling Wall', coverBonus: 'THREE_QUARTERS', blocksMovement: true, blocksVision: true },
+                { name: 'Ancient Arch', coverBonus: 'HALF', blocksMovement: true }
+            ],
+            RUBBLE: [
+                { name: 'Toppled Statue', coverBonus: 'HALF', blocksMovement: true },
+                { name: 'Loose Bricks', coverBonus: 'QUARTER', blocksMovement: true }
+            ],
+            TREE: [
+                { name: 'Dead Tree', coverBonus: 'HALF', blocksVision: true },
+                { name: 'Overgrown Pillar', coverBonus: 'THREE_QUARTERS', blocksMovement: true, blocksVision: true }
+            ],
+            PIT: [
+                { name: 'Flooded Cellar', coverBonus: 'NONE', blocksMovement: true },
+                { name: 'Spike Pit', coverBonus: 'NONE', hazard: { damageType: 'Piercing', damageDice: '2d6', saveDC: 14, saveAbility: 'DEX', description: 'You fall onto rusted spikes!' } }
+            ]
+        }
     },
     'Swamp': {
         passivePerception: 14,
         dangerMultiplier: 2.0,
         dangerTier: 'Dangerous',
-        features: { TREE: 'Mangrove', WALL: 'Sunken Barrier', RUBBLE: 'Overgrown Stone', WATER: 'Murky Pool' }
+        features: {
+            WATER: [
+                { name: 'Toxic Pool', coverBonus: 'QUARTER', blocksMovement: true, hazard: { damageType: 'Poison', damageDice: '2d4', saveDC: 13, saveAbility: 'CON', description: 'The water is toxic!' } },
+                { name: 'Murky Water', coverBonus: 'QUARTER', blocksMovement: true }
+            ],
+            DIFFICULT: [
+                { name: 'Sucking Mud', coverBonus: 'NONE', hazard: { damageType: 'Restrained', damageDice: '0', saveDC: 12, saveAbility: 'STR', description: 'The mud clings to your boots!' } },
+                { name: 'Thick Reeds', coverBonus: 'QUARTER', blocksVision: true }
+            ],
+            TREE: [
+                { name: 'Rotting Cypress', coverBonus: 'THREE_QUARTERS', blocksVision: true },
+                { name: 'Mangrove Roots', coverBonus: 'HALF', blocksVision: true }
+            ],
+            WALL: [
+                { name: 'Sunken Ruin', coverBonus: 'FULL', blocksMovement: true, blocksVision: true }
+            ],
+            RUBBLE: [
+                { name: 'Mossy Stone', coverBonus: 'HALF', blocksMovement: true }
+            ]
+        }
     },
     'Mountain': {
         passivePerception: 14,
         dangerMultiplier: 2.0,
         dangerTier: 'Dangerous',
-        features: { TREE: 'Twisted Pine', WALL: 'Cliff Face', RUBBLE: 'Boulder', WATER: 'Mountain Spring' }
+        features: {
+            WALL: [
+                { name: 'Cliff Face', coverBonus: 'FULL', blocksMovement: true, blocksVision: true },
+                { name: 'Rock Formation', coverBonus: 'THREE_QUARTERS', blocksMovement: true, blocksVision: true }
+            ],
+            RUBBLE: [
+                { name: 'Boulder', coverBonus: 'HALF', blocksMovement: true, blocksVision: true },
+                { name: 'Scree Slope', coverBonus: 'QUARTER', blocksMovement: true }
+            ],
+            TREE: [
+                { name: 'Twisted Pine', coverBonus: 'HALF', blocksVision: true },
+                { name: 'Mountain Ash', coverBonus: 'THREE_QUARTERS', blocksVision: true }
+            ],
+            WATER: [
+                { name: 'Mountain Spring', coverBonus: 'NONE' },
+                { name: 'Icy Stream', coverBonus: 'NONE', blocksMovement: true, hazard: { damageType: 'Cold', damageDice: '1d4', saveDC: 12, saveAbility: 'CON', description: 'The water is freezing!' } }
+            ]
+        }
     },
     'Desert': {
         passivePerception: 14,
         dangerMultiplier: 2.0,
         dangerTier: 'Dangerous',
-        features: { TREE: 'Cactus', WALL: 'Sandstone Slab', RUBBLE: 'Sand Pile', WATER: 'Oasis' }
+        features: {
+            TREE: [
+                { name: 'Cactus', coverBonus: 'QUARTER', hazard: { damageType: 'Piercing', damageDice: '1d4', saveDC: 10, saveAbility: 'DEX', description: 'You prick yourself on a cactus!' } },
+                { name: 'Dead Palm', coverBonus: 'HALF', blocksVision: true }
+            ],
+            WALL: [
+                { name: 'Sandstone Slab', coverBonus: 'FULL', blocksMovement: true, blocksVision: true },
+                { name: 'Dune Ridge', coverBonus: 'HALF', blocksMovement: true, blocksVision: true }
+            ],
+            RUBBLE: [
+                { name: 'Sand Pile', coverBonus: 'QUARTER', blocksMovement: true },
+                { name: 'Bleached Bones', coverBonus: 'QUARTER' },
+                { name: 'Sandstone Outcrop', coverBonus: 'HALF', blocksMovement: true }
+            ],
+            WATER: [
+                { name: 'Oasis', coverBonus: 'NONE', blocksMovement: true }
+            ]
+        }
     },
     'Jungle': {
         passivePerception: 14,
         dangerMultiplier: 2.0,
         dangerTier: 'Dangerous',
-        features: { TREE: 'Giant Fern', WALL: 'Vine Wall', RUBBLE: 'Mossy Rock', WATER: 'Tropical Stream' }
+        features: {
+            DIFFICULT: [
+                { name: 'Spiked Vines', coverBonus: 'QUARTER', hazard: { damageType: 'Piercing', damageDice: '1d6', saveDC: 13, saveAbility: 'DEX', description: 'The vines have sharp thorns!' } },
+                { name: 'Dense Ferns', coverBonus: 'HALF', blocksVision: true }
+            ],
+            TREE: [
+                { name: 'Giant Fern', coverBonus: 'HALF', blocksVision: true },
+                { name: 'Ironwood', coverBonus: 'THREE_QUARTERS', blocksVision: true },
+                { name: 'Strangling Fig', coverBonus: 'FULL', blocksMovement: true, blocksVision: true }
+            ],
+            WALL: [
+                { name: 'Ancient Sentinel', coverBonus: 'FULL', blocksMovement: true, blocksVision: true }
+            ],
+            RUBBLE: [
+                { name: 'Overgrown Idol', coverBonus: 'THREE_QUARTERS', blocksMovement: true }
+            ],
+            WATER: [
+                { name: 'Tropical Stream', coverBonus: 'QUARTER', blocksMovement: true }
+            ]
+        }
     },
     'Tundra': {
         passivePerception: 14,
         dangerMultiplier: 2.0,
         dangerTier: 'Dangerous',
-        features: { TREE: 'Frozen Fir', WALL: 'Ice Wall', RUBBLE: 'Snow Mound', WATER: 'Frozen Pond' }
+        features: {
+            WATER: [
+                { name: 'Thin Ice', coverBonus: 'QUARTER', hazard: { damageType: 'Cold', damageDice: '1d6', saveDC: 12, saveAbility: 'DEX', description: 'The ice cracks!' } },
+                { name: 'Frozen Pond', coverBonus: 'NONE', blocksMovement: true }
+            ],
+            DIFFICULT: [
+                { name: 'Deep Snow', coverBonus: 'QUARTER', blocksMovement: true }
+            ],
+            TREE: [
+                { name: 'Frozen Fir', coverBonus: 'THREE_QUARTERS', blocksVision: true },
+                { name: 'Bare Pine', coverBonus: 'HALF' }
+            ],
+            WALL: [
+                { name: 'Ice Wall', coverBonus: 'FULL', blocksMovement: true, blocksVision: true },
+                { name: 'Glacial Ridge', coverBonus: 'THREE_QUARTERS', blocksMovement: true, blocksVision: true }
+            ],
+            RUBBLE: [
+                { name: 'Snow Mound', coverBonus: 'HALF', blocksMovement: true }
+            ]
+        }
     },
     'Ocean': {
         passivePerception: 14,
         dangerMultiplier: 2.0,
         dangerTier: 'Dangerous',
-        features: { TREE: 'Coral Spire', WALL: 'Reef Wall', RUBBLE: 'Shipwreck', WATER: 'Whirlpool' }
+        features: {
+            TREE: [
+                { name: 'Coral Spire', coverBonus: 'HALF', blocksVision: true },
+                { name: 'Kelp Forest', coverBonus: 'QUARTER', blocksVision: true }
+            ],
+            WALL: [
+                { name: 'Reef Wall', coverBonus: 'FULL', blocksMovement: true, blocksVision: true },
+                { name: 'Shipwreck Hull', coverBonus: 'FULL', blocksMovement: true, blocksVision: true }
+            ],
+            RUBBLE: [
+                { name: 'Shipwreck Debris', coverBonus: 'HALF', blocksMovement: true },
+                { name: 'Anchor', coverBonus: 'HALF', blocksMovement: true }
+            ],
+            WATER: [
+                { name: 'Whirlpool', coverBonus: 'NONE', blocksMovement: true, hazard: { damageType: 'Bludgeoning', damageDice: '2d6', saveDC: 14, saveAbility: 'STR', description: 'The whirlpool pulls you down!' } },
+                { name: 'Deep Current', coverBonus: 'NONE', blocksMovement: true }
+            ]
+        }
     },
     'Coast': {
         passivePerception: 14,
         dangerMultiplier: 2.0,
         dangerTier: 'Dangerous',
-        features: { TREE: 'Palm', WALL: 'Dune Ridge', RUBBLE: 'Driftwood', WATER: 'Tide Pool' }
+        features: {
+            TREE: [
+                { name: 'Palm', coverBonus: 'HALF', blocksVision: true },
+                { name: 'Driftwood Log', coverBonus: 'HALF', blocksMovement: true }
+            ],
+            WALL: [
+                { name: 'Dune Ridge', coverBonus: 'HALF', blocksMovement: true, blocksVision: true },
+                { name: 'Rock Face', coverBonus: 'FULL', blocksMovement: true, blocksVision: true }
+            ],
+            RUBBLE: [
+                { name: 'Driftwood', coverBonus: 'QUARTER', blocksMovement: true },
+                { name: 'Shell Mound', coverBonus: 'QUARTER' }
+            ],
+            WATER: [
+                { name: 'Tide Pool', coverBonus: 'NONE' },
+                { name: 'Surf', coverBonus: 'NONE', blocksMovement: true }
+            ]
+        }
     },
     'Forest': {
         passivePerception: 12,
         dangerMultiplier: 1.0,
         dangerTier: 'Standard',
-        features: { TREE: 'Ancient Oak', WALL: 'Thicket Wall', RUBBLE: 'Mossy Rock', WATER: 'Stream' }
+        features: {
+            TREE: [
+                { name: 'Ancient Oak', coverBonus: 'THREE_QUARTERS', blocksVision: true },
+                { name: 'Gnarled Elm', coverBonus: 'HALF', blocksVision: true },
+                { name: 'Fallen Log', coverBonus: 'HALF', blocksMovement: true },
+                { name: 'Hollow Stump', coverBonus: 'HALF' }
+            ],
+            WALL: [
+                { name: 'Thicket Wall', coverBonus: 'FULL', blocksMovement: true, blocksVision: true },
+                { name: 'Thorny Hedge', coverBonus: 'THREE_QUARTERS', blocksMovement: true, blocksVision: true }
+            ],
+            RUBBLE: [
+                { name: 'Mossy Rock', coverBonus: 'HALF', blocksMovement: true }
+            ],
+            WATER: [
+                { name: 'Woodland Pool', coverBonus: 'QUARTER', blocksMovement: true },
+                { name: 'Stream', coverBonus: 'QUARTER', blocksMovement: true }
+            ]
+        }
     },
     'Plains': {
         passivePerception: 12,
         dangerMultiplier: 1.0,
         dangerTier: 'Standard',
-        features: { TREE: 'Lone Oak', WALL: 'Stone Fence', RUBBLE: 'Field Stone', WATER: 'Puddle' }
+        features: {
+            TREE: [
+                { name: 'Lone Oak', coverBonus: 'HALF', blocksVision: true },
+                { name: 'Scrub Bush', coverBonus: 'QUARTER' }
+            ],
+            WALL: [
+                { name: 'Stone Fence', coverBonus: 'HALF', blocksMovement: true },
+                { name: 'Wooden Fence', coverBonus: 'QUARTER', blocksMovement: true }
+            ],
+            RUBBLE: [
+                { name: 'Field Stone', coverBonus: 'HALF', blocksMovement: true },
+                { name: 'Hay Bale', coverBonus: 'HALF', blocksVision: true }
+            ],
+            WATER: [
+                { name: 'Puddle', coverBonus: 'NONE' },
+                { name: 'Horse Trough', coverBonus: 'HALF', blocksMovement: true }
+            ]
+        }
     },
     'Urban': {
         passivePerception: 10,
         dangerMultiplier: 0.5,
         dangerTier: 'Safe',
-        features: { TREE: 'Decorative Elm', WALL: 'Brick Wall', RUBBLE: 'Crate', WATER: 'Open Sewer' }
+        features: {
+            TREE: [
+                { name: 'Decorative Elm', coverBonus: 'HALF', blocksVision: true },
+                { name: 'Planter Box', coverBonus: 'HALF', blocksMovement: true }
+            ],
+            WALL: [
+                { name: 'Brick Wall', coverBonus: 'FULL', blocksMovement: true, blocksVision: true },
+                { name: 'Iron Fence', coverBonus: 'QUARTER', blocksMovement: true },
+                { name: 'Stone Pillar', coverBonus: 'THREE_QUARTERS', blocksMovement: true, blocksVision: true }
+            ],
+            RUBBLE: [
+                { name: 'Crate', coverBonus: 'HALF', blocksMovement: true, blocksVision: true },
+                { name: 'Barrel Stack', coverBonus: 'THREE_QUARTERS', blocksMovement: true, blocksVision: true },
+                { name: 'Overturned Cart', coverBonus: 'THREE_QUARTERS', blocksMovement: true, blocksVision: true }
+            ],
+            WATER: [
+                { name: 'Open Sewer', coverBonus: 'NONE', blocksMovement: true, hazard: { damageType: 'Poison', damageDice: '1d6', saveDC: 12, saveAbility: 'CON', description: 'The stench is overwhelming!' } }
+            ]
+        }
     }
 };
 

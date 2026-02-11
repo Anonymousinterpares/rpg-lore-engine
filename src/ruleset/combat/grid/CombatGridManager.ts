@@ -41,6 +41,44 @@ export class CombatGridManager {
     }
 
     /**
+     * Finds the first terrain feature encountered on a straight line between two points.
+     */
+    public getFeatureOnPath(start: GridPosition, end: GridPosition): TerrainFeature | undefined {
+        let x0 = start.x;
+        let y0 = start.y;
+        let x1 = end.x;
+        let y1 = end.y;
+
+        const dx = Math.abs(x1 - x0);
+        const dy = Math.abs(y1 - y0);
+        const sx = (x0 < x1) ? 1 : -1;
+        const sy = (y0 < y1) ? 1 : -1;
+        let err = dx - dy;
+
+        while (true) {
+            if (x0 === x1 && y0 === y1) break;
+
+            // Check if current cell (other than start) has a feature
+            if (!(x0 === start.x && y0 === start.y)) {
+                const feature = this.getFeatureAt({ x: x0, y: y0 });
+                if (feature) return feature;
+            }
+
+            const e2 = 2 * err;
+            if (e2 > -dy) {
+                err -= dy;
+                x0 += sx;
+            }
+            if (e2 < dx) {
+                err += dx;
+                y0 += sy;
+            }
+        }
+
+        return undefined;
+    }
+
+    /**
      * Bresenham's Line Algorithm to check Line of Sight between two points.
      */
     public hasLineOfSight(start: GridPosition, end: GridPosition): boolean {

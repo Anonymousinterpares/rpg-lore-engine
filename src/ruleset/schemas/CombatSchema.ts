@@ -27,7 +27,7 @@ export const StatusEffectSchema = z.object({
 });
 
 export const CombatantTacticalSchema = z.object({
-    cover: z.enum(['None', 'Half', 'Three-Quarters', 'Full']).default('None'),
+    cover: z.enum(['None', 'Quarter', 'Half', 'Three-Quarters', 'Full']).default('None'),
     reach: z.number().default(5),
     isRanged: z.boolean().default(false),
     range: z.object({
@@ -117,15 +117,26 @@ export const TerrainTypeSchema = z.enum([
 ]);
 export type TerrainType = z.infer<typeof TerrainTypeSchema>;
 
+export const HazardSchema = z.object({
+    damageType: z.string(),        // 'Fire', 'Cold', 'Acid', etc.
+    damageDice: z.string(),        // '1d6', '2d6'
+    saveDC: z.number(),            // DC for DEX/CON save
+    saveAbility: z.enum(['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA']).default('DEX'),
+    description: z.string()        // "The lava scorches you!"
+});
+
+export type Hazard = z.infer<typeof HazardSchema>;
+
 export const TerrainFeatureSchema = z.object({
     id: z.string(),
     type: TerrainTypeSchema,
     position: GridPositionSchema,
     blocksMovement: z.boolean().default(false),
     blocksVision: z.boolean().default(false),
-    coverBonus: z.enum(['NONE', 'HALF', 'THREE_QUARTERS', 'FULL']).default('NONE'),
+    coverBonus: z.enum(['NONE', 'QUARTER', 'HALF', 'THREE_QUARTERS', 'FULL']).default('NONE'),
     isDestructible: z.boolean().default(false),
-    hp: z.number().optional()
+    hp: z.number().optional(),
+    hazard: HazardSchema.optional()
 });
 export type TerrainFeature = z.infer<typeof TerrainFeatureSchema>;
 

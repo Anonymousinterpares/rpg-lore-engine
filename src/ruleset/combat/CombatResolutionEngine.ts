@@ -57,7 +57,13 @@ export class CombatResolutionEngine {
         let effectiveAC = target.ac;
         if (isSprinting) effectiveAC -= 2;
         if (isPhalanxTarget) effectiveAC += 1;
-        if (isHunkered) effectiveAC += 2; // Flat half-cover bonus for now
+        if (isHunkered) {
+            const cover = target.tactical?.cover || 'None';
+            if (cover === 'Full') effectiveAC += 0; // Not targetable anyway
+            else if (cover === 'Three-Quarters') effectiveAC += 5;
+            else if (cover === 'Half') effectiveAC += 2;
+            else if (cover === 'Quarter') effectiveAC += 1;
+        }
 
         // Evasive: +2 AC vs ranged attacks only
         const isRangedAttacker = isRanged || (attacker.tactical?.isRanged || false);

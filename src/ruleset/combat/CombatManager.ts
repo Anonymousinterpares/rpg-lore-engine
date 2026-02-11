@@ -14,6 +14,10 @@ export class CombatManager {
     private state: GameState;
     private gridManager?: CombatGridManager;
 
+    public getGridManager(): CombatGridManager | undefined {
+        return this.gridManager;
+    }
+
     constructor(state: GameState) {
         this.state = state;
         if (this.state.combat?.grid) {
@@ -155,7 +159,7 @@ export class CombatManager {
         // Find nearby features at destination for flavor
         const feature = this.gridManager.getFeatureAt(targetPos);
         const featureSuffix = feature
-            ? `, taking position near a ${this.getFeatureName(feature, this.state.location.subLocationId || 'Plains')}`
+            ? ` behind the ${CombatManager.getFeatureName(feature, this.state.location.subLocationId || 'Plains')}`
             : '';
 
         // Context: show distance to the RELEVANT opponent, not to allies
@@ -184,12 +188,47 @@ export class CombatManager {
         combatant.position = targetPos;
         combatant.movementRemaining -= distance;
 
-        return `${combatant.name} moves ${distanceFt}ft ${direction}${featureSuffix}${opponentContext}.`;
+        let hazardMsg = '';
+        const hazardResult = this.checkHazard(combatant, targetPos);
+        if (hazardResult) {
+            hazardMsg = `\n[HAZARD] ${hazardResult}`;
+        }
+
+        return `${combatant.name} moves ${distanceFt}ft ${direction}${featureSuffix}${opponentContext}.${hazardMsg}`;
     }
 
-    private getFeatureName(feature: TerrainFeature, biome: string): string {
+    private checkHazard(combatant: Combatant, pos: GridPosition): string | null {
+        if (!this.gridManager) return null;
+        const feature = this.gridManager.getFeatureAt(pos);
+        if (feature?.hazard) {
+            const result = MechanicsEngine.resolveHazard(combatant, feature.hazard);
+
+            // Apply Damage
+            combatant.hp.current = Math.max(0, combatant.hp.current - result.damage);
+
+            // Add to combat log
+            if (this.state.combat) {
+                this.state.combat.logs.push({
+                    id: `hazard_${Date.now()}_${Math.random()}`,
+                    type: 'warning',
+                    message: result.message,
+                    turn: this.state.combat.round
+                });
+            }
+
+            return result.message;
+        }
+        return null;
+    }
+
+    private static getFeatureName(feature: TerrainFeature, biome: string): string {
         const biomeData = BIOME_TACTICAL_DATA[biome] || BIOME_TACTICAL_DATA['Forest'];
-        return biomeData.features[feature.type] || feature.type;
+        const variants = biomeData.features[feature.type] || [];
+        if (variants.length === 0) return feature.type;
+
+        const hash = (feature.position.x * 31 + feature.position.y);
+        const variant = variants[hash % variants.length];
+        return variant.name;
     }
     /**
      * Orchestrates end of turn and next turn transitions.
@@ -215,11 +254,15 @@ export class CombatManager {
 
         const nextCombatant = combat.combatants[combat.currentTurnIndex];
 
+        // START OF TURN HAZARD CHECK
+        const hazardMsg = this.checkHazard(nextCombatant, nextCombatant.position);
+
         // Handle Unconscious or dead
         if (nextCombatant.hp.current <= 0) {
-            return this.advanceTurn(); // Skip to next
+            return (hazardMsg ? `[HAZARD] ${hazardMsg}\n` : '') + this.advanceTurn(); // Skip to next
         }
 
-        return `Round ${combat.round}: ${nextCombatant.name}'s turn.`;
+        return (hazardMsg ? `[HAZARD] ${nextCombatant.name} starts in danger! ${hazardMsg}\n` : '') +
+            `Round ${combat.round}: ${nextCombatant.name}'s turn.`;
     }
 }

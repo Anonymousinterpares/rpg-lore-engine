@@ -1,3 +1,4 @@
+import { BIOME_TACTICAL_DATA } from '../BiomeRegistry';
 import { CombatGrid, GridPosition, TerrainFeature, TerrainType } from '../../schemas/CombatSchema';
 
 export class TerrainGenerator {
@@ -13,7 +14,6 @@ export class TerrainGenerator {
         const rng = this.createRNG(seed);
 
         // Standard Deployment Zones (Proportionally scaled for 80x80)
-        // Compact 4x4 deployment zones (~20ft square) centered on y-midline
         const playerStartZone: GridPosition[] = [];
         for (let x = 2; x < 6; x++) {
             for (let y = 38; y < 42; y++) {
@@ -28,58 +28,27 @@ export class TerrainGenerator {
             }
         }
 
-        // Procedural Terrain based on Biome - Density increased for 80x80
-        switch (biome.toLowerCase()) {
-            case 'forest':
-                this.addCluster(features, 'TREE', 48, rng, width, height, { blocksVision: true, coverBonus: 'HALF' });
-                this.addCluster(features, 'DIFFICULT', 32, rng, width, height, { blocksMovement: false });
-                break;
-            case 'mountain':
-            case 'mountains':
-                this.addCluster(features, 'WALL', 24, rng, width, height, { blocksMovement: true, blocksVision: true, coverBonus: 'FULL' });
-                this.addCluster(features, 'RUBBLE', 40, rng, width, height, { coverBonus: 'THREE_QUARTERS' });
-                break;
-            case 'swamp':
-                this.addCluster(features, 'WATER', 60, rng, width, height, { blocksMovement: true });
-                this.addCluster(features, 'DIFFICULT', 48, rng, width, height, {});
-                break;
-            case 'ruins':
-                this.addCluster(features, 'WALL', 40, rng, width, height, { blocksMovement: true, blocksVision: true, coverBonus: 'FULL' });
-                this.addCluster(features, 'RUBBLE', 60, rng, width, height, { coverBonus: 'HALF' });
-                this.addCluster(features, 'PIT', 20, rng, width, height, { blocksMovement: true });
-                break;
-            case 'volcanic':
-                this.addCluster(features, 'LAVA', 48, rng, width, height, { blocksMovement: true, blocksVision: false });
-                this.addCluster(features, 'WALL', 32, rng, width, height, { blocksMovement: true, blocksVision: true, coverBonus: 'HALF' });
-                break;
-            case 'jungle':
-                this.addCluster(features, 'TREE', 80, rng, width, height, { blocksVision: true, coverBonus: 'THREE_QUARTERS' });
-                this.addCluster(features, 'DIFFICULT', 60, rng, width, height, {});
-                break;
-            case 'desert':
-                this.addCluster(features, 'RUBBLE', 40, rng, width, height, { coverBonus: 'HALF' });
-                this.addCluster(features, 'PIT', 16, rng, width, height, { blocksMovement: true });
-                break;
-            case 'tundra':
-                this.addCluster(features, 'RUBBLE', 40, rng, width, height, { coverBonus: 'HALF' });
-                this.addCluster(features, 'WALL', 16, rng, width, height, { blocksMovement: true, blocksVision: true, coverBonus: 'FULL' });
-                break;
-            case 'coast':
-            case 'ocean':
-                this.addCluster(features, 'WATER', 60, rng, width, height, { blocksMovement: true });
-                this.addCluster(features, 'RUBBLE', 24, rng, width, height, { coverBonus: 'HALF' });
-                break;
-            case 'urban':
-                this.addCluster(features, 'WALL', 48, rng, width, height, { blocksMovement: true, blocksVision: true, coverBonus: 'FULL' });
-                this.addCluster(features, 'RUBBLE', 32, rng, width, height, { coverBonus: 'HALF' });
-                break;
-            case 'plains':
-            default:
-                // Sparse cover
-                this.addCluster(features, 'RUBBLE', 16, rng, width, height, { coverBonus: 'HALF' });
-                this.addCluster(features, 'TREE', 4, rng, width, height, { blocksVision: true, coverBonus: 'HALF' });
-                break;
-        }
+        const biomeData = BIOME_TACTICAL_DATA[biome] || BIOME_TACTICAL_DATA['Forest'];
+
+        // Procedural Terrain based on Biome 
+        // We now iterate through the types available in the biome data
+        Object.keys(biomeData.features).forEach(typeKey => {
+            const type = typeKey as TerrainType;
+            let count = 0;
+            switch (type) {
+                case 'TREE': count = 40; break;
+                case 'WALL': count = 25; break;
+                case 'RUBBLE': count = 30; break;
+                case 'WATER': count = 35; break;
+                case 'LAVA': count = 30; break;
+                case 'PIT': count = 15; break;
+                case 'DIFFICULT': count = 40; break;
+                default: count = 10;
+            }
+
+            // Adjust count by biome frequency if needed, but for now fixed per type
+            this.addCluster(features, type, count, rng, width, height, biome);
+        });
 
         return {
             width,
@@ -97,41 +66,50 @@ export class TerrainGenerator {
         rng: () => number,
         width: number,
         height: number,
-        props: Partial<TerrainFeature>
+        biome: string
     ) {
+        const biomeData = BIOME_TACTICAL_DATA[biome] || BIOME_TACTICAL_DATA['Forest'];
+        const variants = biomeData.features[type] || [];
+        if (variants.length === 0) return;
+
         for (let i = 0; i < count; i++) {
             const pos = {
                 x: Math.floor(rng() * width),
                 y: Math.floor(rng() * height)
             };
 
-            // Avoid putting obstacles directly in start zones for now (or make it rare)
+            // Avoid putting obstacles directly in start zones
             if (this.isInStartZone(pos)) continue;
+
+            // Pick a variant based on RNG
+            const variant = variants[Math.floor(rng() * variants.length)];
 
             features.push({
                 id: `feat_${type}_${i}_${pos.x}_${pos.y}`,
                 type,
                 position: pos,
-                blocksMovement: props.blocksMovement ?? false,
-                blocksVision: props.blocksVision ?? false,
-                coverBonus: props.coverBonus ?? 'NONE',
-                isDestructible: props.isDestructible ?? false,
-                hp: props.hp
+                blocksMovement: variant.blocksMovement ?? false,
+                blocksVision: variant.blocksVision ?? false,
+                coverBonus: variant.coverBonus ?? 'NONE',
+                isDestructible: variant.isDestructible ?? false,
+                hazard: variant.hazard
             });
 
             // Occasional cluster neighbor
             if (rng() > 0.6) {
                 const neighborPos = { x: pos.x + 1, y: pos.y };
                 if (neighborPos.x < width && !this.isInStartZone(neighborPos)) {
+                    // Re-pick variant for neighbor or use same? User wants variety, but clusters usually same type.
+                    // Using same variant for cluster cohesion.
                     features.push({
                         id: `feat_${type}_${i}_n_${neighborPos.x}_${neighborPos.y}`,
                         type,
                         position: neighborPos,
-                        blocksMovement: props.blocksMovement ?? false,
-                        blocksVision: props.blocksVision ?? false,
-                        coverBonus: props.coverBonus ?? 'NONE',
-                        isDestructible: props.isDestructible ?? false,
-                        hp: props.hp
+                        blocksMovement: variant.blocksMovement ?? false,
+                        blocksVision: variant.blocksVision ?? false,
+                        coverBonus: variant.coverBonus ?? 'NONE',
+                        isDestructible: variant.isDestructible ?? false,
+                        hazard: variant.hazard
                     });
                 }
             }

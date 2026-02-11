@@ -37,7 +37,8 @@ export class CombatAnalysisEngine {
         combatant: Combatant,
         allCombatants: Combatant[],
         biome: string,
-        weather: Weather
+        weather: Weather,
+        selectedTargetId?: string
     ): TacticalOption[] {
         const options: TacticalOption[] = [];
         const reachable = this.gridManager.getReachablePositions(combatant.position, combatant.movementRemaining, allCombatants);
@@ -57,7 +58,7 @@ export class CombatAnalysisEngine {
         options.push(...this.getRetreatOptions(combatant, reachable, enemies, allies, biome, weather));
 
         // 5. Environmental Awareness (Cover Approaches)
-        options.push(...this.getCoverOptions(combatant, reachable, allCombatants, biome, weather));
+        options.push(...this.getCoverOptions(combatant, reachable, allCombatants, biome, weather, selectedTargetId));
 
         return options;
     }
@@ -124,15 +125,50 @@ export class CombatAnalysisEngine {
             if (dist <= 2) {
                 const targetPos = this.getApproachPosition(reachable, enemy.position, 1);
                 if (targetPos) {
-                    const nar = NarrativeGenerator.generate('press', combatant, enemy, biome, weather, '');
-                    options.push({
-                        id: `press_${enemy.id}`,
-                        label: nar.label,
-                        description: nar.description,
-                        targetPosition: targetPos,
-                        type: 'AGGRESSION',
-                        command: `/move ${targetPos.x} ${targetPos.y} press`
-                    });
+                    // Check if direct path is blocked for "Vault" or "Flank" context
+                    const obstacle = this.gridManager.getFeatureOnPath(combatant.position, enemy.position);
+
+                    if (obstacle && this.gridManager.getDistance(combatant.position, obstacle.position) <= 2) {
+                        const obstacleName = this.getFeatureName(obstacle, biome);
+                        const isHigh = obstacle.coverBonus === 'THREE_QUARTERS' || obstacle.coverBonus === 'FULL';
+
+                        if (!isHigh) {
+                            // Low obstacle -> Vault
+                            options.push({
+                                id: `vault_${enemy.id}_${obstacle.id}`,
+                                label: `Vault Over ${obstacleName}`,
+                                description: `Jump over the ${obstacleName} to reach ${enemy.name}. Athletics DC 12.`,
+                                targetPosition: targetPos,
+                                type: 'AGGRESSION',
+                                command: `/move ${targetPos.x} ${targetPos.y} vault`
+                            });
+                        } else {
+                            // High obstacle -> Flank Left/Right
+                            // In a real implementation we'd calculate pathing for left/right specifically
+                            // For now, offering generic Flank with the calculated path
+                            options.push({
+                                id: `flank_around_${enemy.id}_${obstacle.id}`,
+                                label: `Flank Around ${obstacleName}`,
+                                description: `Circle around the ${obstacleName} (+${(dist - this.gridManager.getDistance(combatant.position, enemy.position)) * 5}ft).`,
+                                targetPosition: targetPos,
+                                type: 'AGGRESSION',
+                                command: `/move ${targetPos.x} ${targetPos.y} flank`
+                            });
+                        }
+                    } else {
+                        // Direct/Clean path -> Normal Aggression
+                        const nar = NarrativeGenerator.generate('press', combatant, enemy, biome, weather, '');
+                        options.push({
+                            id: `press_${enemy.id}`,
+                            label: nar.label,
+                            description: nar.description,
+                            targetPosition: targetPos,
+                            type: 'AGGRESSION',
+                            command: `/move ${targetPos.x} ${targetPos.y} press`,
+                            pros: ['Advantage on Next Melee'],
+                            cons: ['Half Movement']
+                        });
+                    }
                 }
             }
         });
@@ -300,14 +336,18 @@ export class CombatAnalysisEngine {
         reachable: GridPosition[],
         allCombatants: Combatant[],
         biome: string,
-        weather: Weather
+        weather: Weather,
+        selectedTargetId?: string
     ): TacticalOption[] {
         const features = this.gridManager.getAllFeatures();
+        const selectedEnemy = selectedTargetId ? allCombatants.find(c => c.id === selectedTargetId) : null;
+
         const coverFeatures = features
             .filter(f => f.coverBonus !== 'NONE')
             .map(f => ({
                 feature: f,
                 dist: this.gridManager.getDistance(combatant.position, f.position),
+                enemyDist: selectedEnemy ? this.gridManager.getDistance(f.position, selectedEnemy.position) : null,
                 featureName: this.getFeatureName(f, biome)
             }))
             .sort((a, b) => a.dist - b.dist)
@@ -338,10 +378,15 @@ export class CombatAnalysisEngine {
                 : item.feature.coverBonus === 'THREE_QUARTERS' ? '¾ Cover (+5 AC)'
                     : 'Half Cover (+2 AC)';
 
+            let description = `${relDir}, ${item.dist * 5}ft away${sprintRemaining === 0 ? ' — ✓ Reachable' : ''}`;
+            if (item.enemyDist !== null && selectedEnemy) {
+                description += ` | ${item.enemyDist * 5}ft from ${selectedEnemy.name}`;
+            }
+
             return {
                 id: `cover_${item.feature.id}`,
                 label: `${item.featureName} — ${coverLabel}`,
-                description: `${relDir}, ${item.dist * 5}ft away${sprintRemaining === 0 ? ' — ✓ Reachable' : ''}`,
+                description: description,
                 targetPosition: item.feature.position,
                 type: 'COVER',
                 command: '', // Parent item is informational/grouping only
@@ -379,7 +424,12 @@ export class CombatAnalysisEngine {
 
     private getFeatureName(feature: TerrainFeature, biome: string): string {
         const biomeData = BIOME_TACTICAL_DATA[biome] || BIOME_TACTICAL_DATA['Forest'];
-        return biomeData.features[feature.type] || feature.type;
+        const variants = biomeData.features[feature.type] || [];
+        if (variants.length === 0) return feature.type;
+
+        const hash = (feature.position.x * 31 + feature.position.y);
+        const variant = variants[hash % variants.length];
+        return variant.name;
     }
 
     private getApproachPositionWithRange(

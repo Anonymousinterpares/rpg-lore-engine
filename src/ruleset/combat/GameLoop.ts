@@ -547,6 +547,22 @@ export class GameLoop {
                             currentCombatant.statusEffects.push({ id: 'phalanx_formation', name: 'Phalanx Formation', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
                         } else if (mode === 'hunker') {
                             currentCombatant.statusEffects.push({ id: 'hunkered_down', name: 'Hunkered Down', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
+                        } else if (mode === 'vault' || mode === 'jump') {
+                            // Vault/Jump = Athletics check (DC 12)
+                            const athletics = (currentCombatant.stats.STR || 10) + 2; // Simple bonus for now
+                            const roll = Math.floor(Math.random() * 20) + 1;
+                            const success = (roll + athletics) >= 12;
+
+                            if (!success) {
+                                // Fail -> Stop and take possible hazard damage
+                                const obstacle = this.combatManager.getGridManager()?.getFeatureAt({ x, y });
+                                let failMsg = `${currentCombatant.name} fails the vault attempt! (Roll: ${roll}+${athletics} vs DC 12)`;
+                                if (obstacle?.hazard) {
+                                    failMsg += ` They land in the ${obstacle.type.toLowerCase()}!`;
+                                }
+                                return failMsg;
+                            }
+                            // Success -> Continue movement (handled by combatManager.moveCombatant below)
                         }
 
                         return this.combatManager.moveCombatant(currentCombatant, { x, y });
@@ -1953,7 +1969,8 @@ export class GameLoop {
             player,
             this.state.combat.combatants,
             biome,
-            this.state.combat.weather || { type: 'Clear', durationMinutes: 0, intensity: 1.0 }
+            this.state.combat.weather || { type: 'Clear', durationMinutes: 0, intensity: 1.0 },
+            this.state.combat.selectedTargetId
         );
     }
 

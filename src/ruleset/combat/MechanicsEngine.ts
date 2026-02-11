@@ -96,24 +96,28 @@ export class MechanicsEngine {
     /**
      * Resolves an environmental hazard against an actor.
      */
-    public static resolveHazard(actor: PlayerCharacter | Monster, hazard: any): string {
-        let msg = `${actor.name} encounters ${hazard.name} (${hazard.type}). `;
+    public static resolveHazard(actor: any, hazard: any): { message: string, damage: number, success: boolean } {
+        let msg = `${actor.name} encounters ${hazard.description || 'a hazardous area'}. `;
+        let damage = 0;
+        let success = true;
 
         if (hazard.saveDC && hazard.saveAbility) {
             const result = this.resolveCheck(actor, hazard.saveAbility, undefined, hazard.saveDC);
             msg += result.message;
-            if (result.success) {
-                msg += " Damage avoided or halved.";
-                // Logic for half damage or avoiding would go here
-                return msg;
+            success = result.success || false;
+
+            if (success) {
+                msg += " Damage halved! ";
             }
         }
 
-        if (hazard.damage) {
-            msg += ` Taking ${hazard.damage} ${hazard.damageType || ''} damage.`;
+        if (hazard.damageDice) {
+            const roll = Dice.roll(hazard.damageDice);
+            damage = success ? Math.floor(roll / 2) : roll;
+            msg += ` Taking ${damage} ${hazard.damageType || ''} damage.`;
         }
 
-        return msg;
+        return { message: msg, damage, success };
     }
 
     /**
