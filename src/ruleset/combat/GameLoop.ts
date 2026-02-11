@@ -910,12 +910,18 @@ export class GameLoop {
     }
 
     public async initializeCombat(encounter: Encounter) {
-        const biome = this.hexMapManager.getHex(this.state.location.hexId)?.biome || 'Plains';
-        await this.combatManager.initializeCombat(encounter, biome);
-        this.emitStateUpdate();
+        try {
+            const biome = this.hexMapManager.getHex(this.state.location.hexId)?.biome || 'Plains';
+            await this.combatManager.initializeCombat(encounter, biome);
+            this.emitStateUpdate();
 
-        // CRITICAL FIX: Trigger combat queue so AI acts if it wins initiative
-        await this.processCombatQueue();
+            // CRITICAL FIX: Trigger combat queue so AI acts if it wins initiative
+            await this.processCombatQueue();
+        } catch (error) {
+            console.error("[GameLoop] Failed to start combat:", error);
+            this.state.lastNarrative = `[System Error] Failed to initialize combat encounter. Reverting to exploration mode. (Error: ${error instanceof Error ? error.message : String(error)})`;
+            this.emitStateUpdate();
+        }
     }
 
     private handleCombatAction(intent: ParsedIntent): string {
@@ -1794,7 +1800,8 @@ export class GameLoop {
     }
 
     private async endCombat(victory: boolean) {
-        if (!this.state.combat) return;
+        const combatState = this.state.combat;
+        if (!combatState) return;
 
         const summaryMsg = victory
             ? "Victory! All enemies have been defeated."
@@ -1806,7 +1813,7 @@ export class GameLoop {
         if (victory) {
             let totalXP = 0;
             // Get all enemies that were in the combat
-            const enemies = this.state.combat.combatants.filter(c => c.type === 'enemy');
+            const enemies = combatState.combatants.filter(c => c.type === 'enemy');
 
             for (const enemy of enemies) {
                 // Get monster data to find CR
@@ -1831,7 +1838,7 @@ export class GameLoop {
             this.addCombatLog(`You gained ${totalXP} Experience Points! (Total: ${char.xp})`);
 
             // --- Generate Combat Loot ---
-            const defeatedEnemies = this.state.combat.combatants.filter(c => c.type === 'enemy');
+            const defeatedEnemies = combatState.combatants.filter(c => c.type === 'enemy');
             const totalLoot: any[] = [];
             let totalGold = 0;
 
@@ -1881,6 +1888,7 @@ export class GameLoop {
 
         // Transition back to exploration or game over
         if (victory) {
+            // CRITICAL FIX: Handle state transition BEFORE async calls to prevent race conditions
             this.state.mode = 'EXPLORATION';
 
             // Mark hex as cleared for the 4-hour window
@@ -1888,16 +1896,27 @@ export class GameLoop {
             this.state.clearedHexes[this.state.location.hexId] = this.state.worldTime.totalTurns;
 
             // Calculate time passed (Round * 6s) + 5 minutes recovery
-            const combatSeconds = (this.state.combat?.round || 0) * 6;
+            const combatSeconds = (combatState.round || 0) * 6;
             const totalMinutes = Math.ceil(combatSeconds / 60) + 5;
             this.state.worldTime = WorldClockEngine.advanceTime(this.state.worldTime, totalMinutes);
 
-            // Trigger LLM Summarization
-            const summary = await NarratorService.summarizeCombat(this.state, this.state.combat?.logs || []);
-            this.state.lastNarrative = summary;
+            // Clear combat state synchronously to avoid it persisting during async summary
+            // But keep a reference for summary generation
             this.state.combat = undefined;
-
             this.emitStateUpdate();
+
+            // Trigger LLM Summarization safely
+            try {
+                const summary = await NarratorService.summarizeCombat(this.state, combatState.logs || []);
+                // Only update narrative if we are still in exploration and haven't started a NEW combat
+                if (this.state.mode === 'EXPLORATION' && !this.state.combat) {
+                    this.state.lastNarrative = summary;
+                    this.emitStateUpdate();
+                }
+            } catch (error) {
+                console.error("[GameLoop] Combat summary failed:", error);
+            }
+
         } else {
             this.state.mode = 'GAME_OVER';
             this.emitStateUpdate();

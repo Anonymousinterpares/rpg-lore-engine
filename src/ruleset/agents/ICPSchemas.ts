@@ -23,7 +23,8 @@ export const EngineCallSchema = z.object({
         'set_faction_standing',
         'advance_time',
         'spawn_npc',
-        'set_npc_disposition'
+        'set_npc_disposition',
+        'turn_end'
     ]),
     args: z.record(z.any())
 });

@@ -146,6 +146,10 @@ export class EngineDispatcher {
                         console.log(`[EngineDispatcher] Manual Skill Check (${call.args.skill}): ${skillResult} vs DC ${call.args.dc}`);
                         break;
 
+                    case 'turn_end':
+                        // Narrator sometimes emits this during combat transitions; benign no-op.
+                        break;
+
                     default:
                         console.warn(`[EngineDispatcher] Unhandled function: ${call.function}`);
                 }

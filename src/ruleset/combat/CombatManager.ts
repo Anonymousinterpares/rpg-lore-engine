@@ -31,97 +31,105 @@ export class CombatManager {
     public async initializeCombat(encounter: Encounter, biome: string): Promise<void> {
         this.state.mode = 'COMBAT';
 
-        // 1. Generate Grid
-        const seed = `combat_${Date.now()}_${Math.random()}`;
-        const grid = TerrainGenerator.generate(biome, seed);
+        try {
+            // 1. Generate Grid
+            const seed = `combat_${Date.now()}_${Math.random()}`;
+            const grid = TerrainGenerator.generate(biome, seed);
 
-        // 2. Prepare Combatants
-        const combatants: Combatant[] = [];
+            // 2. Prepare Combatants
+            const combatants: Combatant[] = [];
 
-        // Add Player
-        const pc = CombatFactory.fromPlayer(this.state.character);
-        pc.initiative = Dice.d20() + MechanicsEngine.getModifier(this.state.character.stats.DEX || 10);
-        pc.position = grid.playerStartZone[0] || { x: 10, y: 40 };
-        combatants.push(pc);
+            // Add Player
+            const pc = CombatFactory.fromPlayer(this.state.character);
+            pc.initiative = Dice.d20() + MechanicsEngine.getModifier(this.state.character.stats.DEX || 10);
+            pc.position = grid.playerStartZone[0] || { x: 10, y: 40 };
+            combatants.push(pc);
 
-        // Add Companions
-        for (let i = 0; i < this.state.companions.length; i++) {
-            const companion = CombatFactory.fromPlayer(this.state.companions[i]);
-            companion.initiative = Dice.d20() + MechanicsEngine.getModifier(companion.stats.DEX || 10);
+            // Add Companions
+            for (let i = 0; i < this.state.companions.length; i++) {
+                const companion = CombatFactory.fromPlayer(this.state.companions[i]);
+                companion.initiative = Dice.d20() + MechanicsEngine.getModifier(companion.stats.DEX || 10);
 
-            // Deployment: Pick unique positions from player zone
-            const posIndex = Math.min(i + 1, grid.playerStartZone.length - 1);
-            companion.position = grid.playerStartZone[posIndex] || { x: 10 + i, y: 41 + i };
-            combatants.push(companion);
-        }
-
-        // Add Enemies
-        await DataManager.loadMonsters();
-        for (let i = 0; i < encounter.monsters.length; i++) {
-            const monsterName = encounter.monsters[i];
-            const monsterData = DataManager.getMonster(monsterName);
-
-            // Deployment: Pick unique positions from enemy zone
-            const posIndex = Math.min(i, grid.enemyStartZone.length - 1);
-            const pos = grid.enemyStartZone[posIndex] || { x: 68, y: 40 };
-
-            const monster = CombatFactory.fromMonster(monsterData || {
-                name: monsterName,
-                hp: { average: 15, formula: '2d8+2' },
-                ac: 10,
-                stats: { STR: 10, DEX: 10, CON: 10, INT: 10, WIS: 10, CHA: 10 },
-                cr: 0,
-                size: 'Medium',
-                type: 'beast',
-                alignment: 'unaligned',
-                speed: 'walk: 30 ft.',
-                actions: [],
-                traits: [],
-                legendaryActions: []
-            } as any, `enemy_${i}`);
-            monster.initiative = Dice.d20() + (monsterData ? MechanicsEngine.getModifier(monsterData.stats['DEX'] || 10) : 0);
-            monster.position = pos;
-            combatants.push(monster);
-
-            // Register discovery (with safety wrapper to prevent JSON crashes)
-            try {
-                LoreService.registerMonsterEncounter(monsterName, this.state, () => { });
-            } catch (error) {
-                console.error(`[LoreService] Failed to register encounter for ${monsterName}:`, error);
+                // Deployment: Pick unique positions from player zone
+                const posIndex = Math.min(i + 1, grid.playerStartZone.length - 1);
+                companion.position = grid.playerStartZone[posIndex] || { x: 10 + i, y: 41 + i };
+                combatants.push(companion);
             }
-        }
 
-        // 3. Sort by Initiative
-        combatants.sort((a, b) => {
-            if (b.initiative !== a.initiative) return b.initiative - a.initiative;
-            return (b.dexterityScore || 0) - (a.dexterityScore || 0); // Dexterity tie-breaker
-        });
+            // Add Enemies
+            await DataManager.loadMonsters();
+            for (let i = 0; i < encounter.monsters.length; i++) {
+                const monsterName = encounter.monsters[i];
+                const monsterData = DataManager.getMonster(monsterName);
 
-        // 4. Set Initial State
-        this.state.combat = {
-            round: 1,
-            currentTurnIndex: 0,
-            combatants,
-            grid,
-            isAmbush: false,
-            logs: [{
-                id: `log_start_${Date.now()}`,
-                type: 'info',
-                message: `Combat started in the ${biome}!`,
-                turn: 1
-            }],
-            events: [],
-            turnActions: [],
-            selectedTargetId: undefined,
-            lastRoll: undefined,
-            activeBanner: {
-                type: 'NAME',
-                text: 'Combat Started',
-                visible: true
+                // Deployment: Pick unique positions from enemy zone
+                const posIndex = Math.min(i, grid.enemyStartZone.length - 1);
+                const pos = grid.enemyStartZone[posIndex] || { x: 68, y: 40 };
+
+                const monster = CombatFactory.fromMonster(monsterData || {
+                    name: `${monsterName} (Unknown)`,
+                    hp: { average: 15, formula: '2d8+2' },
+                    ac: 10,
+                    stats: { STR: 10, DEX: 10, CON: 10, INT: 10, WIS: 10, CHA: 10 },
+                    cr: 0,
+                    size: 'Medium',
+                    type: 'beast',
+                    alignment: 'unaligned',
+                    speed: 'walk: 30 ft.',
+                    actions: [],
+                    traits: [],
+                    legendaryActions: []
+                } as any, `enemy_${i}`);
+                monster.initiative = Dice.d20() + (monsterData ? MechanicsEngine.getModifier(monsterData.stats['DEX'] || 10) : 0);
+                monster.position = pos;
+                combatants.push(monster);
+
+                // Register discovery (with safety wrapper to prevent JSON crashes)
+                try {
+                    LoreService.registerMonsterEncounter(monsterName, this.state, () => { });
+                } catch (error) {
+                    console.error(`[LoreService] Failed to register encounter for ${monsterName}:`, error);
+                }
             }
-        };
 
-        this.gridManager = new CombatGridManager(grid);
+            // 3. Sort by Initiative
+            combatants.sort((a, b) => {
+                if (b.initiative !== a.initiative) return b.initiative - a.initiative;
+                return (b.dexterityScore || 0) - (a.dexterityScore || 0); // Dexterity tie-breaker
+            });
+
+            // 4. Set Initial State
+            this.state.combat = {
+                round: 1,
+                currentTurnIndex: 0,
+                combatants,
+                grid,
+                isAmbush: false,
+                logs: [{
+                    id: `log_start_${Date.now()}`,
+                    type: 'info',
+                    message: `Combat started in the ${biome}!`,
+                    turn: 1
+                }],
+                events: [],
+                turnActions: [],
+                selectedTargetId: undefined,
+                lastRoll: undefined,
+                activeBanner: {
+                    type: 'NAME',
+                    text: 'Combat Started',
+                    visible: true
+                }
+            };
+
+            this.gridManager = new CombatGridManager(grid);
+        } catch (error) {
+            console.error("[CombatManager] Failed to initialize combat:", error);
+            // ROLLBACK: Prevent game from being stuck in a broken combat mode
+            this.state.mode = 'EXPLORATION';
+            this.state.combat = undefined;
+            throw error;
+        }
     }
 
     /**
