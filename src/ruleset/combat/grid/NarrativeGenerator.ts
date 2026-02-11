@@ -17,7 +17,28 @@ export class NarrativeGenerator {
         resultDistance?: number
     ): { label: string, description: string } {
         const biomeData = BIOME_TACTICAL_DATA[biome] || BIOME_TACTICAL_DATA['Forest'];
-        const targetName = target ? ('name' in target ? target.name : ('type' in target ? (biomeData.features[target.type] || target.type) : 'the location')) : '';
+        let targetName = '';
+        if (target) {
+            if ('name' in target && typeof (target as any).name === 'string') {
+                targetName = (target as any).name;
+            } else if ('type' in target && 'position' in target) {
+                // TerrainFeature resolution
+                const tf = target as TerrainFeature;
+                const variants = biomeData.features[tf.type] || [];
+                if (Array.isArray(variants) && variants.length > 0) {
+                    const x = tf.position?.x ?? 0;
+                    const y = tf.position?.y ?? 0;
+                    const hash = Math.abs(x * 31 + y);
+                    const variant = variants[hash % variants.length];
+                    targetName = variant?.name || tf.type;
+                } else {
+                    targetName = tf.type;
+                }
+            } else {
+                targetName = 'the location';
+            }
+        }
+
         const distText = distance ? `${distance * 5}ft` : '';
         const remainingText = combatant && target && 'x' in target && 'y' in target
             ? ` (${(distance || 0) * 5}ft move, ${Math.max(0, (Math.ceil(Math.sqrt(Math.pow(target.x - combatant.position.x, 2) + Math.pow(target.y - combatant.position.y, 2))) - (distance || 0)) * 5)}ft remaining)`
