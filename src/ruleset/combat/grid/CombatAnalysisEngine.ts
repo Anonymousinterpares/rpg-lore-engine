@@ -201,7 +201,8 @@ export class CombatAnalysisEngine {
         candidates.sort((a, b) => b.score - a.score);
         candidates.slice(0, 3).forEach((c, idx) => {
             const relDir = this.gridManager.getRelativeDirection(combatant.position, c.pos);
-            const nar = NarrativeGenerator.generate('hunker_down', combatant, c.feature, biome, weather, relDir);
+            const dist = this.gridManager.getDistance(combatant.position, c.pos);
+            const nar = NarrativeGenerator.generate('hunker_down', combatant, c.feature, biome, weather, relDir, dist);
             options.push({
                 id: `safety_${idx}`,
                 label: nar.label,
@@ -383,14 +384,10 @@ export class CombatAnalysisEngine {
                 description += ` | ${item.enemyDist * 5}ft from ${selectedEnemy.name}`;
             }
 
-            return {
-                id: `cover_${item.feature.id}`,
-                label: `${item.featureName} — ${coverLabel}`,
-                description: description,
-                targetPosition: item.feature.position,
-                type: 'COVER',
-                command: '', // Parent item is informational/grouping only
-                subOptions: [
+            const subOptions: TacticalSubOption[] = [];
+
+            if (item.dist > 0) {
+                subOptions.push(
                     {
                         id: `cover_sprint_${item.feature.id}`,
                         label: '⚡ Sprint to Cover',
@@ -417,7 +414,17 @@ export class CombatAnalysisEngine {
                         command: evasivePos ? `/move ${evasivePos.x} ${evasivePos.y} evasive` : '',
                         pros: ['+2 vs Ranged']
                     }
-                ]
+                );
+            }
+
+            return {
+                id: `cover_${item.feature.id}`,
+                label: `${item.featureName} — ${coverLabel}`,
+                description: description,
+                targetPosition: item.feature.position,
+                type: 'COVER',
+                command: item.dist === 0 ? `/move ${item.feature.position.x} ${item.feature.position.y} hunker` : '',
+                subOptions: subOptions.length > 0 ? subOptions : undefined
             };
         });
     }

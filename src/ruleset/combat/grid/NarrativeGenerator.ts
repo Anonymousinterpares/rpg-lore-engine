@@ -76,9 +76,10 @@ export class NarrativeGenerator {
 
             // Category C: Defensive
             case 'hunker_down':
+                const movePrefix = distance && distance > 0 ? `Move ${distance * 5}ft and take` : 'Take';
                 return {
                     label: `Hunker Down`,
-                    description: `Take cover behind the ${targetName}, bracing for incoming fire. 🛡️ Cover bonus depends on feature.`
+                    description: `${movePrefix} cover behind the ${targetName}, bracing for incoming fire. 🛡️ Cover bonus depends on feature.`
                 };
 
             // Category D: Retreat
