@@ -33,6 +33,56 @@ const SaveLoadModal: React.FC<SaveLoadModalProps> = ({
     className = ''
 }) => {
     const [newSaveName, setNewSaveName] = useState(`Chronicle ${new Date().toLocaleDateString()}`);
+    const [confirmOverwrite, setConfirmOverwrite] = useState<{ id: string, name: string } | null>(null);
+
+    const handleNewSaveClick = () => {
+        const existingSlot = slots.find(s => s.name.toLowerCase() === newSaveName.trim().toLowerCase());
+        if (existingSlot) {
+            setConfirmOverwrite({ id: existingSlot.id, name: existingSlot.name });
+        } else {
+            onAction('new', newSaveName);
+        }
+    };
+
+    const handleSlotClick = (slot: SaveSlot) => {
+        if (mode === 'save') {
+            setConfirmOverwrite({ id: slot.id, name: slot.name });
+        } else {
+            onAction(slot.id);
+        }
+    };
+
+    if (confirmOverwrite) {
+        return (
+            <div className={`${styles.overlay} ${className}`}>
+                <div className={`${styles.modal} ${parchmentStyles.panel}`} style={{ maxWidth: '400px', textAlign: 'center' }}>
+                    <div className={styles.header}>
+                        <h2 className={styles.title}>Overwrite?</h2>
+                    </div>
+                    <div className={parchmentStyles.text} style={{ padding: '20px' }}>
+                        <p>A chronicle named <strong>"{confirmOverwrite.name}"</strong> already exists.</p>
+                        <p style={{ marginTop: '10px' }}>This will permanently erase the old history. Are you sure?</p>
+                    </div>
+                    <div className={styles.createControls} style={{ justifyContent: 'center', gap: '20px', marginTop: '10px' }}>
+                        <button
+                            className={styles.createButton}
+                            onClick={() => { onAction(confirmOverwrite.id, confirmOverwrite.name); setConfirmOverwrite(null); }}
+                            style={{ background: '#6d1818', color: 'white' }}
+                        >
+                            Yes, Overwrite
+                        </button>
+                        <button
+                            className={styles.nameInput}
+                            onClick={() => setConfirmOverwrite(null)}
+                            style={{ width: 'auto', padding: '0 20px' }}
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={`${styles.overlay} ${className}`}>
@@ -61,7 +111,7 @@ const SaveLoadModal: React.FC<SaveLoadModalProps> = ({
                             />
                             <button
                                 className={styles.createButton}
-                                onClick={() => onAction('new', newSaveName)}
+                                onClick={handleNewSaveClick}
                                 disabled={!newSaveName.trim()}
                             >
                                 <Plus size={18} />
@@ -82,7 +132,7 @@ const SaveLoadModal: React.FC<SaveLoadModalProps> = ({
 
                     {slots.map(slot => (
                         <div key={slot.id} className={styles.slotItem}>
-                            <div className={styles.slotMain} onClick={() => onAction(slot.id)}>
+                            <div className={styles.slotMain} onClick={() => handleSlotClick(slot)}>
                                 <div className={styles.slotHeader}>
                                     <span className={styles.slotName}>{slot.name}</span>
                                     <span className={styles.charInfo}>{slot.charName} (Lvl {slot.level})</span>
@@ -134,5 +184,6 @@ const SaveLoadModal: React.FC<SaveLoadModalProps> = ({
         </div>
     );
 };
+
 
 export default SaveLoadModal;

@@ -1,0 +1,968 @@
+{
+  "saveId": "7d5dd88c-bbe2-4c20-a96b-67cf92d2fc1b",
+  "saveVersion": 1,
+  "createdAt": "2026-02-11T21:46:44.113Z",
+  "lastSavedAt": "2026-02-11T21:46:44.113Z",
+  "playTimeSeconds": 0,
+  "character": {
+    "name": "Dam",
+    "level": 1,
+    "race": "Dragonborn",
+    "class": "Barbarian",
+    "conditions": [],
+    "stats": {
+      "STR": 17,
+      "DEX": 11,
+      "CON": 15,
+      "INT": 10,
+      "WIS": 10,
+      "CHA": 11
+    },
+    "savingThrowProficiencies": [
+      "STR",
+      "CON"
+    ],
+    "skillProficiencies": [
+      "Deception",
+      "Stealth",
+      "Intimidation",
+      "Survival"
+    ],
+    "hp": {
+      "current": 14,
+      "max": 14,
+      "temp": 0
+    },
+    "deathSaves": {
+      "successes": 0,
+      "failures": 0
+    },
+    "hitDice": {
+      "current": 1,
+      "max": 1,
+      "dieType": "1d12"
+    },
+    "spellSlots": {},
+    "featureUsages": {
+      "Rage": {
+        "current": 2,
+        "max": 2,
+        "usageType": "LONG_REST"
+      }
+    },
+    "cantripsKnown": [],
+    "knownSpells": [],
+    "preparedSpells": [],
+    "spellbook": [],
+    "unseenSpells": [],
+    "ac": 10,
+    "inventory": {
+      "gold": {
+        "cp": 0,
+        "sp": 0,
+        "ep": 0,
+        "gp": 15,
+        "pp": 0
+      },
+      "items": [
+        {
+          "name": "Crowbar",
+          "type": "Adventuring Gear",
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 2,
+            "pp": 0
+          },
+          "weight": 5,
+          "description": "Using a crowbar grants advantage to Strength checks where the crowbar's leverage can be applied.",
+          "id": "Crowbar",
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "550afb25-407f-4aa5-aa19-0b937fda62ba"
+        },
+        {
+          "name": "Clothes, common",
+          "type": "Adventuring Gear",
+          "cost": {
+            "cp": 0,
+            "sp": 5,
+            "ep": 0,
+            "gp": 0,
+            "pp": 0
+          },
+          "weight": 3,
+          "id": "Clothes, common",
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "efabb0b2-5fd5-413b-adff-e4f56f981888"
+        },
+        {
+          "name": "Pouch",
+          "type": "Adventuring Gear",
+          "cost": {
+            "cp": 0,
+            "sp": 5,
+            "ep": 0,
+            "gp": 0,
+            "pp": 0
+          },
+          "weight": 1,
+          "description": "A cloth or leather pouch can hold up to 20 sling bullets or 50 blowgun needles, among other things. A compartmentalized pouch for holding spell components is called a component pouch (described earlier in this section).",
+          "id": "Pouch",
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "7c69de03-6e0a-404c-81ff-4930ecb0bb84"
+        },
+        {
+          "name": "Shortbow",
+          "type": "Weapon",
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 25,
+            "pp": 0
+          },
+          "weight": 2,
+          "damage": {
+            "dice": "1d6",
+            "type": "Piercing"
+          },
+          "properties": [
+            "Ammunition",
+            "Two-Handed"
+          ],
+          "range": {
+            "normal": 80,
+            "long": 320
+          },
+          "id": "Shortbow",
+          "instanceId": "shortbow_1770846427462_224",
+          "quantity": 1,
+          "equipped": true
+        }
+      ]
+    },
+    "equipmentSlots": {
+      "mainHand": "shortbow_1770846427462_224"
+    },
+    "attunedItems": [],
+    "xp": 50,
+    "inspiration": false,
+    "knownEntities": {
+      "monsters": [
+        "Giant_Weasel"
+      ],
+      "items": []
+    },
+    "biography": {
+      "background": "Criminal",
+      "traits": [
+        "I always have a plan for what to do when things go wrong.",
+        "I am incredibly slow to trust. Those who seem the fairest often have the most to hide.",
+        "I would rather make a new friend than a new enemy.",
+        "I am incredibly slow to trust. Those who seem the fairest often have the most to hide.",
+        "I don't pay attention to the risks in a situation. Never tell me the odds.",
+        "The best way to get me to do something is to tell me I can't do it.",
+        "I blow up at the slightest insult."
+      ],
+      "ideals": [
+        "Honor. I don't steal from others in the trade. (Lawful)",
+        "Freedom. Chains are meant to be broken, as are those who would forge them. (Chaotic)",
+        "Charity. I steal from the wealthy so that I can help people in need. (Good)",
+        "Greed. I will do whatever it takes to become wealthy. (Evil)",
+        "People. I'm loyal to my friends, not to any ideals, and everyone else can take a trip down the Styx for all I care. (Neutral)",
+        "Redemption. There's a spark of good in everyone. (Good)"
+      ],
+      "bonds": [
+        "I'm trying to pay off an old debt I owe to a generous benefactor.",
+        "My ill-gotten gains go to support my family.",
+        "I'm guilty of a terrible crime. I hope I can redeem myself for it.",
+        "Someone I loved was killed because of a mistake I made. That will never happen again.",
+        "I will become the greatest thief that ever lived.",
+        "I'm searching for a treasure that will make me rich for the rest of my life."
+      ],
+      "flaws": [
+        "When I see something valuable, I can't help but think about how to steal it.",
+        "When faced with a choice between money and my friends, I usually choose the money.",
+        "If there's a plan, I'll forget it. If I don't forget it, I'll ignore it.",
+        "I have a 'tell' that reveals when I'm lying.",
+        "I turn tail and run when things look bad.",
+        "An innocent person is in prison for a crime that I committed. I'm okay with that."
+      ],
+      "chronicles": [
+        {
+          "turn": 0,
+          "event": "The adventure begins."
+        }
+      ]
+    }
+  },
+  "companions": [],
+  "mode": "EXPLORATION",
+  "location": {
+    "hexId": "0,0",
+    "coordinates": [
+      0,
+      0
+    ],
+    "droppedItems": [],
+    "combatLoot": []
+  },
+  "worldTime": {
+    "hour": 9,
+    "minute": 17,
+    "day": 1,
+    "month": 1,
+    "year": 1489,
+    "totalTurns": 170
+  },
+  "worldMap": {
+    "grid_id": "world_map",
+    "hexes": {
+      "0,0": {
+        "coordinates": [
+          0,
+          0
+        ],
+        "name": "Initial Landing Site",
+        "generated": true,
+        "biome": "Plains",
+        "description": "A vast expanse of hills.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": true,
+        "inLineOfSight": false,
+        "namingSource": "engine",
+        "visualVariant": 1
+      },
+      "0,1": {
+        "coordinates": [
+          0,
+          1
+        ],
+        "name": "Plains (Uncharted Territory)",
+        "generated": true,
+        "biome": "Plains",
+        "description": "A vast expanse of plains.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_42w8j57rs",
+            "resourceType": "Herb",
+            "itemId": "Kingsbloom",
+            "quantityRemaining": 3,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 4
+      },
+      "0,-1": {
+        "coordinates": [
+          0,
+          -1
+        ],
+        "name": "Tundra (Uncharted Territory)",
+        "generated": true,
+        "biome": "Tundra",
+        "description": "A vast expanse of tundra.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_0e1bjagv4",
+            "resourceType": "Hide",
+            "itemId": "Thick_Hide",
+            "quantityRemaining": 3,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 5
+      },
+      "1,0": {
+        "coordinates": [
+          1,
+          0
+        ],
+        "name": "Farmland (Uncharted Territory)",
+        "generated": true,
+        "biome": "Farmland",
+        "description": "A vast expanse of farmland.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 5
+      },
+      "-1,1": {
+        "coordinates": [
+          -1,
+          1
+        ],
+        "name": "Ruins (Uncharted Territory)",
+        "generated": true,
+        "biome": "Ruins",
+        "description": "A vast expanse of ruins.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 14
+      },
+      "1,-1": {
+        "coordinates": [
+          1,
+          -1
+        ],
+        "name": "Hills (Uncharted Territory)",
+        "generated": true,
+        "biome": "Hills",
+        "description": "A vast expanse of hills.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 5
+      },
+      "-1,0": {
+        "coordinates": [
+          -1,
+          0
+        ],
+        "name": "Plains (Uncharted Territory)",
+        "generated": true,
+        "biome": "Plains",
+        "description": "A vast expanse of plains.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 3
+      },
+      "0,2": {
+        "coordinates": [
+          0,
+          2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of plains.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_tv1eogkb8",
+            "resourceType": "Hide",
+            "itemId": "Raw_Hide",
+            "quantityRemaining": 2,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "1,1": {
+        "coordinates": [
+          1,
+          1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Forest",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of forest.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_hiy1wri6j",
+            "resourceType": "Herb",
+            "itemId": "Silverleaf",
+            "quantityRemaining": 1,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 7,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "-1,2": {
+        "coordinates": [
+          -1,
+          2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of jungle.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_p8qcrgx1w",
+            "resourceType": "Wood",
+            "itemId": "Ironwood",
+            "quantityRemaining": 3,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "0,-2": {
+        "coordinates": [
+          0,
+          -2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Hills",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of hills.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "1,-2": {
+        "coordinates": [
+          1,
+          -2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Desert",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of desert.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "-1,-1": {
+        "coordinates": [
+          -1,
+          -1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of jungle.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "2,0": {
+        "coordinates": [
+          2,
+          0
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Farmland",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of farmland.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "2,-1": {
+        "coordinates": [
+          2,
+          -1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Farmland",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of farmland.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_m5ky8dkkr",
+            "resourceType": "Arcane",
+            "itemId": "Hay",
+            "quantityRemaining": 1,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "-2,2": {
+        "coordinates": [
+          -2,
+          2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of plains.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "-2,1": {
+        "coordinates": [
+          -2,
+          1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Ruins",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of ruins.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_qxemwpohl",
+            "resourceType": "Ore",
+            "itemId": "Silver_Ore",
+            "quantityRemaining": 3,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 20,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "2,-2": {
+        "coordinates": [
+          2,
+          -2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of plains.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_prq1nn2y0",
+            "resourceType": "Herb",
+            "itemId": "Kingsbloom",
+            "quantityRemaining": 1,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 2,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "-2,0": {
+        "coordinates": [
+          -2,
+          0
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of jungle.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      }
+    },
+    "discoveredHexIds": [
+      "0,0"
+    ],
+    "lastGeneratedTurn": 0,
+    "coastlines": []
+  },
+  "subLocations": [],
+  "worldNpcs": [],
+  "activeQuests": [
+    {
+      "id": "tutorial_01",
+      "title": "The First Step",
+      "description": "You awake in a strange clearing. The air is fresh, but the silence is heavy. You must get your bearings.",
+      "status": "ACTIVE",
+      "isNew": true,
+      "objectives": [
+        {
+          "id": "obj_master_booklet",
+          "description": "Master the Booklet: View all pages (Character, Map, Quests, Equipment, Codex)",
+          "isCompleted": false,
+          "currentProgress": 0,
+          "maxProgress": 5
+        },
+        {
+          "id": "obj_study_gear",
+          "description": "Study Your Gear: Examine an item in your inventory",
+          "isCompleted": false,
+          "currentProgress": 0,
+          "maxProgress": 1
+        },
+        {
+          "id": "obj_begin_journey",
+          "description": "Begin the Journey: Move to a neighboring hex",
+          "isCompleted": false,
+          "currentProgress": 0,
+          "maxProgress": 1
+        }
+      ],
+      "rewards": {
+        "xp": 50,
+        "gold": {
+          "gp": 10,
+          "sp": 0,
+          "cp": 0,
+          "ep": 0,
+          "pp": 0
+        },
+        "items": []
+      }
+    }
+  ],
+  "factions": [
+    {
+      "id": "commoners",
+      "name": "Commoners",
+      "description": "Ordinary folk of the realm.",
+      "standing": 0,
+      "isPlayerMember": false
+    },
+    {
+      "id": "crown",
+      "name": "The Crown",
+      "description": "The royal authority.",
+      "standing": 10,
+      "isPlayerMember": false
+    },
+    {
+      "id": "thieves",
+      "name": "Shadow Guild",
+      "description": "Underworld organization.",
+      "standing": -20,
+      "isPlayerMember": false
+    }
+  ],
+  "storySummary": "started their journey as a Dragonborn Barbarian with the Criminal background.",
+  "lastNarrative": "The morning sun, though weak from the winter chill, casts long shadows across the rolling plains. To your west, the ruins you spotted earlier seem to loom larger, their crumbling silhouettes hinting at forgotten histories. As you scan the ground near your initial landing site, a glint catches your eye. Half-buried in the sparse, winter-hardened grass is a small, tarnished silver locket. It's unadorned and simple, yet it feels strangely out of place in this wild expanse. A faint, almost imperceptible engraving on its surface depicts a stylized dragon's head, its eye a tiny, dull ruby chip. It doesn't seem to be a local design, and you have a nagging feeling it connects to the dragon you're hunting.",
+  "conversationHistory": [
+    {
+      "role": "player",
+      "content": "__OPENING_SCENE__",
+      "turnNumber": 0
+    },
+    {
+      "role": "narrator",
+      "content": "A biting winter wind whips across your face, stinging your eyes as you slowly regain consciousness. A dull ache throbs behind your temples, a stark reminder that your memory is a blank slate, save for the name 'Dam' echoing in the void. You push yourself up, your muscles protesting, and find yourself on a windswept plain, a vast expanse of rolling hills stretching as far as the eye can see. To your immediate south, more plains ripple under a pale morning sky, while a bleak tundra lies to the north. Southeast, you glimpse what might be farmland, and to the southwest, the jagged, broken teeth of ancient ruins pierce the horizon. The distant rumble of thunder, low and ominous, vibrates through the ground, a disquieting counterpoint to the otherwise still morning. You have no idea how you came to be here, alone in this desolate landscape. Your options are few, but clear: \n\n1. Search your immediate surroundings for clues.\n2. Head towards the distant ruins to the southwest.\n3. Try to discern more about the source of the thunder.",
+      "turnNumber": 0
+    },
+    {
+      "role": "player",
+      "content": "/item_add shortbow 1",
+      "turnNumber": 50
+    },
+    {
+      "role": "narrator",
+      "content": "As the morning sun begins to warm the plains, a sudden rustling in the tall, frosted grasses catches your attention. From the swaying stalks, a creature emerges – a Giant Weasel, its sleek, brown fur bristling, its beady eyes fixed on you with unsettling intensity. It lets out a chittering growl, effectively blocking your path across the hills. Your instincts scream danger, and your hand instinctively goes to your weapon.",
+      "turnNumber": 50
+    },
+    {
+      "role": "narrator",
+      "content": "The plains wind whispered a tense silence as Dam stood their ground, a lone sentinel against the unseen threat. The giant weasel, a blur of fur and feral intent, circled, testing Dam's resolve. For rounds, it stalked, a shadowy dance around a lone oak, while Dam braced, their shortbow clutched tight. Then, a turning point! With a desperate swing, Dam used the bow as a club, striking the elusive beast. Blow after blow landed, each thudding impact chipping away at the creature's ferocity until, with a final, resounding crack, Dam felled the weasel, claiming victory!",
+      "turnNumber": 120
+    },
+    {
+      "role": "player",
+      "content": "end turn",
+      "turnNumber": 120
+    },
+    {
+      "role": "narrator",
+      "content": "The morning sun, though weak from the winter chill, casts long shadows across the rolling plains. To your west, the ruins you spotted earlier seem to loom larger, their crumbling silhouettes hinting at forgotten histories. As you scan the ground near your initial landing site, a glint catches your eye. Half-buried in the sparse, winter-hardened grass is a small, tarnished silver locket. It's unadorned and simple, yet it feels strangely out of place in this wild expanse. A faint, almost imperceptible engraving on its surface depicts a stylized dragon's head, its eye a tiny, dull ruby chip. It doesn't seem to be a local design, and you have a nagging feeling it connects to the dragon you're hunting.",
+      "turnNumber": 120
+    }
+  ],
+  "triggeredEvents": [],
+  "weather": {
+    "type": "Snow",
+    "durationMinutes": 355,
+    "intensity": 1
+  },
+  "travelPace": "Normal",
+  "clearedHexes": {
+    "0,0": 50
+  },
+  "settings": {
+    "permadeath": false,
+    "variantEncumbrance": false,
+    "milestoneLeveling": false,
+    "criticalFumbleEffects": false,
+    "difficultyModifier": 1,
+    "inspirationEnabled": true,
+    "multiclassingAllowed": true,
+    "maxConversationHistoryTurns": 50,
+    "video": {
+      "fullscreen": false,
+      "vsync": true,
+      "resolutionScale": 1
+    },
+    "audio": {
+      "master": 0.8,
+      "music": 0.5
+    },
+    "gameplay": {
+      "difficulty": "normal",
+      "tutorials": true,
+      "autosave": false
+    }
+  },
+  "codexEntries": [
+    {
+      "id": "8768ee29-8936-466b-9faf-f35f6336f85b",
+      "category": "bestiary",
+      "entityId": "Giant_Weasel",
+      "title": "The Colossal Weasel: A Predator of Legend",
+      "content": "In the dense forests and shadowed glades of the realm, tales speak of a creature that strikes fear into the hearts of even the bravest adventurers: the Giant Weasel. This monstrous beast, a magnified version of its diminutive cousin, is a formidable predator that has earned its place in the annals of fantasy lore.\n\n**Physicality and Biology**\nThe Giant Weasel stands as tall as a man, with a body length that can exceed six feet. Its sleek, muscular form is covered in a glossy, dark brown fur that seems to absorb the light, making it nearly invisible in the shadows. The creature's most striking feature is its elongated body and powerful, sharp-clawed paws, which allow it to climb trees with ease and pounce on its prey with deadly precision. Its eyes, a piercing yellow, seem to hold an intelligence that is both cunning and malevolent.\n\nRumors abound regarding the biology of the Giant Weasel. Some scholars speculate that it possesses a unique digestive system capable of breaking down even the toughest hides and bones, allowing it to consume its prey entirely. Others believe that the creature has a symbiotic relationship with a type of parasitic plant that aids in its digestion and provides it with additional nutrients.\n\n**Ecology and Behavior**\nThe Giant Weasel is a solitary creature, preferring to hunt alone rather than in packs. It is known to be territorial, marking its hunting grounds with a pungent scent that warns other predators to stay away. The creature is most active during the night, using its keen senses to stalk its prey under the cover of darkness.\n\nIts diet consists primarily of small to medium-sized animals, but it is not unheard of for a Giant Weasel to take down larger prey, including humans. The creature is known to be particularly fond of the taste of human flesh, which has led to many a grim tale of adventurers falling prey to its deadly embrace.\n\n**Myths and Legends**\nThe Giant Weasel is the subject of many myths and legends, each more terrifying than the last. Some say that the creature is a curse, a punishment for those who dare to venture into the forbidden forests. Others believe that it is a guardian of the wild places, a protector of the natural order that will not hesitate to strike down those who threaten it.\n\nOne of the most enduring myths surrounding the Giant Weasel is that of the 'Weasel's Curse.' It is said that those who are bitten by the creature will be forever changed, their bodies twisted and warped by the creature's venom. The afflicted are said to become wild and feral, driven by an insatiable hunger that can only be sated by the taste of human flesh.\n\n**Adventurer's Tale**\n'I've faced many a monster in my time, but nothing like the Giant Weasel,' recalls Thalion, a seasoned adventurer who survived an encounter with the beast. 'It was a dark night, and we were lost in the forest, trying to find our way back to camp. Suddenly, we heard a rustling in the underbrush, and before we knew it, the creature was upon us. It moved with a speed and agility that was almost inhuman, its eyes burning like twin flames in the darkness. We fought as best we could, but it was no use. The beast was too strong, too fast. I thought for sure we were doomed, but then, just as suddenly as it had appeared, it vanished into the night, leaving us shaken and battered, but alive. I'll never forget the look in its eyes, the cold, calculating intelligence that seemed to peer into the very depths of my soul. It was a chilling reminder of the power of nature, and the dangers that lurk in the shadows of the wild places.'\n\nThe Giant Weasel remains a creature of mystery and terror, a symbol of the untamed wilderness and the dangers that lurk within. Those who venture into its domain do so at their own risk, for the Giant Weasel is a predator unlike any other, a beast that strikes fear into the hearts of even the bravest adventurers.",
+      "isNew": true,
+      "discoveredAt": 50
+    }
+  ],
+  "notifications": [
+    {
+      "id": "aa1af0c5-7597-4e4b-83f9-f4c002c11fcf",
+      "type": "CODEX_ENTRY",
+      "message": "New codex entry created: The Colossal Weasel: A Predator of Legend",
+      "data": {
+        "category": "bestiary",
+        "entityId": "8768ee29-8936-466b-9faf-f35f6336f85b"
+      },
+      "isRead": false,
+      "createdAt": 1770846433860
+    }
+  ]
+}

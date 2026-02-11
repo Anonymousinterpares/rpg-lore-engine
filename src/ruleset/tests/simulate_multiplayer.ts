@@ -83,7 +83,7 @@ async function verifyMultiplayer() {
             maxConversationHistoryTurns: 50,
             video: { fullscreen: false, vsync: true, resolutionScale: 1.0 },
             audio: { master: 0.8, music: 0.5 },
-            gameplay: { difficulty: 'normal', tutorials: true }
+            gameplay: { difficulty: 'normal', tutorials: true, autosave: false }
         },
         codexEntries: [],
         notifications: []

@@ -137,7 +137,7 @@ const App: React.FC = () => {
     const defaultSettings = {
         video: { fullscreen: false, vsync: true, resolutionScale: 1.0 },
         audio: { master: 0.8, music: 0.6 },
-        gameplay: { difficulty: 'normal', tutorials: true },
+        gameplay: { difficulty: 'normal', tutorials: true, autosave: false },
         ai: {}
     };
 

@@ -270,8 +270,10 @@ RULES:
 
         if (!providerConfig || !modelConfig) return "The adventure continues...";
 
-        // Take last 5 conversation history entries for context
+        // Context gathering
         const recentHistory = state.conversationHistory.slice(-5).map(h => `${h.role}: ${h.content}`).join('\n');
+        const storySummary = state.storySummary || 'The journey has just begun.';
+        const lastEvent = state.lastNarrative || 'Standing ready.';
 
         const systemPrompt = `You are a legendary bard. 
 Summarize the current state and recent events of the adventure in 2-3 evocative sentences. 
@@ -279,8 +281,14 @@ This summary will be used by the player to identify their save game.
 Focus on the location, the player's current goal, and the most recent achievement or dilemma.
 Keep it strictly under 50 words.
 
+## STORY SO FAR
+${storySummary}
+
 ## RECENT HISTORY
-${recentHistory || 'The journey has just begun.'}`;
+${recentHistory}
+
+## LATEST EVENT
+${lastEvent}`;
 
         try {
             const rawResponse = await LLMClient.generateCompletion(
