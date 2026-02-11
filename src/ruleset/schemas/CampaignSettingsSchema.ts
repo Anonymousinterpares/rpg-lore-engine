@@ -23,7 +23,8 @@ export const CampaignSettingsSchema = z.object({
     }).default({}),
     gameplay: z.object({
         difficulty: z.enum(['easy', 'normal', 'hard']).default('normal'),
-        tutorials: z.boolean().default(true)
+        tutorials: z.boolean().default(true),
+        autosave: z.boolean().default(false)
     }).default({})
 });
 

@@ -294,6 +294,10 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, onSave, initialS
                                 <span>Tutorial Tips</span>
                                 <input type="checkbox" checked={settings.gameplay.tutorials} onChange={() => handleToggle('tutorials', 'gameplay')} />
                             </div>
+                            <div className={styles.settingRow}>
+                                <span>Autosave</span>
+                                <input type="checkbox" checked={settings.gameplay.autosave} onChange={() => handleToggle('autosave', 'gameplay')} />
+                            </div>
                         </div>
                     )}
 

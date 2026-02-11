@@ -6,10 +6,22 @@
       "characterName": "Dam",
       "characterLevel": 1,
       "characterClass": "Barbarian",
-      "lastSaved": "2026-02-11T20:57:07.725Z",
+      "lastSaved": "2026-02-11T21:00:46.799Z",
       "playTimeSeconds": 0,
       "locationSummary": "-2,0",
       "narrativeSummary": "Waking on volcanic rock, you sought answers. Now, as twilight paints the plains, mountains loom ahead. You've journeyed far, but the mystery of 'Dam' still calls from the unknown."
+    },
+    {
+      "id": "87a533bb-c888-4610-aa8a-da01b303be0b",
+      "slotName": "Chronicle 11/02/2026",
+      "characterName": "Dam",
+      "characterLevel": 1,
+      "characterClass": "Ranger",
+      "lastSaved": "2026-02-11T21:13:12.165Z",
+      "playTimeSeconds": 0,
+      "locationSummary": "0,0",
+      "narrativeSummary": "Amidst the vast plains, Dam the dragonborn awakens, memory lost. A charging boar blocks their path, a primal challenge in this desolate, wind-swept land.",
+      "thumbnail": "data:image/png;base64,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"
     }
   ]
 }

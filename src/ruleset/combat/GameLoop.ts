@@ -142,7 +142,9 @@ export class GameLoop {
      * Centralized method to save state and notify the UI.
      */
     private async emitStateUpdate() {
-        await this.stateManager.saveGame(this.state);
+        if (this.state.settings.gameplay.autosave) {
+            await this.stateManager.saveGame(this.state);
+        }
         this.notifyListeners();
     }
 

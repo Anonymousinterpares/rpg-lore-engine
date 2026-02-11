@@ -52,7 +52,7 @@ export class GameStateManager {
             playTimeSeconds: state.playTimeSeconds || 0,
             locationSummary: `${state.location.hexId}${state.location.roomId ? ` / ${state.location.roomId}` : ''}`,
             narrativeSummary: narrativeSummary || (existingIndex >= 0 ? registry.slots[existingIndex].narrativeSummary : undefined),
-            thumbnail: thumbnail
+            thumbnail: thumbnail || (existingIndex >= 0 ? registry.slots[existingIndex].thumbnail : undefined)
         };
 
         if (existingIndex >= 0) {
