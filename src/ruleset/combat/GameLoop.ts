@@ -1884,6 +1884,18 @@ export class GameLoop {
                 // Only update narrative if we are still in exploration and haven't started a NEW combat
                 if (this.state.mode === 'EXPLORATION' && !this.state.combat) {
                     this.state.lastNarrative = summary;
+
+                    // PERSIST TO HISTORY so Save Summaries find it
+                    const turn = this.state.worldTime.totalTurns;
+                    this.state.conversationHistory.push({
+                        role: 'narrator',
+                        content: summary,
+                        turnNumber: turn
+                    });
+
+                    // Update memory context
+                    this.contextManager.addEvent('narrator', summary);
+
                     await this.emitStateUpdate();
                 }
             } catch (error) {
