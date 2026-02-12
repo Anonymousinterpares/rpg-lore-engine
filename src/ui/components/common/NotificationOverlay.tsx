@@ -12,22 +12,33 @@ const NotificationOverlay: React.FC<NotificationOverlayProps> = ({ onOpenCodex }
     const [activeNotif, setActiveNotif] = useState<any>(null);
 
     useEffect(() => {
-        if (state?.notifications && state.notifications.length > 0) {
-            const unread = state.notifications.find(n => !n.isRead);
-            if (unread) {
-                setActiveNotif(unread);
+        if (!state?.notifications) return;
 
-                // Auto-hide after 8 seconds
-                const timer = setTimeout(() => {
-                    markAsRead(unread.id);
-                }, 8000);
+        const now = Date.now();
+        const unreadList = state.notifications.filter(n => !n.isRead);
 
-                return () => clearTimeout(timer);
-            } else {
-                setActiveNotif(null);
-            }
+        // Auto-dismiss stale notifications (likely from a loaded game save)
+        const stale = unreadList.filter(n => now - n.createdAt > 10000);
+        if (stale.length > 0) {
+            stale.forEach(n => { n.isRead = true; });
+            updateState();
+            return;
         }
-    }, [state?.notifications]);
+
+        const nextNotif = unreadList[0];
+        if (nextNotif) {
+            setActiveNotif(nextNotif);
+
+            // Auto-hide after 8 seconds
+            const timer = setTimeout(() => {
+                markAsRead(nextNotif.id);
+            }, 8000);
+
+            return () => clearTimeout(timer);
+        } else {
+            setActiveNotif(null);
+        }
+    }, [state]);
 
     const markAsRead = (id: string) => {
         const notif = state?.notifications?.find(n => n.id === id);

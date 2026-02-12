@@ -36,7 +36,8 @@
       "visited": true,
       "inLineOfSight": false,
       "namingSource": "engine",
-      "visualVariant": 1
+      "visualVariant": 1,
+      "npcs": []
     },
     "0,1": {
       "coordinates": [
@@ -61,7 +62,8 @@
       "visited": false,
       "inLineOfSight": true,
       "namingSource": "engine",
-      "visualVariant": 17
+      "visualVariant": 17,
+      "npcs": []
     },
     "0,-1": {
       "coordinates": [
@@ -86,7 +88,8 @@
       "visited": false,
       "inLineOfSight": true,
       "namingSource": "engine",
-      "visualVariant": 4
+      "visualVariant": 4,
+      "npcs": []
     },
     "1,0": {
       "coordinates": [
@@ -111,7 +114,8 @@
       "visited": false,
       "inLineOfSight": true,
       "namingSource": "engine",
-      "visualVariant": 5
+      "visualVariant": 5,
+      "npcs": []
     },
     "-1,1": {
       "coordinates": [
@@ -148,7 +152,8 @@
       "visited": false,
       "inLineOfSight": true,
       "namingSource": "engine",
-      "visualVariant": 7
+      "visualVariant": 7,
+      "npcs": []
     },
     "1,-1": {
       "coordinates": [
@@ -173,7 +178,8 @@
       "visited": false,
       "inLineOfSight": true,
       "namingSource": "engine",
-      "visualVariant": 5
+      "visualVariant": 5,
+      "npcs": []
     },
     "-1,0": {
       "coordinates": [
@@ -198,7 +204,8 @@
       "visited": false,
       "inLineOfSight": true,
       "namingSource": "engine",
-      "visualVariant": 6
+      "visualVariant": 6,
+      "npcs": []
     },
     "0,2": {
       "coordinates": [
@@ -223,7 +230,8 @@
       "visited": false,
       "inLineOfSight": false,
       "namingSource": "engine",
-      "visualVariant": 5
+      "visualVariant": 5,
+      "npcs": []
     },
     "1,1": {
       "coordinates": [
@@ -248,7 +256,8 @@
       "visited": false,
       "inLineOfSight": false,
       "namingSource": "engine",
-      "visualVariant": 5
+      "visualVariant": 5,
+      "npcs": []
     },
     "-1,2": {
       "coordinates": [
@@ -285,7 +294,8 @@
       "visited": false,
       "inLineOfSight": false,
       "namingSource": "engine",
-      "visualVariant": 3
+      "visualVariant": 3,
+      "npcs": []
     },
     "0,-2": {
       "coordinates": [
@@ -322,7 +332,8 @@
       "visited": false,
       "inLineOfSight": false,
       "namingSource": "engine",
-      "visualVariant": 5
+      "visualVariant": 5,
+      "npcs": []
     },
     "1,-2": {
       "coordinates": [
@@ -347,7 +358,8 @@
       "visited": false,
       "inLineOfSight": false,
       "namingSource": "engine",
-      "visualVariant": 3
+      "visualVariant": 3,
+      "npcs": []
     },
     "-1,-1": {
       "coordinates": [
@@ -372,7 +384,8 @@
       "visited": false,
       "inLineOfSight": false,
       "namingSource": "engine",
-      "visualVariant": 4
+      "visualVariant": 4,
+      "npcs": []
     },
     "2,0": {
       "coordinates": [
@@ -409,7 +422,8 @@
       "visited": false,
       "inLineOfSight": false,
       "namingSource": "engine",
-      "visualVariant": 4
+      "visualVariant": 4,
+      "npcs": []
     },
     "2,-1": {
       "coordinates": [
@@ -434,7 +448,8 @@
       "visited": false,
       "inLineOfSight": false,
       "namingSource": "engine",
-      "visualVariant": 13
+      "visualVariant": 13,
+      "npcs": []
     },
     "-2,2": {
       "coordinates": [
@@ -471,7 +486,8 @@
       "visited": false,
       "inLineOfSight": false,
       "namingSource": "engine",
-      "visualVariant": 3
+      "visualVariant": 3,
+      "npcs": []
     },
     "-2,1": {
       "coordinates": [
@@ -496,7 +512,8 @@
       "visited": false,
       "inLineOfSight": false,
       "namingSource": "engine",
-      "visualVariant": 4
+      "visualVariant": 4,
+      "npcs": []
     },
     "2,-2": {
       "coordinates": [
@@ -521,7 +538,8 @@
       "visited": false,
       "inLineOfSight": false,
       "namingSource": "engine",
-      "visualVariant": 4
+      "visualVariant": 4,
+      "npcs": []
     },
     "-2,0": {
       "coordinates": [
@@ -546,7 +564,8 @@
       "visited": false,
       "inLineOfSight": false,
       "namingSource": "engine",
-      "visualVariant": 7
+      "visualVariant": 7,
+      "npcs": []
     }
   },
   "coastlines": []
