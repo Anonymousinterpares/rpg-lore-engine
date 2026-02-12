@@ -136,7 +136,8 @@ export class HexMapManager {
                     resourceNodes: [],
                     openedContainers: {},
                     namingSource: 'engine',
-                    visualVariant: 1
+                    visualVariant: 1,
+                    npcs: []
                 };
                 this.registry.hexes[key] = placeholder;
             }

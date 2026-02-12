@@ -101,9 +101,10 @@ export class MovementEngine {
                 resourceNodes: [],
                 openedContainers: {},
                 namingSource: 'engine',
-                visualVariant: 1
+                visualVariant: 1,
+                npcs: []
             };
-            this.mapManager.setHex(newHex);
+            this.mapManager.setHex(newHex!);
             requiresGeneration = true;
         } else if (!newHex.generated) {
             requiresGeneration = true;

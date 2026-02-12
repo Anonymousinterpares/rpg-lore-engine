@@ -45,14 +45,14 @@ async function runExpansionSimulation() {
         deathSaves: { successes: 0, failures: 0 }
     } as any;
 
-    const hex = HexGenerator.generateHex([0, 0], neighbors, clusterSizes);
+    const { hex } = HexGenerator.generateHex([0, 0], neighbors, clusterSizes);
     hex.biome = 'Forest';
     hex.resourceNodes = [
         { id: 'node_1', resourceType: 'Herb', itemId: 'herb_silverleaf', quantityRemaining: 2, respawnDays: 7, skillCheck: { skill: 'Nature', dc: 5 } }
     ];
 
     console.log(`Hex biome: ${hex.biome}. Seeking node_1...`);
-    const gatherResult = GatheringEngine.gather(pc, hex, 'node_1');
+    const gatherResult = GatheringEngine.gather(pc, hex as any, 'node_1');
     console.log(gatherResult.message);
     console.log('Inventory:', JSON.stringify(pc.inventory.items));
 
@@ -79,6 +79,7 @@ async function runExpansionSimulation() {
         character: pc,
         activeQuests: [],
         factions: [],
+        codexEntries: [],
         location: { hexId: '0,0', coordinates: [0, 0], droppedItems: [] },
         worldTime: { days: 1, hours: 12, minutes: 0 },
         worldMap: { grid_id: 'test', hexes: {} },

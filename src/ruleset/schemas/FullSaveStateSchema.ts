@@ -82,7 +82,7 @@ export const FullSaveStateSchema = z.object({
     triggeredEvents: z.array(z.string()).default([]),
     codexEntries: z.array(z.object({
         id: z.string(),
-        category: z.enum(['bestiary', 'items']),
+        category: z.enum(['bestiary', 'items', 'world']),
         entityId: z.string(),
         title: z.string(),
         content: z.string(),

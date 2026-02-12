@@ -4,6 +4,13 @@ import { BiomeGenerationEngine } from './BiomeGenerationEngine';
 import { BIOME_RESOURCES } from '../data/StaticData';
 import { BiomePoolManager } from './BiomeRegistry';
 import { NPCFactory } from '../factories/NPCFactory';
+import { WorldNPC } from '../schemas/WorldEnrichmentSchema';
+import { SPAWN_TABLES } from '../data/SpawnTables';
+
+export interface GeneratedHexResult {
+    hex: Partial<Hex>;
+    spawnedNPCs: WorldNPC[];
+}
 
 export class HexGenerator {
     private static resourceTables = BIOME_RESOURCES;
@@ -17,7 +24,7 @@ export class HexGenerator {
         clusterSizes: Record<BiomeType, number>,
         pool?: BiomePoolManager,
         coastlines: Coastline[] = []
-    ): Hex {
+    ): GeneratedHexResult {
         const result = BiomeGenerationEngine.selectBiome(coords, neighbors, clusterSizes, coastlines);
         const biome = result.biome;
         const oceanDir = result.oceanDirection;
@@ -25,7 +32,7 @@ export class HexGenerator {
         const hash = Math.abs(coords[0] * 31 + coords[1] * 17);
         const activePool = pool || new BiomePoolManager();
 
-        // Smart Variant Selection: Exclude variants used by immediate neighbors of the same biome
+        // Smart Variant Selection
         const excludedVariants = neighbors
             .filter(n => n.biome === biome && n.visualVariant !== undefined)
             .map(n => n.visualVariant!);
@@ -36,7 +43,7 @@ export class HexGenerator {
         const nodes: ResourceNode[] = [];
         const table = this.resourceTables.find(t => t.biome === biome);
 
-        if (table && Math.random() > 0.5) { // 50% chance for a node
+        if (table && Math.random() > 0.5) {
             const roll = Math.random() * table.resources.reduce((a: any, b: any) => a + b.weight, 0);
             let current = 0;
             for (const res of table.resources) {
@@ -55,25 +62,36 @@ export class HexGenerator {
             }
         }
 
-        // Roll for NPCs (10% chance)
-        // REVERTED: User request - Logic pending approval.
+        // Roll for NPCs based on SPAWN_TABLES
+        const spawnedNPCs: WorldNPC[] = [];
+        const npcIds: string[] = [];
+        const spawnConfig = SPAWN_TABLES[biome];
+
+        if (spawnConfig && Math.random() < spawnConfig.chance) {
+            const npc = NPCFactory.generateRandomNPC(biome);
+            spawnedNPCs.push(npc);
+            npcIds.push(npc.id);
+        }
 
         return {
-            coordinates: coords,
-            name: `${biome} (Unknown)`,
-            generated: true,
-            biome: biome,
-            description: `A vast expanse of ${biome.toLowerCase()}.`,
-            traversable_sides: { 'N': true, 'S': true, 'NE': true, 'NW': true, 'SE': true, 'SW': true },
-            interest_points: [],
-            resourceNodes: nodes,
-            openedContainers: {},
-            visited: false,
-            inLineOfSight: false,
-            namingSource: 'engine',
-            visualVariant: variant,
-            oceanDirection: oceanDir,
-            npcs: npcIds
+            hex: {
+                coordinates: coords,
+                name: `${biome} (Unknown)`,
+                generated: true,
+                biome: biome,
+                description: `A vast expanse of ${biome.toLowerCase()}.`,
+                traversable_sides: { 'N': true, 'S': true, 'NE': true, 'NW': true, 'SE': true, 'SW': true },
+                interest_points: [],
+                resourceNodes: nodes,
+                openedContainers: {},
+                visited: false,
+                inLineOfSight: false,
+                namingSource: 'engine',
+                visualVariant: variant,
+                oceanDirection: oceanDir,
+                npcs: npcIds
+            },
+            spawnedNPCs
         };
     }
 

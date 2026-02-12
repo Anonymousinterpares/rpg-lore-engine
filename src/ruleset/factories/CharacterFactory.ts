@@ -175,7 +175,7 @@ export class CharacterFactory {
             worldMap: (() => {
                 const pool = new BiomePoolManager();
                 const emptySizes = { 'Plains': 0, 'Forest': 0, 'Hills': 0, 'Mountains': 0, 'Swamp': 0, 'Desert': 0, 'Tundra': 0, 'Jungle': 0, 'Coast': 0, 'Ocean': 0, 'Volcanic': 0, 'Ruins': 0, 'Farmland': 0, 'Urban': 0 };
-                const startHex = HexGenerator.generateHex([0, 0], [], emptySizes, pool);
+                const { hex: startHex } = HexGenerator.generateHex([0, 0], [], emptySizes, pool);
                 startHex.visited = true;
                 startHex.name = "Initial Landing Site";
                 startHex.biome = "Plains";
@@ -186,7 +186,7 @@ export class CharacterFactory {
                 directions.forEach(dir => {
                     const coords = HexMapManager.getNewCoords([0, 0], dir);
                     const key = `${coords[0]},${coords[1]}`;
-                    const neighbor = HexGenerator.generateHex(coords, [{ biome: 'Plains' }], emptySizes, pool);
+                    const { hex: neighbor } = HexGenerator.generateHex(coords, [{ biome: 'Plains' }], emptySizes, pool);
                     neighbor.visited = false;
                     neighbor.name = 'Uncharted Territory';
                     hexes[key] = neighbor;

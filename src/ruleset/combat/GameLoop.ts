@@ -8,19 +8,23 @@ import { MechanicsEngine } from './MechanicsEngine';
 import { RestingEngine } from './RestingEngine';
 import { HexMapManager } from './HexMapManager';
 import { MovementEngine } from './MovementEngine';
-import { HexGenerator } from './HexGenerator';
+import { HexGenerator, GeneratedHexResult } from './HexGenerator';
+import { INITIAL_FACTIONS } from '../data/FactionRegistry';
+import { CODEX_LORE } from '../data/CodexRegistry';
 import { WorldClockEngine } from './WorldClockEngine';
-import { HexDirection } from '../schemas/HexMapSchema';
+import { Hex, HexDirection } from '../schemas/HexMapSchema';
+import { BiomeType } from '../schemas/BiomeSchema';
 import { TravelPace } from '../schemas/BaseSchemas';
 import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
 import { StoryScribe } from './StoryScribe';
-import { EncounterDirector } from './EncounterDirector';
+import { EncounterDirector, Encounter } from './EncounterDirector';
 import { FactionEngine } from './FactionEngine';
 import { Dice } from './Dice';
 import { LootEngine } from './LootEngine';
 import { DataManager } from '../data/DataManager';
 import { Monster } from '../schemas/MonsterSchema';
-import { Encounter } from './EncounterDirector';
+import { CombatAnalysisEngine, TacticalOption } from './grid/CombatAnalysisEngine';
+import { CombatGridManager } from './grid/CombatGridManager';
 import { CombatantSchema } from '../schemas/FullSaveStateSchema';
 import { NarratorService } from '../agents/NarratorService';
 import { NarratorOutput } from '../agents/ICPSchemas';
@@ -34,9 +38,7 @@ import { CombatLogFormatter } from './CombatLogFormatter';
 import { WeatherEngine } from './WeatherEngine';
 import { BiomePoolManager } from './BiomeRegistry';
 import { CombatManager } from './CombatManager';
-import { CombatGridManager } from './grid/CombatGridManager';
 import { CombatUtils } from './CombatUtils';
-import { CombatAnalysisEngine, TacticalOption } from './grid/CombatAnalysisEngine';
 import { z } from 'zod';
 
 type Combatant = z.infer<typeof CombatantSchema>;
@@ -74,13 +76,9 @@ export class GameLoop {
         // Bootstrap registries from storage
         await this.hexMapManager.initialize();
 
-        // Initialize factions if empty
+        // Initialize Factions if not present (Pre-seed lore alignment)
         if (!this.state.factions || this.state.factions.length === 0) {
-            this.state.factions = [
-                { id: 'commoners', name: 'Commoners', description: 'Ordinary folk of the realm.', standing: 0, isPlayerMember: false },
-                { id: 'crown', name: 'The Crown', description: 'The royal authority.', standing: 10, isPlayerMember: false },
-                { id: 'thieves', name: 'Shadow Guild', description: 'Underworld organization.', standing: -20, isPlayerMember: false }
-            ];
+            this.state.factions = INITIAL_FACTIONS;
         }
 
         // Initialize starting hex if it doesn't exist
@@ -98,7 +96,8 @@ export class GameLoop {
                 resourceNodes: [],
                 openedContainers: {},
                 namingSource: 'engine',
-                visualVariant: 1
+                visualVariant: 1,
+                npcs: []
             });
         }
 
@@ -172,6 +171,7 @@ export class GameLoop {
                 systemResponse = this.state.lastNarrative;
             } else {
                 this.state.lastNarrative = systemResponse;
+                this.unlockLoreCategories(systemResponse);
             }
 
             await this.emitStateUpdate();
@@ -217,6 +217,7 @@ export class GameLoop {
 
         // Set ephemeral display field
         this.state.lastNarrative = narratorOutput;
+        this.unlockLoreCategories(narratorOutput);
 
         // Internal context manager history (for LLM context window)
         this.contextManager.addEvent('player', input);
@@ -378,9 +379,16 @@ export class GameLoop {
                 clusterSizes[b] = neighborWithBiome ? this.hexMapManager.getClusterSize(neighborWithBiome) : 0;
             }
 
-            generatedData = HexGenerator.generateHex(coords, neighbors, clusterSizes, this.biomePool, this.state.worldMap.coastlines || []);
-            biome = generatedData.biome;
-            variant = generatedData.visualVariant;
+            const result = HexGenerator.generateHex(coords, neighbors, clusterSizes, this.biomePool, this.state.worldMap.coastlines || []);
+            generatedData = result.hex;
+            biome = (result.hex as any).biome;
+            variant = (result.hex as any).visualVariant;
+
+            // Register spawned NPCs in the global state
+            if (result.spawnedNPCs && result.spawnedNPCs.length > 0) {
+                if (!this.state.worldNpcs) this.state.worldNpcs = [];
+                this.state.worldNpcs.push(...result.spawnedNPCs);
+            }
         }
 
         // Name logic - Construct fresh from biome, never append to old names
@@ -402,7 +410,7 @@ export class GameLoop {
             generated: true,
             inLineOfSight: isVisible,
             name: newName
-        };
+        } as Hex;
 
         await this.hexMapManager.setHex(updatedHex);
     }
@@ -1994,5 +2002,49 @@ export class GameLoop {
                 worldClock: { advanceTime: (s: any, h: number) => { this.state.worldTime.hour += h; } } // Example shim
             }
         );
+    }
+
+    /**
+     * Scans text for faction names/concepts and unlocks corresponding Codex entries.
+     */
+    public unlockLoreCategories(text: string) {
+        if (!text) return;
+
+        const lowerText = text.toLowerCase();
+        const discoveries: string[] = [];
+
+        // Check each faction lore entry
+        Object.entries(CODEX_LORE.WORLD).forEach(([id, data]) => {
+            // Check if player hasn't seen this yet
+            const alreadyUnlocked = this.state.codexEntries.some(e => e.entityId === id);
+            if (alreadyUnlocked) return;
+
+            // Check if name is mentioned (case-insensitive check)
+            if (lowerText.includes(data.name.toLowerCase())) {
+                this.state.codexEntries.push({
+                    id: `world_${id}_${Date.now()}`,
+                    category: 'world' as any,
+                    entityId: id,
+                    title: data.name,
+                    content: data.content,
+                    isNew: true,
+                    discoveredAt: Date.now()
+                });
+                discoveries.push(data.name);
+            }
+        });
+
+        if (discoveries.length > 0) {
+            discoveries.forEach(name => {
+                this.state.notifications.push({
+                    id: `notif_lore_${name}_${Date.now()}`,
+                    type: 'CODEX_ENTRY' as any,
+                    message: `New Codex Entry: ${name}`,
+                    data: { factionId: name },
+                    isRead: false,
+                    createdAt: Date.now()
+                });
+            });
+        }
     }
 }

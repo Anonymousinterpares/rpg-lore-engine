@@ -18,6 +18,7 @@ export const WorldNPCSchema = z.object({
     relationship: RelationshipStateSchema.default({}),
     dialogue_triggers: z.array(z.string()).default([]),
     factionId: z.string().optional(),
+    role: z.string().optional(),
     isMerchant: z.boolean().default(false),
     shopState: ShopStateSchema.optional(),
     inventory: z.array(z.object({

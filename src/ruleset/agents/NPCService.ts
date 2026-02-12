@@ -33,10 +33,10 @@ export class NPCService {
         const modelConfig = providerConfig.models.find(m => m.id === profile.modelId);
         if (!modelConfig) return null;
 
-        const traits = npc.traits.join(', ');
-        const memory = npc.conversationHistory.slice(-3).map(c => `${c.speaker}: ${c.text}`).join('\n');
+        const traits = targetNPC.traits.join(', ');
+        const memory = targetNPC.conversationHistory.slice(-3).map(c => `${c.speaker}: ${c.text}`).join('\n');
 
-        const systemPrompt = `You are the NPC Controller for ${npc.name}.
+        const systemPrompt = `You are the NPC Controller for ${targetNPC.name}.
 PERSONALITY TRAITS: ${traits}
 
 ## SCENE CONTEXT
@@ -48,7 +48,7 @@ PERSONALITY TRAITS: ${traits}
 ${memory || 'No recent interactions.'}
 
 ## TASK
-Provide a short, personality-driven comment from ${npc.name} based on the situation and their traits.
+Provide a short, personality-driven comment from ${targetNPC.name} based on the situation and their traits.
 Keep it under 2 sentences. Do not use generic fantasy tropes unless they fit the specific traits.
 `;
 
@@ -64,7 +64,7 @@ Keep it under 2 sentences. Do not use generic fantasy tropes unless they fit the
                 }
             );
         } catch (e) {
-            console.error(`[NPCService] Chatter generation failed for ${npc.name}:`, e);
+            console.error(`[NPCService] Chatter generation failed for ${targetNPC.name}:`, e);
             return null;
         }
     }
