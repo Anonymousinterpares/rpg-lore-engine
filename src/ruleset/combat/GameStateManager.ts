@@ -27,19 +27,34 @@ export class GameStateManager {
 
     public async saveGame(state: GameState, slotName?: string, narrativeSummary?: string, thumbnail?: string): Promise<void> {
         const registry = await this.loadRegistry();
+        // Check if we are saving consistent state or branching to a new save
+        const existingIndex = registry.slots.findIndex((s: any) => s.id === state.saveId);
+
+        // If user provided a specific slot name, and it differs from the current one, treat as "Save As"
+        // But only if we actually HAVE an existing save.
+        if (slotName && existingIndex >= 0 && registry.slots[existingIndex].slotName !== slotName) {
+            // Branching: New ID, New File
+            // We need to generate a new ID to avoid overwriting the old file
+            const newId = crypto.randomUUID(); // Use native crypto or uuid import if avail
+            state.saveId = newId;
+            // existingIndex becomes irrelevant for the new entry, we will push new
+        }
+
+        // Re-calculate paths with potentially new ID
         const saveFileName = `${state.saveId}.json`;
         const filePath = path.join(this.saveDir, saveFileName);
 
         await this.storage.write(filePath, JSON.stringify(state, null, 2));
 
-        const existingIndex = registry.slots.findIndex((s: any) => s.id === state.saveId);
+        // Re-fetch index in case ID changed (it will be -1 for new)
+        const currentRegistryIndex = registry.slots.findIndex((s: any) => s.id === state.saveId);
 
         // Determine the actual slot name to use
         let finalSlotName = slotName || 'Quick Save';
 
         // If no explicit name provided (or default), and it exists, preserve existing name
-        if ((!slotName || slotName === 'Quick Save') && existingIndex >= 0) {
-            finalSlotName = registry.slots[existingIndex].slotName;
+        if ((!slotName || slotName === 'Quick Save') && currentRegistryIndex >= 0) {
+            finalSlotName = registry.slots[currentRegistryIndex].slotName;
         }
 
         const meta = {
@@ -51,12 +66,12 @@ export class GameStateManager {
             lastSaved: new Date().toISOString(),
             playTimeSeconds: state.playTimeSeconds || 0,
             locationSummary: `${state.location.hexId}${state.location.roomId ? ` / ${state.location.roomId}` : ''}`,
-            narrativeSummary: narrativeSummary || (existingIndex >= 0 ? registry.slots[existingIndex].narrativeSummary : undefined),
-            thumbnail: thumbnail || (existingIndex >= 0 ? registry.slots[existingIndex].thumbnail : undefined)
+            narrativeSummary: narrativeSummary || (currentRegistryIndex >= 0 ? registry.slots[currentRegistryIndex].narrativeSummary : undefined),
+            thumbnail: thumbnail || (currentRegistryIndex >= 0 ? registry.slots[currentRegistryIndex].thumbnail : undefined)
         };
 
-        if (existingIndex >= 0) {
-            registry.slots[existingIndex] = meta;
+        if (currentRegistryIndex >= 0) {
+            registry.slots[currentRegistryIndex] = meta;
         } else {
             registry.slots.push(meta);
         }
