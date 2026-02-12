@@ -3,6 +3,7 @@ import { BiomeType } from '../schemas/BiomeSchema';
 import { BiomeGenerationEngine } from './BiomeGenerationEngine';
 import { BIOME_RESOURCES } from '../data/StaticData';
 import { BiomePoolManager } from './BiomeRegistry';
+import { NPCFactory } from '../factories/NPCFactory';
 
 export class HexGenerator {
     private static resourceTables = BIOME_RESOURCES;
@@ -54,6 +55,9 @@ export class HexGenerator {
             }
         }
 
+        // Roll for NPCs (10% chance)
+        // REVERTED: User request - Logic pending approval.
+
         return {
             coordinates: coords,
             name: `${biome} (Unknown)`,
@@ -68,7 +72,8 @@ export class HexGenerator {
             inLineOfSight: false,
             namingSource: 'engine',
             visualVariant: variant,
-            oceanDirection: oceanDir
+            oceanDirection: oceanDir,
+            npcs: npcIds
         };
     }
 

@@ -25,7 +25,13 @@ export const WorldNPCSchema = z.object({
         quantity: z.number().default(1)
     })).default([]),
     stats: z.record(AbilityScoreSchema, z.number()).optional(),
-    description: z.string().optional()
+    description: z.string().optional(),
+    traits: z.array(z.string()).default([]),
+    conversationHistory: z.array(z.object({
+        speaker: z.string(),
+        text: z.string(),
+        timestamp: z.string()
+    })).default([])
 });
 
 export type WorldNPC = z.infer<typeof WorldNPCSchema>;

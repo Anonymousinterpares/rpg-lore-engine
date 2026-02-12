@@ -2,16 +2,28 @@ import { GameState } from '../schemas/FullSaveStateSchema';
 import { AgentManager } from './AgentManager';
 import { LLMClient } from '../combat/LLMClient';
 import { LLM_PROVIDERS } from '../data/StaticData';
+import { WorldNPC } from '../schemas/WorldEnrichmentSchema';
 
 export class NPCService {
     /**
-     * Generates personality-driven chatter or reactions from party companions.
+     * Generates personality-driven chatter or reactions from party companions or nearby NPCs.
      */
-    public static async generateChatter(state: GameState, context: any): Promise<string | null> {
-        // Companions logic placeholder - check if any companions exist
-        // This would be expanded as the companion system is implemented.
-        const companions = state.character.biography?.chronicles?.filter(c => c.event.includes('Joined party'));
-        if (!companions || companions.length === 0) return null;
+    public static async generateChatter(state: GameState, context: any, npc?: WorldNPC): Promise<string | null> {
+        let targetNPC = npc;
+
+        // If no specific NPC provided, look for party companions
+        if (!targetNPC) {
+            const companions = state.character.biography?.chronicles?.filter(c => c.event.includes('Joined party'));
+            if (companions && companions.length > 0) {
+                // Pick a random/first companion for now
+                const companionName = companions[0].event.split(' ')[0]; // Very naive extraction
+                // Note: Real companion implementation would have a WorldNPC object in state.companions
+                // For now, if we don't have a real object, we return null to avoid crash
+                return null;
+            }
+        }
+
+        if (!targetNPC) return null;
 
         const profile = AgentManager.getAgentProfile('NPC_CONTROLLER');
 
@@ -21,17 +33,23 @@ export class NPCService {
         const modelConfig = providerConfig.models.find(m => m.id === profile.modelId);
         if (!modelConfig) return null;
 
-        const systemPrompt = `You are the NPC Controller.
-${profile.basePrompt}
+        const traits = npc.traits.join(', ');
+        const memory = npc.conversationHistory.slice(-3).map(c => `${c.speaker}: ${c.text}`).join('\n');
+
+        const systemPrompt = `You are the NPC Controller for ${npc.name}.
+PERSONALITY TRAITS: ${traits}
 
 ## SCENE CONTEXT
 - Location: ${context.location.name}
 - Activity: ${context.mode}
 - Player Status: ${context.player.hpStatus}
 
+## RECENT MEMORY
+${memory || 'No recent interactions.'}
+
 ## TASK
-Provide a short, personality-driven comment from one of the companions based on the current situation.
-Keep it under 2 sentences.
+Provide a short, personality-driven comment from ${npc.name} based on the situation and their traits.
+Keep it under 2 sentences. Do not use generic fantasy tropes unless they fit the specific traits.
 `;
 
         try {
@@ -40,14 +58,77 @@ Keep it under 2 sentences.
                 modelConfig,
                 {
                     systemPrompt,
-                    userMessage: "What does the party say?",
+                    userMessage: "What does the NPC say?",
                     temperature: profile.temperature,
                     maxTokens: profile.maxTokens
                 }
             );
         } catch (e) {
-            console.error('[NPCService] Chatter generation failed:', e);
+            console.error(`[NPCService] Chatter generation failed for ${npc.name}:`, e);
             return null;
+        }
+    }
+
+    /**
+     * Generates a direct dialogue response from an NPC.
+     */
+    public static async generateDialogue(state: GameState, npc: WorldNPC, playerInput: string): Promise<string | null> {
+        const profile = AgentManager.getAgentProfile('NPC_CONTROLLER');
+
+        const providerConfig = LLM_PROVIDERS.find(p => p.id === profile.providerId);
+        if (!providerConfig) return null;
+
+        const modelConfig = providerConfig.models.find(m => m.id === profile.modelId);
+        if (!modelConfig) return null;
+
+        const traits = npc.traits.join(', ');
+        const memory = npc.conversationHistory.slice(-5).map(c => `${c.speaker}: ${c.text}`).join('\n');
+
+        const systemPrompt = `You are responding as ${npc.name} in a D&D RPG.
+PERSONALITY TRAITS: ${traits}
+RELATIONSHIP STANDING: ${npc.relationship.standing} (-100 to 100)
+
+## CONVERSATION HISTORY
+${memory || 'No previous conversation.'}
+
+## TASK
+Respond to the player's message in character.
+- Your personality must be strictly driven by your TRAITS.
+- Your tone should reflect your RELATIONSHIP STANDING.
+- Keep the response concise (1-3 sentences).
+- If you are a merchant (${npc.isMerchant}), you may mention your shop if appropriate.
+`;
+
+        try {
+            const response = await LLMClient.generateCompletion(
+                providerConfig,
+                modelConfig,
+                {
+                    systemPrompt,
+                    userMessage: playerInput,
+                    temperature: 0.8,
+                    maxTokens: 150
+                }
+            );
+
+            if (response) {
+                // Persistent memory update
+                npc.conversationHistory.push({
+                    speaker: 'Player',
+                    text: playerInput,
+                    timestamp: new Date().toISOString()
+                });
+                npc.conversationHistory.push({
+                    speaker: npc.name,
+                    text: response,
+                    timestamp: new Date().toISOString()
+                });
+            }
+
+            return response;
+        } catch (e) {
+            console.error(`[NPCService] Dialogue generation failed for ${npc.name}:`, e);
+            return "The individual seems unable to respond right now.";
         }
     }
 }
