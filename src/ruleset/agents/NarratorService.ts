@@ -217,9 +217,14 @@ ${visible.map((n: any) => `- ${n.direction}: ${n.biome} ${n.name ? `(${n.name})`
 On the Horizon (Distant):
 ${horizon.map((n: any) => `- ${n.direction}: ${n.biome} ${n.name ? `(${n.name})` : ''}`).join('\n')}
 
+## LOCAL INHABITANTS
+The following people are visible in this area:
+${(context.hex.inhabitants || []).map((npc: string) => `- ${npc}`).join('\n') || 'None visible.'}
+
 CRITICAL INSTRUCTION:
 - You MUST base your environmental description on the data above.
 - Do NOT hallucinate mountains or oceans if they are not listed in the Surroundings or Horizon.
+- If specific inhabitants are listed, you MUST mention them in the scene (e.g., "A Harper Scout watches you from the trees"). 
 - If a direction is missing, it means there is nothing notable generated there yet (fog of war). Describe it as "shrouded in mist" or "obscured".
 - You can NAME a location (e.g., "The Whispering Woods") if the player passes a passive Lore check (History/Nature/Religion) or if an NPC reveals it.
 - To name a hex, use the \`engine_call\`: \`NAME_HEX\`. 

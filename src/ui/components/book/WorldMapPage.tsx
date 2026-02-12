@@ -25,7 +25,8 @@ const WorldMapPage: React.FC = () => {
         namingSource: hex.namingSource,
         visualVariant: hex.visualVariant,
         resourceNodes: hex.resourceNodes,
-        interest_points: hex.interest_points
+        interest_points: hex.interest_points,
+        npcs: (hex.npcs || []).map(id => state.worldNpcs.find(n => n.id === id)).filter(Boolean)
     }));
 
     const selectedHex = selectedHexId ? state.worldMap.hexes[selectedHexId] : null;
@@ -133,6 +134,23 @@ const WorldMapPage: React.FC = () => {
                                 <ul className={styles.poiList}>
                                     {selectedHex.interest_points.map((poi, i) => (
                                         <li key={i}>{poi.name}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
+                        {selectedHex.npcs && selectedHex.npcs.length > 0 && (
+                            <div className={styles.section}>
+                                <h3>Inhabitants</h3>
+                                <ul className={styles.poiList}>
+                                    {selectedHex.npcs.map((npc: any, i: number) => (
+                                        <li key={i}>
+                                            <span style={{ fontWeight: 'bold' }}>{npc.name}</span>
+                                            <br />
+                                            <span style={{ fontSize: '0.85em', color: '#aaa' }}>
+                                                {npc.role || 'Unknown'} • {npc.factionId ? npc.factionId.replace('_', ' ').toUpperCase() : 'Unaffiliated'}
+                                            </span>
+                                        </li>
                                     ))}
                                 </ul>
                             </div>

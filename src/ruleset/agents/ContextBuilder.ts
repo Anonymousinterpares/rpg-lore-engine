@@ -36,6 +36,7 @@ export interface ExplorationContext extends BaseContext {
         interestPoints: string[];
         resourceNodes: string[];
         neighbors?: { direction: string; biome: string; name?: string; distance: number }[];
+        inhabitants: string[];
     };
     activeQuests: { title: string; currentObjective: string }[];
 }
@@ -145,7 +146,11 @@ export class ContextBuilder {
             hex: {
                 interestPoints: hex.interest_points.map(p => p.name),
                 resourceNodes: hex.resourceNodes.map(r => r.resourceType),
-                neighbors: [...neighborInfoD1, ...neighborInfoD2]
+                neighbors: [...neighborInfoD1, ...neighborInfoD2],
+                inhabitants: (hex.npcs || []).map(id => {
+                    const npc = state.worldNpcs.find(n => n.id === id);
+                    return npc ? `${npc.name} (${npc.role || 'Unknown'} - ${npc.factionId || 'Unaffiliated'})` : 'Unknown Figure';
+                })
             },
             activeQuests: state.activeQuests.map(q => ({
                 title: q.title,
