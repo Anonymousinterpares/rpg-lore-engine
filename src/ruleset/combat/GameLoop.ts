@@ -787,9 +787,10 @@ export class GameLoop {
         });
 
         // If it was equipped, unequip it
-        Object.keys(char.equipmentSlots).forEach(slot => {
-            if ((char.equipmentSlots as any)[slot] === instanceId) {
-                (char.equipmentSlots as any)[slot] = undefined;
+        const slots = char.equipmentSlots as Record<string, string | undefined>;
+        Object.keys(slots).forEach(slot => {
+            if (slots[slot] === instanceId) {
+                slots[slot] = undefined;
             }
         });
 
@@ -806,9 +807,10 @@ export class GameLoop {
         if (item.equipped) {
             // Unequip
             item.equipped = false;
-            Object.keys(char.equipmentSlots).forEach(slot => {
-                if ((char.equipmentSlots as any)[slot] === instanceId) {
-                    (char.equipmentSlots as any)[slot] = undefined;
+            const slots = char.equipmentSlots as Record<string, string | undefined>;
+            Object.keys(slots).forEach(slot => {
+                if (slots[slot] === instanceId) {
+                    slots[slot] = undefined;
                 }
             });
             await this.emitStateUpdate();
@@ -825,13 +827,16 @@ export class GameLoop {
             if (!slot) return `${item.name} cannot be equipped.`;
 
             // Unequip current item in slot if any
-            const currentInSlotId = (char.equipmentSlots as any)[slot];
+            const slots = char.equipmentSlots as Record<string, string | undefined>;
+
+            // Unequip current item in slot if any
+            const currentInSlotId = slots[slot];
             if (currentInSlotId) {
                 const currentItem = char.inventory.items.find(i => i.instanceId === currentInSlotId);
                 if (currentItem) currentItem.equipped = false;
             }
 
-            (char.equipmentSlots as any)[slot] = instanceId;
+            slots[slot] = instanceId;
             item.equipped = true;
 
             // Recalculate AC if armor or shield

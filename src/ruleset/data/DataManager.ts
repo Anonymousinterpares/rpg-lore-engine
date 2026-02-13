@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { Race } from '../schemas/RaceSchema';
 import { CharacterClass } from '../schemas/ClassSchema';
 import { Background } from '../schemas/BackgroundSchema';
