@@ -23,6 +23,8 @@ import { Dice } from './Dice';
 import { LootEngine } from './LootEngine';
 import { DataManager } from '../data/DataManager';
 import { Monster } from '../schemas/MonsterSchema';
+import { SPAWN_TABLES } from '../data/SpawnTables';
+import { NPCFactory } from '../factories/NPCFactory';
 import { CombatAnalysisEngine, TacticalOption } from './grid/CombatAnalysisEngine';
 import { CombatGridManager } from './grid/CombatGridManager';
 import { CombatantSchema } from '../schemas/FullSaveStateSchema';
@@ -76,9 +78,17 @@ export class GameLoop {
         // Bootstrap registries from storage
         await this.hexMapManager.initialize();
 
-        // Initialize Factions if not present (Pre-seed lore alignment)
+        // Initialize Factions if missing
         if (!this.state.factions || this.state.factions.length === 0) {
-            this.state.factions = INITIAL_FACTIONS;
+            this.state.factions = INITIAL_FACTIONS.map(f => ({
+                ...f,
+                relationship: { standing: 0, interactionLog: [] }
+            }));
+        }
+
+        // Initialize NPC State if missing
+        if (!this.state.worldNpcs) {
+            this.state.worldNpcs = [];
         }
 
         // Initialize starting hex if it doesn't exist
@@ -369,10 +379,11 @@ export class GameLoop {
         let variant = hex.visualVariant;
         let generatedData: any = {};
 
+        // If not yet generated, run full generation
         if (!hex.generated) {
             const neighbors = this.hexMapManager.getNeighbors(coords);
-            const clusterSizes: any = {};
-            const biomes = ['Plains', 'Forest', 'Hills', 'Mountains', 'Swamp', 'Desert', 'Tundra', 'Jungle', 'Coast', 'Ocean', 'Volcanic', 'Ruins', 'Farmland', 'Urban'];
+            const clusterSizes: Record<BiomeType, number> = {} as any;
+            const biomes: BiomeType[] = ['Plains', 'Forest', 'Hills', 'Mountains', 'Swamp', 'Desert', 'Tundra', 'Jungle', 'Coast', 'Ocean', 'Volcanic', 'Ruins', 'Farmland', 'Urban'];
 
             for (const b of biomes) {
                 const neighborWithBiome = neighbors.find(n => n.biome === b);
