@@ -114,14 +114,42 @@
     cursor: grabbing !important;
 }
 
-.playerMarker {
-    width: 12px;
-    height: 12px;
-    background: var(--glass-accent);
+.playerMarker,
+.playerMarkerFloating {
+    width: 14px;
+    height: 14px;
+    background: #4ecdc4;
+    border: 2px solid white;
     border-radius: 50%;
-    box-shadow: 0 0 15px var(--glass-accent);
+    box-shadow: 0 0 15px #4ecdc4, 0 0 30px rgba(78, 205, 196, 0.4);
     animation: pulse 2s infinite;
-    z-index: 10;
+    z-index: 1000;
+    pointer-events: none;
+    position: absolute;
+}
+
+.overlayLayerContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 500;
+}
+
+.overlayLayerSvg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.overlayLayer {
+    z-index: 50;
+    pointer-events: none;
 }
 
 .details {

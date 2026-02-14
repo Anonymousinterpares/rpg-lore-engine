@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './HexMapView.module.css';
-
-import { Target, Pickaxe, Leaf, MapPin } from 'lucide-react';
+import { Pickaxe, Leaf, MapPin } from 'lucide-react';
 
 interface HexData {
     id: string;
@@ -17,7 +16,6 @@ interface HexData {
     visualVariant?: number;
     resourceNodes?: { resourceType: string }[];
     interest_points?: { name: string }[];
-    // Add inLineOfSight to interface if we pass it down, or infer from logic
     inLineOfSight?: boolean;
     oceanDirection?: 'N' | 'S' | 'E' | 'W' | 'NE' | 'SE' | 'NW' | 'SW';
 }
@@ -31,6 +29,13 @@ interface HexMapViewProps {
     selectedHexId?: string;
     zoomScale?: number;
     isDraggable?: boolean;
+    travelAnimation?: {
+        startCoordinates: [number, number];
+        targetCoordinates: [number, number];
+        startTime: number;
+        duration: number;
+    };
+    previousCoordinates?: [number, number];
 }
 
 const HexMapView: React.FC<HexMapViewProps> = ({
@@ -41,33 +46,51 @@ const HexMapView: React.FC<HexMapViewProps> = ({
     viewMode = 'normal',
     selectedHexId,
     zoomScale = 1,
-    isDraggable = true
+    isDraggable = true,
+    travelAnimation,
+    previousCoordinates
 }) => {
-    // Dynamic size based on view mode and zoom scale
     const baseSize = viewMode === 'zoomed-in' ? 60 : viewMode === 'zoomed-out' ? 15 : 30;
     const size = baseSize * zoomScale;
 
-    // Panning state
-    const [panOffset, setPanOffset] = React.useState({ x: 0, y: 0 });
-    const [isDragging, setIsDragging] = React.useState(false);
-    const [lastMousePos, setLastMousePos] = React.useState({ x: 0, y: 0 });
+    const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+    const [isDragging, setIsDragging] = useState(false);
+    const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 });
+    const [animationProgress, setAnimationProgress] = useState(0);
 
     const currentHex = hexes.find(h => h.isCurrent);
-
-    // Offset everything so current hex is at (0,0) effectively for the grid container
     const centerQ = currentHex ? currentHex.q : 0;
     const centerR = currentHex ? currentHex.r : 0;
 
     const getX = (q: number, r: number) => {
         const offset = isDraggable ? panOffset.x : 0;
-        // Flat-top orientation
         return size * (3 / 2 * (q - centerQ)) + offset;
     };
     const getY = (q: number, r: number) => {
         const offset = isDraggable ? panOffset.y : 0;
-        // Flat-top orientation, North (r+) is visually Up (negative Y)
         return -size * (Math.sqrt(3) / 2 * (q - centerQ) + Math.sqrt(3) * (r - centerR)) + offset;
     };
+
+    // Animation Loop
+    useEffect(() => {
+        if (!travelAnimation) {
+            setAnimationProgress(0);
+            return;
+        }
+
+        let rafId: number;
+        const update = () => {
+            const now = Date.now();
+            const elapsed = now - travelAnimation.startTime;
+            const progress = Math.min(1, Math.max(0, elapsed / travelAnimation.duration));
+            setAnimationProgress(progress);
+            if (progress < 1) {
+                rafId = requestAnimationFrame(update);
+            }
+        };
+        rafId = requestAnimationFrame(update);
+        return () => cancelAnimationFrame(rafId);
+    }, [travelAnimation]);
 
     const handleMouseDown = (e: React.MouseEvent) => {
         if (!isDraggable) return;
@@ -83,8 +106,71 @@ const HexMapView: React.FC<HexMapViewProps> = ({
         setLastMousePos({ x: e.clientX, y: e.clientY });
     };
 
-    const handleMouseUp = () => {
-        setIsDragging(false);
+    const handleMouseUp = () => setIsDragging(false);
+
+    // Calculate interpolated player position
+    const getMovingPlayerPos = () => {
+        if (!travelAnimation) {
+            return { x: getX(centerQ, centerR), y: getY(centerQ, centerR) };
+        }
+
+        // Use animation state timing directly for smoother frame-perfect position
+        const { startCoordinates, targetCoordinates, startTime, duration } = travelAnimation;
+        const now = Date.now();
+        const progress = Math.min(1, Math.max(0, (now - startTime) / duration));
+
+        const startX = getX(startCoordinates[0], startCoordinates[1]);
+        const startY = getY(startCoordinates[0], startCoordinates[1]);
+        const targetX = getX(targetCoordinates[0], targetCoordinates[1]);
+        const targetY = getY(targetCoordinates[0], targetCoordinates[1]);
+
+        return {
+            x: startX + (targetX - startX) * progress,
+            y: startY + (targetY - startY) * progress
+        };
+    };
+
+    const playerPos = getMovingPlayerPos();
+
+    // Calculate Trail Segments
+    // We split the trail into separate lines anchored at the "Corner" (Start of current move)
+    // This ensures that the dash pattern (stroke-dasharray) doesn't slide as the line gets shorter/longer.
+    const getTrailLines = () => {
+        const lines: { x1: number, y1: number, x2: number, y2: number }[] = [];
+
+        if (travelAnimation) {
+            const startX = getX(travelAnimation.startCoordinates[0], travelAnimation.startCoordinates[1]);
+            const startY = getY(travelAnimation.startCoordinates[0], travelAnimation.startCoordinates[1]);
+
+            // 1. Head Segment (Growing): Anchor (Start) -> Head (Player)
+            // Dashes start at Anchor and stay fixed there as Head extends.
+            lines.push({ x1: startX, y1: startY, x2: playerPos.x, y2: playerPos.y });
+
+            if (previousCoordinates) {
+                const prevX = getX(previousCoordinates[0], previousCoordinates[1]);
+                const prevY = getY(previousCoordinates[0], previousCoordinates[1]);
+
+                // 2. Tail Segment (Shrinking): Anchor (Start) -> Tail (Moving towards Start)
+                // We draw FROM Anchor TO Tail so dashes are fixed at Anchor.
+                const now = Date.now();
+                const progress = Math.min(1, Math.max(0, (now - travelAnimation.startTime) / travelAnimation.duration));
+
+                const tailX = prevX + (startX - prevX) * progress;
+                const tailY = prevY + (startY - prevY) * progress;
+
+                lines.push({ x1: startX, y1: startY, x2: tailX, y2: tailY });
+            }
+        } else if (previousCoordinates) {
+            // Idle: Static line from Previous -> Current
+            const prevX = getX(previousCoordinates[0], previousCoordinates[1]);
+            const prevY = getY(previousCoordinates[0], previousCoordinates[1]);
+            const currentX = getX(centerQ, centerR);
+            const currentY = getY(centerQ, centerR);
+
+            lines.push({ x1: prevX, y1: prevY, x2: currentX, y2: currentY });
+        }
+
+        return lines;
     };
 
     return (
@@ -99,36 +185,10 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                 {hexes.map((hex) => {
                     const biomeBase = hex.biome.toLowerCase();
                     const variantClass = hex.visualVariant ? styles[`${biomeBase}_${hex.visualVariant}`] : styles[biomeBase];
-
-                    // Display Name Logic
-                    let displayName = hex.name || `${hex.biome} (${hex.q}, ${hex.r})`;
-                    if (hex.playerName) {
-                        displayName = `${hex.name || hex.biome} (${hex.playerName})`;
-                    }
-
-                    const tooltip = displayName;
-
+                    const displayName = hex.name || `${hex.biome} (${hex.q}, ${hex.r})`;
+                    const tooltip = hex.playerName ? `${hex.name || hex.biome} (${hex.playerName})` : displayName;
                     const isZoomedIn = viewMode === 'zoomed-in';
                     const isSelected = selectedHexId === hex.id;
-
-                    // Visibility Logic
-                    // Visited: Full Brightness
-                    // In Line of Sight (Adjacent): Full Image (maybe slightly dimmed if we had CSS for it), but requirement says "visible"
-                    // Distant (Horizon, "Uncharted Territory"): Brown Placeholder
-
-                    // Logic from RightPanel: isDiscovered = visited || inLineOfSight.
-                    // If name is "Uncharted Territory", treat as placeholder.
-                    const isUncharted = hex.name === 'Uncharted Territory' || (!hex.isVisited && !hex.name?.includes('(Discovered)') && !hex.name?.includes('(Uncharted Territory)'));
-                    // Actually, rely on name convention or explicit flags if passed.
-
-                    // Better check:
-                    // If !visited and !inLineOfSight (implied) -> Brown
-                    // But we don't have inLOS passed explicitly yet in HexData, but we rely on RightPanel passing it as isDiscovered.
-                    // RightPanel sets isDiscovered = true if inLOS.
-
-                    // If Discovered (Visible/Visited) AND NOT "Uncharted Territory" -> Show Biome
-                    // If "Uncharted Territory" -> Show Brown
-
                     const showBiomeImage = (hex.isVisited || hex.name?.includes('(Discovered)') || hex.name?.includes('(Uncharted Territory)')) && hex.name !== 'Uncharted Territory';
 
                     return (
@@ -172,22 +232,17 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                                         } : {}}
                                         onError={(e) => {
                                             const img = e.target as HTMLImageElement;
-                                            // If we failed to find the specific variant, try variant 1 as a universal fallback
-                                            if (!img.src.endsWith('_1.png')) {
-                                                img.src = `/assets/biomes/${biomeBase}_1.png`;
-                                            } else {
-                                                img.style.display = 'none';
-                                            }
+                                            if (!img.src.endsWith('_1.png')) img.src = `/assets/biomes/${biomeBase}_1.png`;
+                                            else img.style.display = 'none';
                                         }}
                                     />
                                 )}
-                                {hex.isCurrent && <div className={styles.playerMarker} />}
 
                                 {isZoomedIn && (
                                     <div className={styles.details}>
                                         {hex.resourceNodes?.map((node, i) => (
                                             <div key={`res-${i}`} className={styles.detailIcon} title={node.resourceType}>
-                                                {node.resourceType === 'Ore' || node.resourceType === 'Gem' ? <Pickaxe size={12} /> : <Leaf size={12} />}
+                                                <Leaf size={12} />
                                             </div>
                                         ))}
                                         {hex.interest_points?.map((poi, i) => (
@@ -201,11 +256,41 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                         </div>
                     );
                 })}
-                {hexes.length === 0 && (
-                    <div className={styles.emptyMap}>
-                        Exploring the unknown...
-                    </div>
-                )}
+
+                {/* Overlay Layer for Trail and Floating Marker */}
+                <div className={styles.overlayLayerContainer} style={{ zIndex: 100 }}>
+                    <svg
+                        className={styles.overlayLayerSvg}
+                        viewBox="-500 -500 1000 1000"
+                        style={{ overflow: 'visible' }}
+                    >
+                        {getTrailLines().map((line, i) => (
+                            <line
+                                key={i}
+                                x1={line.x1}
+                                y1={line.y1}
+                                x2={line.x2}
+                                y2={line.y2}
+                                fill="none"
+                                stroke="#634e4eff"
+                                strokeWidth="4"
+                                strokeDasharray="8,6"
+                                opacity="0.8"
+                                strokeLinecap="round"
+                                style={{ filter: 'drop-shadow(0 0 8px rgba(78, 205, 196, 0.6))' }}
+                            />
+                        ))}
+                    </svg>
+
+                    <div
+                        className={styles.playerMarkerFloating}
+                        style={{
+                            left: `calc(50% + ${playerPos.x}px)`,
+                            top: `calc(50% + ${playerPos.y}px)`,
+                            transform: 'translate(-50%, -50%)',
+                        }}
+                    />
+                </div>
             </div>
         </div>
     );

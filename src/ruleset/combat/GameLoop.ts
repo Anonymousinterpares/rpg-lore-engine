@@ -223,12 +223,36 @@ export class GameLoop {
                     return await this.combatOrchestrator.handleCombatAction(intent);
                 }
 
+                // Block if already moving
+                if (this.state.location.travelAnimation) return "You are already traveling.";
+
                 const direction = args[0] as any;
                 const result = this.movementEngine.move(this.state.location.coordinates, direction, this.state.travelPace || 'Normal' as any);
                 if (!result.success) return result.message || "Can't move there.";
 
-                this.state.location.coordinates = result.newHex!.coordinates;
-                this.state.location.hexId = `${result.newHex!.coordinates[0]},${result.newHex!.coordinates[1]}`;
+                const startCoords = [...this.state.location.coordinates] as [number, number];
+                const targetCoords = result.newHex!.coordinates;
+
+                // Duration: 1 second per game hour (result.timeCost is in minutes)
+                const durationMs = (result.timeCost / 60) * 1000;
+
+                // 1. Set Animation State
+                this.state.location.travelAnimation = {
+                    startCoordinates: startCoords,
+                    targetCoordinates: targetCoords,
+                    startTime: Date.now(),
+                    duration: durationMs
+                };
+                await this.emitStateUpdate();
+
+                // 2. Wait for animation
+                await new Promise(resolve => setTimeout(resolve, durationMs));
+
+                // 3. Finalize Movement
+                this.state.location.previousCoordinates = startCoords;
+                this.state.location.coordinates = targetCoords;
+                this.state.location.hexId = `${targetCoords[0]},${targetCoords[1]}`;
+                this.state.location.travelAnimation = undefined;
 
                 // Advance time for travel
                 const encounter = await this.time.advanceTimeAndProcess(result.timeCost);
@@ -258,6 +282,9 @@ export class GameLoop {
                     });
                 }
 
+                // Block if already moving
+                if (this.state.location.travelAnimation) return "You are already traveling.";
+
                 // Exploration Moveto (Teleport/Debug/Click)
                 const char = this.state.character;
                 const weight = char.inventory.items.reduce((sum, i) => sum + (i.weight * (i.quantity || 1)), 0);
@@ -271,8 +298,27 @@ export class GameLoop {
                 const moveResult = this.movementEngine.move(this.state.location.coordinates, [q, r], this.state.travelPace as any);
                 if (!moveResult.success) return moveResult.message;
 
-                this.state.location.coordinates = moveResult.newHex!.coordinates;
-                this.state.location.hexId = `${moveResult.newHex!.coordinates[0]},${moveResult.newHex!.coordinates[1]}`;
+                const startCoordsMT = [...this.state.location.coordinates] as [number, number];
+                const targetCoordsMT = moveResult.newHex!.coordinates;
+                const durationMsMT = (moveResult.timeCost / 60) * 1000;
+
+                // 1. Set Animation State
+                this.state.location.travelAnimation = {
+                    startCoordinates: startCoordsMT,
+                    targetCoordinates: targetCoordsMT,
+                    startTime: Date.now(),
+                    duration: durationMsMT
+                };
+                await this.emitStateUpdate();
+
+                // 2. Wait for animation
+                await new Promise(resolve => setTimeout(resolve, durationMsMT));
+
+                // 3. Finalize Movement
+                this.state.location.previousCoordinates = startCoordsMT;
+                this.state.location.coordinates = targetCoordsMT;
+                this.state.location.hexId = `${targetCoordsMT[0]},${targetCoordsMT[1]}`;
+                this.state.location.travelAnimation = undefined;
 
                 const enc = await this.time.advanceTimeAndProcess(moveResult.timeCost);
                 await this.exploration.expandHorizon(this.state.location.coordinates);
