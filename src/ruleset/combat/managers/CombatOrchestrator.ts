@@ -516,6 +516,12 @@ export class CombatOrchestrator {
                     }
 
                     const result = CombatResolutionEngine.resolveAttack(actor, target, actionData.attackBonus || 0, actionData.damage || "1d6", 0, isRanged);
+
+                    // Trigger UI Dice Animation
+                    if (this.state.combat && result.details.roll) {
+                        this.state.combat.lastRoll = result.details.roll;
+                    }
+
                     this.emitCombatEvent(result.type, target.id, result.damage || 0);
                     await this.applyCombatDamage(target, result.damage);
                     const logMsg = CombatLogFormatter.format(result, actor.name, target.name, isRanged);
