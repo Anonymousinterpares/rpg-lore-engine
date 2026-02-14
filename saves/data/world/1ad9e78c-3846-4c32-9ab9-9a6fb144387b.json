@@ -704,7 +704,7 @@
       ],
       "generated": true,
       "biome": "Mountains",
-      "name": "Mountains (Discovered)",
+      "name": "Mountains (Uncharted Territory)",
       "description": "A vast expanse of mountains.",
       "traversable_sides": {
         "N": true,
@@ -717,7 +717,7 @@
       "interest_points": [],
       "resourceNodes": [],
       "openedContainers": {},
-      "visited": true,
+      "visited": false,
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 1,
@@ -860,7 +860,7 @@
       ],
       "generated": true,
       "biome": "Mountains",
-      "name": "Mountains (Uncharted Territory)",
+      "name": "Uncharted Territory",
       "description": "A vast expanse of mountains.",
       "traversable_sides": {
         "N": true,
@@ -886,7 +886,7 @@
       ],
       "openedContainers": {},
       "visited": false,
-      "inLineOfSight": true,
+      "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 3,
       "npcs": [
@@ -900,7 +900,7 @@
       ],
       "generated": true,
       "biome": "Mountains",
-      "name": "Mountains (Uncharted Territory)",
+      "name": "Uncharted Territory",
       "description": "A vast expanse of mountains.",
       "traversable_sides": {
         "N": true,
@@ -926,7 +926,7 @@
       ],
       "openedContainers": {},
       "visited": false,
-      "inLineOfSight": true,
+      "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 2,
       "npcs": []
@@ -1096,98 +1096,6 @@
       "namingSource": "engine",
       "visualVariant": 1,
       "npcs": []
-    },
-    "4,-3": {
-      "coordinates": [
-        4,
-        -3
-      ],
-      "generated": true,
-      "visited": false,
-      "biome": "Mountains",
-      "name": "Uncharted Territory",
-      "description": "A vast expanse of mountains.",
-      "inLineOfSight": false,
-      "interest_points": [],
-      "resourceNodes": [],
-      "openedContainers": {},
-      "namingSource": "engine",
-      "visualVariant": 5,
-      "npcs": [],
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      }
-    },
-    "4,-4": {
-      "coordinates": [
-        4,
-        -4
-      ],
-      "generated": true,
-      "visited": false,
-      "biome": "Mountains",
-      "name": "Uncharted Territory",
-      "description": "A vast expanse of mountains.",
-      "inLineOfSight": false,
-      "interest_points": [],
-      "resourceNodes": [],
-      "openedContainers": {},
-      "namingSource": "engine",
-      "visualVariant": 4,
-      "npcs": [],
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      }
-    },
-    "4,-5": {
-      "coordinates": [
-        4,
-        -5
-      ],
-      "generated": true,
-      "visited": false,
-      "biome": "Mountains",
-      "name": "Uncharted Territory",
-      "description": "A vast expanse of mountains.",
-      "inLineOfSight": false,
-      "interest_points": [],
-      "resourceNodes": [
-        {
-          "id": "node_2mfbp2xr0",
-          "resourceType": "Ore",
-          "itemId": "Silver_Ore",
-          "quantityRemaining": 3,
-          "respawnDays": 7,
-          "skillCheck": {
-            "skill": "Nature",
-            "dc": 10
-          }
-        }
-      ],
-      "openedContainers": {},
-      "namingSource": "engine",
-      "visualVariant": 3,
-      "npcs": [
-        "4c0041b3-7a60-45a5-96e9-f3a85a82e9f4"
-      ],
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      }
     }
   },
   "coastlines": []

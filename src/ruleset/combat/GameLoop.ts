@@ -233,23 +233,43 @@ export class GameLoop {
                 const startCoords = [...this.state.location.coordinates] as [number, number];
                 const targetCoords = result.newHex!.coordinates;
 
-                // Duration: 1 second per game hour (result.timeCost is in minutes)
-                const durationMs = (result.timeCost / 60) * 1000;
+                // Calculate Base Duration
+                const baseDurationMs = result.timeCost * (1000 / 60); // 1 real sec = 1 game hour
 
-                // 1. Set Animation State
+                // --- Curve Calculation ---
+                // Generate a random control point offset for a Quadratic Bezier curve
+                // We want the curve to deviate from the straight line but land back on target.
+                // The offset is relative to the *midpoint* of the straight line.
+
+                // Random deviation: +/- 0.5 hex width equivalent (approx 0.5 coord units)
+                // We use a pseudo-normal distribution to keep it mostly reasonable
+                const rand = () => (Math.random() + Math.random() + Math.random()) / 3 - 0.5;
+                const curvatureX = rand() * 1.5; // Scale deviation
+                const curvatureY = rand() * 1.5;
+
+                // Calculate approximate arc length for duration adjustment
+                // Simple approximation: hypotenuse of the triangle formed by start, control, end
+                // Or just scale base duration by a factor of the deviation magnitude
+                const curveFactor = 1 + (Math.abs(curvatureX) + Math.abs(curvatureY)) * 0.2;
+                const durationMs = Math.round(baseDurationMs * curveFactor);
+
                 this.state.location.travelAnimation = {
                     startCoordinates: startCoords,
                     targetCoordinates: targetCoords,
+                    controlPointOffset: [curvatureX, curvatureY],
                     startTime: Date.now(),
                     duration: durationMs
                 };
+
+                // Notify UI of start
                 await this.emitStateUpdate();
 
-                // 2. Wait for animation
+                // Wait for animation
                 await new Promise(resolve => setTimeout(resolve, durationMs));
 
-                // 3. Finalize Movement
+                // Arrived
                 this.state.location.previousCoordinates = startCoords;
+                this.state.location.previousControlPointOffset = [curvatureX, curvatureY];
                 this.state.location.coordinates = targetCoords;
                 this.state.location.hexId = `${targetCoords[0]},${targetCoords[1]}`;
                 this.state.location.travelAnimation = undefined;
@@ -300,12 +320,21 @@ export class GameLoop {
 
                 const startCoordsMT = [...this.state.location.coordinates] as [number, number];
                 const targetCoordsMT = moveResult.newHex!.coordinates;
-                const durationMsMT = (moveResult.timeCost / 60) * 1000;
+                // Calculate Base Duration
+                const baseDurationMsMT = moveResult.timeCost * (1000 / 60);
+
+                // --- Curve Calculation ---
+                const randMT = () => (Math.random() + Math.random() + Math.random()) / 3 - 0.5;
+                const curvatureXMT = randMT() * 1.5;
+                const curvatureYMT = randMT() * 1.5;
+                const curveFactorMT = 1 + (Math.abs(curvatureXMT) + Math.abs(curvatureYMT)) * 0.2;
+                const durationMsMT = Math.round(baseDurationMsMT * curveFactorMT);
 
                 // 1. Set Animation State
                 this.state.location.travelAnimation = {
                     startCoordinates: startCoordsMT,
                     targetCoordinates: targetCoordsMT,
+                    controlPointOffset: [curvatureXMT, curvatureYMT],
                     startTime: Date.now(),
                     duration: durationMsMT
                 };
@@ -316,6 +345,7 @@ export class GameLoop {
 
                 // 3. Finalize Movement
                 this.state.location.previousCoordinates = startCoordsMT;
+                this.state.location.previousControlPointOffset = [curvatureXMT, curvatureYMT];
                 this.state.location.coordinates = targetCoordsMT;
                 this.state.location.hexId = `${targetCoordsMT[0]},${targetCoordsMT[1]}`;
                 this.state.location.travelAnimation = undefined;

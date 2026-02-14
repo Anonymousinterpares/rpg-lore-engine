@@ -48,6 +48,7 @@ export const FullSaveStateSchema = z.object({
         hexId: z.string(),
         coordinates: z.tuple([z.number(), z.number()]),
         previousCoordinates: z.tuple([z.number(), z.number()]).optional(),
+        previousControlPointOffset: z.tuple([z.number(), z.number()]).optional(),
         subLocationId: z.string().optional(),
         roomId: z.string().optional(),
         droppedItems: z.array(z.object({
@@ -69,6 +70,7 @@ export const FullSaveStateSchema = z.object({
         travelAnimation: z.object({
             startCoordinates: z.tuple([z.number(), z.number()]),
             targetCoordinates: z.tuple([z.number(), z.number()]),
+            controlPointOffset: z.tuple([z.number(), z.number()]),
             startTime: z.number(),
             duration: z.number()
         }).optional()

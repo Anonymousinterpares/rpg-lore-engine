@@ -32,6 +32,7 @@ interface HexMapViewProps {
     travelAnimation?: {
         startCoordinates: [number, number];
         targetCoordinates: [number, number];
+        controlPointOffset: [number, number];
         startTime: number;
         duration: number;
     };
@@ -108,69 +109,84 @@ const HexMapView: React.FC<HexMapViewProps> = ({
 
     const handleMouseUp = () => setIsDragging(false);
 
-    // Calculate interpolated player position
+    // Calculate interpolated player position on a Quadratic Bezier Curve
     const getMovingPlayerPos = () => {
         if (!travelAnimation) {
             return { x: getX(centerQ, centerR), y: getY(centerQ, centerR) };
         }
 
-        // Use animation state timing directly for smoother frame-perfect position
-        const { startCoordinates, targetCoordinates, startTime, duration } = travelAnimation;
+        const { startCoordinates, targetCoordinates, controlPointOffset, startTime, duration } = travelAnimation;
         const now = Date.now();
-        const progress = Math.min(1, Math.max(0, (now - startTime) / duration));
+        const t = Math.min(1, Math.max(0, (now - startTime) / duration));
 
         const startX = getX(startCoordinates[0], startCoordinates[1]);
         const startY = getY(startCoordinates[0], startCoordinates[1]);
         const targetX = getX(targetCoordinates[0], targetCoordinates[1]);
         const targetY = getY(targetCoordinates[0], targetCoordinates[1]);
 
-        return {
-            x: startX + (targetX - startX) * progress,
-            y: startY + (targetY - startY) * progress
-        };
+        const midX = (startX + targetX) / 2;
+        const midY = (startY + targetY) / 2;
+
+        const controlX = midX + controlPointOffset[0] * (size * 2);
+        const controlY = midY + controlPointOffset[1] * (size * 2);
+
+        // Quadratic Bezier Formula: B(t) = (1-t)^2 P0 + 2(1-t)t P1 + t^2 P2
+        const x = Math.pow(1 - t, 2) * startX + 2 * (1 - t) * t * controlX + Math.pow(t, 2) * targetX;
+        const y = Math.pow(1 - t, 2) * startY + 2 * (1 - t) * t * controlY + Math.pow(t, 2) * targetY;
+
+        return { x, y };
     };
 
     const playerPos = getMovingPlayerPos();
 
-    // Calculate Trail Segments
-    // We split the trail into separate lines anchored at the "Corner" (Start of current move)
-    // This ensures that the dash pattern (stroke-dasharray) doesn't slide as the line gets shorter/longer.
-    const getTrailLines = () => {
-        const lines: { x1: number, y1: number, x2: number, y2: number }[] = [];
+    // Calculate Trail Segments (Curved)
+    const getTrailPaths = () => {
+        const paths: string[] = [];
 
         if (travelAnimation) {
-            const startX = getX(travelAnimation.startCoordinates[0], travelAnimation.startCoordinates[1]);
-            const startY = getY(travelAnimation.startCoordinates[0], travelAnimation.startCoordinates[1]);
+            const { startCoordinates, targetCoordinates, controlPointOffset } = travelAnimation;
+            const startX = getX(startCoordinates[0], startCoordinates[1]);
+            const startY = getY(startCoordinates[0], startCoordinates[1]);
+            const targetX = getX(targetCoordinates[0], targetCoordinates[1]);
+            const targetY = getY(targetCoordinates[0], targetCoordinates[1]);
 
-            // 1. Head Segment (Growing): Anchor (Start) -> Head (Player)
-            // Dashes start at Anchor and stay fixed there as Head extends.
-            lines.push({ x1: startX, y1: startY, x2: playerPos.x, y2: playerPos.y });
+            const cpOffset = controlPointOffset || [0, 0];
+            const midX = (startX + targetX) / 2;
+            const midY = (startY + targetY) / 2;
+            const controlX = midX + cpOffset[0] * (size * 2);
+            const controlY = midY + cpOffset[1] * (size * 2);
+
+            const now = Date.now();
+            const t = Math.min(1, Math.max(0, (now - travelAnimation.startTime) / travelAnimation.duration));
+            const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+            const q1x = lerp(startX, controlX, t);
+            const q1y = lerp(startY, controlY, t);
+
+            const dHead = `M ${startX} ${startY} Q ${q1x} ${q1y} ${playerPos.x} ${playerPos.y}`;
+            paths.push(dHead);
 
             if (previousCoordinates) {
                 const prevX = getX(previousCoordinates[0], previousCoordinates[1]);
                 const prevY = getY(previousCoordinates[0], previousCoordinates[1]);
+                const tailT = t;
+                const tailX = prevX + (startX - prevX) * tailT;
+                const tailY = prevY + (startY - prevY) * tailT;
 
-                // 2. Tail Segment (Shrinking): Anchor (Start) -> Tail (Moving towards Start)
-                // We draw FROM Anchor TO Tail so dashes are fixed at Anchor.
-                const now = Date.now();
-                const progress = Math.min(1, Math.max(0, (now - travelAnimation.startTime) / travelAnimation.duration));
-
-                const tailX = prevX + (startX - prevX) * progress;
-                const tailY = prevY + (startY - prevY) * progress;
-
-                lines.push({ x1: startX, y1: startY, x2: tailX, y2: tailY });
+                const dTail = `M ${startX} ${startY} L ${tailX} ${tailY}`;
+                paths.push(dTail);
             }
         } else if (previousCoordinates) {
-            // Idle: Static line from Previous -> Current
             const prevX = getX(previousCoordinates[0], previousCoordinates[1]);
             const prevY = getY(previousCoordinates[0], previousCoordinates[1]);
             const currentX = getX(centerQ, centerR);
             const currentY = getY(centerQ, centerR);
 
-            lines.push({ x1: prevX, y1: prevY, x2: currentX, y2: currentY });
+            const dIdle = `M ${prevX} ${prevY} L ${currentX} ${currentY}`;
+            paths.push(dIdle);
         }
 
-        return lines;
+        return paths;
     };
 
     return (
@@ -264,15 +280,12 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                         viewBox="-500 -500 1000 1000"
                         style={{ overflow: 'visible' }}
                     >
-                        {getTrailLines().map((line, i) => (
-                            <line
+                        {getTrailPaths().map((pathData, i) => (
+                            <path
                                 key={i}
-                                x1={line.x1}
-                                y1={line.y1}
-                                x2={line.x2}
-                                y2={line.y2}
+                                d={pathData}
                                 fill="none"
-                                stroke="#634e4eff"
+                                stroke="#4ecdc4"
                                 strokeWidth="4"
                                 strokeDasharray="8,6"
                                 opacity="0.8"
