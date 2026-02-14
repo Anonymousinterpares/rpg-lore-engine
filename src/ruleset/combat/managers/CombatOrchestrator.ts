@@ -1,0 +1,594 @@
+import { GameState } from '../../schemas/FullSaveStateSchema';
+import { CombatantSchema } from '../../schemas/FullSaveStateSchema';
+import { CombatManager } from '../CombatManager';
+import { CombatGridManager } from '../grid/CombatGridManager';
+import { CombatResolutionEngine } from '../CombatResolutionEngine';
+import { CombatLogFormatter } from '../CombatLogFormatter';
+import { CombatAI } from '../CombatAI';
+import { CombatUtils } from '../CombatUtils';
+import { MechanicsEngine } from '../MechanicsEngine';
+import { Dice } from '../Dice';
+import { DataManager } from '../../data/DataManager';
+import { LootEngine } from '../LootEngine';
+import { WorldClockEngine } from '../WorldClockEngine';
+import { NarratorService } from '../../agents/NarratorService';
+import { ContextManager } from '../../agents/ContextManager';
+import { ParsedIntent } from '../IntentRouter';
+import { AbilityParser } from '../AbilityParser';
+import { z } from 'zod';
+
+type Combatant = z.infer<typeof CombatantSchema>;
+
+/**
+ * Orchestrates the async combat loop, AI turns, and combat resolution.
+ */
+export class CombatOrchestrator {
+    private turnProcessing: boolean = false;
+
+    constructor(
+        private state: GameState,
+        private combatManager: CombatManager,
+        private contextManager: ContextManager,
+        private emitStateUpdate: () => Promise<void>,
+        private addCombatLog: (message: string) => void,
+        private emitCombatEvent: (type: string, targetId: string, value: number) => void
+    ) { }
+
+    public async processCombatQueue() {
+        console.log(`[Orchestrator] Processing Queue. State: ${!!this.state.combat}, Locked: ${this.turnProcessing}`);
+        if (!this.state.combat || this.turnProcessing) return;
+        this.turnProcessing = true;
+
+        try {
+            while (this.state.combat && !await this.checkCombatEnd()) {
+                const actor = this.state.combat.combatants[this.state.combat.currentTurnIndex];
+                console.log(`[Orchestrator] Turn: ${actor.name} (${actor.type})`);
+
+                actor.resources.actionSpent = false;
+                actor.resources.bonusActionSpent = false;
+                actor.movementRemaining = actor.movementSpeed;
+                this.state.combat.turnActions = [];
+
+                let bannerType: 'PLAYER' | 'ENEMY' | 'NAME' = 'PLAYER';
+                if (actor.type === 'enemy') bannerType = 'ENEMY';
+                else if (actor.type === 'companion' || actor.type === 'summon') bannerType = 'NAME';
+
+                this.state.combat.activeBanner = {
+                    type: bannerType,
+                    text: bannerType === 'NAME' ? `${actor.name.toUpperCase()} TURN` : undefined,
+                    visible: true
+                };
+
+                await this.processStartOfTurn(actor);
+                await this.emitStateUpdate();
+
+                if (actor.isPlayer) {
+                    this.turnProcessing = false;
+                    return;
+                } else {
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    await this.performAITurn(actor);
+
+                    const npcSummary = this.state.combat.turnActions.length > 0
+                        ? `${this.state.combat.turnActions.join(". ")}`
+                        : `${actor.name} waits for an opening.`;
+                    this.addCombatLog(npcSummary);
+                    this.state.lastNarrative = npcSummary;
+
+                    // Fix: Force update so UI shows narrative immediately
+                    await this.emitStateUpdate();
+
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+
+                    if (!this.state.combat) break;
+
+                    const nextMsg = this.combatManager.advanceTurn();
+                    this.addCombatLog(nextMsg);
+                    this.state.combat.turnActions = [];
+                }
+            }
+        } catch (error) {
+            console.error("Critical Error in processCombatQueue:", error);
+            this.addCombatLog(`[System Error] Turn processing failed: ${error}`);
+        } finally {
+            this.turnProcessing = false;
+        }
+    }
+
+    private async processStartOfTurn(actor: Combatant) {
+        if (actor.statusEffects) {
+            actor.statusEffects = actor.statusEffects.filter(effect => {
+                if (effect.duration !== undefined) {
+                    effect.duration--;
+                    return effect.duration > 0;
+                }
+                return true;
+            });
+        }
+        await this.emitStateUpdate();
+    }
+
+    public async applyCombatDamage(target: Combatant, damage: number) {
+        if (damage <= 0) return;
+        CombatResolutionEngine.applyDamage(target, damage);
+
+        if (target.concentration && target.hp.current > 0) {
+            const dc = Math.max(10, Math.floor(damage / 2));
+            const conMod = MechanicsEngine.getModifier(target.stats['CON'] || 10);
+            const roll = Dice.d20();
+            const total = roll + conMod;
+
+            if (total < dc) {
+                this.addCombatLog(`${target.name} fails a CON save (rolled ${total} vs DC ${dc}) and loses concentration!`);
+                // Note: breakConcentration should be accessible. For now calling it via a shared method if possible or re-implementing.
+                this.internalBreakConcentration(target);
+            } else {
+                this.addCombatLog(`${target.name} maintains concentration (rolled ${total} vs DC ${dc}).`);
+            }
+        }
+        await this.emitStateUpdate();
+    }
+
+    private internalBreakConcentration(caster: Combatant) {
+        const spellName = caster.concentration?.spellName;
+        caster.concentration = undefined;
+        if (!this.state.combat) return;
+
+        this.state.combat.combatants = this.state.combat.combatants.filter(c => {
+            if (c.type === 'summon' && c.sourceId === caster.id) {
+                this.addCombatLog(`${c.name} vanishes as ${caster.name} loses concentration on ${spellName}.`);
+                return false;
+            }
+            return true;
+        });
+        this.state.combat.combatants.sort((a, b) => b.initiative - a.initiative);
+    }
+
+    public async handleCombatAction(intent: ParsedIntent): Promise<string> {
+        try {
+            // console.log(`[Orchestrator] Action: ${intent.command}, Args: ${intent.args}`);
+
+            if (!this.state.combat) return "Not in combat.";
+            const currentCombatant = this.state.combat.combatants[this.state.combat.currentTurnIndex];
+
+            if (!currentCombatant) {
+                this.addCombatLog(`[Error] Current combatant is undefined!`);
+                return "Error: Invalid turn state.";
+            }
+
+            let resultMsg = '';
+
+            const nonActionCommands = ['target', 'end turn'];
+            if (currentCombatant.resources.actionSpent && !nonActionCommands.includes(intent.command || '')) {
+                return `You have already used your main action this turn. Use "End Turn".`;
+            }
+
+            if (intent.command === 'attack') {
+                const combatState = this.state.combat!;
+                const isRanged = intent.args?.[0] === 'ranged';
+                const targets = combatState.combatants.filter(c => c.type === 'enemy' && c.hp.current > 0);
+                if (targets.length === 0) return "No valid targets.";
+
+                let target = targets.find(t => t.id === combatState.selectedTargetId);
+                if (!target) target = targets[0];
+                if (!target) return "No target found.";
+
+                const pc = this.state.character;
+                const mainHandId = pc.equipmentSlots.mainHand;
+                const inventoryEntry = mainHandId ? pc.inventory.items.find(i => i.instanceId === mainHandId) : null;
+                const mainHandItem = inventoryEntry ? DataManager.getItem(inventoryEntry.id) : null;
+
+                if (isRanged && !CombatUtils.isRangedWeapon(mainHandItem)) {
+                    return "You do not have a ranged weapon equipped!";
+                }
+
+                let ammoItem: any = null;
+                if (isRanged) {
+                    const requiredAmmo = CombatUtils.getRequiredAmmunition(mainHandItem?.name || '');
+                    if (requiredAmmo) {
+                        ammoItem = pc.inventory.items.find(i => i.name === requiredAmmo);
+                        if (!ammoItem || (ammoItem.quantity || 0) <= 0) {
+                            return `You have no ${requiredAmmo}s!`;
+                        }
+                    }
+                }
+
+                const strMod = MechanicsEngine.getModifier(pc.stats.STR || 10);
+                const dexMod = MechanicsEngine.getModifier(pc.stats.DEX || 10);
+                const prof = MechanicsEngine.getProficiencyBonus(pc.level);
+
+                const statMod = isRanged ? dexMod : strMod;
+                let attackBonus = statMod + prof;
+                let damageFormula = (mainHandItem as any)?.damage?.dice || "1d8";
+                let dmgBonus = statMod;
+                let forceDisadvantage = false;
+
+                const hasUnarmedSkill = pc.skillProficiencies.includes('Unarmed Combat');
+                if (!mainHandItem && !isRanged) {
+                    damageFormula = "1d4";
+                    attackBonus = strMod + (hasUnarmedSkill ? prof : 0);
+                    dmgBonus = strMod + (hasUnarmedSkill ? 2 : 0);
+                } else if (mainHandItem && !isRanged && CombatUtils.isRangedWeapon(mainHandItem)) {
+                    damageFormula = "1d4";
+                    attackBonus = strMod + prof;
+                    dmgBonus = strMod;
+                    forceDisadvantage = true;
+                }
+
+                const gridManager = new CombatGridManager(this.state.combat.grid!);
+                const distance = gridManager.getDistance(currentCombatant.position, target.position);
+
+                let normalRangeCells: number;
+                let maxRangeCells: number;
+                if (isRanged) {
+                    normalRangeCells = CombatUtils.getWeaponRange(mainHandItem);
+                    maxRangeCells = CombatUtils.getWeaponMaxRange(mainHandItem);
+                } else {
+                    const hasReach = (mainHandItem as any)?.properties?.some((p: string) => p.toLowerCase().includes('reach'));
+                    normalRangeCells = hasReach ? 2 : 1;
+                    maxRangeCells = normalRangeCells;
+                }
+
+                if (distance > maxRangeCells) {
+                    const distFt = distance * 5;
+                    const rangeFt = maxRangeCells * 5;
+                    return isRanged
+                        ? `Target is too far away! (${distFt}ft). Your weapon maximum range is ${rangeFt}ft.`
+                        : `Target is out of melee reach! (${distFt}ft away, melee reach is ${rangeFt}ft). Move closer first.`;
+                }
+
+                let rangePrefix = "";
+                if (isRanged && distance > normalRangeCells) {
+                    forceDisadvantage = true;
+                    rangePrefix = "(Long Range! Disadvantage) ";
+                }
+                if (isRanged) {
+                    const isThreatened = combatState.combatants.some(c =>
+                        c.type === 'enemy' && c.hp.current > 0 && gridManager.getDistance(currentCombatant.position, c.position) === 1
+                    );
+                    if (isThreatened) {
+                        forceDisadvantage = true;
+                        rangePrefix += "(Threatened! Disadvantage) ";
+                    }
+                }
+
+                const result = CombatResolutionEngine.resolveAttack(currentCombatant, target, attackBonus, damageFormula, dmgBonus, isRanged, forceDisadvantage);
+
+                if (isRanged) {
+                    if (ammoItem) {
+                        ammoItem.quantity = (ammoItem.quantity || 1) - 1;
+                        if (ammoItem.quantity <= 0) pc.inventory.items = pc.inventory.items.filter(i => i.instanceId !== ammoItem.instanceId);
+                    } else if (CombatUtils.isThrownWeapon(mainHandItem)) {
+                        pc.inventory.items = pc.inventory.items.filter(i => i.instanceId !== inventoryEntry?.instanceId);
+                        pc.equipmentSlots.mainHand = undefined;
+                    }
+                }
+
+                combatState.lastRoll = (result.details?.roll || 0) + (result.details?.modifier || 0);
+                this.emitCombatEvent(result.type, target.id, result.damage || 0);
+                const logMsg = rangePrefix + CombatLogFormatter.format(result, currentCombatant.name, target.name, isRanged);
+                this.state.combat.turnActions.push(logMsg);
+                resultMsg = logMsg;
+                await this.applyCombatDamage(target, result.damage);
+
+            } else if (intent.command === 'dodge') {
+                currentCombatant.statusEffects.push({
+                    id: 'dodge',
+                    name: 'Dodge',
+                    type: 'BUFF',
+                    duration: 1,
+                    sourceId: currentCombatant.id
+                });
+                resultMsg = `${currentCombatant.name} takes a defensive stance. Attacks against them will have disadvantage until the start of their next turn.`;
+                currentCombatant.resources.actionSpent = true;
+                this.state.combat.turnActions.push(resultMsg);
+            } else if (intent.command === 'disengage') {
+                currentCombatant.statusEffects.push({
+                    id: 'disengage',
+                    name: 'Disengage',
+                    type: 'BUFF',
+                    duration: 1,
+                    sourceId: currentCombatant.id
+                });
+                resultMsg = `${currentCombatant.name} focuses on defense while moving, preventing opportunity attacks.`;
+                this.state.combat.turnActions.push(resultMsg);
+            } else if (intent.command === 'hide') {
+                const d20 = Dice.d20();
+                const stealth = d20 + MechanicsEngine.getModifier(currentCombatant.stats.DEX || 10);
+                resultMsg = `${currentCombatant.name} attempts to hide! (Roll: ${stealth})`;
+                this.state.combat.turnActions.push(resultMsg);
+            } else if (intent.command === 'use') {
+                const abilityName = intent.args?.[0] || intent.originalInput.replace(/^use /i, '').trim();
+                resultMsg = await this.useAbility(abilityName);
+                this.state.combat.turnActions.push(resultMsg);
+            } else if (intent.command === 'move') {
+                const x = parseInt(intent.args?.[0] || '0');
+                const y = parseInt(intent.args?.[1] || '0');
+                const mode = intent.args?.[2];
+
+                if (mode === 'sprint') {
+                    currentCombatant.movementRemaining = (currentCombatant.movementSpeed || 6) * 2;
+                    currentCombatant.statusEffects.push({ id: 'sprint_reckless', name: 'Reckless Sprint', type: 'DEBUFF', duration: 1, sourceId: currentCombatant.id });
+                } else if (mode === 'evasive') {
+                    currentCombatant.statusEffects.push({ id: 'evasive_movement', name: 'Evasive Movement', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
+                } else if (mode === 'press') {
+                    currentCombatant.movementRemaining = Math.floor(currentCombatant.movementRemaining / 2);
+                    currentCombatant.statusEffects.push({ id: 'press_advantage', name: 'Pressing Attack', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
+                } else if (mode === 'stalk') {
+                    currentCombatant.movementRemaining = Math.floor(currentCombatant.movementRemaining / 2);
+                    currentCombatant.statusEffects.push({ id: 'stalking', name: 'Stalking', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
+                } else if (mode === 'flank') {
+                    currentCombatant.statusEffects.push({ id: 'flanking', name: 'Flanking', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
+                } else if (mode === 'phalanx') {
+                    currentCombatant.statusEffects.push({ id: 'phalanx_formation', name: 'Phalanx Formation', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
+                } else if (mode === 'hunker') {
+                    currentCombatant.statusEffects.push({ id: 'hunkered_down', name: 'Hunkered Down', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
+                }
+
+                resultMsg = this.combatManager.moveCombatant(currentCombatant, { x, y });
+                this.state.combat.turnActions.push(resultMsg);
+            } else if (intent.command === 'target') {
+                const targetIdOrName = intent.args?.[0];
+                const target = this.state.combat.combatants.find(c =>
+                    c.id === targetIdOrName || c.name.toLowerCase() === targetIdOrName?.toLowerCase()
+                );
+
+                if (target) {
+                    this.state.combat.selectedTargetId = target.id;
+                    resultMsg = `Target set to ${target.name}.`;
+                } else {
+                    resultMsg = "Target not found.";
+                }
+
+            } else if (intent.command === 'end turn') {
+                if (!currentCombatant.isPlayer) return "";
+
+                const summary = `${currentCombatant.name} ends their turn.`;
+
+                resultMsg = summary;
+                this.state.combat.turnActions = [];
+
+                this.addCombatLog(resultMsg);
+                this.state.lastNarrative = resultMsg;
+                await this.emitStateUpdate();
+
+                await this.advanceTurn();
+                return resultMsg;
+            }
+
+            this.addCombatLog(resultMsg);
+            if (resultMsg && !nonActionCommands.includes(intent.command || '')) {
+                currentCombatant.resources.actionSpent = true;
+            }
+
+            // Fix: Update narrative box for player actions
+            if (resultMsg) {
+                this.state.lastNarrative = resultMsg;
+            }
+
+            await this.emitStateUpdate();
+            return resultMsg;
+
+        } catch (error) {
+            console.error("[Orchestrator] Error processing player action:", error);
+            const errMsg = `[Error] Action failed: ${error instanceof Error ? error.message : String(error)}`;
+            this.addCombatLog(errMsg);
+            return errMsg;
+        }
+    }
+
+    private async advanceTurn() {
+        const msg = this.combatManager.advanceTurn();
+        this.addCombatLog(msg);
+        await this.processCombatQueue();
+    }
+
+    private async checkCombatEnd(): Promise<boolean> {
+        if (!this.state.combat) return false;
+        const enemiesAlive = this.state.combat.combatants.some(c => c.type === 'enemy' && c.hp.current > 0);
+        const playersAlive = this.state.combat.combatants.some(c => c.type === 'player' && c.hp.current > 0);
+
+        if (!enemiesAlive || !playersAlive) {
+            await this.endCombat(!enemiesAlive);
+            return true;
+        }
+        return false;
+    }
+
+    private async endCombat(victory: boolean) {
+        const combatState = this.state.combat;
+        if (!combatState) return;
+
+        const summaryMsg = victory
+            ? "Victory! All enemies have been defeated."
+            : "Defeat... You have been overcome by your foes.";
+        this.addCombatLog(summaryMsg);
+
+        if (victory) {
+            let totalXP = 0;
+            const enemies = combatState.combatants.filter(c => c.type === 'enemy');
+            for (const enemy of enemies) {
+                const monsterData = DataManager.getMonster(enemy.name);
+                totalXP += monsterData ? MechanicsEngine.getCRtoXP(monsterData.cr) : 50;
+            }
+
+            // Apply difficulty modifier from settings
+            const difficulty = (this.state.settings?.gameplay as any)?.difficulty || 'normal';
+            if (difficulty === 'hard') {
+                totalXP = Math.floor(totalXP * 1.25);
+                this.addCombatLog(`Bonus XP awarded for Hard difficulty!`);
+            }
+
+            const char = this.state.character;
+            char.xp += totalXP;
+            this.addCombatLog(`You gained ${totalXP} Experience Points! (Total: ${char.xp})`);
+
+            const defeatedEnemies = combatState.combatants.filter(c => c.type === 'enemy');
+            for (const enemy of defeatedEnemies) {
+                const monsterData = DataManager.getMonster(enemy.name);
+                if (monsterData) {
+                    const loot = LootEngine.processDefeat(monsterData);
+                    char.inventory.gold.cp += loot.gold.cp;
+                    char.inventory.gold.sp += loot.gold.sp;
+                    char.inventory.gold.gp += loot.gold.gp;
+                    char.inventory.gold.pp += loot.gold.pp;
+                    if (!this.state.location.combatLoot) this.state.location.combatLoot = [];
+                    this.state.location.combatLoot.push(...loot.items.map(i => ({ ...i, instanceId: `loot_${Date.now()}_${Math.random()}`, equipped: false })));
+                }
+            }
+
+            const nextThreshold = MechanicsEngine.getNextLevelXP(char.level);
+            if (char.xp >= nextThreshold && char.level < 20) {
+                char.level++;
+                char.hp.max += 10;
+                char.hp.current = char.hp.max;
+                Object.values(char.spellSlots).forEach(s => s.current = s.max);
+            }
+        }
+
+        if (victory) {
+            this.state.mode = 'EXPLORATION';
+            this.state.clearedHexes[this.state.location.hexId] = this.state.worldTime.totalTurns;
+            const totalMinutes = Math.ceil((combatState.round || 0) * 6 / 60) + 5;
+            this.state.worldTime = WorldClockEngine.advanceTime(this.state.worldTime, totalMinutes);
+            this.state.combat = undefined;
+            await this.emitStateUpdate();
+
+            try {
+                const summary = await NarratorService.summarizeCombat(this.state, combatState.logs || []);
+                this.state.lastNarrative = summary;
+                this.state.conversationHistory.push({ role: 'narrator', content: summary, turnNumber: this.state.worldTime.totalTurns });
+                this.contextManager.addEvent('narrator', summary);
+                await this.emitStateUpdate();
+            } catch (e) { console.error(e); }
+        } else {
+            this.state.mode = 'GAME_OVER';
+            await this.emitStateUpdate();
+        }
+    }
+
+    private async performAITurn(actor: Combatant) {
+        if (!this.state.combat) return;
+        let actionsTaken = 0;
+        const maxLoop = 2;
+
+        while (actionsTaken < maxLoop && actor.hp.current > 0) {
+            const action = CombatAI.decideAction(actor, this.state.combat);
+
+            if (action.type === 'MOVE' && action.targetId) {
+                const target = this.state.combat.combatants.find(c => c.id === action.targetId);
+                if (target && this.state.combat.grid) {
+                    const gridManager = new CombatGridManager(this.state.combat.grid);
+                    const path = gridManager.findPath(actor.position, target.position, this.state.combat.combatants);
+                    if (path && path.length > 1) {
+                        const steps = Math.min(actor.movementRemaining, path.length - 2);
+                        if (steps > 0) {
+                            const moveMsg = this.combatManager.moveCombatant(actor, path[steps]);
+                            this.addCombatLog(moveMsg);
+                            this.state.combat.turnActions.push(moveMsg);
+                        } else break;
+                    } else break;
+                } else break;
+                actionsTaken++;
+            } else if (action.type === 'ATTACK' && action.targetId) {
+                const target = this.state.combat.combatants.find(c => c.id === action.targetId);
+                if (!target) break;
+
+                const monsterData = DataManager.getMonster(actor.name);
+
+                // Parity: Tactical selection (Range vs Reach)
+                let actionData = monsterData?.actions?.[0];
+                if (monsterData?.actions && monsterData.actions.length > 1) {
+                    const preference = actor.tactical.isRanged ? 'range' : 'reach';
+                    actionData = monsterData.actions.find(a => a.description.toLowerCase().includes(preference)) || monsterData.actions[0];
+                }
+
+                if (actionData) {
+                    // Parity: Virtual Ammo
+                    const isRanged = actionData.description.toLowerCase().includes('ranged') || actionData.name?.toLowerCase().includes('bow') || actionData.name?.toLowerCase().includes('crossbow');
+                    if (isRanged) {
+                        if (actor.virtualAmmo === undefined) (actor as any).virtualAmmo = 20;
+                        if ((actor as any).virtualAmmo <= 0) {
+                            this.addCombatLog(`${actor.name} is out of ammo!`);
+                            break;
+                        }
+                        (actor as any).virtualAmmo--;
+                    }
+
+                    const result = CombatResolutionEngine.resolveAttack(actor, target, actionData.attackBonus || 0, actionData.damage || "1d6", 0, isRanged);
+                    this.emitCombatEvent(result.type, target.id, result.damage || 0);
+                    await this.applyCombatDamage(target, result.damage);
+                    const logMsg = CombatLogFormatter.format(result, actor.name, target.name, isRanged);
+                    this.addCombatLog(logMsg);
+                    this.state.combat.turnActions.push(logMsg);
+                    break;
+                } else break;
+            } else break;
+        }
+    }
+
+    public async useAbility(abilityName: string): Promise<string> {
+        const char = this.state.character;
+        const ability = AbilityParser.getCombatAbilities(char).find(a => a.name.toLowerCase() === abilityName.toLowerCase());
+
+        if (!ability) return `You don't have an ability named "${abilityName}".`;
+
+        const combat = this.state.combat;
+        const currentCombatant = combat?.combatants[combat.currentTurnIndex];
+
+        // Action Economy Check
+        if (currentCombatant && ability.actionCost === 'ACTION' && currentCombatant.resources.actionSpent) {
+            return "You have already used your action this turn.";
+        }
+
+        // Check usage
+        const usage = this.state.character.featureUsages?.[ability.name];
+        if (usage && usage.current <= 0) {
+            return `You have no more uses of "${ability.name}" left until you ${usage.usageType === 'LONG_REST' ? 'take a long rest' : 'rest'}.`;
+        }
+
+        let result = `You use ${ability.name}. `;
+
+        // Execute effect based on name
+        if (ability.name === 'Arcane Recovery') {
+            if (this.state.mode === 'COMBAT') {
+                return "Arcane Recovery can only be used during a short rest (outside of combat).";
+            }
+            result += "You focus your mind to recover some of your spent magical energy.";
+        } else if (ability.name === 'Second Wind') {
+            const rollVal = Dice.roll("1d10");
+            const heal = rollVal + char.level;
+
+            if (this.state.combat) this.state.combat.lastRoll = rollVal;
+
+            char.hp.current = Math.min(char.hp.max, char.hp.current + heal);
+            result += `Recovering ${heal} HP.`;
+        } else if (ability.name === 'Action Surge') {
+            result += "You push yourself beyond your normal limits for a moment.";
+        }
+
+        // Consume usage
+        if (usage) {
+            usage.current--;
+        }
+
+        if (this.state.mode === 'COMBAT' && currentCombatant) {
+            this.state.lastNarrative = result;
+            if (ability.actionCost === 'ACTION') {
+                currentCombatant.resources.actionSpent = true;
+            } else if (ability.actionCost === 'BONUS_ACTION') {
+                currentCombatant.resources.bonusActionSpent = true;
+            }
+
+            this.addCombatLog(result);
+            if (!this.turnProcessing && ability.actionCost === 'ACTION') {
+                // For abilities that take an action and don't explicitly end turn,
+                // we might want to wait a bit before advancing? 
+                // In backup it was 1500ms.
+                setTimeout(() => this.advanceTurn(), 1500);
+            }
+        }
+
+        return result;
+    }
+}

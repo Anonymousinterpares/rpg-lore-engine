@@ -1,0 +1,1130 @@
+{
+  "saveId": "fac90688-db31-4a13-8c6e-f177b6da15b7",
+  "saveVersion": 1,
+  "createdAt": "2026-02-14T11:39:43.405Z",
+  "lastSavedAt": "2026-02-14T11:39:43.405Z",
+  "playTimeSeconds": 0,
+  "character": {
+    "name": "Dam",
+    "level": 1,
+    "race": "Half-Elf",
+    "class": "Wizard",
+    "conditions": [],
+    "stats": {
+      "STR": 15,
+      "DEX": 14,
+      "CON": 13,
+      "INT": 12,
+      "WIS": 10,
+      "CHA": 10
+    },
+    "savingThrowProficiencies": [
+      "INT",
+      "WIS"
+    ],
+    "skillProficiencies": [
+      "Arcana",
+      "History",
+      "Perception",
+      "Investigation",
+      "Insight",
+      "Medicine",
+      "Persuasion"
+    ],
+    "hp": {
+      "current": 7,
+      "max": 7,
+      "temp": 0
+    },
+    "deathSaves": {
+      "successes": 0,
+      "failures": 0
+    },
+    "hitDice": {
+      "current": 1,
+      "max": 1,
+      "dieType": "1d6"
+    },
+    "spellSlots": {},
+    "featureUsages": {
+      "Arcane Recovery": {
+        "current": 1,
+        "max": 1,
+        "usageType": "SHORT_REST"
+      }
+    },
+    "cantripsKnown": [
+      "Fire Bolt",
+      "Chill Touch",
+      "Poison Spray"
+    ],
+    "knownSpells": [],
+    "preparedSpells": [
+      "Magic Missile",
+      "Mage Armor"
+    ],
+    "spellbook": [
+      "Burning Hands",
+      "Color Spray",
+      "Mage Armor",
+      "Magic Missile",
+      "Disguise Self",
+      "Comprehend Languages"
+    ],
+    "unseenSpells": [
+      "Acid Splash",
+      "Alarm",
+      "Burning Hands",
+      "Charm Person",
+      "Chill Touch",
+      "Color Spray",
+      "Comprehend Languages",
+      "Dancing Lights",
+      "Detect Magic",
+      "Disguise Self",
+      "Expeditious Retreat",
+      "False Life",
+      "Feather Fall",
+      "Find Familiar",
+      "Fire Bolt",
+      "Floating Disk",
+      "Fog Cloud",
+      "Grease",
+      "Hideous Laughter",
+      "Identify",
+      "Illusory Script",
+      "Jump",
+      "Light",
+      "Longstrider",
+      "Mage Armor",
+      "Mage Hand",
+      "Magic Missile",
+      "Mending",
+      "Message",
+      "Minor Illusion",
+      "Poison Spray",
+      "Prestidigitation",
+      "Protection from Evil and Good",
+      "Ray of Frost",
+      "Shield",
+      "Shocking Grasp",
+      "Silent Image",
+      "Sleep",
+      "Thunderwave",
+      "True Strike",
+      "Unseen Servant"
+    ],
+    "ac": 12,
+    "inventory": {
+      "gold": {
+        "cp": 4,
+        "sp": 0,
+        "ep": 0,
+        "gp": 10,
+        "pp": 0
+      },
+      "items": [
+        {
+          "name": "Ink (1 ounce bottle)",
+          "type": "Adventuring Gear",
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 10,
+            "pp": 0
+          },
+          "weight": 0,
+          "id": "Ink (1 ounce bottle)",
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "e9848e63-8b70-45f9-b2c7-14eddff22728"
+        },
+        {
+          "name": "Ink pen",
+          "type": "Adventuring Gear",
+          "cost": {
+            "cp": 2,
+            "sp": 0,
+            "ep": 0,
+            "gp": 0,
+            "pp": 0
+          },
+          "weight": 0,
+          "id": "Ink pen",
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "84bdaee1-58d3-4689-8ee5-66c844b56207"
+        },
+        {
+          "name": "Dagger",
+          "type": "Weapon",
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 2,
+            "pp": 0
+          },
+          "weight": 1,
+          "damage": {
+            "dice": "1d4",
+            "type": "Piercing"
+          },
+          "properties": [
+            "Finesse",
+            "Light",
+            "Thrown",
+            "Monk"
+          ],
+          "range": {
+            "normal": 20,
+            "long": 60
+          },
+          "id": "Dagger",
+          "quantity": 1,
+          "equipped": true,
+          "instanceId": "0bb610ca-ce0f-48a6-bd7d-daf8f2f3311d"
+        },
+        {
+          "name": "Paper, one sheet",
+          "id": "Paper, one sheet",
+          "type": "Misc",
+          "weight": 0,
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "b10ae49f-d781-43bf-a8e1-ef36a229898b"
+        },
+        {
+          "name": "Clothes, common",
+          "type": "Adventuring Gear",
+          "cost": {
+            "cp": 0,
+            "sp": 5,
+            "ep": 0,
+            "gp": 0,
+            "pp": 0
+          },
+          "weight": 3,
+          "id": "Clothes, common",
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "25b0eca1-4d28-4252-83c9-2e0c1e4582b5"
+        },
+        {
+          "name": "Pouch",
+          "type": "Adventuring Gear",
+          "cost": {
+            "cp": 0,
+            "sp": 5,
+            "ep": 0,
+            "gp": 0,
+            "pp": 0
+          },
+          "weight": 1,
+          "description": "A cloth or leather pouch can hold up to 20 sling bullets or 50 blowgun needles, among other things. A compartmentalized pouch for holding spell components is called a component pouch (described earlier in this section).",
+          "id": "Pouch",
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "903c7cb9-1654-4c85-b4ea-8a5b633c33bf"
+        }
+      ]
+    },
+    "equipmentSlots": {
+      "mainHand": "0bb610ca-ce0f-48a6-bd7d-daf8f2f3311d"
+    },
+    "attunedItems": [],
+    "xp": 10,
+    "inspiration": false,
+    "knownEntities": {
+      "monsters": [
+        "cat"
+      ],
+      "items": []
+    },
+    "biography": {
+      "background": "Sage",
+      "traits": [
+        "I use polysyllabic words that convey the impression of great erudition.",
+        "I've read every book in the world's greatest libraries—or I like to boast that I have.",
+        "I'm used to helping out those who aren't as smart as I am, and I patiently explain anything and everything to others.",
+        "There's nothing I like more than a good mystery.",
+        "I'm willing to listen to every side of an argument before I make my own judgment.",
+        "I ... speak ... slowly ... when ... talking ... to ... idiots, ... which ... almost ... everyone ... is ... compared ... to ... me.",
+        "I am horribly, horribly awkward in social situations.",
+        "I'm convinced that people are always trying to steal my secrets."
+      ],
+      "ideals": [
+        "Knowledge. The path to power and self-improvement is through knowledge. (Neutral)",
+        "Beauty. What is beautiful points us beyond itself toward what is true. (Good)",
+        "Logic. Emotions must not cloud our logical thinking. (Lawful)",
+        "No Limits. Nothing should fetter the infinite possibility of experience. (Chaotic)",
+        "Power. Knowledge is the path to power and domination. (Evil)",
+        "Self-Improvement. The goal of a life of study is the betterment of oneself. (Any)"
+      ],
+      "bonds": [
+        "It is my duty to protect my students.",
+        "I have an ancient text that holds a secret to the past, and I must protect it.",
+        "I work to preserve a library, university, or monastery.",
+        "My life's work is a series of tomes related to a specific field of lore.",
+        "I've been searching my whole life for the answer to a certain question.",
+        "I sold my soul for knowledge. I hope to do great deeds and win it back."
+      ],
+      "flaws": [
+        "I am easily flustered when my knowledge is challenged.",
+        "I speak without thinking, often offending others.",
+        "I can't keep a secret to save my life, or anyone else's.",
+        "Most people scream and run when they see a demon. I stop and take notes on its anatomy.",
+        "I am easily distracted by the promise of information.",
+        "I possess a self-destructive curiosity that sometimes gets me into trouble."
+      ],
+      "chronicles": [
+        {
+          "turn": 0,
+          "event": "The adventure begins."
+        }
+      ]
+    }
+  },
+  "companions": [],
+  "mode": "EXPLORATION",
+  "location": {
+    "hexId": "0,0",
+    "coordinates": [
+      0,
+      0
+    ],
+    "droppedItems": [],
+    "combatLoot": []
+  },
+  "worldTime": {
+    "hour": 9,
+    "minute": 11,
+    "day": 1,
+    "month": 1,
+    "year": 1489,
+    "totalTurns": 110
+  },
+  "worldMap": {
+    "grid_id": "fac90688-db31-4a13-8c6e-f177b6da15b7",
+    "hexes": {
+      "0,0": {
+        "coordinates": [
+          0,
+          0
+        ],
+        "name": "Initial Landing Site",
+        "generated": true,
+        "biome": "Plains",
+        "description": "A vast expanse of forest.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": true,
+        "inLineOfSight": false,
+        "namingSource": "engine",
+        "visualVariant": 1,
+        "npcs": [
+          "af17807a-d2ad-4d5f-b723-2a9ddf8136f1"
+        ]
+      },
+      "0,1": {
+        "coordinates": [
+          0,
+          1
+        ],
+        "name": "Tundra (Uncharted Territory)",
+        "generated": true,
+        "biome": "Tundra",
+        "description": "A vast expanse of tundra.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_9jvym0l6i",
+            "resourceType": "Ore",
+            "itemId": "Iron_Ore",
+            "quantityRemaining": 3,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": []
+      },
+      "0,-1": {
+        "coordinates": [
+          0,
+          -1
+        ],
+        "name": "Farmland (Uncharted Territory)",
+        "generated": true,
+        "biome": "Farmland",
+        "description": "A vast expanse of farmland.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": []
+      },
+      "1,0": {
+        "coordinates": [
+          1,
+          0
+        ],
+        "name": "Forest (Uncharted Territory)",
+        "generated": true,
+        "biome": "Forest",
+        "description": "A vast expanse of forest.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_39ma9uty2",
+            "resourceType": "Wood",
+            "itemId": "Pine_Logs",
+            "quantityRemaining": 3,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 7,
+        "npcs": []
+      },
+      "-1,1": {
+        "coordinates": [
+          -1,
+          1
+        ],
+        "name": "Hills (Uncharted Territory)",
+        "generated": true,
+        "biome": "Hills",
+        "description": "A vast expanse of hills.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": []
+      },
+      "1,-1": {
+        "coordinates": [
+          1,
+          -1
+        ],
+        "name": "Urban (Uncharted Territory)",
+        "generated": true,
+        "biome": "Urban",
+        "description": "A vast expanse of urban.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 13,
+        "npcs": []
+      },
+      "-1,0": {
+        "coordinates": [
+          -1,
+          0
+        ],
+        "name": "Farmland (Uncharted Territory)",
+        "generated": true,
+        "biome": "Farmland",
+        "description": "A vast expanse of farmland.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_b7ye6ut0w",
+            "resourceType": "Arcane",
+            "itemId": "Hay",
+            "quantityRemaining": 2,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": []
+      },
+      "0,2": {
+        "coordinates": [
+          0,
+          2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Tundra",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of tundra.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_x2j3n60ja",
+            "resourceType": "Wood",
+            "itemId": "Pine_Logs",
+            "quantityRemaining": 2,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "1,1": {
+        "coordinates": [
+          1,
+          1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Tundra",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of tundra.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_3jgesmujc",
+            "resourceType": "Wood",
+            "itemId": "Pine_Logs",
+            "quantityRemaining": 2,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "-1,2": {
+        "coordinates": [
+          -1,
+          2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Swamp",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of swamp.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_ekql3qj9n",
+            "resourceType": "Wood",
+            "itemId": "Oak_Logs",
+            "quantityRemaining": 1,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "0,-2": {
+        "coordinates": [
+          0,
+          -2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Farmland",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of farmland.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_emf0dh7hk",
+            "resourceType": "Arcane",
+            "itemId": "Hay",
+            "quantityRemaining": 1,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [
+          "705ed8b3-31bc-444d-a5ec-ed8c8235e568"
+        ],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "1,-2": {
+        "coordinates": [
+          1,
+          -2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Urban",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of urban.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_ybbvigm98",
+            "resourceType": "Arcane",
+            "itemId": "Glass_Vial",
+            "quantityRemaining": 1,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "-1,-1": {
+        "coordinates": [
+          -1,
+          -1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of plains.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "2,0": {
+        "coordinates": [
+          2,
+          0
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Forest",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of forest.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_74s5or1oc",
+            "resourceType": "Herb",
+            "itemId": "Bogbean",
+            "quantityRemaining": 2,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 6,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "2,-1": {
+        "coordinates": [
+          2,
+          -1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Swamp",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of swamp.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "-2,2": {
+        "coordinates": [
+          -2,
+          2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Farmland",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of farmland.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_ekr29zfel",
+            "resourceType": "Arcane",
+            "itemId": "Hay",
+            "quantityRemaining": 2,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "-2,1": {
+        "coordinates": [
+          -2,
+          1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Urban",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of urban.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_9r0i3k2nq",
+            "resourceType": "Arcane",
+            "itemId": "Glass_Vial",
+            "quantityRemaining": 2,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 13,
+        "npcs": [
+          "e11f6222-9739-44bd-8387-0f0caa710369"
+        ],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "2,-2": {
+        "coordinates": [
+          2,
+          -2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Farmland",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of farmland.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_zho9k8nj1",
+            "resourceType": "Arcane",
+            "itemId": "Hay",
+            "quantityRemaining": 1,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "-2,0": {
+        "coordinates": [
+          -2,
+          0
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Tundra",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of tundra.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      }
+    },
+    "discoveredHexIds": [
+      "0,0"
+    ],
+    "lastGeneratedTurn": 0,
+    "coastlines": []
+  },
+  "subLocations": [],
+  "worldNpcs": [
+    {
+      "id": "705ed8b3-31bc-444d-a5ec-ed8c8235e568",
+      "name": "Garrick Shadowstep",
+      "traits": [
+        "Alliance Loyalist",
+        "Charismatic",
+        "Naive",
+        "Greed (Gold)"
+      ],
+      "isMerchant": false,
+      "relationship": {
+        "standing": 0,
+        "interactionLog": []
+      },
+      "dialogue_triggers": [],
+      "inventory": [],
+      "conversationHistory": [],
+      "factionId": "lords_alliance",
+      "role": "Guard"
+    },
+    {
+      "id": "e11f6222-9739-44bd-8387-0f0caa710369",
+      "name": "Dara Thornbusk",
+      "traits": [
+        "Alliance Loyalist",
+        "Evil",
+        "Merchant",
+        "Collects Bones"
+      ],
+      "isMerchant": true,
+      "relationship": {
+        "standing": 0,
+        "interactionLog": []
+      },
+      "dialogue_triggers": [],
+      "inventory": [],
+      "conversationHistory": [],
+      "factionId": "lords_alliance",
+      "role": "Merchant"
+    }
+  ],
+  "activeQuests": [
+    {
+      "id": "tutorial_01",
+      "title": "The First Step",
+      "description": "You awake in a strange clearing. The air is fresh, but the silence is heavy. You must get your bearings.",
+      "status": "ACTIVE",
+      "isNew": true,
+      "objectives": [
+        {
+          "id": "obj_master_booklet",
+          "description": "Master the Booklet: View all pages (Character, Map, Quests, Equipment, Codex)",
+          "isCompleted": false,
+          "currentProgress": 2,
+          "maxProgress": 5
+        },
+        {
+          "id": "obj_study_gear",
+          "description": "Study Your Gear: Examine an item in your inventory",
+          "isCompleted": false,
+          "currentProgress": 0,
+          "maxProgress": 1
+        },
+        {
+          "id": "obj_begin_journey",
+          "description": "Begin the Journey: Move to a neighboring hex",
+          "isCompleted": false,
+          "currentProgress": 0,
+          "maxProgress": 1
+        }
+      ],
+      "rewards": {
+        "xp": 50,
+        "gold": {
+          "gp": 10,
+          "sp": 0,
+          "cp": 0,
+          "ep": 0,
+          "pp": 0
+        },
+        "items": []
+      }
+    }
+  ],
+  "factions": [],
+  "storySummary": "started their journey as a Half-Elf Wizard with the Sage background.",
+  "lastNarrative": "The plains echoed with a dance of death! Cat, a shadow in the tall grass, stalked Dam, who countered with a desperate chase, spell-fire crackling at their fingertips. Miss after miss, the tension mounted, until Cat, in a reckless lunge, found nothing but air. Seizing the moment, Dam unleashed a scorching Fire Bolt, a fiery kiss that singed Cat's resolve and brought the hunt to a sudden, triumphant end.",
+  "conversationHistory": [
+    {
+      "role": "player",
+      "content": "__OPENING_SCENE__",
+      "turnNumber": 0
+    },
+    {
+      "role": "narrator",
+      "content": "A dull ache pulses behind your eyes as consciousness slowly returns. You blink, trying to clear the haze, and find yourself lying on damp, cold earth. Above, a sky of bruised purple and grey presses down, threatening rain. A vast expanse of forest stretches to your southeast, its distant trees a dark, impenetrable wall. To the north, the land rolls into what appears to be farmland, though the details are obscured by the gloom. A faint, low rumble, like a distant beast, echoes from somewhere far off, a sound that vibrates through the very ground beneath you. You push yourself up, your limbs stiff and uncooperative, and a chill wind whips around you, carrying the scent of damp earth and something indefinably wild. Your name, Dam, is the only anchor in this sea of forgotten moments. You are alone, save for a shadowy, unknown figure standing motionless some distance away, partially obscured by the shifting light. How you arrived here, or why, remains a complete mystery. \n\nWhat do you do?",
+      "turnNumber": 0
+    },
+    {
+      "role": "narrator",
+      "content": "The plains echoed with a dance of death! Cat, a shadow in the tall grass, stalked Dam, who countered with a desperate chase, spell-fire crackling at their fingertips. Miss after miss, the tension mounted, until Cat, in a reckless lunge, found nothing but air. Seizing the moment, Dam unleashed a scorching Fire Bolt, a fiery kiss that singed Cat's resolve and brought the hunt to a sudden, triumphant end.",
+      "turnNumber": 110
+    }
+  ],
+  "triggeredEvents": [
+    "viewed_page:character",
+    "viewed_page:codex",
+    "viewed_page:spellbook"
+  ],
+  "weather": {
+    "type": "Fog",
+    "durationMinutes": 360,
+    "intensity": 1
+  },
+  "travelPace": "Normal",
+  "clearedHexes": {
+    "0,0": 50
+  },
+  "settings": {
+    "permadeath": false,
+    "variantEncumbrance": false,
+    "milestoneLeveling": false,
+    "criticalFumbleEffects": false,
+    "difficultyModifier": 1,
+    "inspirationEnabled": true,
+    "multiclassingAllowed": true,
+    "maxConversationHistoryTurns": 50,
+    "video": {
+      "fullscreen": false,
+      "vsync": true,
+      "resolutionScale": 1
+    },
+    "audio": {
+      "master": 0.8,
+      "music": 0.5
+    },
+    "gameplay": {
+      "difficulty": "normal",
+      "tutorials": true,
+      "autosave": false
+    }
+  },
+  "codexEntries": [
+    {
+      "id": "9ba9bfbc-2912-4a76-b4c8-61d9f1e1eeca",
+      "category": "bestiary",
+      "entityId": "cat",
+      "title": "The Enigmatic Feline: A Study of the Mysterious Cat",
+      "content": "In the vast and varied realms, few creatures have captivated the imagination and curiosity of scholars and adventurers alike as the enigmatic cat. Known for its sleek form and independent nature, the cat is a creature of both beauty and mystery, its true origins and capabilities shrouded in the mists of time.\n\n**Physicality and Biology**\nThe cat is a creature of remarkable agility and grace, its lithe body covered in a coat of fur that varies in color and pattern from one specimen to another. Its eyes, often described as pools of liquid gold or emerald, are said to hold a wisdom that belies its small stature. The cat's biology is as intriguing as its appearance, with some scholars speculating that it possesses a unique ability to heal rapidly from injuries, a trait that has earned it the moniker 'the self-renewing hunter.'\n\n**Ecology and Habitat**\nCats are found in a wide variety of habitats, from the dense forests of Eldoria to the bustling cities of the human realms. They are solitary creatures, preferring to hunt alone and only forming temporary alliances with others of their kind during mating season. Their diet is varied, consisting of small mammals, birds, and even insects, making them a versatile and adaptable predator.\n\n**Myths and Legends**\nThe cat is a creature of many myths and legends. In some cultures, it is revered as a symbol of good fortune and prosperity, while in others, it is feared as a harbinger of misfortune and death. One of the most enduring myths is that of the 'Nine Lives' cat, a creature said to possess the ability to cheat death nine times before finally succumbing to its fate. Whether this is mere folklore or a hint at a deeper truth about the cat's biology remains a subject of much debate among scholars.\n\n**Adventurer's Account**\n'The first time I encountered a cat was in the heart of the Whispering Woods. It was a creature of such grace and beauty that I could not help but be captivated. It moved with a fluidity that was almost hypnotic, its eyes seeming to hold the very essence of the forest itself. I have faced many creatures in my travels, but none have left such a lasting impression as the enigmatic cat.' - Thalion Swiftfoot, Elven Ranger",
+      "isNew": true,
+      "discoveredAt": 50
+    }
+  ],
+  "notifications": [
+    {
+      "id": "089ba5e4-6cd7-45da-8118-8e09812c6a45",
+      "type": "CODEX_ENTRY",
+      "message": "New codex entry created: The Enigmatic Feline: A Study of the Mysterious Cat",
+      "data": {
+        "category": "bestiary",
+        "entityId": "9ba9bfbc-2912-4a76-b4c8-61d9f1e1eeca"
+      },
+      "isRead": true,
+      "createdAt": 1771069228869
+    }
+  ]
+}

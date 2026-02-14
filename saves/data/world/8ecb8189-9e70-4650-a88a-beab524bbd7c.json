@@ -394,7 +394,7 @@
       ],
       "generated": true,
       "biome": "Swamp",
-      "name": "Swamp (Uncharted Territory)",
+      "name": "Swamp (Discovered)",
       "description": "A vast expanse of swamp.",
       "traversable_sides": {
         "N": true,
@@ -419,7 +419,7 @@
         }
       ],
       "openedContainers": {},
-      "visited": false,
+      "visited": true,
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 4,
@@ -600,7 +600,7 @@
       ],
       "generated": true,
       "biome": "Plains",
-      "name": "Uncharted Territory",
+      "name": "Plains (Uncharted Territory)",
       "description": "A vast expanse of plains.",
       "traversable_sides": {
         "N": true,
@@ -614,7 +614,7 @@
       "resourceNodes": [],
       "openedContainers": {},
       "visited": false,
-      "inLineOfSight": false,
+      "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 4,
       "npcs": []
@@ -626,7 +626,7 @@
       ],
       "generated": true,
       "biome": "Jungle",
-      "name": "Uncharted Territory",
+      "name": "Jungle (Uncharted Territory)",
       "description": "A vast expanse of jungle.",
       "traversable_sides": {
         "N": true,
@@ -640,7 +640,7 @@
       "resourceNodes": [],
       "openedContainers": {},
       "visited": false,
-      "inLineOfSight": false,
+      "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 5,
       "npcs": []
@@ -875,6 +875,84 @@
       "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 6,
+      "npcs": []
+    },
+    "2,2": {
+      "coordinates": [
+        2,
+        2
+      ],
+      "generated": true,
+      "biome": "Forest",
+      "name": "Uncharted Territory",
+      "description": "A vast expanse of forest.",
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      },
+      "interest_points": [],
+      "resourceNodes": [],
+      "openedContainers": {},
+      "visited": false,
+      "inLineOfSight": false,
+      "namingSource": "engine",
+      "visualVariant": 7,
+      "npcs": []
+    },
+    "3,1": {
+      "coordinates": [
+        3,
+        1
+      ],
+      "generated": true,
+      "biome": "Plains",
+      "name": "Uncharted Territory",
+      "description": "A vast expanse of plains.",
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      },
+      "interest_points": [],
+      "resourceNodes": [],
+      "openedContainers": {},
+      "visited": false,
+      "inLineOfSight": false,
+      "namingSource": "engine",
+      "visualVariant": 3,
+      "npcs": []
+    },
+    "4,0": {
+      "coordinates": [
+        4,
+        0
+      ],
+      "generated": true,
+      "biome": "Hills",
+      "name": "Uncharted Territory",
+      "description": "A vast expanse of hills.",
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      },
+      "interest_points": [],
+      "resourceNodes": [],
+      "openedContainers": {},
+      "visited": false,
+      "inLineOfSight": false,
+      "namingSource": "engine",
+      "visualVariant": 5,
       "npcs": []
     }
   },

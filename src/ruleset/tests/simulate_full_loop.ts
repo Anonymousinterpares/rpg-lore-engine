@@ -1,3 +1,13 @@
+// Node.js localStorage shim
+if (typeof localStorage === 'undefined') {
+    (global as any).localStorage = {
+        getItem: () => null,
+        setItem: () => { },
+        removeItem: () => { },
+        clear: () => { }
+    };
+}
+
 import { GameLoop } from '../combat/GameLoop';
 import { GameState } from '../combat/GameStateManager';
 
@@ -37,11 +47,34 @@ async function runFullLoopSimulation() {
         },
         mode: 'EXPLORATION',
         location: { hexId: '0,0', coordinates: [0, 0] },
-        worldTime: { days: 1, hours: 8, minutes: 0 },
-        worldMap: { grid_id: 'test', hexes: {} },
+        worldTime: { day: 1, hour: 8, minute: 0, month: 4, year: 1489, totalTurns: 0 },
+        worldMap: {
+            grid_id: 'test',
+            hexes: {
+                '0,0': {
+                    id: '0,0',
+                    coordinates: [0, 0],
+                    biome: 'Swamp',
+                    name: 'The Black Mire',
+                    description: 'A dark, dank swamp.',
+                    interest_points: [],
+                    resourceNodes: [],
+                    npcs: []
+                }
+            }
+        },
         activeQuests: [],
         factions: [],
-        settings: { difficulty: 'normal', ironman: false, adaptiveCombat: true, explorationDensity: 1.0, loreWeight: 1.0 },
+        settings: {
+            difficulty: 'normal',
+            goldMultiplier: 1.0,
+            xpMultiplier: 1.0,
+            narrativeStyle: 'standard',
+            gameplay: { difficulty: 'normal', ironman: false, adaptiveCombat: true, explorationDensity: 1.0, loreWeight: 1.0 }
+        },
+        weather: { type: 'Clear', durationMinutes: 60 },
+        travelPace: 'Normal',
+        clearedHexes: {},
         saveId: 'test-save',
         saveVersion: 1,
         createdAt: new Date().toISOString(),
@@ -51,8 +84,11 @@ async function runFullLoopSimulation() {
         subLocations: [],
         worldNpcs: [],
         storySummary: 'Starting a new adventure.',
+        lastNarrative: '',
         conversationHistory: [],
-        triggeredEvents: []
+        triggeredEvents: [],
+        codexEntries: [],
+        notifications: []
     } as any;
 
     const loop = new GameLoop(initialState, '.');

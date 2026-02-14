@@ -182,7 +182,10 @@ export class DataManager {
     }
 
     public static getMonster(name: string): Monster | undefined {
-        return this.monsters[name] || this.monsterLookup[name.toLowerCase()];
+        const key = name.toLowerCase();
+        return this.monsters[name] ||
+            this.monsterLookup[key] ||
+            this.monsterLookup[key.replace(/_/g, ' ')];
     }
 
     public static getMonstersByBiome(biome: string): { id: string, cr: number }[] {

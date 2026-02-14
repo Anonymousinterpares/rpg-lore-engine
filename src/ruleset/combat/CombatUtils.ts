@@ -66,7 +66,8 @@ export class CombatUtils {
         if (lower.includes('self')) return 0;
         if (lower.includes('touch')) return 1;
 
-        const match = lower.match(/(\d+)\s*ft/);
+        // Fix: Handle "120 feet" (feet vs ft)
+        const match = lower.match(/(\d+)\s*(ft|feet)/i);
         if (match) {
             return Math.ceil(parseInt(match[1]) / 5);
         }
