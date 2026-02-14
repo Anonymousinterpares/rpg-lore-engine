@@ -166,6 +166,7 @@
     transition: all 0.2s ease;
     overflow: hidden;
     position: relative;
+    flex-shrink: 0;
 }
 
 .slotItem:hover {
