@@ -110,10 +110,7 @@ export class CombatOrchestrator {
 
     public async applyCombatDamage(target: Combatant, damage: number) {
         if (damage <= 0) return;
-        const oldHp = target.hp.current;
         CombatResolutionEngine.applyDamage(target, damage);
-        // console.log(`[Orchestrator] Applied ${damage} damage to ${target.name}. HP: ${oldHp} -> ${target.hp.current}`);
-        this.addCombatLog(`[Debug] ${target.name} takes ${damage} damage (HP: ${oldHp} -> ${target.hp.current})`);
 
         if (target.concentration && target.hp.current > 0) {
             const dc = Math.max(10, Math.floor(damage / 2));
