@@ -69,18 +69,49 @@ const DiceRoller: React.FC<DiceRollerProps> = ({ result, sides = 20, isRolling =
     const isCrit = rawResult === sides; // Generic crit logic based on sides
     const isFumble = rawResult === 1;
 
-    const renderBreakdown = () => {
+    const renderEnhancedView = () => {
         if (!showResult || typeof result === 'number' || !result) return null;
+
+        const isCrit = result.value === sides;
+        const isFumble = result.value === 1;
         const sign = result.modifier >= 0 ? '+' : '-';
+
+        let resultColorClass = '';
+        if (isCrit) resultColorClass = styles.resGold;
+        else if (isFumble) resultColorClass = styles.resRed;
+        else if (result.modifier > 0) resultColorClass = styles.resGreen;
+        else if (result.modifier < 0) resultColorClass = styles.resRed;
+
         return (
-            <div className={styles.breakdown}>
-                <span className={styles.rollVal}>{result.value}</span>
-                <span className={styles.mod}>{sign} {Math.abs(result.modifier)}</span>
-                <span className={styles.equals}>=</span>
-                <span className={styles.total}>{result.total}</span>
+            <div className={styles.enhancedContainer}>
+                <div className={styles.dieSection}>
+                    <div className={`${styles.die} ${isCrit ? styles.crit : ''} ${isFumble ? styles.fumble : ''}`} style={{ width: '50px', height: '50px' }}>
+                        <svg className={styles.d20Svg} viewBox="0 0 100 100">
+                            <polygon points="50,5 95,30 95,70 50,95 5,70 5,30" className={styles.d20Shape} />
+                        </svg>
+                        <span className={styles.value} style={{ fontSize: '1.4rem' }}>{result.value}</span>
+                    </div>
+                    <div className={styles.calculationRow}>
+                        <span>{result.value}</span>
+                        <span className={result.modifier >= 0 ? styles.modPositive : styles.modNegative}>
+                            {sign} {Math.abs(result.modifier)}
+                        </span>
+                    </div>
+                </div>
+                <div className={styles.mathSection}>
+                    <div className={`${styles.finalResult} ${resultColorClass}`}>
+                        {result.total}
+                    </div>
+                    {isCrit && <div className={styles.critLabel} style={{ fontSize: '0.6rem' }}>CRIT!</div>}
+                    {isFumble && <div className={styles.fumbleLabel} style={{ fontSize: '0.6rem' }}>FUMBLE!</div>}
+                </div>
             </div>
         );
     };
+
+    if (showResult && typeof result !== 'number' && result) {
+        return renderEnhancedView();
+    }
 
     return (
         <div className={`${styles.container} ${className} ${showResult ? styles.resultGlow : ''}`}>
@@ -94,19 +125,11 @@ const DiceRoller: React.FC<DiceRollerProps> = ({ result, sides = 20, isRolling =
                 <span className={styles.value}>{displayValue ?? '--'}</span>
             </div>
 
-            {showResult && typeof result !== 'number' && result ? (
-                <div className={styles.label}>
-                    {renderBreakdown()}
-                    {isCrit && <div className={styles.critLabel}>CRITICAL!</div>}
-                    {isFumble && <div className={styles.fumbleLabel}>FUMBLE!</div>}
-                </div>
-            ) : (
-                <div className={styles.label}>
-                    D{sides}
-                    {isCrit && showResult && <span className={styles.critLabel}> CRITICAL!</span>}
-                    {isFumble && showResult && <span className={styles.fumbleLabel}> FUMBLE!</span>}
-                </div>
-            )}
+            <div className={styles.label}>
+                D{sides}
+                {isCrit && showResult && <span className={styles.critLabel}> CRITICAL!</span>}
+                {isFumble && showResult && <span className={styles.fumbleLabel}> FUMBLE!</span>}
+            </div>
         </div>
     );
 };

@@ -4,9 +4,14 @@ export class Dice {
      * Format: 2d6+4
      */
     public static roll(formula: string): number {
+        // Handle simple numbers (e.g., "5")
+        if (/^\d+$/.test(formula)) {
+            return parseInt(formula);
+        }
+
         const match = formula.match(/^(\d+)d(\d+)(?:\s*([-+]\s*)(\d+))?$/i);
         if (!match) {
-            console.error(`Invalid dice formula: ${formula}`);
+            console.error(`[Dice] Invalid dice formula: "${formula}"`);
             return 0;
         }
 
