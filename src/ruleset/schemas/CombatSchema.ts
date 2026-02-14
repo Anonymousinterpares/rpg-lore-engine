@@ -159,7 +159,15 @@ export const CombatStateSchema = z.object({
     weather: WeatherSchema.optional(),
     isAmbush: z.boolean().default(false),
     selectedTargetId: z.string().optional(),
-    lastRoll: z.number().optional(),
+    lastRoll: z.union([
+        z.number(),
+        z.object({
+            value: z.number(),
+            modifier: z.number(),
+            total: z.number(),
+            label: z.string().optional()
+        })
+    ]).optional(),
     activeBanner: z.object({
         type: z.enum(['PLAYER', 'ENEMY', 'NAME']),
         text: z.string().optional(),

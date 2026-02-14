@@ -264,7 +264,16 @@ export class CombatOrchestrator {
                     }
                 }
 
-                combatState.lastRoll = (result.details?.roll || 0) + (result.details?.modifier || 0);
+                if (result.details) {
+                    combatState.lastRoll = {
+                        value: result.details.roll || 0,
+                        modifier: result.details.modifier || 0,
+                        total: (result.details.roll || 0) + (result.details.modifier || 0),
+                        label: 'Attack'
+                    };
+                } else {
+                    combatState.lastRoll = 0;
+                }
                 this.emitCombatEvent(result.type, target.id, result.damage || 0);
                 const logMsg = rangePrefix + CombatLogFormatter.format(result, currentCombatant.name, target.name, isRanged);
                 this.state.combat.turnActions.push(logMsg);
@@ -518,8 +527,13 @@ export class CombatOrchestrator {
                     const result = CombatResolutionEngine.resolveAttack(actor, target, actionData.attackBonus || 0, actionData.damage || "1d6", 0, isRanged);
 
                     // Trigger UI Dice Animation
-                    if (this.state.combat && result.details.roll) {
-                        this.state.combat.lastRoll = result.details.roll;
+                    if (this.state.combat && result.details) {
+                        this.state.combat.lastRoll = {
+                            value: result.details.roll || 0,
+                            modifier: result.details.modifier || 0,
+                            total: (result.details.roll || 0) + (result.details.modifier || 0),
+                            label: 'Attack'
+                        };
                     }
 
                     this.emitCombatEvent(result.type, target.id, result.damage || 0);
@@ -565,7 +579,14 @@ export class CombatOrchestrator {
             const rollVal = Dice.roll("1d10");
             const heal = rollVal + char.level;
 
-            if (this.state.combat) this.state.combat.lastRoll = rollVal;
+            if (this.state.combat) {
+                this.state.combat.lastRoll = {
+                    value: rollVal,
+                    modifier: 0,
+                    total: rollVal + char.level, // Technicality: The heal is d10 + level, but the roll is d10.
+                    label: 'Heal'
+                };
+            }
 
             char.hp.current = Math.min(char.hp.max, char.hp.current + heal);
             result += `Recovering ${heal} HP.`;
