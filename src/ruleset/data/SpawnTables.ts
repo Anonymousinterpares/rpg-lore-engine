@@ -76,5 +76,20 @@ export const SPAWN_TABLES: Record<BiomeType, SpawnConfig> = {
         chance: 0.1,
         roles: ['Archaeologist', 'Scavenger', 'Cultist', 'Wanderer'],
         dominantFaction: 'zhentarim'
+    },
+    'Coast_Cold': {
+        chance: 0.1,
+        roles: ['Fisherman', 'Hunter', 'Hermit'],
+        dominantFaction: 'emerald_enclave'
+    },
+    'Coast_Desert': {
+        chance: 0.1,
+        roles: ['Nomad', 'Fisherman', 'Smuggler'],
+        dominantFaction: 'zhentarim'
+    },
+    'Mountain_High': {
+        chance: 0.05,
+        roles: ['Hermit', 'Monk', 'Explorer'],
+        dominantFaction: 'emerald_enclave'
     }
 };

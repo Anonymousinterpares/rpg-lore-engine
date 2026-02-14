@@ -25,7 +25,7 @@ export class HexGenerator {
         pool?: BiomePoolManager,
         coastlines: Coastline[] = []
     ): GeneratedHexResult {
-        const result = BiomeGenerationEngine.selectBiome(coords, neighbors, clusterSizes, coastlines);
+        const result = BiomeGenerationEngine.selectBiome(coords, coastlines);
         const biome = result.biome;
         const oceanDir = result.oceanDirection;
 

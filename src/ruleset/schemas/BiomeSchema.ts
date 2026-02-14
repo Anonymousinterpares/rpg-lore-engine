@@ -3,7 +3,8 @@ import { z } from 'zod';
 export const BiomeTypeSchema = z.enum([
     'Plains', 'Forest', 'Hills', 'Mountains', 'Swamp',
     'Desert', 'Tundra', 'Jungle', 'Coast', 'Ocean',
-    'Volcanic', 'Ruins', 'Farmland', 'Urban'
+    'Volcanic', 'Ruins', 'Farmland', 'Urban',
+    'Coast_Cold', 'Coast_Desert', 'Mountain_High'
 ]);
 
 export type BiomeType = z.infer<typeof BiomeTypeSchema>;

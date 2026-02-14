@@ -1,0 +1,1079 @@
+{
+  "saveId": "f097ab63-b7fb-47fa-b93a-f1a3ad862c13",
+  "saveVersion": 1,
+  "createdAt": "2026-02-14T21:44:17.783Z",
+  "lastSavedAt": "2026-02-14T21:44:17.783Z",
+  "playTimeSeconds": 0,
+  "character": {
+    "name": "Qwert",
+    "level": 1,
+    "race": "Half-Elf",
+    "class": "Sorcerer",
+    "conditions": [],
+    "stats": {
+      "STR": 15,
+      "DEX": 14,
+      "CON": 13,
+      "INT": 12,
+      "WIS": 10,
+      "CHA": 10
+    },
+    "savingThrowProficiencies": [
+      "CON",
+      "CHA"
+    ],
+    "skillProficiencies": [
+      "Arcana",
+      "History",
+      "Perception",
+      "Athletics",
+      "Intimidation",
+      "Nature",
+      "Religion"
+    ],
+    "hp": {
+      "current": 7,
+      "max": 7,
+      "temp": 0
+    },
+    "deathSaves": {
+      "successes": 0,
+      "failures": 0
+    },
+    "hitDice": {
+      "current": 1,
+      "max": 1,
+      "dieType": "1d6"
+    },
+    "spellSlots": {},
+    "featureUsages": {},
+    "cantripsKnown": [
+      "Fire Bolt",
+      "Acid Splash",
+      "Ray of Frost",
+      "Poison Spray"
+    ],
+    "knownSpells": [
+      "Magic Missile",
+      "Thunderwave"
+    ],
+    "preparedSpells": [
+      "Magic Missile",
+      "Thunderwave"
+    ],
+    "spellbook": [],
+    "unseenSpells": [
+      "Acid Splash",
+      "Burning Hands",
+      "Charm Person",
+      "Chill Touch",
+      "Color Spray",
+      "Comprehend Languages",
+      "Dancing Lights",
+      "Detect Magic",
+      "Disguise Self",
+      "Expeditious Retreat",
+      "False Life",
+      "Feather Fall",
+      "Fire Bolt",
+      "Fog Cloud",
+      "Jump",
+      "Light",
+      "Mage Armor",
+      "Mage Hand",
+      "Magic Missile",
+      "Mending",
+      "Message",
+      "Minor Illusion",
+      "Poison Spray",
+      "Prestidigitation",
+      "Ray of Frost",
+      "Shield",
+      "Shocking Grasp",
+      "Silent Image",
+      "Sleep",
+      "Thunderwave",
+      "True Strike"
+    ],
+    "ac": 12,
+    "inventory": {
+      "gold": {
+        "cp": 0,
+        "sp": 0,
+        "ep": 0,
+        "gp": 10,
+        "pp": 0
+      },
+      "items": [
+        {
+          "name": "Ink (1 ounce bottle)",
+          "type": "Adventuring Gear",
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 10,
+            "pp": 0
+          },
+          "weight": 0,
+          "id": "Ink (1 ounce bottle)",
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "09dc3d46-9392-467c-9876-69b61ec2f6fd"
+        },
+        {
+          "name": "Ink pen",
+          "type": "Adventuring Gear",
+          "cost": {
+            "cp": 2,
+            "sp": 0,
+            "ep": 0,
+            "gp": 0,
+            "pp": 0
+          },
+          "weight": 0,
+          "id": "Ink pen",
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "d7707324-628e-4016-a001-fc6a582d214a"
+        },
+        {
+          "name": "Dagger",
+          "type": "Weapon",
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 2,
+            "pp": 0
+          },
+          "weight": 1,
+          "damage": {
+            "dice": "1d4",
+            "type": "Piercing"
+          },
+          "properties": [
+            "Finesse",
+            "Light",
+            "Thrown",
+            "Monk"
+          ],
+          "range": {
+            "normal": 20,
+            "long": 60
+          },
+          "id": "Dagger",
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "aa18b78a-26d8-4d80-9826-a3452e65c9d7"
+        },
+        {
+          "name": "Paper, one sheet",
+          "id": "Paper, one sheet",
+          "type": "Misc",
+          "weight": 0,
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "58f3f0ab-dca5-4738-95fb-393bc89366c4"
+        },
+        {
+          "name": "Clothes, common",
+          "type": "Adventuring Gear",
+          "cost": {
+            "cp": 0,
+            "sp": 5,
+            "ep": 0,
+            "gp": 0,
+            "pp": 0
+          },
+          "weight": 3,
+          "id": "Clothes, common",
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "3a685810-58d8-4520-ab90-780ca47db373"
+        },
+        {
+          "name": "Pouch",
+          "type": "Adventuring Gear",
+          "cost": {
+            "cp": 0,
+            "sp": 5,
+            "ep": 0,
+            "gp": 0,
+            "pp": 0
+          },
+          "weight": 1,
+          "description": "A cloth or leather pouch can hold up to 20 sling bullets or 50 blowgun needles, among other things. A compartmentalized pouch for holding spell components is called a component pouch (described earlier in this section).",
+          "id": "Pouch",
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "98bbdce8-fff2-464c-98dc-c99299f1f721"
+        },
+        {
+          "name": "Shortbow",
+          "type": "Weapon",
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 25,
+            "pp": 0
+          },
+          "weight": 2,
+          "damage": {
+            "dice": "1d6",
+            "type": "Piercing"
+          },
+          "properties": [
+            "Ammunition",
+            "Two-Handed"
+          ],
+          "range": {
+            "normal": 80,
+            "long": 320
+          },
+          "id": "Shortbow",
+          "quantity": 1,
+          "equipped": true,
+          "instanceId": "dev_1771105540604_0"
+        },
+        {
+          "name": "Arrow",
+          "type": "Adventuring Gear",
+          "cost": {
+            "cp": 5,
+            "sp": 0,
+            "ep": 0,
+            "gp": 0,
+            "pp": 0
+          },
+          "weight": 1,
+          "id": "Arrow",
+          "quantity": 20,
+          "equipped": false,
+          "instanceId": "dev_1771105548391_0"
+        }
+      ]
+    },
+    "equipmentSlots": {
+      "mainHand": "dev_1771105540604_0"
+    },
+    "attunedItems": [],
+    "xp": 0,
+    "inspiration": false,
+    "knownEntities": {
+      "monsters": [],
+      "items": []
+    },
+    "biography": {
+      "background": "Sage",
+      "traits": [
+        "I use polysyllabic words that convey the impression of great erudition.",
+        "I've read every book in the world's greatest libraries—or I like to boast that I have.",
+        "I'm used to helping out those who aren't as smart as I am, and I patiently explain anything and everything to others.",
+        "There's nothing I like more than a good mystery.",
+        "I'm willing to listen to every side of an argument before I make my own judgment.",
+        "I ... speak ... slowly ... when ... talking ... to ... idiots, ... which ... almost ... everyone ... is ... compared ... to ... me.",
+        "I am horribly, horribly awkward in social situations.",
+        "I'm convinced that people are always trying to steal my secrets."
+      ],
+      "ideals": [
+        "Knowledge. The path to power and self-improvement is through knowledge. (Neutral)",
+        "Beauty. What is beautiful points us beyond itself toward what is true. (Good)",
+        "Logic. Emotions must not cloud our logical thinking. (Lawful)",
+        "No Limits. Nothing should fetter the infinite possibility of experience. (Chaotic)",
+        "Power. Knowledge is the path to power and domination. (Evil)",
+        "Self-Improvement. The goal of a life of study is the betterment of oneself. (Any)"
+      ],
+      "bonds": [
+        "It is my duty to protect my students.",
+        "I have an ancient text that holds a secret to the past, and I must protect it.",
+        "I work to preserve a library, university, or monastery.",
+        "My life's work is a series of tomes related to a specific field of lore.",
+        "I've been searching my whole life for the answer to a certain question.",
+        "I sold my soul for knowledge. I hope to do great deeds and win it back."
+      ],
+      "flaws": [
+        "I am easily flustered when my knowledge is challenged.",
+        "I speak without thinking, often offending others.",
+        "I can't keep a secret to save my life, or anyone else's.",
+        "Most people scream and run when they see a demon. I stop and take notes on its anatomy.",
+        "I am easily distracted by the promise of information.",
+        "I possess a self-destructive curiosity that sometimes gets me into trouble."
+      ],
+      "chronicles": [
+        {
+          "turn": 0,
+          "event": "The adventure begins."
+        }
+      ]
+    }
+  },
+  "companions": [],
+  "mode": "EXPLORATION",
+  "location": {
+    "hexId": "0,0",
+    "coordinates": [
+      0,
+      0
+    ],
+    "droppedItems": [],
+    "combatLoot": []
+  },
+  "worldTime": {
+    "hour": 9,
+    "minute": 5,
+    "day": 1,
+    "month": 1,
+    "year": 1489,
+    "totalTurns": 50
+  },
+  "worldMap": {
+    "grid_id": "f097ab63-b7fb-47fa-b93a-f1a3ad862c13",
+    "hexes": {
+      "0,0": {
+        "coordinates": [
+          0,
+          0
+        ],
+        "name": "Initial Landing Site",
+        "generated": true,
+        "biome": "Plains",
+        "description": "A vast expanse of plains.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": true,
+        "inLineOfSight": false,
+        "namingSource": "engine",
+        "visualVariant": 1,
+        "npcs": [
+          "518d605b-96bd-4c69-8978-d3a03aaee76e"
+        ]
+      },
+      "0,1": {
+        "coordinates": [
+          0,
+          1
+        ],
+        "name": "Plains (Uncharted Territory)",
+        "generated": true,
+        "biome": "Plains",
+        "description": "A vast expanse of plains.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [
+          "93c14aa2-abdf-4c6f-a161-8884ae940996"
+        ]
+      },
+      "0,-1": {
+        "coordinates": [
+          0,
+          -1
+        ],
+        "name": "Hills (Uncharted Territory)",
+        "generated": true,
+        "biome": "Hills",
+        "description": "A vast expanse of hills.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": []
+      },
+      "1,0": {
+        "coordinates": [
+          1,
+          0
+        ],
+        "name": "Plains (Uncharted Territory)",
+        "generated": true,
+        "biome": "Plains",
+        "description": "A vast expanse of plains.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": [
+          "94286572-816d-4732-84ca-47c0334a1a01"
+        ]
+      },
+      "-1,1": {
+        "coordinates": [
+          -1,
+          1
+        ],
+        "name": "Jungle (Uncharted Territory)",
+        "generated": true,
+        "biome": "Jungle",
+        "description": "A vast expanse of jungle.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": []
+      },
+      "1,-1": {
+        "coordinates": [
+          1,
+          -1
+        ],
+        "name": "Hills (Uncharted Territory)",
+        "generated": true,
+        "biome": "Hills",
+        "description": "A vast expanse of hills.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": []
+      },
+      "-1,0": {
+        "coordinates": [
+          -1,
+          0
+        ],
+        "name": "Plains (Uncharted Territory)",
+        "generated": true,
+        "biome": "Plains",
+        "description": "A vast expanse of plains.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_57zdt9wri",
+            "resourceType": "Ore",
+            "itemId": "Iron_Ore",
+            "quantityRemaining": 2,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 2,
+        "npcs": []
+      },
+      "0,2": {
+        "coordinates": [
+          0,
+          2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of plains.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_gdkcsw9zr",
+            "resourceType": "Hide",
+            "itemId": "Raw_Hide",
+            "quantityRemaining": 3,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "1,1": {
+        "coordinates": [
+          1,
+          1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of plains.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_jlpuim5io",
+            "resourceType": "Hide",
+            "itemId": "Raw_Hide",
+            "quantityRemaining": 3,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 2,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "-1,2": {
+        "coordinates": [
+          -1,
+          2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of jungle.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_lss4ah5p5",
+            "resourceType": "Wood",
+            "itemId": "Ironwood",
+            "quantityRemaining": 2,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "0,-2": {
+        "coordinates": [
+          0,
+          -2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Hills",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of hills.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "1,-2": {
+        "coordinates": [
+          1,
+          -2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Mountains",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of mountains.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "-1,-1": {
+        "coordinates": [
+          -1,
+          -1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of plains.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_b9we540sm",
+            "resourceType": "Herb",
+            "itemId": "Kingsbloom",
+            "quantityRemaining": 1,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [
+          "263f0bc5-7fac-4783-a548-206925fef0f1"
+        ],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "2,0": {
+        "coordinates": [
+          2,
+          0
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of plains.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 1,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "2,-1": {
+        "coordinates": [
+          2,
+          -1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Hills",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of hills.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": [
+          "0f5169cf-2be2-402f-b53f-4a745ff4ff90"
+        ],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "-2,2": {
+        "coordinates": [
+          -2,
+          2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of jungle.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "-2,1": {
+        "coordinates": [
+          -2,
+          1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of jungle.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 2,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "2,-2": {
+        "coordinates": [
+          2,
+          -2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Mountains",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of mountains.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "-2,0": {
+        "coordinates": [
+          -2,
+          0
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of plains.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_hdr0e5lqw",
+            "resourceType": "Herb",
+            "itemId": "Kingsbloom",
+            "quantityRemaining": 1,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      }
+    },
+    "discoveredHexIds": [
+      "0,0"
+    ],
+    "lastGeneratedTurn": 0,
+    "coastlines": []
+  },
+  "subLocations": [],
+  "worldNpcs": [
+    {
+      "id": "263f0bc5-7fac-4783-a548-206925fef0f1",
+      "name": "Caelum Thornbusk",
+      "traits": [
+        "Duty (Honor)",
+        "Stoic",
+        "Always Eating"
+      ],
+      "isMerchant": false,
+      "relationship": {
+        "standing": 0,
+        "interactionLog": []
+      },
+      "dialogue_triggers": [],
+      "inventory": [],
+      "conversationHistory": [],
+      "role": "Traveler"
+    },
+    {
+      "id": "0f5169cf-2be2-402f-b53f-4a745ff4ff90",
+      "name": "Elowen Oakheart",
+      "traits": [
+        "Zhentarim Mercenary",
+        "Merchant",
+        "Sarcastic"
+      ],
+      "isMerchant": false,
+      "relationship": {
+        "standing": 0,
+        "interactionLog": []
+      },
+      "dialogue_triggers": [],
+      "inventory": [],
+      "conversationHistory": [],
+      "factionId": "zhentarim",
+      "role": "Prospector"
+    }
+  ],
+  "activeQuests": [
+    {
+      "id": "tutorial_01",
+      "title": "The First Step",
+      "description": "You awake in a strange clearing. The air is fresh, but the silence is heavy. You must get your bearings.",
+      "status": "ACTIVE",
+      "isNew": true,
+      "objectives": [
+        {
+          "id": "obj_master_booklet",
+          "description": "Master the Booklet: View all pages (Character, Map, Quests, Equipment, Codex)",
+          "isCompleted": false,
+          "currentProgress": 0,
+          "maxProgress": 5
+        },
+        {
+          "id": "obj_study_gear",
+          "description": "Study Your Gear: Examine an item in your inventory",
+          "isCompleted": false,
+          "currentProgress": 0,
+          "maxProgress": 1
+        },
+        {
+          "id": "obj_begin_journey",
+          "description": "Begin the Journey: Move to a neighboring hex",
+          "isCompleted": false,
+          "currentProgress": 0,
+          "maxProgress": 1
+        }
+      ],
+      "rewards": {
+        "xp": 50,
+        "gold": {
+          "gp": 10,
+          "sp": 0,
+          "cp": 0,
+          "ep": 0,
+          "pp": 0
+        },
+        "items": []
+      }
+    }
+  ],
+  "factions": [],
+  "storySummary": "started their journey as a Half-Elf Sorcerer with the Sage background.",
+  "lastNarrative": "The morning sun casts long shadows across the vast plains where you stand. To your south, the plains continue, stretching out to an uncharted horizon. To the north, hills rise gently, their peaks shrouded in a light mist. The southeast also reveals more plains, while the southwest transitions into a dense, green jungle. Looking northeast, the hills continue, and to the northwest, the plains seem to go on indefinitely. Distant mountains can be seen far to the north and northeast, their jagged silhouettes barely visible against the winter sky. An unknown figure stands in the middle distance, their form indistinct against the bright light.",
+  "conversationHistory": [
+    {
+      "role": "player",
+      "content": "__OPENING_SCENE__",
+      "turnNumber": 0
+    },
+    {
+      "role": "narrator",
+      "content": "The biting wind whips across your face, rousing you from a deep, dreamless sleep. You stir, finding yourself sprawled on a vast, open plain, the pale winter sun already climbing the eastern sky. A thin layer of frost coats the sparse, brown grasses all around you, crunching softly as you push yourself upright. The air is sharp, carrying the scent of damp earth and something else... something wild and untamed.  \n\nYour head throbs with a dull ache, and your memory is a blank slate; only the name 'Qwert' echoes within your mind. How you came to be in this desolate expanse is a mystery, a void where recollection should be.  \n\nTo the south, the plains stretch endlessly, fading into a hazy horizon. Northward, rugged hills rise, their peaks stark against the sky, while a dense, emerald jungle claws at the southwestern edge of your vision. Far to the north, even grander mountains loom, their snow-capped summits gleaming faintly.  \n\nDirectly before you, perhaps a mile or two away, a faint, shimmering light pulses intermittently. It's too distant to discern its source, but its ethereal glow draws the eye, a strange beacon in this otherwise barren landscape. And then, just beyond that, you notice a lone, indistinct figure standing perfectly still, seemingly observing the same distant light.  \n\nWhat do you do, Qwert? Do you investigate the mysterious light, cautiously approach the unknown figure, or try to recall your past?",
+      "turnNumber": 0
+    },
+    {
+      "role": "player",
+      "content": "/item_add shortbow 1",
+      "turnNumber": 50
+    },
+    {
+      "role": "narrator",
+      "content": "The vast plains stretch out before you under the crisp winter morning sky. To the south, more plains extend to the distant horizon, while to the southwest, a dense jungle begins to appear. Northward, the plains give way to rolling hills, and further still, the faint outlines of mountains can be seen. The northeast also shows hills, with mountains beyond them. The northwest is shrouded in mist, though you sense more plains lie in that direction. To the east, the landscape is obscured. A solitary figure stands in the distance, their identity currently unknown.",
+      "turnNumber": 50
+    },
+    {
+      "role": "player",
+      "content": "/add_item shortbow 1",
+      "turnNumber": 50
+    },
+    {
+      "role": "narrator",
+      "content": "The vast plains stretch out before you, an endless expanse of golden grasses swaying gently in the morning breeze. To the south, the plains continue, unbroken as far as the eye can see. Directly ahead, to the north, the ground begins to rise, signaling the start of uncharted hills. The southeastern horizon mirrors the plains to the south, while to the southwest, the distinctive, dense canopy of a jungle hints at a change in terrain. More hills can be glimpsed to the northeast, and the northwestern plains seem to disappear into a hazy distance. Far off to the north and northeast, the faint, jagged outlines of distant mountains pierce the sky, while the far southern and southwestern horizons are dominated by more plains and jungle. An unknown figure stands alone in this open landscape, their silhouette stark against the rising sun. You retrieve a shortbow from your pack.",
+      "turnNumber": 50
+    },
+    {
+      "role": "player",
+      "content": "/add_item arrow 20",
+      "turnNumber": 50
+    },
+    {
+      "role": "narrator",
+      "content": "The morning sun casts long shadows across the vast plains where you stand. To your south, the plains continue, stretching out to an uncharted horizon. To the north, hills rise gently, their peaks shrouded in a light mist. The southeast also reveals more plains, while the southwest transitions into a dense, green jungle. Looking northeast, the hills continue, and to the northwest, the plains seem to go on indefinitely. Distant mountains can be seen far to the north and northeast, their jagged silhouettes barely visible against the winter sky. An unknown figure stands in the middle distance, their form indistinct against the bright light.",
+      "turnNumber": 50
+    }
+  ],
+  "triggeredEvents": [],
+  "weather": {
+    "type": "Snow",
+    "durationMinutes": 60,
+    "intensity": 1
+  },
+  "travelPace": "Normal",
+  "clearedHexes": {},
+  "settings": {
+    "permadeath": false,
+    "variantEncumbrance": false,
+    "milestoneLeveling": false,
+    "criticalFumbleEffects": false,
+    "difficultyModifier": 1,
+    "inspirationEnabled": true,
+    "multiclassingAllowed": true,
+    "maxConversationHistoryTurns": 50,
+    "video": {
+      "fullscreen": false,
+      "vsync": true,
+      "resolutionScale": 1
+    },
+    "audio": {
+      "master": 0.8,
+      "music": 0.5
+    },
+    "gameplay": {
+      "difficulty": "normal",
+      "tutorials": true,
+      "autosave": false
+    }
+  },
+  "codexEntries": [],
+  "notifications": []
+}

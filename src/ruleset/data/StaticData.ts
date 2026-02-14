@@ -200,6 +200,37 @@ export const BIOME_DEFINITIONS: BiomeDefinition[] = [
         "adjacencyModifiers": { "Urban": 25, "Farmland": 15, "Coast": 5 },
         "maxClusterSize": 4,
         "clusterPenaltyMultiplier": 0.5
+    },
+
+    {
+        "id": "Coast_Cold",
+        "displayName": "Frozen Coast",
+        "travelSpeedModifier": 0.8,
+        "encounterRateModifier": 1.1,
+        "baseAppearanceWeight": 0,
+        "adjacencyModifiers": { "Ocean": 50, "Tundra": 20 },
+        "maxClusterSize": 15,
+        "clusterPenaltyMultiplier": 0.4
+    },
+    {
+        "id": "Coast_Desert",
+        "displayName": "Arid Coast",
+        "travelSpeedModifier": 0.8,
+        "encounterRateModifier": 1.1,
+        "baseAppearanceWeight": 0,
+        "adjacencyModifiers": { "Ocean": 50, "Desert": 20 },
+        "maxClusterSize": 15,
+        "clusterPenaltyMultiplier": 0.4
+    },
+    {
+        "id": "Mountain_High",
+        "displayName": "High Peaks",
+        "travelSpeedModifier": 0.3,
+        "encounterRateModifier": 1.8,
+        "baseAppearanceWeight": 0,
+        "adjacencyModifiers": { "Mountains": 50 },
+        "maxClusterSize": 5,
+        "clusterPenaltyMultiplier": 0.3
     }
 ];
 
@@ -216,7 +247,10 @@ export const BIOME_RESOURCES = [
     { "biome": "Volcanic", "resources": [{ "itemId": "Mithril_Ore", "weight": 20 }, { "itemId": "Coal", "weight": 40 }, { "itemId": "Gold_Ore", "weight": 10 }] },
     { "biome": "Ruins", "resources": [{ "itemId": "Gold_Ore", "weight": 10 }, { "itemId": "Silver_Ore", "weight": 10 }] },
     { "biome": "Farmland", "resources": [{ "itemId": "Hay", "weight": 50 }, { "itemId": "Raw_Hide", "weight": 10 }] },
-    { "biome": "Urban", "resources": [{ "itemId": "Glass_Vial", "weight": 30 }] }
+    { "biome": "Urban", "resources": [{ "itemId": "Glass_Vial", "weight": 30 }] },
+    { "biome": "Coast_Cold", "resources": [{ "itemId": "Thick_Hide", "weight": 20 }, { "itemId": "Glass_Vial", "weight": 10 }] },
+    { "biome": "Coast_Desert", "resources": [{ "itemId": "Glass_Vial", "weight": 20 }, { "itemId": "Desert_Rose", "weight": 10 }] },
+    { "biome": "Mountain_High", "resources": [{ "itemId": "Mithril_Ore", "weight": 20 }, { "itemId": "Silver_Ore", "weight": 20 }, { "itemId": "Thick_Hide", "weight": 10 }] }
 ];
 
 export const RECIPES: Recipe[] = [

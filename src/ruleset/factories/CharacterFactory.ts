@@ -174,7 +174,7 @@ export class CharacterFactory {
             worldTime: { day: 1, hour: 9, minute: 0, month: 1, year: 1489, totalTurns: 0 },
             worldMap: (() => {
                 const pool = new BiomePoolManager();
-                const emptySizes = { 'Plains': 0, 'Forest': 0, 'Hills': 0, 'Mountains': 0, 'Swamp': 0, 'Desert': 0, 'Tundra': 0, 'Jungle': 0, 'Coast': 0, 'Ocean': 0, 'Volcanic': 0, 'Ruins': 0, 'Farmland': 0, 'Urban': 0 };
+                const emptySizes = { 'Plains': 0, 'Forest': 0, 'Hills': 0, 'Mountains': 0, 'Swamp': 0, 'Desert': 0, 'Tundra': 0, 'Jungle': 0, 'Coast': 0, 'Ocean': 0, 'Volcanic': 0, 'Ruins': 0, 'Farmland': 0, 'Urban': 0, 'Coast_Cold': 0, 'Coast_Desert': 0, 'Mountain_High': 0 };
                 const { hex: startHex } = HexGenerator.generateHex([0, 0], [], emptySizes, pool);
                 startHex.visited = true;
                 startHex.name = "Initial Landing Site";
