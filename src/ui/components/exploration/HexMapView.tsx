@@ -37,6 +37,7 @@ interface HexMapViewProps {
         duration: number;
     };
     previousCoordinates?: [number, number];
+    previousControlPointOffset?: [number, number];
 }
 
 const HexMapView: React.FC<HexMapViewProps> = ({
@@ -49,7 +50,8 @@ const HexMapView: React.FC<HexMapViewProps> = ({
     zoomScale = 1,
     isDraggable = true,
     travelAnimation,
-    previousCoordinates
+    previousCoordinates,
+    previousControlPointOffset
 }) => {
     const baseSize = viewMode === 'zoomed-in' ? 60 : viewMode === 'zoomed-out' ? 15 : 30;
     const size = baseSize * zoomScale;
@@ -143,6 +145,36 @@ const HexMapView: React.FC<HexMapViewProps> = ({
     const getTrailPaths = () => {
         const paths: string[] = [];
 
+        const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+        // Helper to get path data for a sub-segment of a Quadratic Bezier curve
+        const getBezierSubcurve = (p0x: number, p0y: number, p1x: number, p1y: number, p2x: number, p2y: number, t0: number, t1: number) => {
+            // If t0-t1 is too small, return empty
+            if (Math.abs(t1 - t0) < 0.001) return "";
+
+            // De Casteljau to split the curve
+            // First split at t0 and keep the segment from t0 to 1
+            const m0x = lerp(p0x, p1x, t0);
+            const m0y = lerp(p0y, p1y, t0);
+            const m1x = lerp(p1x, p2x, t0);
+            const m1y = lerp(p1y, p2y, t0);
+            const m12x = lerp(m0x, m1x, t0);
+            const m12y = lerp(m0y, m1y, t0);
+
+            // The segment [t0, 1] has control points: M12, M1, P2
+            // Now we need to take the part [0, (t1-t0)/(1-t0)] of this new segment
+            const localT = (t1 - t0) / (1 - t0 || 1);
+
+            const n0x = lerp(m12x, m1x, localT);
+            const n0y = lerp(m12y, m1y, localT);
+            const n1x = lerp(m1x, p2x, localT);
+            const n1y = lerp(m1y, p2y, localT);
+            const n12x = lerp(n0x, n1x, localT);
+            const n12y = lerp(n0y, n1y, localT);
+
+            return `M ${m12x} ${m12y} Q ${n0x} ${n0y} ${n12x} ${n12y}`;
+        };
+
         if (travelAnimation) {
             const { startCoordinates, targetCoordinates, controlPointOffset } = travelAnimation;
             const startX = getX(startCoordinates[0], startCoordinates[1]);
@@ -158,23 +190,30 @@ const HexMapView: React.FC<HexMapViewProps> = ({
 
             const now = Date.now();
             const t = Math.min(1, Math.max(0, (now - travelAnimation.startTime) / travelAnimation.duration));
-            const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
-            const q1x = lerp(startX, controlX, t);
-            const q1y = lerp(startY, controlY, t);
-
-            const dHead = `M ${startX} ${startY} Q ${q1x} ${q1y} ${playerPos.x} ${playerPos.y}`;
-            paths.push(dHead);
+            // 1. Head Segment (Growing): Anchor (Start) -> Head (Player)
+            const dHead = getBezierSubcurve(startX, startY, controlX, controlY, targetX, targetY, 0, t);
+            if (dHead) paths.push(dHead);
 
             if (previousCoordinates) {
+                // 2. Tail Segment (Shrinking): Anchor (Start) -> Tail
                 const prevX = getX(previousCoordinates[0], previousCoordinates[1]);
                 const prevY = getY(previousCoordinates[0], previousCoordinates[1]);
-                const tailT = t;
-                const tailX = prevX + (startX - prevX) * tailT;
-                const tailY = prevY + (startY - prevY) * tailT;
 
-                const dTail = `M ${startX} ${startY} L ${tailX} ${tailY}`;
-                paths.push(dTail);
+                // Use previous control point if available, else straight line
+                if (previousControlPointOffset) {
+                    const pMidX = (prevX + startX) / 2;
+                    const pMidY = (prevY + startY) / 2;
+                    const pControlX = pMidX + previousControlPointOffset[0] * (size * 2);
+                    const pControlY = pMidY + previousControlPointOffset[1] * (size * 2);
+
+                    const dTail = getBezierSubcurve(prevX, prevY, pControlX, pControlY, startX, startY, t, 1);
+                    if (dTail) paths.push(dTail);
+                } else {
+                    const tailX = lerp(prevX, startX, t);
+                    const tailY = lerp(prevY, startY, t);
+                    paths.push(`M ${startX} ${startY} L ${tailX} ${tailY}`);
+                }
             }
         } else if (previousCoordinates) {
             const prevX = getX(previousCoordinates[0], previousCoordinates[1]);
@@ -182,8 +221,15 @@ const HexMapView: React.FC<HexMapViewProps> = ({
             const currentX = getX(centerQ, centerR);
             const currentY = getY(centerQ, centerR);
 
-            const dIdle = `M ${prevX} ${prevY} L ${currentX} ${currentY}`;
-            paths.push(dIdle);
+            if (previousControlPointOffset) {
+                const pMidX = (prevX + currentX) / 2;
+                const pMidY = (prevY + currentY) / 2;
+                const pControlX = pMidX + previousControlPointOffset[0] * (size * 2);
+                const pControlY = pMidY + previousControlPointOffset[1] * (size * 2);
+                paths.push(`M ${prevX} ${prevY} Q ${pControlX} ${pControlY} ${currentX} ${currentY}`);
+            } else {
+                paths.push(`M ${prevX} ${prevY} L ${currentX} ${currentY}`);
+            }
         }
 
         return paths;

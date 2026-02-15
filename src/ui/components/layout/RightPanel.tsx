@@ -104,6 +104,7 @@ const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests
                         isDraggable={false}
                         travelAnimation={state.location.travelAnimation}
                         previousCoordinates={state.location.previousCoordinates}
+                        previousControlPointOffset={state.location.previousControlPointOffset}
                         onHexClick={(id) => {
                             // Left click now only selects, does not move
                             // Ideally, we should set some selected state here if we want inspection

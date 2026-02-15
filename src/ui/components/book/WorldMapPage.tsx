@@ -64,6 +64,9 @@ const WorldMapPage: React.FC = () => {
                     viewMode="normal"
                     selectedHexId={selectedHexId || undefined}
                     zoomScale={zoomMultiplier}
+                    travelAnimation={state.location.travelAnimation}
+                    previousCoordinates={state.location.previousCoordinates}
+                    previousControlPointOffset={state.location.previousControlPointOffset}
                 />
 
                 {contextMenu && (() => {
