@@ -110,6 +110,8 @@ export const FullSaveStateSchema = z.object({
     // --- Environmental ---
     weather: WeatherSchema.default({ type: 'Clear', durationMinutes: 0 }),
     travelPace: TravelPaceSchema.default('Normal'),
+    travelStance: z.enum(['Normal', 'Stealth']).default('Normal'),
+    explorationBlindnessUntil: z.number().default(0),
     clearedHexes: z.record(z.string(), z.number()).default({}), // hexId -> timestamp (in turns or game min)
 
     // --- Settings ---

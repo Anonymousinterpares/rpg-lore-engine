@@ -17,7 +17,8 @@ export const BaseItemSchema = z.object({
     description: z.string().optional(),
     isMagic: z.boolean().default(false),
     modifiers: z.array(ModifierSchema).default([]),
-    tags: z.array(z.string()).default([])
+    tags: z.array(z.string()).default([]),
+    charges: z.number().optional()
 });
 
 export const WeaponSchema = BaseItemSchema.extend({

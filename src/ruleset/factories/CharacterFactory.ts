@@ -108,6 +108,8 @@ export class CharacterFactory {
             createdAt: now,
             lastSavedAt: now,
             playTimeSeconds: 0,
+            travelStance: 'Normal',
+            explorationBlindnessUntil: 0,
             character: {
                 name: name,
                 level: 1,

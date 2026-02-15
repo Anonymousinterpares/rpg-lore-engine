@@ -37,7 +37,7 @@ export const SkillNameSchema = z.enum([
   'Acrobatics', 'Animal Handling', 'Arcana', 'Athletics', 'Deception',
   'History', 'Insight', 'Intimidation', 'Investigation', 'Medicine',
   'Nature', 'Perception', 'Performance', 'Persuasion', 'Religion',
-  'Sleight of Hand', 'Stealth', 'Survival', 'Unarmed Combat'
+  'Sleight of Hand', 'Stealth', 'Survival', 'Unarmed Combat', 'Cartography'
 ]);
 export type SkillName = z.infer<typeof SkillNameSchema>;
 

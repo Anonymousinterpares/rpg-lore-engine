@@ -101,7 +101,6 @@ When `MovementEngine.move(startHex, targetHex)` is called, the engine performs a
     *   **Narrative:** The output text updates: `"You follow the [Old Stone Road / Forest Path] toward [TargetBiome]."` This narrative sync is essential for world immersion.
     *   **Speed Calc:** `BaseTime * BiomeMod * (Type == 'R' ? 0.5 : 0.75)`.
     *   **Encounter Calc:** `BaseChance * (Type == 'R' ? 0.3 : 0.7)`.
-    *   **Encounter Calc:** `BaseChance * (Type == 'R' ? 0.3 : 0.7)`.
     *   **Blocker Bypass:** If `HexMapManager` lists a side as impassable (e.g., `traversable_sides`), a Road connection overrides this block, allowing passage.
 
 3.  **Case B: Wilderness (No Connection) OR Stealth Mode:**

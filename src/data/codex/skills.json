@@ -178,5 +178,15 @@
             "Navigating a trackless forest",
             "Setting up a safe campsite"
         ]
+    },
+    {
+        "name": "Cartography",
+        "ability": "INT",
+        "description": "Your Intelligence (Cartography) check measures your ability to create and read maps, and to translate the physical world into a mathematical record. It is essential for documenting infrastructure and surveying uncharted lands.",
+        "examples": [
+            "Creating a map of a dungeon",
+            "Surveying a new territory",
+            "Finding road stubs in the mists"
+        ]
     }
 ]
