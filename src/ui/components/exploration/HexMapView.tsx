@@ -59,41 +59,98 @@ const HexMapView: React.FC<HexMapViewProps> = ({
     const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
     const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 });
-    const [animationProgress, setAnimationProgress] = useState(0);
+    const [renderTrigger, setRenderTrigger] = useState(0);
+    const lastTargetRef = useRef<{ q: number, r: number } | null>(null);
+    const localStartTimeRef = useRef<number | null>(null);
+    const lastAnimIdRef = useRef<string | null>(null);
 
-    const currentHex = hexes.find(h => h.isCurrent);
-    const centerQ = currentHex ? currentHex.q : 0;
-    const centerR = currentHex ? currentHex.r : 0;
+    // Identify animation by coordinates to prevent resets if parent sends new objects
+    const currentAnimId = travelAnimation 
+        ? `anim-${travelAnimation.startCoordinates.join(',')}-to-${travelAnimation.targetCoordinates.join(',')}` 
+        : null;
+    
+    if (currentAnimId !== lastAnimIdRef.current) {
+        localStartTimeRef.current = travelAnimation ? performance.now() : null;
+        lastAnimIdRef.current = currentAnimId;
+    }
+
+    // Calculate 't' using stable local clock
+    const getT = () => {
+        if (!travelAnimation || !localStartTimeRef.current) return 0;
+        const now = performance.now();
+        const elapsed = now - localStartTimeRef.current;
+        const duration = Math.max(1, travelAnimation.duration);
+        return Math.min(1, Math.max(0, elapsed / duration));
+    };
+
+    const t = getT();
+
+    // Update lastTargetRef when travelAnimation changes to provide a stable fallback
+    useEffect(() => {
+        if (travelAnimation) {
+            lastTargetRef.current = {
+                q: travelAnimation.targetCoordinates[0],
+                r: travelAnimation.targetCoordinates[1]
+            };
+        }
+    }, [travelAnimation]);
+
+    const getCameraAxial = () => {
+        if (travelAnimation) {
+            const { startCoordinates, targetCoordinates, controlPointOffset } = travelAnimation;
+
+            const startQ = startCoordinates[0];
+            const startR = startCoordinates[1];
+            const targetQ = targetCoordinates[0];
+            const targetR = targetCoordinates[1];
+
+            const midQ = (startQ + targetQ) / 2;
+            const midR = (startR + targetR) / 2;
+            const controlQ = midQ + controlPointOffset[0];
+            const controlR = midR + controlPointOffset[1];
+
+            // Quadratic Bezier interpolation
+            const q = Math.pow(1 - t, 2) * startQ + 2 * (1 - t) * t * controlQ + Math.pow(t, 2) * targetQ;
+            const r = Math.pow(1 - t, 2) * startR + 2 * (1 - t) * t * controlR + Math.pow(t, 2) * targetR;
+
+            return { q, r };
+        }
+
+        // Fallback: Use current hex, or the last targeted coordinates during transition
+        const currentHex = hexes.find(h => h.isCurrent);
+        if (currentHex) return { q: currentHex.q, r: currentHex.r };
+        if (lastTargetRef.current) return lastTargetRef.current;
+        return { q: 0, r: 0 };
+    };
+
+    const cameraAxial = getCameraAxial();
 
     const getX = (q: number, r: number) => {
         const offset = isDraggable ? panOffset.x : 0;
-        return size * (3 / 2 * (q - centerQ)) + offset;
+        return size * (3 / 2 * (q - cameraAxial.q)) + offset;
     };
     const getY = (q: number, r: number) => {
         const offset = isDraggable ? panOffset.y : 0;
-        return -size * (Math.sqrt(3) / 2 * (q - centerQ) + Math.sqrt(3) * (r - centerR)) + offset;
+        return -size * (Math.sqrt(3) / 2 * (q - cameraAxial.q) + Math.sqrt(3) * (r - cameraAxial.r)) + offset;
     };
 
-    // Animation Loop
+    // Animation Loop - Continuous re-render while animation is active
     useEffect(() => {
-        if (!travelAnimation) {
-            setAnimationProgress(0);
-            return;
-        }
+        if (!travelAnimation) return;
 
         let rafId: number;
-        const update = () => {
-            const now = Date.now();
-            const elapsed = now - travelAnimation.startTime;
-            const progress = Math.min(1, Math.max(0, elapsed / travelAnimation.duration));
-            setAnimationProgress(progress);
-            if (progress < 1) {
-                rafId = requestAnimationFrame(update);
+        const step = () => {
+            const currentT = getT();
+            setRenderTrigger(prev => prev + 1);
+
+            if (currentT < 1) {
+                rafId = requestAnimationFrame(step);
             }
         };
-        rafId = requestAnimationFrame(update);
+
+        rafId = requestAnimationFrame(step);
         return () => cancelAnimationFrame(rafId);
-    }, [travelAnimation]);
+    }, [currentAnimId]);
 
     const handleMouseDown = (e: React.MouseEvent) => {
         if (!isDraggable) return;
@@ -111,124 +168,75 @@ const HexMapView: React.FC<HexMapViewProps> = ({
 
     const handleMouseUp = () => setIsDragging(false);
 
-    // Calculate interpolated player position on a Quadratic Bezier Curve
     const getMovingPlayerPos = () => {
-        if (!travelAnimation) {
-            return { x: getX(centerQ, centerR), y: getY(centerQ, centerR) };
-        }
-
-        const { startCoordinates, targetCoordinates, controlPointOffset, startTime, duration } = travelAnimation;
-        const now = Date.now();
-        const t = Math.min(1, Math.max(0, (now - startTime) / duration));
-
-        const startX = getX(startCoordinates[0], startCoordinates[1]);
-        const startY = getY(startCoordinates[0], startCoordinates[1]);
-        const targetX = getX(targetCoordinates[0], targetCoordinates[1]);
-        const targetY = getY(targetCoordinates[0], targetCoordinates[1]);
-
-        const midX = (startX + targetX) / 2;
-        const midY = (startY + targetY) / 2;
-
-        const controlX = midX + controlPointOffset[0] * (size * 2);
-        const controlY = midY + controlPointOffset[1] * (size * 2);
-
-        // Quadratic Bezier Formula: B(t) = (1-t)^2 P0 + 2(1-t)t P1 + t^2 P2
-        const x = Math.pow(1 - t, 2) * startX + 2 * (1 - t) * t * controlX + Math.pow(t, 2) * targetX;
-        const y = Math.pow(1 - t, 2) * startY + 2 * (1 - t) * t * controlY + Math.pow(t, 2) * targetY;
-
-        return { x, y };
+        // Dot is ALWAYS at 0,0 relative to centered camera
+        return { x: getX(cameraAxial.q, cameraAxial.r), y: getY(cameraAxial.q, cameraAxial.r) };
     };
 
     const playerPos = getMovingPlayerPos();
 
-    // Calculate Trail Segments (Curved)
+    // Calculate Trail Segments (Curved) using Axial Math
     const getTrailPaths = () => {
         const paths: string[] = [];
 
-        const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-
-        // Helper to get path data for a sub-segment of a Quadratic Bezier curve
-        const getBezierSubcurve = (p0x: number, p0y: number, p1x: number, p1y: number, p2x: number, p2y: number, t0: number, t1: number) => {
-            // If t0-t1 is too small, return empty
+        // Helper to get Axial path data for a sub-segment of a Quadratic Bezier curve using Blossoming
+        const getAxialBezierSubcurve = (p0: [number, number], p1: [number, number], p2: [number, number], t0: number, t1: number) => {
             if (Math.abs(t1 - t0) < 0.001) return "";
 
-            // De Casteljau to split the curve
-            // First split at t0 and keep the segment from t0 to 1
-            const m0x = lerp(p0x, p1x, t0);
-            const m0y = lerp(p0y, p1y, t0);
-            const m1x = lerp(p1x, p2x, t0);
-            const m1y = lerp(p1y, p2y, t0);
-            const m12x = lerp(m0x, m1x, t0);
-            const m12y = lerp(m0y, m1y, t0);
+            // Blossom formula for Quadratic Bezier: P(u, v) = (1-u)(1-v)P0 + [u(1-v) + v(1-u)]P1 + uvP2
+            const blossom = (u: number, v: number): [number, number] => [
+                (1 - u) * (1 - v) * p0[0] + (u * (1 - v) + v * (1 - u)) * p1[0] + u * v * p2[0],
+                (1 - u) * (1 - v) * p0[1] + (u * (1 - v) + v * (1 - u)) * p1[1] + u * v * p2[1]
+            ];
 
-            // The segment [t0, 1] has control points: M12, M1, P2
-            // Now we need to take the part [0, (t1-t0)/(1-t0)] of this new segment
-            const localT = (t1 - t0) / (1 - t0 || 1);
+            // A sub-segment [t0, t1] of a quadratic Bezier has control points:
+            // Q0 = P(t0, t0), Q1 = P(t0, t1), Q2 = P(t1, t1)
+            const q0 = blossom(t0, t0);
+            const q1 = blossom(t0, t1);
+            const q2 = blossom(t1, t1);
 
-            const n0x = lerp(m12x, m1x, localT);
-            const n0y = lerp(m12y, m1y, localT);
-            const n1x = lerp(m1x, p2x, localT);
-            const n1y = lerp(m1y, p2y, localT);
-            const n12x = lerp(n0x, n1x, localT);
-            const n12y = lerp(n0y, n1y, localT);
+            const sX = getX(q0[0], q0[1]);
+            const sY = getY(q0[0], q0[1]);
+            const cX = getX(q1[0], q1[1]);
+            const cY = getY(q1[0], q1[1]);
+            const eX = getX(q2[0], q2[1]);
+            const eY = getY(q2[0], q2[1]);
 
-            return `M ${m12x} ${m12y} Q ${n0x} ${n0y} ${n12x} ${n12y}`;
+            return `M ${sX} ${sY} Q ${cX} ${cY} ${eX} ${eY}`;
         };
 
         if (travelAnimation) {
             const { startCoordinates, targetCoordinates, controlPointOffset } = travelAnimation;
-            const startX = getX(startCoordinates[0], startCoordinates[1]);
-            const startY = getY(startCoordinates[0], startCoordinates[1]);
-            const targetX = getX(targetCoordinates[0], targetCoordinates[1]);
-            const targetY = getY(targetCoordinates[0], targetCoordinates[1]);
 
-            const cpOffset = controlPointOffset || [0, 0];
-            const midX = (startX + targetX) / 2;
-            const midY = (startY + targetY) / 2;
-            const controlX = midX + cpOffset[0] * (size * 2);
-            const controlY = midY + cpOffset[1] * (size * 2);
+            const midQ = (startCoordinates[0] + targetCoordinates[0]) / 2;
+            const midR = (startCoordinates[1] + targetCoordinates[1]) / 2;
+            const cp: [number, number] = [midQ + controlPointOffset[0], midR + controlPointOffset[1]];
 
-            const now = Date.now();
-            const t = Math.min(1, Math.max(0, (now - travelAnimation.startTime) / travelAnimation.duration));
-
-            // 1. Head Segment (Growing): Anchor (Start) -> Head (Player)
-            const dHead = getBezierSubcurve(startX, startY, controlX, controlY, targetX, targetY, 0, t);
+            // 1. Head Segment (Growing): Anchor (Start) -> Player (Center)
+            const dHead = getAxialBezierSubcurve(startCoordinates, cp, targetCoordinates, 0, t);
             if (dHead) paths.push(dHead);
 
             if (previousCoordinates) {
-                // 2. Tail Segment (Shrinking): Anchor (Start) -> Tail
-                const prevX = getX(previousCoordinates[0], previousCoordinates[1]);
-                const prevY = getY(previousCoordinates[0], previousCoordinates[1]);
+                // 2. Tail Segment (Shrinking): Previous -> Anchor (Start)
+                const pMidQ = (previousCoordinates[0] + startCoordinates[0]) / 2;
+                const pMidR = (previousCoordinates[1] + startCoordinates[1]) / 2;
+                const pCp: [number, number] = previousControlPointOffset ?
+                    [pMidQ + previousControlPointOffset[0], pMidR + previousControlPointOffset[1]] : [pMidQ, pMidR];
 
-                // Use previous control point if available, else straight line
-                if (previousControlPointOffset) {
-                    const pMidX = (prevX + startX) / 2;
-                    const pMidY = (prevY + startY) / 2;
-                    const pControlX = pMidX + previousControlPointOffset[0] * (size * 2);
-                    const pControlY = pMidY + previousControlPointOffset[1] * (size * 2);
-
-                    const dTail = getBezierSubcurve(prevX, prevY, pControlX, pControlY, startX, startY, t, 1);
-                    if (dTail) paths.push(dTail);
-                } else {
-                    const tailX = lerp(prevX, startX, t);
-                    const tailY = lerp(prevY, startY, t);
-                    paths.push(`M ${startX} ${startY} L ${tailX} ${tailY}`);
-                }
+                const dTail = getAxialBezierSubcurve(previousCoordinates, pCp, startCoordinates, t, 1);
+                if (dTail) paths.push(dTail);
             }
         } else if (previousCoordinates) {
-            const prevX = getX(previousCoordinates[0], previousCoordinates[1]);
-            const prevY = getY(previousCoordinates[0], previousCoordinates[1]);
-            const currentX = getX(centerQ, centerR);
-            const currentY = getY(centerQ, centerR);
+            const currentHex = hexes.find(h => h.isCurrent);
+            if (currentHex) {
+                const currentCoords: [number, number] = [currentHex.q, currentHex.r];
+                const pMidQ = (previousCoordinates[0] + currentCoords[0]) / 2;
+                const pMidR = (previousCoordinates[1] + currentCoords[1]) / 2;
+                const pCp: [number, number] = previousControlPointOffset ?
+                    [pMidQ + previousControlPointOffset[0], pMidR + previousControlPointOffset[1]] : [pMidQ, pMidR];
 
-            if (previousControlPointOffset) {
-                const pMidX = (prevX + currentX) / 2;
-                const pMidY = (prevY + currentY) / 2;
-                const pControlX = pMidX + previousControlPointOffset[0] * (size * 2);
-                const pControlY = pMidY + previousControlPointOffset[1] * (size * 2);
-                paths.push(`M ${prevX} ${prevY} Q ${pControlX} ${pControlY} ${currentX} ${currentY}`);
-            } else {
-                paths.push(`M ${prevX} ${prevY} L ${currentX} ${currentY}`);
+                const dIdle = getAxialBezierSubcurve(previousCoordinates, pCp, currentCoords, 0, 1);
+                if (dIdle) paths.push(dIdle);
             }
         }
 
@@ -331,7 +339,7 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                                 key={i}
                                 d={pathData}
                                 fill="none"
-                                stroke="#4ecdc4"
+                                stroke="#343d3dff"
                                 strokeWidth="4"
                                 strokeDasharray="8,6"
                                 opacity="0.8"

@@ -19,7 +19,11 @@
     position: absolute;
     clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    transition:
+        background 0.3s ease,
+        opacity 0.3s ease,
+        filter 0.3s ease,
+        transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -62,7 +66,11 @@
 .hex {
     background: rgba(93, 64, 55, 0.4);
     /* Brownish contour */
-    transition: all 0.2s ease;
+    transition: 
+        background 0.3s ease,
+        opacity 0.3s ease,
+        filter 0.3s ease,
+        transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
 
 .hex.selected {
