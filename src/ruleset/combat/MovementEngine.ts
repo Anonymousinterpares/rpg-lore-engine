@@ -1,6 +1,7 @@
 import { HexMapManager } from './HexMapManager';
 import { Hex, HexDirection } from '../schemas/HexMapSchema';
 import { TravelPace } from '../schemas/BaseSchemas';
+import { BIOME_DEFINITIONS } from '../data/StaticData';
 
 export interface MovementResult {
     success: boolean;
@@ -136,11 +137,16 @@ export class MovementEngine {
             ? `You venture ${direction} into unexplored territory... [TRIGGER: HEX_GENERATION]`
             : `You travel ${direction} into ${newHex.name || 'the unknown'}.`;
 
+        // Biome speed modifier
+        const biomeDef = BIOME_DEFINITIONS.find(b => b.id === newHex!.biome);
+        const speedMod = biomeDef?.travelSpeedModifier || 1.0;
+
         // Pace-based time cost calculation
         const baseTime = 4 * 60; // 4 hours base
-        let timeCost = baseTime;
-        if (pace === 'Fast') timeCost = Math.floor(baseTime * 0.75); // 3 hours
-        if (pace === 'Slow') timeCost = Math.floor(baseTime * 1.5);  // 6 hours
+        let timeCost = Math.floor(baseTime / speedMod);
+
+        if (pace === 'Fast') timeCost = Math.floor(timeCost * 0.75); // 3 hours equivalent
+        if (pace === 'Slow') timeCost = Math.floor(timeCost * 1.5);  // 6 hours equivalent
 
         return { success: true, newHex, requiresGeneration, message, timeCost };
     }

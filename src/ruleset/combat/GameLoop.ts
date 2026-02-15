@@ -232,24 +232,40 @@ export class GameLoop {
 
                 const startCoords = [...this.state.location.coordinates] as [number, number];
                 const targetCoords = result.newHex!.coordinates;
+                const startHex = this.hexMapManager.getHex(`${startCoords[0]},${startCoords[1]}`);
+
+                // --- Connectivity & Curve Logic ---
+                let curvatureX: number;
+                let curvatureY: number;
+                let travelType: 'Road' | 'Path' | 'Stealth' | 'Wilderness' = 'Wilderness';
+                let infraSpeedMod = 1.0;
+
+                const sideIndex = HexMapManager.getSideIndex(startCoords, targetCoords);
+                const connection = startHex ? this.hexMapManager.getConnection(startHex, sideIndex) : null;
+
+                // Use road/path if discovered AND not in stealth mode
+                if (connection && connection.discovered && this.state.travelStance !== 'Stealth') {
+                    travelType = connection.type === 'R' ? 'Road' : 'Path';
+                    infraSpeedMod = connection.type === 'R' ? 0.5 : 0.75;
+
+                    // Deterministic Curve (seeded by coordinates to ensure visual consistency)
+                    const seed = (startCoords[0] * 131 + startCoords[1] * 7 + targetCoords[0] * 31 + targetCoords[1] * 3) % 1000;
+                    const pseudoRand = (s: number) => ((s * 9301 + 49297) % 233280) / 233280;
+                    curvatureX = (pseudoRand(seed) * 0.8 - 0.4); // Tighter deviation for roads
+                    curvatureY = (pseudoRand(seed + 1) * 0.8 - 0.4);
+                } else {
+                    if (this.state.travelStance === 'Stealth') {
+                        travelType = 'Stealth';
+                    }
+                    // Random deviation for wilderness/stealth
+                    const rand = () => (Math.random() + Math.random() + Math.random()) / 3 - 0.5;
+                    curvatureX = rand() * 1.5;
+                    curvatureY = rand() * 1.5;
+                }
 
                 // Calculate Base Duration
-                const baseDurationMs = result.timeCost * (1000 / 60); // 1 real sec = 1 game hour
+                const baseDurationMs = (result.timeCost * infraSpeedMod) * (1000 / 60); // 1 real sec = 1 game hour
 
-                // --- Curve Calculation ---
-                // Generate a random control point offset for a Quadratic Bezier curve
-                // We want the curve to deviate from the straight line but land back on target.
-                // The offset is relative to the *midpoint* of the straight line.
-
-                // Random deviation: +/- 0.5 hex width equivalent (approx 0.5 coord units)
-                // We use a pseudo-normal distribution to keep it mostly reasonable
-                const rand = () => (Math.random() + Math.random() + Math.random()) / 3 - 0.5;
-                const curvatureX = rand() * 1.5; // Scale deviation
-                const curvatureY = rand() * 1.5;
-
-                // Calculate approximate arc length for duration adjustment
-                // Simple approximation: hypotenuse of the triangle formed by start, control, end
-                // Or just scale base duration by a factor of the deviation magnitude
                 const curveFactor = 1 + (Math.abs(curvatureX) + Math.abs(curvatureY)) * 0.2;
                 const durationMs = Math.round(baseDurationMs * curveFactor);
 
@@ -274,8 +290,9 @@ export class GameLoop {
                 this.state.location.hexId = `${targetCoords[0]},${targetCoords[1]}`;
                 this.state.location.travelAnimation = undefined;
 
-                // Advance time for travel
-                const encounter = await this.time.advanceTimeAndProcess(result.timeCost);
+                // Advance time for travel (apply infrastructure modifier to game time too)
+                const adjustedTimeCost = Math.max(1, Math.round(result.timeCost * infraSpeedMod));
+                const encounter = await this.time.advanceTimeAndProcess(adjustedTimeCost);
                 await this.exploration.expandHorizon(this.state.location.coordinates);
                 await this.time.trackTutorialEvent('moved_hex');
 
@@ -283,7 +300,16 @@ export class GameLoop {
                     await this.initializeCombat(encounter);
                     return `You move ${direction}. Suddenly, you are ambushed!`;
                 }
-                return `You travel ${direction} through the ${this.hexMapManager.getHex(this.state.location.hexId)?.biome || 'wilderness'}.`;
+
+                // Varied Narrative
+                const targetBiome = this.hexMapManager.getHex(this.state.location.hexId)?.biome || 'wilderness';
+                let narrativeMessage = `You travel ${direction} through the ${targetBiome}.`;
+
+                if (travelType === 'Road') narrativeMessage = `You follow the road ${direction} into the ${targetBiome}.`;
+                else if (travelType === 'Path') narrativeMessage = `You follow a narrow trail ${direction} through the ${targetBiome}.`;
+                else if (travelType === 'Stealth') narrativeMessage = `You move stealthily ${direction}, avoiding the main paths as you enter the ${targetBiome}.`;
+
+                return narrativeMessage;
 
             case 'moveto':
                 if (this.state.mode === 'COMBAT') {

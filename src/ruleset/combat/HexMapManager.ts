@@ -60,6 +60,60 @@ export class HexMapManager {
     }
 
     /**
+     * Gets the side index (0-5) for a neighbor based on target coordinates.
+     */
+    public static getSideIndex(current: [number, number], target: [number, number]): number {
+        const dq = target[0] - current[0];
+        const dr = target[1] - current[1];
+
+        if (dq === 0 && dr === 1) return 0;  // N
+        if (dq === 1 && dr === 0) return 1;  // NE
+        if (dq === 1 && dr === -1) return 2; // SE
+        if (dq === 0 && dr === -1) return 3; // S
+        if (dq === -1 && dr === 0) return 4; // SW
+        if (dq === -1 && dr === 1) return 5; // NW
+
+        return -1;
+    }
+
+    /**
+     * Parses the connections string and returns data for a specific side.
+     */
+    public getConnection(hex: Hex, sideIndex: number): { type: 'R' | 'P', discovered: boolean } | null {
+        if (!hex.connections) return null;
+        const parts = hex.connections.split(',');
+        for (const part of parts) {
+            const [side, type, disco] = part.split(':');
+            if (parseInt(side, 10) === sideIndex) {
+                return {
+                    type: type as 'R' | 'P',
+                    discovered: disco === '1'
+                };
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Updates or adds a connection to the hex.
+     */
+    public setConnection(hex: Hex, sideIndex: number, type: 'R' | 'P', discovered: boolean): void {
+        const newEntry = `${sideIndex}:${type}:${discovered ? '1' : '0'}`;
+        if (!hex.connections) {
+            hex.connections = newEntry;
+        } else {
+            const parts = hex.connections.split(',');
+            const existingIndex = parts.findIndex(p => p.startsWith(`${sideIndex}:`));
+            if (existingIndex !== -1) {
+                parts[existingIndex] = newEntry;
+            } else {
+                parts.push(newEntry);
+            }
+            hex.connections = parts.join(',');
+        }
+    }
+
+    /**
      * Checks if movement is allowed in a given direction from the current hex
      */
     public canTraverse(currentHex: Hex, direction: HexDirection): boolean {
