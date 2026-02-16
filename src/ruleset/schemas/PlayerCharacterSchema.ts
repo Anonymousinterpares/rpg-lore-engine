@@ -63,6 +63,7 @@ export const PlayerCharacterSchema = z.object({
             type: z.string().optional().default('Misc'),
             weight: z.number(),
             quantity: z.number().default(1),
+            charges: z.number().optional(),
             equipped: z.boolean().default(false)
         })).default([])
     }).default({}),

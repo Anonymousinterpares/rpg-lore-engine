@@ -52,6 +52,9 @@ export class IntentRouter {
             if (lower === 'long rest') {
                 return { type: 'COMMAND', command: 'rest', args: ['long'], originalInput: input };
             }
+            if (lower === 'survey') {
+                return { type: 'COMMAND', command: 'survey', args: [], originalInput: input };
+            }
             if (lower.startsWith('wait')) {
                 const parts = trimmed.split(' ');
                 return { type: 'COMMAND', command: 'wait', args: parts.slice(1), originalInput: input };

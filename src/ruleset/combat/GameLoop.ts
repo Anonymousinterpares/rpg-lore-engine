@@ -242,11 +242,12 @@ export class GameLoop {
 
                 const sideIndex = HexMapManager.getSideIndex(startCoords, targetCoords);
                 const connection = startHex ? this.hexMapManager.getConnection(startHex, sideIndex) : null;
+                const isFindThePathActive = this.state.worldTime.totalTurns < this.state.findThePathActiveUntil;
 
                 // Use road/path if discovered AND not in stealth mode
-                if (connection && connection.discovered && this.state.travelStance !== 'Stealth') {
-                    travelType = connection.type === 'R' ? 'Road' : 'Path';
-                    infraSpeedMod = connection.type === 'R' ? 0.5 : 0.75;
+                if ((isFindThePathActive || (connection && connection.discovered)) && this.state.travelStance !== 'Stealth') {
+                    travelType = (isFindThePathActive || connection?.type === 'R') ? 'Road' : 'Path';
+                    infraSpeedMod = (isFindThePathActive || connection?.type === 'R') ? 0.5 : 0.75;
 
                     // Deterministic Curve (seeded by coordinates to ensure visual consistency)
                     const seed = (startCoords[0] * 131 + startCoords[1] * 7 + targetCoords[0] * 31 + targetCoords[1] * 3) % 1000;
@@ -385,12 +386,16 @@ export class GameLoop {
                 const startCoordsMT = [...this.state.location.coordinates] as [number, number];
                 const targetCoordsMT = moveResult.newHex!.coordinates;
                 // Calculate Base Duration
-                const baseDurationMsMT = moveResult.timeCost * (1000 / 60);
+                const isFindThePathActiveMT = this.state.worldTime.totalTurns < this.state.findThePathActiveUntil;
+                const travelTypeMT: 'Road' | 'Path' | 'Stealth' | 'Wilderness' = isFindThePathActiveMT ? 'Road' : 'Wilderness';
+                const infraSpeedModMT = isFindThePathActiveMT ? 0.5 : 1.0;
+
+                const baseDurationMsMT = (moveResult.timeCost * infraSpeedModMT) * (1000 / 60);
 
                 // --- Curve Calculation ---
                 const randMT = () => (Math.random() + Math.random() + Math.random()) / 3 - 0.5;
-                const curvatureXMT = randMT() * 1.5;
-                const curvatureYMT = randMT() * 1.5;
+                const curvatureXMT = isFindThePathActiveMT ? (Math.random() * 0.8 - 0.4) : randMT() * 1.5;
+                const curvatureYMT = isFindThePathActiveMT ? (Math.random() * 0.8 - 0.4) : randMT() * 1.5;
                 const curveFactorMT = 1 + (Math.abs(curvatureXMT) + Math.abs(curvatureYMT)) * 0.2;
                 const durationMsMT = Math.round(baseDurationMsMT * curveFactorMT);
 
@@ -401,7 +406,7 @@ export class GameLoop {
                     controlPointOffset: [curvatureXMT, curvatureYMT],
                     startTime: Date.now(),
                     duration: durationMsMT,
-                    travelType: 'Wilderness'
+                    travelType: travelTypeMT
                 };
                 await this.emitStateUpdate();
 
@@ -463,6 +468,49 @@ export class GameLoop {
                 (this.state.settings.gameplay as any).pacing = args[0] as any;
                 await this.emitStateUpdate();
                 return `Pacing set to ${args[0]}.`;
+
+            case 'survey': {
+                const centerHex = this.hexMapManager.getHex(this.state.location.hexId);
+                if (!centerHex) return "Error: Current hex not found.";
+
+                // 1. Requirements Check
+                if (!this.inventory.hasItem("Cartographer's tools")) return "You need Cartographer's tools to survey the area.";
+                if (!this.inventory.hasItem("Ink (1 ounce bottle)")) return "You need Ink to survey the area.";
+                if (!this.inventory.hasItem("Parchment (one sheet)")) return "You need Parchment to survey the area.";
+
+                // 2. Consume Resources (Consumed regardless of success/failure)
+                await this.inventory.consumeCharge("Ink (1 ounce bottle)");
+                await this.inventory.consumeQuantity("Parchment (one sheet)", 1);
+
+                // 3. Skill Check
+                // Formula: 1d20 + floor((INT + WIS) / 2 - 10) / 2) + ProficiencyBonus
+                const pc = this.state.character;
+                const intScore = pc.stats['INT'] || 10;
+                const wisScore = pc.stats['WIS'] || 10;
+                const avgMod = Math.floor((Math.floor((intScore - 10) / 2) + Math.floor((wisScore - 10) / 2)) / 2);
+                const isProficient = pc.skillProficiencies.includes('Cartography');
+                const profBonus = isProficient ? (2 + Math.floor((pc.level - 1) / 4)) : 0;
+                const roll = Math.floor(Math.random() * 20) + 1;
+                const total = roll + avgMod + profBonus;
+
+                // DC Table
+                const dcMap: Record<string, number> = {
+                    'Plains': 12, 'Farmland': 12, 'Urban': 12,
+                    'Forest': 15, 'Hills': 15,
+                    'Swamp': 18, 'Jungle': 18, 'Mountains': 18, 'Mountain_High': 18
+                };
+                const dc = dcMap[centerHex.biome] || 15;
+
+                if (total < dc) {
+                    await this.emitStateUpdate();
+                    return "Your survey yields only rough sketches. The supplies are spent, but no useful map emerges.";
+                }
+
+                // 4. Success
+                const revealed = await this.exploration.surveyArea(this.state.location.coordinates);
+                await this.emitStateUpdate();
+                return `Through meticulous measurement and sketching, you successfully survey the region. \n\nRevealed ${revealed} new connections and uncharted terrain features.`;
+            }
 
             case 'add_item':
                 return await this.inventory.addItem(args[0], parseInt(args[1] || '1'));

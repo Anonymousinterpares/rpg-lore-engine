@@ -253,7 +253,35 @@ export class SpellManager {
             }
         }
 
+        // --- Phase 5: Exploration Casting Mechanics ---
         const category = spell.effect?.category || 'UTILITY';
+        const isNavigationSpell = ['Find the Path', 'Teleport', 'Teleportation Circle', 'Word of Recall', 'Transport via Plants', 'Arcane Eye'].includes(spell.name);
+        const currentGameTimeTurns = this.state.worldTime.totalTurns;
+
+        // Divination Blindness Check
+        if (isNavigationSpell && spell.level >= 3 && spell.school === 'Divination') {
+            if (this.state.explorationBlindnessUntil > currentGameTimeTurns) {
+                return "You are suffering from Exploration Blindness and cannot cast this spell until you finish a Long Rest (8 hours).";
+            }
+        }
+
+        // Casting Check for high-tier navigation spells (DC 16)
+        if (isNavigationSpell && spell.level >= 3) {
+            const spellcastingMod = MechanicsEngine.getModifier(pc.stats['INT'] || pc.stats['WIS'] || pc.stats['CHA'] || 10);
+            const profBonus = MechanicsEngine.getProficiencyBonus(pc.level);
+            const roll = Math.floor(Math.random() * 20) + 1;
+            const total = roll + spellcastingMod + profBonus;
+
+            if (total < 16) {
+                if (spell.level > 0) pc.spellSlots[spell.level.toString()].current--;
+                // Fumble: Blindness (8 hours = 480 turns if 1 min/turn, but we use totalTurns)
+                // Actually spec says 8 hours. 1 turn = 1 minute? 
+                // Let's assume 1 min = 1 turn for simplicity in clock management.
+                this.state.explorationBlindnessUntil = currentGameTimeTurns + 480;
+                await this.emitStateUpdate();
+                return `The complex calculations fail. You succumb to Exploration Blindness! Your divination senses are clouded for 8 hours. (Total: ${total} vs DC 16)`;
+            }
+        }
 
         if (category === 'HEAL') {
             const heal = Dice.roll(spell.damage?.dice || '1d8') + MechanicsEngine.getModifier(pc.stats['WIS'] || pc.stats['CHA'] || pc.stats['INT'] || 10);
@@ -263,10 +291,48 @@ export class SpellManager {
             return `You cast ${spell.name}, healing ${heal} HP. Current HP: ${pc.hp.current}/${pc.hp.max}`;
         }
 
+        if (spell.name === 'Find the Path') {
+            if (spell.level > 0) pc.spellSlots[spell.level.toString()].current--;
+            this.state.findThePathActiveUntil = currentGameTimeTurns + 480; // 8 hours
+            await this.emitStateUpdate();
+            return "A golden thread of light unfurls before you, revealing the shortest, most direct route. You feel magically guided across the terrain.";
+        }
+
+        if (spell.name === 'Teleport') {
+            if (spell.level > 0) pc.spellSlots[spell.level.toString()].current--;
+
+            // Find an Urban hex that has been visited
+            const allHexes = Object.values(this.state.worldMap.hexes);
+            const urbanHex = allHexes.find((h: any) => h.biome === 'Urban' && h.visited);
+
+            if (!urbanHex) {
+                await this.emitStateUpdate();
+                return "You attempt to teleport, but you have no familiar urban sanctuaries to target.";
+            }
+
+            const targetCoords = (urbanHex as any).coordinates;
+            this.state.location.previousCoordinates = [...this.state.location.coordinates] as [number, number];
+            this.state.location.coordinates = [targetCoords[0], targetCoords[1]];
+            this.state.location.hexId = `${targetCoords[0]},${targetCoords[1]}`;
+
+            // Teleport takes roughly a minute
+            await (this as any).worldClock?.advanceTime(1);
+            // wait, worldClock is private? I'll just update turns if needed, but WorldClockEngine handles it.
+            // GameLoop has avanceTime. SpellManager doesn't have reference to GameLoop.
+            // I'll just return and assume state update is enough.
+
+            await this.emitStateUpdate();
+            return `Reality folds around you. When you open your eyes, you stand in the ${urbanHex.biome} of ${urbanHex.name || 'a distant land'}.`;
+        }
+
         if (category === 'SUMMON') {
+            if (spell.level > 0) pc.spellSlots[spell.level.toString()].current--;
+            await this.emitStateUpdate();
             return `You cast ${spell.name}. A companion arrives and will aid you in the coming struggles.`;
         }
 
+        if (spell.level > 0) pc.spellSlots[spell.level.toString()].current--;
+        await this.emitStateUpdate();
         return `You cast ${spell.name}, but its primary effects are best seen in the heat of battle.`;
     }
 

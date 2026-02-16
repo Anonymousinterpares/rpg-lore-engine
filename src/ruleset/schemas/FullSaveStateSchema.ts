@@ -57,6 +57,7 @@ export const FullSaveStateSchema = z.object({
             type: z.string(),
             quantity: z.number(),
             weight: z.number(),
+            charges: z.number().optional(),
             instanceId: z.string()
         })).optional().default([]),
         combatLoot: z.array(z.object({
@@ -65,6 +66,7 @@ export const FullSaveStateSchema = z.object({
             type: z.string(),
             quantity: z.number(),
             weight: z.number(),
+            charges: z.number().optional(),
             instanceId: z.string()
         })).optional().default([]),
         travelAnimation: z.object({
@@ -113,6 +115,7 @@ export const FullSaveStateSchema = z.object({
     travelPace: TravelPaceSchema.default('Normal'),
     travelStance: z.enum(['Normal', 'Stealth']).default('Normal'),
     explorationBlindnessUntil: z.number().default(0),
+    findThePathActiveUntil: z.number().default(0),
     clearedHexes: z.record(z.string(), z.number()).default({}), // hexId -> timestamp (in turns or game min)
 
     // --- Settings ---

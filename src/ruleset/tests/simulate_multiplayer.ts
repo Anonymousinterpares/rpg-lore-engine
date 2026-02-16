@@ -74,6 +74,7 @@ async function verifyMultiplayer() {
         travelPace: 'Normal',
         travelStance: 'Normal',
         explorationBlindnessUntil: 0,
+        findThePathActiveUntil: 0,
         clearedHexes: {},
         settings: SettingsManager.getGlobalSettings(),
         codexEntries: [],

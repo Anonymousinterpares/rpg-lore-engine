@@ -426,7 +426,7 @@
       ],
       "generated": true,
       "biome": "Plains",
-      "name": "Plains (Uncharted Territory)",
+      "name": "Plains (Discovered)",
       "description": "A vast expanse of plains.",
       "traversable_sides": {
         "N": true,
@@ -451,7 +451,7 @@
         }
       ],
       "openedContainers": {},
-      "visited": false,
+      "visited": true,
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 1,
@@ -679,9 +679,9 @@
       "generated": true,
       "visited": false,
       "biome": "Jungle",
-      "name": "Uncharted Territory",
+      "name": "Jungle (Uncharted Territory)",
       "description": "A vast expanse of jungle.",
-      "inLineOfSight": false,
+      "inLineOfSight": true,
       "interest_points": [],
       "resourceNodes": [
         {
@@ -708,7 +708,7 @@
         "SE": true,
         "SW": true
       },
-      "connections": "3:P:1,2:P:1"
+      "connections": "3:P:1,2:P:1,0:P:0"
     },
     "3,0": {
       "coordinates": [
@@ -718,9 +718,9 @@
       "generated": true,
       "visited": false,
       "biome": "Plains",
-      "name": "Uncharted Territory",
+      "name": "Plains (Uncharted Territory)",
       "description": "A vast expanse of plains.",
-      "inLineOfSight": false,
+      "inLineOfSight": true,
       "interest_points": [],
       "resourceNodes": [],
       "openedContainers": {},
@@ -735,7 +735,7 @@
         "SE": true,
         "SW": true
       },
-      "connections": "5:P:1,3:R:1"
+      "connections": "5:P:1,3:R:1,1:R:1,2:R:1"
     },
     "3,-1": {
       "coordinates": [
@@ -745,9 +745,9 @@
       "generated": true,
       "visited": false,
       "biome": "Plains",
-      "name": "Uncharted Territory",
+      "name": "Plains (Uncharted Territory)",
       "description": "A vast expanse of plains.",
-      "inLineOfSight": false,
+      "inLineOfSight": true,
       "interest_points": [],
       "resourceNodes": [],
       "openedContainers": {},
@@ -762,7 +762,7 @@
         "SE": true,
         "SW": true
       },
-      "connections": "0:R:1"
+      "connections": "0:R:1,1:R:1,2:P:1"
     },
     "3,-2": {
       "coordinates": [
@@ -790,6 +790,167 @@
         "SW": true
       },
       "connections": "4:P:0"
+    },
+    "2,2": {
+      "coordinates": [
+        2,
+        2
+      ],
+      "generated": true,
+      "visited": false,
+      "biome": "Jungle",
+      "name": "Uncharted Territory",
+      "description": "A vast expanse of jungle.",
+      "inLineOfSight": false,
+      "interest_points": [],
+      "resourceNodes": [],
+      "openedContainers": {},
+      "namingSource": "engine",
+      "visualVariant": 4,
+      "npcs": [],
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      },
+      "connections": "3:P:0,2:P:0"
+    },
+    "3,1": {
+      "coordinates": [
+        3,
+        1
+      ],
+      "generated": true,
+      "visited": false,
+      "biome": "Jungle",
+      "name": "Uncharted Territory",
+      "description": "A vast expanse of jungle.",
+      "inLineOfSight": false,
+      "interest_points": [],
+      "resourceNodes": [],
+      "openedContainers": {},
+      "namingSource": "engine",
+      "visualVariant": 3,
+      "npcs": [],
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      },
+      "connections": "5:P:0"
+    },
+    "4,0": {
+      "coordinates": [
+        4,
+        0
+      ],
+      "generated": true,
+      "visited": false,
+      "biome": "Plains",
+      "name": "Uncharted Territory",
+      "description": "A vast expanse of plains.",
+      "inLineOfSight": false,
+      "interest_points": [],
+      "resourceNodes": [
+        {
+          "id": "node_ryvke9xng",
+          "resourceType": "Wood",
+          "itemId": "Oak_Logs",
+          "quantityRemaining": 1,
+          "respawnDays": 7,
+          "skillCheck": {
+            "skill": "Nature",
+            "dc": 10
+          }
+        }
+      ],
+      "openedContainers": {},
+      "namingSource": "engine",
+      "visualVariant": 1,
+      "npcs": [
+        "f7da532b-4d88-4493-962e-4daea49850a7"
+      ],
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      },
+      "connections": "4:R:1"
+    },
+    "4,-1": {
+      "coordinates": [
+        4,
+        -1
+      ],
+      "generated": true,
+      "visited": false,
+      "biome": "Plains",
+      "name": "Uncharted Territory",
+      "description": "A vast expanse of plains.",
+      "inLineOfSight": false,
+      "interest_points": [],
+      "resourceNodes": [
+        {
+          "id": "node_85g9vpttk",
+          "resourceType": "Hide",
+          "itemId": "Raw_Hide",
+          "quantityRemaining": 2,
+          "respawnDays": 7,
+          "skillCheck": {
+            "skill": "Nature",
+            "dc": 10
+          }
+        }
+      ],
+      "openedContainers": {},
+      "namingSource": "engine",
+      "visualVariant": 4,
+      "npcs": [],
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      },
+      "connections": "5:R:1,4:R:1"
+    },
+    "4,-2": {
+      "coordinates": [
+        4,
+        -2
+      ],
+      "generated": true,
+      "visited": false,
+      "biome": "Hills",
+      "name": "Uncharted Territory",
+      "description": "A vast expanse of hills.",
+      "inLineOfSight": false,
+      "interest_points": [],
+      "resourceNodes": [],
+      "openedContainers": {},
+      "namingSource": "engine",
+      "visualVariant": 5,
+      "npcs": [],
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      },
+      "connections": "5:P:1"
     }
   },
   "coastlines": []

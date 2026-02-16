@@ -163,4 +163,41 @@ export class ExplorationManager {
 
         await this.hexMapManager.setHex(updatedHex);
     }
+
+    /**
+     * Survey Area (Phase 5)
+     * Permanently sets the DiscoveredFlag to 1 for all connections 
+     * in the current hex and its immediate neighbors (radius 1).
+     */
+    public async surveyArea(centerCoords: [number, number]): Promise<number> {
+        let revealedCount = 0;
+        const targets = [
+            centerCoords,
+            ...this.hexMapManager.getNeighbors(centerCoords).map(n => n.coordinates)
+        ];
+
+        for (const coords of targets) {
+            const hex = this.hexMapManager.getHex(`${coords[0]},${coords[1]}`);
+            if (!hex || !hex.connections) continue;
+
+            const connections = hex.connections.split(',');
+            let changed = false;
+            const updated = connections.map(entry => {
+                const [side, type, disco] = entry.split(':');
+                if (disco === '0') {
+                    revealedCount++;
+                    changed = true;
+                    return `${side}:${type}:1`;
+                }
+                return entry;
+            });
+
+            if (changed) {
+                hex.connections = updated.join(',');
+                await this.hexMapManager.setHex(hex);
+            }
+        }
+
+        return revealedCount;
+    }
 }

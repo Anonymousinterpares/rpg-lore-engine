@@ -226,4 +226,36 @@ export class InventoryManager {
         this.state.character.ac = baseAC;
         await this.emitStateUpdate();
     }
+
+    public hasItem(itemName: string): boolean {
+        return this.state.character.inventory.items.some(i => i.name === itemName);
+    }
+
+    public async consumeCharge(itemName: string): Promise<boolean> {
+        const item = this.state.character.inventory.items.find(i => i.name === itemName);
+        if (!item || (item.charges ?? 0) <= 0) return false;
+
+        item.charges = (item.charges ?? 0) - 1;
+        if (item.charges <= 0) {
+            const index = this.state.character.inventory.items.indexOf(item);
+            this.state.character.inventory.items.splice(index, 1);
+        }
+
+        await this.emitStateUpdate();
+        return true;
+    }
+
+    public async consumeQuantity(itemName: string, count: number): Promise<boolean> {
+        const item = this.state.character.inventory.items.find(i => i.name === itemName);
+        if (!item || (item.quantity ?? 1) < count) return false;
+
+        item.quantity = (item.quantity ?? 1) - count;
+        if (item.quantity <= 0) {
+            const index = this.state.character.inventory.items.indexOf(item);
+            this.state.character.inventory.items.splice(index, 1);
+        }
+
+        await this.emitStateUpdate();
+        return true;
+    }
 }

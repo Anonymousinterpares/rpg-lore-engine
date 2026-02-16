@@ -60,6 +60,31 @@ export class CharacterFactory {
             };
         });
 
+        // --- Cartography Selection (Phase 5) ---
+        if (skillProficiencies.includes('Cartography')) {
+            const extraItems = [
+                { id: "Cartographer's tools", quantity: 1 },
+                { id: "Ink (1 ounce bottle)", quantity: 1 },
+                { id: "Parchment (one sheet)", quantity: 10 }
+            ];
+
+            extraItems.forEach(eq => {
+                const itemData = DataManager.getItem(eq.id);
+                if (itemData) {
+                    inventoryItems.push({
+                        ...itemData,
+                        name: itemData.name,
+                        id: eq.id,
+                        type: itemData.type || 'Misc',
+                        weight: itemData.weight || 0,
+                        quantity: eq.quantity,
+                        equipped: false,
+                        instanceId: uuidv4()
+                    });
+                }
+            });
+        }
+
         // Initialize Spellcasting Defaults
         let cantrips: string[] = options.selectedCantrips || [];
         let spells: string[] = options.selectedSpells || [];
@@ -112,6 +137,7 @@ export class CharacterFactory {
             playTimeSeconds: 0,
             travelStance: 'Normal',
             explorationBlindnessUntil: 0,
+            findThePathActiveUntil: 0,
             character: {
                 name: name,
                 level: 1,
