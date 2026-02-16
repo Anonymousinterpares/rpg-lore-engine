@@ -183,10 +183,9 @@ const HexMapView: React.FC<HexMapViewProps> = ({
 
     const playerPos = getMovingPlayerPos();
 
-    // Calculate Trail Segments (Curved) using Axial Math
+    // Calculate Infrastructure Segments (Curved) using Axial Math
     const getInfrastructurePaths = () => {
         const infrastructure: { d: string, type: 'Road' | 'Path' | 'Ancient' | 'Disappearing' }[] = [];
-        const processedPairs = new Set<string>();
 
         hexes.forEach(hex => {
             if (!hex.connections || !hex.isDiscovered) return;
@@ -219,11 +218,6 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                     case 4: nQ--; break; // SW
                     case 5: nQ--; nR++; break; // NW
                 }
-                const neighborId = `${nQ},${nR}`;
-                // REMOVED deduplication: each hex renders its own half-curve to allow biome-specific styles
-                // const pairKey = [hex.id, neighborId].sort().join('-');
-                // if (processedPairs.has(pairKey)) return;
-                // processedPairs.add(pairKey);
 
                 // Deterministic Bezier (Matches GameLoop.ts logic)
                 const seed = (Math.min(hex.q, nQ) * 131 + Math.min(hex.r, nR) * 7 + Math.max(hex.q, nQ) * 31 + Math.max(hex.r, nR) * 3) % 1000;

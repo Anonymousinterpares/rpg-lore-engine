@@ -1,21 +1,35 @@
 .panel {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-md);
-    height: 100%;
+    gap: var(--spacing-sm);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    background: var(--parchment-item-bg);
+}
+
+.panel.expanded {
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .header {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding-bottom: var(--spacing-xs);
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
 }
 
 .headerMain {
     display: flex;
     flex-direction: column;
+    flex: 1;
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
 }
 
 .compassButton {
@@ -61,43 +75,64 @@
 .content {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-lg);
+    gap: var(--spacing-md);
+    animation: slideDown 0.3s ease-out;
+    padding-top: var(--spacing-sm);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .description {
     font-family: var(--font-primary);
-    font-size: 1rem;
-    line-height: 1.6;
+    font-size: 0.95rem;
+    line-height: 1.5;
     font-style: italic;
     margin: 0;
     color: var(--color-ink-dim);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.05);
 }
 
-.sectionTitle {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    color: var(--color-ink);
-    margin-bottom: var(--spacing-sm);
-}
-
-.poiList {
+.section {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-xs);
 }
 
-.poiItem {
+.sectionTitle {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: var(--color-ink-dim);
+}
+
+.itemList {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.item {
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
     font-family: var(--font-primary);
-    font-size: 0.95rem;
-    padding: var(--spacing-xs);
+    font-size: 0.9rem;
+    padding: 4px 8px;
     border-radius: var(--radius-xs);
     background: rgba(0, 0, 0, 0.03);
     color: var(--color-ink);

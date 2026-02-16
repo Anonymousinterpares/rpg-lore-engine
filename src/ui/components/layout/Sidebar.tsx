@@ -47,6 +47,12 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter, onCompass }) 
                     biome={currentHex.biome || 'Plains'}
                     description={currentHex.description || ''}
                     interestPoints={currentHex.interest_points || []}
+                    resourceNodes={currentHex.resourceNodes || []}
+                    npcs={(currentHex.npcs || []).map(npcId => {
+                        const npc = state.worldNpcs.find(n => n.id === npcId);
+                        return { name: npc?.name || 'Unknown NPC', id: npcId };
+                    })}
+                    connections={currentHex.connections}
                     onCompassClick={onCompass}
                 />
             )}

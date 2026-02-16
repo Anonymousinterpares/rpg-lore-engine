@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './RightPanel.module.css';
-import { MessageSquare, Map as MapIcon, Target } from 'lucide-react';
+import { MessageSquare, Map as MapIcon, Target, ChevronUp, ChevronDown } from 'lucide-react';
 import { useGameState } from '../../hooks/useGameState';
 import HexMapView from '../exploration/HexMapView';
 import QuestList from '../exploration/QuestList';
@@ -14,6 +14,7 @@ interface RightPanelProps {
 const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests }) => {
     const { state, engine, updateState } = useGameState();
     const [viewMode, setViewMode] = React.useState<'normal' | 'zoomed-in' | 'zoomed-out'>('normal');
+    const [isNarrativeExpanded, setIsNarrativeExpanded] = React.useState(false);
     const [contextMenu, setContextMenu] = React.useState<{ id: string, x: number, y: number } | null>(null);
 
     if (!state) return null;
@@ -63,7 +64,13 @@ const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests
     // Filter based on viewMode
     const currentHex = state.worldMap.hexes[state.location.hexId];
     const filteredHexes = hexData.filter(hex => {
-        if (viewMode === 'zoomed-in') return hex.isCurrent;
+        if (viewMode === 'zoomed-in') {
+            if (!currentHex) return hex.isCurrent;
+            const dq = hex.q - currentHex.coordinates[0];
+            const dr = hex.r - currentHex.coordinates[1];
+            const distance = (Math.abs(dq) + Math.abs(dq + dr) + Math.abs(dr)) / 2;
+            return distance <= 2;
+        }
         const radius = viewMode === 'normal' ? 3 : 10;
         if (!currentHex) return hex.isDiscovered;
 
@@ -162,28 +169,37 @@ const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests
                 <QuestList quests={state.activeQuests} />
             </div>
 
-            <div className={styles.chatSection}>
-                <div className={styles.sectionHeader}>
-                    <MessageSquare size={16} />
-                    <h2>Narrative & Events</h2>
+            <div className={`${styles.chatSection} ${isNarrativeExpanded ? styles.expanded : styles.collapsed}`}>
+                <div
+                    className={styles.sectionHeader}
+                    onClick={() => setIsNarrativeExpanded(!isNarrativeExpanded)}
+                    style={{ cursor: 'pointer' }}
+                >
+                    <div className={styles.headerTitle}>
+                        <MessageSquare size={16} />
+                        <h2>Narrative & Events</h2>
+                    </div>
+                    {isNarrativeExpanded ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
                 </div>
-                <div className={styles.log}>
-                    {visibleHistory.length === 0 ? (
-                        <div className={styles.systemText}>No logs recorded yet.</div>
-                    ) : (
-                        visibleHistory.map((turn, i) => (
-                            <div key={i} className={
-                                turn.role === 'narrator' ? styles.narratorText :
-                                    turn.role === 'player' ? styles.userText :
-                                        styles.systemText
-                            }>
-                                <span className={styles.timestamp}>[{turn.turnNumber}]</span>
-                                <strong>{turn.role.toUpperCase()}: </strong>
-                                {turn.content}
-                            </div>
-                        ))
-                    )}
-                </div>
+                {isNarrativeExpanded && (
+                    <div className={styles.log}>
+                        {visibleHistory.length === 0 ? (
+                            <div className={styles.systemText}>No logs recorded yet.</div>
+                        ) : (
+                            visibleHistory.map((turn, i) => (
+                                <div key={i} className={
+                                    turn.role === 'narrator' ? styles.narratorText :
+                                        turn.role === 'player' ? styles.userText :
+                                            styles.systemText
+                                }>
+                                    <span className={styles.timestamp}>[{turn.turnNumber}]</span>
+                                    <strong>{turn.role.toUpperCase()}: </strong>
+                                    {turn.content}
+                                </div>
+                            ))
+                        )}
+                    </div>
+                )}
             </div>
         </aside>
     );

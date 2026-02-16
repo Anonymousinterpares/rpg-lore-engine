@@ -778,7 +778,7 @@
       "namingSource": "engine",
       "visualVariant": 3,
       "npcs": [],
-      "connections": "0:P:1,1:P:1,2:P:1,3:P:1,5:P:1,4:P:1"
+      "connections": "0:P:0,1:P:1,2:P:1,3:P:1,5:P:0,4:P:1"
     },
     "-2,-2": {
       "coordinates": [
@@ -832,7 +832,7 @@
       "namingSource": "engine",
       "visualVariant": 1,
       "npcs": [],
-      "connections": "0:R:1,1:R:1,2:R:1,5:R:1,3:R:1"
+      "connections": "0:R:1,1:R:1,2:R:1,5:R:1,4:R:1"
     },
     "-4,2": {
       "coordinates": [
@@ -1014,7 +1014,7 @@
       "namingSource": "engine",
       "visualVariant": 4,
       "npcs": [
-        "819ec4b8-f2b3-4436-9a41-2575f23eb16e"
+        "5703a0fa-bd78-428d-bda4-480d475b51e2"
       ],
       "traversable_sides": {
         "N": true,
@@ -1024,7 +1024,7 @@
         "SE": true,
         "SW": true
       },
-      "connections": "0:R:1,1:R:1,5:R:1"
+      "connections": "1:R:1"
     },
     "0,-3": {
       "coordinates": [
@@ -1068,9 +1068,7 @@
       "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 3,
-      "npcs": [
-        "2f511dfe-aea0-4546-bce0-ad2917edec57"
-      ],
+      "npcs": [],
       "traversable_sides": {
         "N": true,
         "S": true,
@@ -1079,7 +1077,7 @@
         "SE": true,
         "SW": true
       },
-      "connections": "2:R:1"
+      "connections": "1:R:1"
     }
   },
   "coastlines": []
