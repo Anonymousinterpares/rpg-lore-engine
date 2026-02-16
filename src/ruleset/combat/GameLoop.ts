@@ -274,7 +274,8 @@ export class GameLoop {
                     targetCoordinates: targetCoords,
                     controlPointOffset: [curvatureX, curvatureY],
                     startTime: Date.now(),
-                    duration: durationMs
+                    duration: durationMs,
+                    travelType: travelType as any
                 };
 
                 // Notify UI of start
@@ -301,13 +302,50 @@ export class GameLoop {
                     return `You move ${direction}. Suddenly, you are ambushed!`;
                 }
 
+                const currentHex = this.hexMapManager.getHex(this.state.location.hexId);
+                let discoveredPath = false;
+
+                // Survival Passive Discovery (Phase 3)
+                const isSurvivalProficient = this.state.character.skillProficiencies.includes('Survival');
+                if (currentHex && currentHex.connections && isSurvivalProficient) {
+                    const roll = Math.floor(Math.random() * 20) + 1;
+                    const wisScore = this.state.character.stats['WIS'] || 10;
+                    const wisMod = Math.floor((wisScore - 10) / 2);
+                    const proficiencyBonus = 2 + Math.floor((this.state.character.level - 1) / 4);
+                    const total = roll + wisMod + proficiencyBonus;
+
+                    // DC 15 to find hidden paths in most biomes
+                    if (total >= 15) {
+                        const connections = currentHex.connections.split(',');
+                        let foundIndex = -1;
+                        const updatedConnections = connections.map((c, i) => {
+                            const [side, type, disco] = c.split(':');
+                            if (type === 'P' && disco === '0') {
+                                foundIndex = i;
+                                return `${side}:${type}:1`;
+                            }
+                            return c;
+                        });
+
+                        if (foundIndex !== -1) {
+                            currentHex.connections = updatedConnections.join(',');
+                            await this.hexMapManager.setHex(currentHex);
+                            discoveredPath = true;
+                        }
+                    }
+                }
+
                 // Varied Narrative
-                const targetBiome = this.hexMapManager.getHex(this.state.location.hexId)?.biome || 'wilderness';
+                const targetBiome = currentHex?.biome || 'wilderness';
                 let narrativeMessage = `You travel ${direction} through the ${targetBiome}.`;
 
                 if (travelType === 'Road') narrativeMessage = `You follow the road ${direction} into the ${targetBiome}.`;
                 else if (travelType === 'Path') narrativeMessage = `You follow a narrow trail ${direction} through the ${targetBiome}.`;
                 else if (travelType === 'Stealth') narrativeMessage = `You move stealthily ${direction}, avoiding the main paths as you enter the ${targetBiome}.`;
+
+                if (discoveredPath) {
+                    narrativeMessage += `\n\nYour keen instincts reveal a hidden trail in this area.`;
+                }
 
                 return narrativeMessage;
 
@@ -362,7 +400,8 @@ export class GameLoop {
                     targetCoordinates: targetCoordsMT,
                     controlPointOffset: [curvatureXMT, curvatureYMT],
                     startTime: Date.now(),
-                    duration: durationMsMT
+                    duration: durationMsMT,
+                    travelType: 'Wilderness'
                 };
                 await this.emitStateUpdate();
 

@@ -39,10 +39,15 @@ const DevOverlay: React.FC<DevOverlayProps> = ({ state }) => {
 
     // Determine active coordinates: switch to target when t > 0.5 (visually crossed)
     let activeCoords: [number, number];
+    let activeTravelType: string | undefined;
     if (state.location.travelAnimation && t > 0.5) {
         activeCoords = state.location.travelAnimation.targetCoordinates;
+        activeTravelType = state.location.travelAnimation.travelType;
     } else {
         activeCoords = state.location.coordinates;
+        if (state.location.travelAnimation) {
+            activeTravelType = state.location.travelAnimation.travelType;
+        }
     }
 
     const activeHexKey = `${activeCoords[0]},${activeCoords[1]}`;
@@ -50,13 +55,41 @@ const DevOverlay: React.FC<DevOverlayProps> = ({ state }) => {
     const biome = activeHex?.biome || 'Unknown';
     const biomeDef = BIOME_DEFINITIONS.find(b => b.id === biome);
 
+    // Infrastructure Detection
+    let infraMod = 1.0;
+    let infraName = 'None';
+
+    if (state.location.travelAnimation) {
+        // Use actual travel type from animation state
+        const type = state.location.travelAnimation.travelType;
+        if (type === 'Road') {
+            infraMod = 0.5;
+            infraName = 'Road';
+        } else if (type === 'Path') {
+            infraMod = 0.75;
+            infraName = 'Path';
+        } else {
+            infraName = type || 'Wilderness';
+        }
+    } else if (activeHex?.connections) {
+        // Static detection: check for ANY discovered connections in the hex
+        const discovered = activeHex.connections.split(',').map(c => c.split(':')).filter(c => c[2] === '1');
+        if (discovered.some(c => c[1] === 'R')) {
+            infraName = 'Road Access';
+            infraMod = 0.5; // Show potential best speed
+        } else if (discovered.some(c => c[1] === 'P')) {
+            infraName = 'Path Access';
+            infraMod = 0.75;
+        }
+    }
+
     // Calculate Speed Modifiers
     const biomeMod = biomeDef?.travelSpeedModifier || 1.0;
     const paceMod = state.travelPace === 'Fast' ? 1.33 : (state.travelPace === 'Slow' ? 0.66 : 1.0);
     const stanceMod = state.travelStance === 'Stealth' ? 0.6 : 1.0;
 
     const baseTime = 4 * 60; // 4 hours in minutes
-    const finalTime = Math.round((baseTime / biomeMod) / paceMod / stanceMod);
+    const finalTime = Math.round((baseTime / biomeMod) / paceMod / stanceMod * infraMod);
 
     return (
         <div className={styles.container}>
@@ -67,13 +100,13 @@ const DevOverlay: React.FC<DevOverlayProps> = ({ state }) => {
             </div>
             <div className={styles.row}>
                 <span className={styles.label}>Biome:</span>
-                <span className={styles.value}>{biome}</span>
+                <span className={styles.value}>{biome} (x{biomeMod.toFixed(1)})</span>
+            </div>
+            <div className={styles.row}>
+                <span className={styles.label}>Infra:</span>
+                <span className={styles.value}>{infraName} {infraMod < 1.0 ? `(x${infraMod.toFixed(2)})` : ''}</span>
             </div>
             <hr className={styles.divider} />
-            <div className={styles.row}>
-                <span className={styles.label}>Biome Mod:</span>
-                <span className={styles.value}>x{biomeMod.toFixed(2)}</span>
-            </div>
             <div className={styles.row}>
                 <span className={styles.label}>Pace ({state.travelPace}):</span>
                 <span className={styles.value}>x{paceMod.toFixed(2)}</span>

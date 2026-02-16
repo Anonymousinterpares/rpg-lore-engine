@@ -4,6 +4,7 @@ import { BiomePoolManager } from '../BiomeRegistry';
 import { HexGenerator } from '../HexGenerator';
 import { Hex } from '../../schemas/HexMapSchema';
 import { BiomeType } from '../../schemas/BiomeSchema';
+import { InfrastructureManager } from '../InfrastructureRules';
 
 /**
  * Handles world exploration, map expansion, and procedural hex generation.
@@ -133,6 +134,32 @@ export class ExplorationManager {
             inLineOfSight: isVisible,
             name: newName
         } as Hex;
+
+        // --- Infrastructure Generation (Phase 3) ---
+        if (!hex.generated) {
+            const neighbors = this.hexMapManager.getNeighbors(coords);
+            for (const neighbor of neighbors) {
+                const nCoords = neighbor.coordinates;
+                const sideIndex = HexMapManager.getSideIndex(coords, nCoords);
+                const oppositeSideIndex = HexMapManager.getSideIndex(nCoords, coords);
+
+                if (sideIndex !== -1 && oppositeSideIndex !== -1 && neighbor.generated) {
+                    const infraType = InfrastructureManager.rollForInfrastructure(biome, neighbor.biome);
+                    if (infraType !== 'None') {
+                        const typeCode = infraType === 'Road' ? 'R' : 'P';
+                        // Roll for discovery based on biome context
+                        const isAutoDiscovered = InfrastructureManager.shouldAutoDiscover(infraType, biome) ||
+                            InfrastructureManager.shouldAutoDiscover(infraType, neighbor.biome);
+
+                        this.hexMapManager.setConnection(updatedHex, sideIndex, typeCode, isAutoDiscovered);
+                        this.hexMapManager.setConnection(neighbor, oppositeSideIndex, typeCode, isAutoDiscovered);
+
+                        // Save neighbor update immediately
+                        await this.hexMapManager.setHex(neighbor);
+                    }
+                }
+            }
+        }
 
         await this.hexMapManager.setHex(updatedHex);
     }
