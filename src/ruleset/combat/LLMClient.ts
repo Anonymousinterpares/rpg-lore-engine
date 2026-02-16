@@ -210,9 +210,11 @@ export class LLMClient {
 
             try {
                 const errorData = JSON.parse(errorText);
-                throw new Error(`LLM API Error (${response.status}): ${errorData.error?.message || response.statusText}`);
-            } catch {
-                throw new Error(`LLM API Error (${response.status}): ${response.statusText}. See console for HTML response.`);
+                const message = errorData.error?.message || errorData.message || response.statusText || 'Unknown API Error';
+                throw new Error(`LLM API Error (${response.status}): ${message}`);
+            } catch (e: any) {
+                if (e.message.startsWith('LLM API Error')) throw e;
+                throw new Error(`LLM API Error (${response.status}): ${response.statusText || 'Payment Required or Proxy Error'}. See console for details.`);
             }
         }
 

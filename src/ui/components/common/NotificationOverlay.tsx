@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './NotificationOverlay.module.css';
-import { BookOpen, X } from 'lucide-react';
+import { BookOpen, X, AlertCircle } from 'lucide-react';
 import { useGameState } from '../../hooks/useGameState';
 
 interface NotificationOverlayProps {
@@ -17,8 +17,8 @@ const NotificationOverlay: React.FC<NotificationOverlayProps> = ({ onOpenCodex }
         const now = Date.now();
         const unreadList = state.notifications.filter(n => !n.isRead);
 
-        // Auto-dismiss stale notifications (likely from a loaded game save)
-        const stale = unreadList.filter(n => now - n.createdAt > 10000);
+        // Auto-dismiss stale notifications
+        const stale = unreadList.filter(n => now - n.createdAt > 15000);
         if (stale.length > 0) {
             stale.forEach(n => { n.isRead = true; });
             updateState();
@@ -29,10 +29,11 @@ const NotificationOverlay: React.FC<NotificationOverlayProps> = ({ onOpenCodex }
         if (nextNotif) {
             setActiveNotif(nextNotif);
 
-            // Auto-hide after 8 seconds
+            // Shorter time for errors (3s), longer for lore (8s)
+            const duration = nextNotif.type === 'SYSTEM_ERROR' ? 3000 : 8000;
             const timer = setTimeout(() => {
                 markAsRead(nextNotif.id);
-            }, 8000);
+            }, duration);
 
             return () => clearTimeout(timer);
         } else {
@@ -57,13 +58,18 @@ const NotificationOverlay: React.FC<NotificationOverlayProps> = ({ onOpenCodex }
 
     if (!activeNotif) return null;
 
+    const isError = activeNotif.type === 'SYSTEM_ERROR';
+
     return (
-        <div className={styles.container} onClick={handleClick}>
+        <div 
+            className={`${styles.container} ${isError ? styles.errorContainer : ''}`} 
+            onClick={isError ? undefined : handleClick}
+        >
             <div className={styles.icon}>
-                <BookOpen size={20} />
+                {isError ? <AlertCircle size={20} /> : <BookOpen size={20} />}
             </div>
             <div className={styles.content}>
-                <span className={styles.title}>New Lore Discovered</span>
+                <span className={styles.title}>{isError ? 'System Error' : 'New Lore Discovered'}</span>
                 <span className={styles.message}>{activeNotif.message}</span>
             </div>
             <button
@@ -75,7 +81,7 @@ const NotificationOverlay: React.FC<NotificationOverlayProps> = ({ onOpenCodex }
             >
                 <X size={16} />
             </button>
-            <div className={styles.progressBar} />
+            <div className={isError ? styles.errorProgressBar : styles.progressBar} />
         </div>
     );
 };

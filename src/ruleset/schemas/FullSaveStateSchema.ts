@@ -104,7 +104,7 @@ export const FullSaveStateSchema = z.object({
     })).default([]),
     notifications: z.array(z.object({
         id: z.string(),
-        type: z.enum(['CODEX_ENTRY']),
+        type: z.enum(['CODEX_ENTRY', 'SYSTEM_ERROR']),
         message: z.string(),
         data: z.any(),
         isRead: z.boolean().default(false),

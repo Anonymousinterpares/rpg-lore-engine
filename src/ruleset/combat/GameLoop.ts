@@ -158,55 +158,85 @@ export class GameLoop {
             // Director Pacing Check
             const directive = await DirectorService.evaluatePacing(this.state);
 
-            // Narrator Generation
-            const narratorResponse = await NarratorService.generate(
-                this.state,
-                this.hexMapManager,
-                input,
-                this.contextManager.getRecentHistory(10),
-                directive
-            );
+            try {
+                // Narrator Generation
+                const narratorResponse = await NarratorService.generate(
+                    this.state,
+                    this.hexMapManager,
+                    input,
+                    this.contextManager.getRecentHistory(10),
+                    directive
+                );
 
-            let narratorOutput = narratorResponse.narrative_output;
+                if (narratorResponse.narrative_output.includes('[System Error]')) {
+                    throw new Error(narratorResponse.narrative_output.replace('[System Error] Narrative generation failed: ', ''));
+                }
 
-            // Companion Chatter
-            const companionMsg = await NPCService.generateChatter(this.state, {
-                location: { name: currentHex?.name || 'Unknown' },
-                mode: this.state.mode,
-                player: { hpStatus: `${this.state.character.hp.current}/${this.state.character.hp.max}` }
-            });
-            if (companionMsg) {
-                narratorOutput += `\n\n${companionMsg}`;
+                let narratorOutput = narratorResponse.narrative_output;
+
+                // Companion Chatter
+                const companionMsg = await NPCService.generateChatter(this.state, {
+                    location: { name: currentHex?.name || 'Unknown' },
+                    mode: this.state.mode,
+                    player: { hpStatus: `${this.state.character.hp.current}/${this.state.character.hp.max}` }
+                });
+                if (companionMsg) {
+                    narratorOutput += `\n\n${companionMsg}`;
+                }
+
+                // Sync Narrative State (Only on SUCCESS)
+                this.state.lastNarrative = narratorOutput;
+                this.unlockLoreCategories(narratorOutput);
+
+                // History Update
+                const turn = this.state.worldTime.totalTurns;
+                this.state.conversationHistory.push({ role: 'player', content: input, turnNumber: turn });
+                this.state.conversationHistory.push({ role: 'narrator', content: narratorOutput, turnNumber: turn });
+
+                this.contextManager.addEvent('player', input);
+                this.contextManager.addEvent('narrator', narratorOutput);
+
+                // Execute Effects
+                this.applyNarratorEffects(narratorResponse);
+
+                systemResponse = systemResponse ? `${systemResponse}\n\n${narratorOutput}` : narratorOutput;
+            } catch (e: any) {
+                console.error('[GameLoop] Narrative Generation Failed:', e);
+                
+                const turn = this.state.worldTime.totalTurns;
+                // Log to history as system so it shows in Right Panel
+                this.state.conversationHistory.push({ 
+                    role: 'system', 
+                    content: `[System Error] Narrative generation failed: ${e.message}`, 
+                    turnNumber: turn 
+                });
+
+                // Trigger volatile notification for UI Overlay
+                this.state.notifications.push({
+                    id: `err_${Date.now()}`,
+                    type: 'SYSTEM_ERROR' as any,
+                    message: e.message,
+                    data: null,
+                    isRead: false,
+                    createdAt: Date.now()
+                });
+
+                // Fallback system response if command was processed
+                if (!systemResponse) systemResponse = `[System Error] ${e.message}`;
             }
-
-            // Sync Narrative State
-            this.state.lastNarrative = narratorOutput;
-            this.unlockLoreCategories(narratorOutput);
-
-            // History Update
-            const turn = this.state.worldTime.totalTurns;
-            this.state.conversationHistory.push({ role: 'player', content: input, turnNumber: turn });
-            this.state.conversationHistory.push({ role: 'narrator', content: narratorOutput, turnNumber: turn });
-
-            this.contextManager.addEvent('player', input);
-            this.contextManager.addEvent('narrator', narratorOutput);
-
-            // Execute Effects
-            this.applyNarratorEffects(narratorResponse);
 
             // Time Advancement (5 mins per turn)
             if (intent.type !== 'COMMAND') {
                 const encounter = await this.time.advanceTimeAndProcess(5);
                 if (encounter) {
                     await this.initializeCombat(encounter);
-                    narratorOutput += `\n\n[AMBUSH] You are interrupted by ${encounter.description}`;
+                    // Append to existing narrative if success, or just state it if fail
+                    systemResponse += `\n\n[AMBUSH] You are interrupted by ${encounter.description}`;
                 }
             }
 
             // Scribe summarization
             await this.scribe.processTurn(this.state, this.contextManager.getRecentHistory(10));
-
-            systemResponse = systemResponse ? `${systemResponse}\n\n${narratorOutput}` : narratorOutput;
         }
 
         await this.emitStateUpdate();

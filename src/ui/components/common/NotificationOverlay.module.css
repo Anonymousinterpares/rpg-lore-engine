@@ -79,6 +79,30 @@
     animation: shrink 8s linear forwards;
 }
 
+.errorContainer {
+    background: rgba(45, 10, 10, 0.95) !important;
+    border: 1px solid rgba(255, 60, 60, 0.4) !important;
+    cursor: default !important;
+}
+
+.errorContainer .icon {
+    color: #ff4d4d;
+}
+
+.errorContainer .title {
+    color: #ff4d4d;
+}
+
+.errorProgressBar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: #ff4d4d;
+    width: 100%;
+    animation: shrinkError 3s linear forwards;
+}
+
 @keyframes slideIn {
     from {
         opacity: 0;
@@ -92,6 +116,16 @@
 }
 
 @keyframes shrink {
+    from {
+        width: 100%;
+    }
+
+    to {
+        width: 0%;
+    }
+}
+
+@keyframes shrinkError {
     from {
         width: 100%;
     }
