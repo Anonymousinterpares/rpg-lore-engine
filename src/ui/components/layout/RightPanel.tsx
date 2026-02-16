@@ -56,7 +56,8 @@ const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests
         visualVariant: hex.visualVariant,
         resourceNodes: hex.resourceNodes,
         interest_points: hex.interest_points,
-        oceanDirection: (hex as any).oceanDirection
+        oceanDirection: (hex as any).oceanDirection,
+        connections: hex.connections
     }));
 
     // Filter based on viewMode

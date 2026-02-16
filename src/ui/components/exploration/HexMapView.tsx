@@ -14,6 +14,8 @@ interface HexData {
     playerName?: string;
     namingSource?: 'engine' | 'llm' | 'player' | 'npc';
     visualVariant?: number;
+    npcs?: any[];
+    connections?: string;
     resourceNodes?: { resourceType: string }[];
     interest_points?: { name: string }[];
     inLineOfSight?: boolean;
@@ -65,10 +67,10 @@ const HexMapView: React.FC<HexMapViewProps> = ({
     const lastAnimIdRef = useRef<string | null>(null);
 
     // Identify animation by coordinates to prevent resets if parent sends new objects
-    const currentAnimId = travelAnimation 
-        ? `anim-${travelAnimation.startCoordinates.join(',')}-to-${travelAnimation.targetCoordinates.join(',')}` 
+    const currentAnimId = travelAnimation
+        ? `anim-${travelAnimation.startCoordinates.join(',')}-to-${travelAnimation.targetCoordinates.join(',')}`
         : null;
-    
+
     if (currentAnimId !== lastAnimIdRef.current) {
         localStartTimeRef.current = travelAnimation ? performance.now() : null;
         lastAnimIdRef.current = currentAnimId;
@@ -174,6 +176,78 @@ const HexMapView: React.FC<HexMapViewProps> = ({
     };
 
     const playerPos = getMovingPlayerPos();
+
+    // Calculate Trail Segments (Curved) using Axial Math
+    const getInfrastructurePaths = () => {
+        const infrastructure: { d: string, type: 'Road' | 'Path' }[] = [];
+        const processedPairs = new Set<string>();
+
+        hexes.forEach(hex => {
+            if (!hex.connections || !hex.isDiscovered) return;
+
+            // Only render if relatively close to camera to save performance
+            const dq = hex.q - cameraAxial.q;
+            const dr = hex.r - cameraAxial.r;
+            const dist = (Math.abs(dq) + Math.abs(dq + dr) + Math.abs(dr)) / 2;
+            if (dist > 15) return;
+
+            const parts = hex.connections.split(',');
+            parts.forEach(part => {
+                const [sideStr, typeCode, disco] = part.split(':');
+                if (disco !== '1') return;
+
+                const side = parseInt(sideStr, 10);
+                const type: 'Road' | 'Path' = typeCode === 'R' ? 'Road' : 'Path';
+
+                // Calculate neighbor coordinates
+                let nQ = hex.q;
+                let nR = hex.r;
+                switch (side) {
+                    case 0: nR++; break; // N
+                    case 1: nQ++; break; // NE
+                    case 2: nQ++; nR--; break; // SE
+                    case 3: nR--; break; // S
+                    case 4: nQ--; break; // SW
+                    case 5: nQ--; nR++; break; // NW
+                }
+
+                // Check discovered status of neighbor hex if we have it in our list
+                // (Actually, if DiscoveredFlag is 1 on this side, it's enough to draw the line)
+                // To avoid double-drawing, order ID strings
+                const neighborId = `${nQ},${nR}`;
+                const pairKey = [hex.id, neighborId].sort().join('-');
+                if (processedPairs.has(pairKey)) return;
+                processedPairs.add(pairKey);
+
+                // Deterministic Bezier (Matches GameLoop.ts logic)
+                const startCoords: [number, number] = [hex.q, hex.r];
+                const targetCoords: [number, number] = [nQ, nR];
+
+                const seed = (Math.min(hex.q, nQ) * 131 + Math.min(hex.r, nR) * 7 + Math.max(hex.q, nQ) * 31 + Math.max(hex.r, nR) * 3) % 1000;
+                const pseudoRand = (s: number) => ((s * 9301 + 49297) % 233280) / 233280;
+
+                const midQ = (hex.q + nQ) / 2;
+                const midR = (hex.r + nR) / 2;
+                const cX = pseudoRand(seed) * 0.8 - 0.4;
+                const cY = pseudoRand(seed + 1) * 0.8 - 0.4;
+                const cp: [number, number] = [midQ + cX, midR + cY];
+
+                const sX = getX(hex.q, hex.r);
+                const sY = getY(hex.q, hex.r);
+                const ctX = getX(cp[0], cp[1]);
+                const ctY = getY(cp[0], cp[1]);
+                const eX = getX(nQ, nR);
+                const eY = getY(nQ, nR);
+
+                infrastructure.push({
+                    d: `M ${sX} ${sY} Q ${ctX} ${ctY} ${eX} ${eY}`,
+                    type
+                });
+            });
+        });
+
+        return infrastructure;
+    };
 
     // Calculate Trail Segments (Curved) using Axial Math
     const getTrailPaths = () => {
@@ -334,19 +408,36 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                         viewBox="-500 -500 1000 1000"
                         style={{ overflow: 'visible' }}
                     >
-                        {getTrailPaths().map((pathData, i) => (
-                            <path
-                                key={i}
-                                d={pathData}
-                                fill="none"
-                                stroke="#343d3dff"
-                                strokeWidth="4"
-                                strokeDasharray="8,6"
-                                opacity="0.8"
-                                strokeLinecap="round"
-                                style={{ filter: 'drop-shadow(0 0 8px rgba(78, 205, 196, 0.6))' }}
-                            />
-                        ))}
+                        <g className="infrastructure">
+                            {getInfrastructurePaths().map((path, i) => (
+                                <path
+                                    key={`infra-${i}`}
+                                    d={path.d}
+                                    fill="none"
+                                    stroke={path.type === 'Road' ? '#5d4037' : '#a1887f'}
+                                    strokeWidth={path.type === 'Road' ? '4' : '2'}
+                                    strokeDasharray={path.type === 'Road' ? 'none' : '6,4'}
+                                    opacity="0.6"
+                                    strokeLinecap="round"
+                                />
+                            ))}
+                        </g>
+
+                        <g className="playerTrail">
+                            {getTrailPaths().map((pathData, i) => (
+                                <path
+                                    key={`trail-${i}`}
+                                    d={pathData}
+                                    fill="none"
+                                    stroke="#343d3dff"
+                                    strokeWidth="4"
+                                    strokeDasharray="8,6"
+                                    opacity="0.8"
+                                    strokeLinecap="round"
+                                    style={{ filter: 'drop-shadow(0 0 8px rgba(78, 205, 196, 0.6))' }}
+                                />
+                            ))}
+                        </g>
                     </svg>
 
                     <div

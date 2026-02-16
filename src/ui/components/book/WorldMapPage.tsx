@@ -26,7 +26,8 @@ const WorldMapPage: React.FC = () => {
         visualVariant: hex.visualVariant,
         resourceNodes: hex.resourceNodes,
         interest_points: hex.interest_points,
-        npcs: (hex.npcs || []).map(id => state.worldNpcs.find(n => n.id === id)).filter(Boolean)
+        npcs: (hex.npcs || []).map(id => state.worldNpcs.find(n => n.id === id)).filter(Boolean),
+        connections: hex.connections
     }));
 
     const selectedHex = selectedHexId ? state.worldMap.hexes[selectedHexId] : null;
