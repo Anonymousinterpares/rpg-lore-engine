@@ -612,6 +612,11 @@ export class GameLoop {
         if (this.state.combat.events.length > 10) this.state.combat.events.shift();
     }
 
+    public async updateSettings(settings: any) {
+        this.state.settings = settings;
+        await this.emitStateUpdate();
+    }
+
     private applyNarratorEffects(output: NarratorOutput) {
         EngineDispatcher.dispatch(
             output.engine_calls || [],

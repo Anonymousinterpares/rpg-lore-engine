@@ -24,21 +24,28 @@ app.use((req, res, next) => {
     next();
 });
 
-const rootSavesDir = path.join(__dirname, 'saves');
+const rootDir = __dirname;
+const rootSavesDir = path.join(rootDir, 'saves');
 
-// Helper to safely resolve paths to the local saves directory
+// Helper to safely resolve paths to the local saves directory or root files
 const resolvePath = (clientPath: string) => {
     // 1. Normalize slashes
     let normalized = clientPath.replace(/\\/g, '/');
 
-    // 2. Strip leading slashes and 'saves/' prefix if present
-    // This allows the client to send "/saves/file.json" or just "file.json"
+    // 2. Strip leading slashes
     normalized = normalized.replace(/^\/+/, '');
+
+    // 3. Special case for root-level settings.json
+    if (normalized === 'settings.json') {
+        return path.join(rootDir, 'settings.json');
+    }
+
+    // 4. Strip 'saves/' prefix if present (normalized for internal logic)
     if (normalized.startsWith('saves/')) {
         normalized = normalized.substring(6);
     }
 
-    // 3. Join with local root
+    // 5. Join with saves root
     return path.join(rootSavesDir, normalized);
 };
 

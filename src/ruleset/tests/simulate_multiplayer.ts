@@ -2,6 +2,7 @@ import { SignalingServer } from '../combat/SignalingServer';
 import { MultiplayerHost } from '../combat/MultiplayerHost';
 import { MultiplayerClient } from '../combat/MultiplayerClient';
 import { FullSaveState } from '../schemas/FullSaveStateSchema';
+import { SettingsManager } from '../combat/SettingsManager';
 import * as path from 'path';
 
 async function sleep(ms: number) {
@@ -74,19 +75,7 @@ async function verifyMultiplayer() {
         travelStance: 'Normal',
         explorationBlindnessUntil: 0,
         clearedHexes: {},
-        settings: {
-            permadeath: false,
-            variantEncumbrance: false,
-            milestoneLeveling: true,
-            criticalFumbleEffects: false,
-            difficultyModifier: 1.0,
-            inspirationEnabled: true,
-            multiclassingAllowed: true,
-            maxConversationHistoryTurns: 50,
-            video: { fullscreen: false, vsync: true, resolutionScale: 1.0 },
-            audio: { master: 0.8, music: 0.5 },
-            gameplay: { difficulty: 'normal', tutorials: true, autosave: false }
-        },
+        settings: SettingsManager.getGlobalSettings(),
         codexEntries: [],
         notifications: []
     };

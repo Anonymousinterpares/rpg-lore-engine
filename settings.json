@@ -1,0 +1,33 @@
+{
+  "permadeath": false,
+  "variantEncumbrance": false,
+  "milestoneLeveling": false,
+  "criticalFumbleEffects": false,
+  "difficultyModifier": 1,
+  "inspirationEnabled": true,
+  "multiclassingAllowed": true,
+  "maxConversationHistoryTurns": 50,
+  "video": {
+    "fullscreen": false,
+    "vsync": true,
+    "resolutionScale": 1
+  },
+  "audio": {
+    "master": 0.8,
+    "music": 0.5
+  },
+  "gameplay": {
+    "difficulty": "normal",
+    "tutorials": true,
+    "autosave": false,
+    "developerMode": true
+  },
+  "ai": {
+    "selectedModels": {
+      "gemini": "gemini-3-0-flash",
+      "openai": "gpt-5-nano",
+      "anthropic": "claude-4-5-haiku",
+      "openrouter": "mistral-7b"
+    }
+  }
+}

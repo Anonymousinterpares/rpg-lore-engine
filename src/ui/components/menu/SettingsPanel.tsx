@@ -18,6 +18,11 @@ interface SettingsPanelProps {
 const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, onSave, initialSettings, className = '', isPage = false }) => {
     const [settings, setSettings] = useState(initialSettings);
     const [activeTab, setActiveTab] = useState<'video' | 'audio' | 'gameplay' | 'ai' | 'agents'>('video');
+
+    // Sync internal state when props change (fixes the "reopen settings" stale data bug)
+    useEffect(() => {
+        setSettings(initialSettings);
+    }, [initialSettings]);
     const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
     const [selectedModels, setSelectedModels] = useState<Record<string, string>>({});
     const [testResults, setTestResults] = useState<Record<string, TestResult>>({});
@@ -297,6 +302,10 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, onSave, initialS
                             <div className={styles.settingRow}>
                                 <span>Autosave</span>
                                 <input type="checkbox" checked={settings.gameplay.autosave} onChange={() => handleToggle('autosave', 'gameplay')} />
+                            </div>
+                            <div className={styles.settingRow}>
+                                <span>Developer Mode (Diagnostics)</span>
+                                <input type="checkbox" checked={settings.gameplay.developerMode} onChange={() => handleToggle('developerMode', 'gameplay')} />
                             </div>
                         </div>
                     )}

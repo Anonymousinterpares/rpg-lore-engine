@@ -20,12 +20,14 @@ import NotificationOverlay from './components/common/NotificationOverlay';
 import SaveLoadModal from './components/menu/SaveLoadModal';
 import { SnapshotService } from './services/SnapshotService';
 import { NarratorService } from '../ruleset/agents/NarratorService';
+import DevOverlay from './components/exploration/DevOverlay';
+import { SettingsManager } from '../ruleset/combat/SettingsManager';
 
 const App: React.FC = () => {
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [showLoadModal, setShowLoadModal] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const { state, isActive, startGame, endGame, saveGame, deleteSave, loadGame, getSaveRegistry } = useGameState();
+    const { state, engine, isActive, startGame, endGame, saveGame, deleteSave, loadGame, getSaveRegistry } = useGameState();
     const [saveRegistry, setSaveRegistry] = useState<any>({ slots: [] });
 
     const [showSettings, setShowSettings] = useState(false);
@@ -35,6 +37,17 @@ const App: React.FC = () => {
     const [activeBookPageId, setActiveBookPageId] = useState<string>('character');
     const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
     const [codexDeepLink, setCodexDeepLink] = useState<{ category: string; entryId?: string } | undefined>(undefined);
+
+    const [appSettings, setAppSettings] = useState(SettingsManager.getGlobalSettings());
+
+    // Initial settings load
+    useEffect(() => {
+        const initSettings = async () => {
+            const loaded = await SettingsManager.loadSettings();
+            setAppSettings(loaded);
+        };
+        initSettings();
+    }, []);
 
     // Refresh registry when modal opens
     useEffect(() => {
@@ -143,18 +156,21 @@ const App: React.FC = () => {
         setShowMenu(false);
     };
 
-    // Default settings placeholder
-    const defaultSettings = {
-        video: { fullscreen: false, vsync: true, resolutionScale: 1.0 },
-        audio: { master: 0.8, music: 0.6 },
-        gameplay: { difficulty: 'normal', tutorials: true, autosave: false },
-        ai: {}
+    // Unified handleSettingsSave
+    const handleSettingsSave = async (newSettings: any) => {
+        console.log("Settings saved:", newSettings);
+
+        // 1. Update persisted storage (json + localstorage)
+        await SettingsManager.saveGlobalSettings(newSettings);
+        setAppSettings(newSettings);
+
+        // 2. If game is active, update the engine state
+        if (engine) {
+            await engine.updateSettings(newSettings);
+        }
     };
 
-    const handleSettingsSave = (newSettings: any) => {
-        console.log("Settings saved:", newSettings);
-        // In the future, this would persist to a store
-    };
+    const currentSettings = state?.settings || appSettings;
 
     const bookPages: BookPageData[] = [
         {
@@ -208,7 +224,7 @@ const App: React.FC = () => {
                 <SettingsPanel
                     onClose={() => setBookOpen(false)}
                     onSave={handleSettingsSave}
-                    initialSettings={defaultSettings}
+                    initialSettings={currentSettings}
                     isPage={true}
                 />
             ),
@@ -277,7 +293,7 @@ const App: React.FC = () => {
                             <SettingsPanel
                                 onClose={() => setShowSettings(false)}
                                 onSave={handleSettingsSave}
-                                initialSettings={defaultSettings}
+                                initialSettings={currentSettings}
                             />
                         )}
                         {showLobby && (
@@ -311,13 +327,14 @@ const App: React.FC = () => {
                                 onWorldMap={openWorldMap}
                                 onQuests={openQuests}
                             />
+                            {state && <DevOverlay state={state} />}
                         </div>
                         {/* In-game Modals */}
                         {showSettings && (
                             <SettingsPanel
                                 onClose={() => setShowSettings(false)}
                                 onSave={handleSettingsSave}
-                                initialSettings={defaultSettings}
+                                initialSettings={currentSettings}
                             />
                         )}
                         {showMenu && (

@@ -8,6 +8,7 @@ import { HexGenerator } from '../combat/HexGenerator';
 import { HexMapManager } from '../combat/HexMapManager';
 import { BiomePoolManager } from '../combat/BiomeRegistry';
 import { BiomeType } from '../schemas/BiomeSchema';
+import { SettingsManager } from '../combat/SettingsManager';
 
 export interface CharacterCreationOptions {
     name: string;
@@ -230,19 +231,7 @@ export class CharacterFactory {
             weather: { type: 'Clear', durationMinutes: 0, intensity: 1.0 },
             travelPace: 'Normal',
             clearedHexes: {},
-            settings: {
-                permadeath: false,
-                variantEncumbrance: false,
-                milestoneLeveling: false,
-                criticalFumbleEffects: false,
-                difficultyModifier: 1.0,
-                inspirationEnabled: true,
-                multiclassingAllowed: true,
-                maxConversationHistoryTurns: 50,
-                video: { fullscreen: false, vsync: true, resolutionScale: 1.0 },
-                audio: { master: 0.8, music: 0.5 },
-                gameplay: { difficulty: 'normal', tutorials: true, autosave: false }
-            },
+            settings: SettingsManager.getGlobalSettings(),
             codexEntries: [],
             notifications: []
         };

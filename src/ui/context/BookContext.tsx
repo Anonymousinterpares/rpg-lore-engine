@@ -41,6 +41,16 @@ export const BookProvider: React.FC<{ children: ReactNode; initialPages?: BookPa
         }
     }, [initialActiveId]);
 
+    // Sync state if initialPages changes (essential for dynamic content like Settings)
+    useEffect(() => {
+        setPages(prev => {
+            return prev.map(p => {
+                const updated = initialPages.find(ip => ip.id === p.id);
+                return updated ? { ...p, ...updated } : p;
+            });
+        });
+    }, [initialPages]);
+
     const pushPage = useCallback((newPage: BookPageData) => {
         setPages(prev => {
             const existingIndex = prev.findIndex(p => p.id === newPage.id);
