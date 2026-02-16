@@ -220,14 +220,12 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                     case 5: nQ--; nR++; break; // NW
                 }
                 const neighborId = `${nQ},${nR}`;
-                const pairKey = [hex.id, neighborId].sort().join('-');
-                if (processedPairs.has(pairKey)) return;
-                processedPairs.add(pairKey);
+                // REMOVED deduplication: each hex renders its own half-curve to allow biome-specific styles
+                // const pairKey = [hex.id, neighborId].sort().join('-');
+                // if (processedPairs.has(pairKey)) return;
+                // processedPairs.add(pairKey);
 
                 // Deterministic Bezier (Matches GameLoop.ts logic)
-                const startCoords: [number, number] = [hex.q, hex.r];
-                const targetCoords: [number, number] = [nQ, nR];
-
                 const seed = (Math.min(hex.q, nQ) * 131 + Math.min(hex.r, nR) * 7 + Math.max(hex.q, nQ) * 31 + Math.max(hex.r, nR) * 3) % 1000;
                 const pseudoRand = (s: number) => ((s * 9301 + 49297) % 233280) / 233280;
 
@@ -235,14 +233,29 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                 const midR = (hex.r + nR) / 2;
                 const cX = pseudoRand(seed) * 0.8 - 0.4;
                 const cY = pseudoRand(seed + 1) * 0.8 - 0.4;
-                const cp: [number, number] = [midQ + cX, midR + cY];
 
-                const sX = getX(hex.q, hex.r);
-                const sY = getY(hex.q, hex.r);
-                const ctX = getX(cp[0], cp[1]);
-                const ctY = getY(cp[0], cp[1]);
-                const eX = getX(nQ, nR);
-                const eY = getY(nQ, nR);
+                // Original Quadratic Bezier Points: P0 (hex), P1 (cp), P2 (neighbor)
+                // cp = [midQ + cX, midR + cY]
+                const p0: [number, number] = [hex.q, hex.r];
+                const p1: [number, number] = [midQ + cX, midR + cY];
+                const p2: [number, number] = [nQ, nR];
+
+                // For split rendering, we draw the segment from t=0 to t=0.5 (the hex's half)
+                // New points for the half-segment Bezier:
+                // New P0 = p0
+                // New P1 = (p0 + p1) / 2
+                // New P2 = B(0.5) = (p0 + 2*p1 + p2) / 4
+
+                const hp0 = p0;
+                const hp1: [number, number] = [(p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2];
+                const hp2: [number, number] = [(p0[0] + 2 * p1[0] + p2[0]) / 4, (p0[1] + 2 * p1[1] + p2[1]) / 4];
+
+                const sX = getX(hp0[0], hp0[1]);
+                const sY = getY(hp0[0], hp0[1]);
+                const ctX = getX(hp1[0], hp1[1]);
+                const ctY = getY(hp1[0], hp1[1]);
+                const eX = getX(hp2[0], hp2[1]);
+                const eY = getY(hp2[0], hp2[1]);
 
                 infrastructure.push({
                     d: `M ${sX} ${sY} Q ${ctX} ${ctY} ${eX} ${eY}`,

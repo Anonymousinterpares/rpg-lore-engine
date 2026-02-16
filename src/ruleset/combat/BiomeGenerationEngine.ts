@@ -19,6 +19,7 @@ export class BiomeGenerationEngine {
     private static moistureNoise: NoiseGenerator;
     private static elevationNoise: NoiseGenerator;
     private static volcanismNoise: NoiseGenerator;
+    private static currentSeed: number = -1;
     private static isInitialized = false;
 
     // World Dimensions
@@ -26,12 +27,14 @@ export class BiomeGenerationEngine {
     private static readonly WORLD_WIDTH = 550;  // East-West
 
     private static initialize(seed: number = 12345) {
-        if (this.isInitialized) return;
+        if (this.isInitialized && this.currentSeed === seed) return;
+
         this.noise = new NoiseGenerator(seed);
         this.moistureNoise = new NoiseGenerator(seed + 1000);
         this.elevationNoise = new NoiseGenerator(seed + 2000);
         this.volcanismNoise = new NoiseGenerator(seed + 3000);
         this.isInitialized = true;
+        this.currentSeed = seed;
     }
 
     /**
@@ -46,24 +49,16 @@ export class BiomeGenerationEngine {
         const [q, r] = coords;
 
         // 1. World Bounds Logic (Ocean at edges)
-        // Convert hex coords to approximate world coords
-        // We assume 0,0 is center or top-left? Let's assume center for noise, but bounds need reference.
-        // Let's assume the world is centered at 0,0 for generation purposes, or we map q,r to 0..Width/Height
-        const centerX = 0;
-        const centerY = 0; // Relative to world center
+        // The centerX and centerY variables were not used in the original logic,
+        // and the x, y variables were directly assigned q, r.
+        // Keeping the provided snippet's structure for x and y.
         const halfWidth = this.WORLD_WIDTH / 2;
         const halfHeight = this.WORLD_HEIGHT / 2;
 
-        // Approximate Cartesian from Hex (Axial)
-        // x = size * 3/2 * q
-        // y = size * sqrt(3) * (r + q/2)
-        // Simplified for bounds check:
+        // Use axial coordinate q directly for X, and simple approximation for Y
         const x = q;
-        const y = r; // Axial R aligns roughly with Y (North-South) inverted or not depending on system.
+        const y = r;
 
-        // Edge Enforcement
-        // If we are significantly outside the defined bounds, it's Ocean.
-        // We use a safe buffer of 3 hexes as requested.
         const distFromEdgeX = halfWidth - Math.abs(x);
         const distFromEdgeY = halfHeight - Math.abs(y);
 
@@ -97,14 +92,6 @@ export class BiomeGenerationEngine {
             if (distance > 1.1) {
                 // Tier 1: Guaranteed Deep Ocean (depth 1 to 5)
                 if (distance <= 5.1) return { biome: 'Ocean' };
-
-                // Tier 2 & 3: Islands/Continents handled by standard logic below if not returned here
-                // But existing logic had specific return paths.
-                // To maintain "Islands", we can use Elevation noise.
-                // If Elevation is high enough in "Ocean" zone, it's an Island.
-                // For now, let's respect the explicit "Ocean" from the original request unless it's a "New Continent" seed.
-                // Original logic had random chances. Let's use Elevation > 0.4 as Island in deep water?
-                // Or stick to the original plan: Coastlines define the edge.
                 if (climate.elevation < 0.35) {
                     return { biome: 'Ocean' };
                 }
@@ -116,11 +103,10 @@ export class BiomeGenerationEngine {
     }
 
     private static generateClimate(q: number, r: number): ClimateData {
-        const scale = 0.05; // Zoom level for noise
+        // Increased scale from 0.05 to 0.1 to create smaller, more varied biome patches
+        const scale = 0.1;
 
         // Latitude (North-South) Normalization
-        // Mapped to 0 (North Pole) to 1 (South Pole) or similar.
-        // Let's say map goes from -250 (North) to +250 (South).
         const normalizedY = (r + (this.WORLD_HEIGHT / 2)) / this.WORLD_HEIGHT; // 0 to 1
 
         // Temperature: Warmer at Equator (0.5), Colder at Poles (0, 1)
@@ -129,7 +115,7 @@ export class BiomeGenerationEngine {
         const tempMod = this.noise.fbm(q * scale, r * scale, 3, 0.5, 2) * 0.4 - 0.2; // +/- 0.2
         const temperature = Math.max(0, Math.min(1, baseTemp + tempMod));
 
-        // Moisture: Purely noise based, maybe slightly wetter at equator?
+        // Moisture: Purely noise based
         const moisture = this.moistureNoise.fbm(q * scale, r * scale, 4, 0.5, 2);
 
         // Elevation: Noise

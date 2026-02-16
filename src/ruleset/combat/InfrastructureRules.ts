@@ -31,23 +31,33 @@ const DISAPPEARING: BiomeType[] = ['Volcanic', 'Desert'];
 
 export class InfrastructureManager {
     /**
-     * Determines infrastructure type between two adjacent biomes.
-     * Implements §2.4 Topographical Flow & Transitions:
-     *   1. Termination  — Ocean/Coast/Mountain → None
-     *   2. Disappearing — Volcanic/Desert → fading trail
-     *   3. Road         — Both Road-eligible
-     *   4. Upgrade      — Path-eligible ↔ Urban/Farmland → Road
-     *   5. Downgrade    — Path-eligible ↔ Plains → Path
-     *   6. Path         — Both Path-eligible
-     *   7. Ancient      — 5% magical shortcut (non-Ocean)
+     * Determines infrastructure type for each side of a connection between two biomes.
+     * Implements §2.4 Topographical Flow & Transitions with Split-Rendering:
+     *   1. Termination  — Ocean/Coast/Mountain → None (both sides)
+     *   2. Disappearing — Volcanic/Desert → Disappearing (both sides)
+     *   3. Swamp Exception — Swamp ↔ Civilized → Path (both sides)
+     *   4. Road-Road    — Both Road-eligible → Road (both sides)
+     *   5. Transition   — Path-eligible ↔ Urban/Farmland → { Road, Path }
+     *   6. Downgrade    — Path-eligible ↔ Plains → Path (both sides)
+     *   7. Path-Path    — Both Path-eligible → Path (both sides)
+     *   8. Ancient      — 5% magical shortcut (both sides)
      */
-    public static rollForInfrastructure(biomeA: BiomeType, biomeB: BiomeType): InfrastructureType {
+    public static rollForInfrastructure(biomeA: BiomeType, biomeB: BiomeType): { sideA: InfrastructureType, sideB: InfrastructureType } {
+        const none = { sideA: 'None' as InfrastructureType, sideB: 'None' as InfrastructureType };
+
         // 1. TERMINATION: Ocean/Coast/Mountain kills all infrastructure
-        if (TERMINATED.includes(biomeA) || TERMINATED.includes(biomeB)) return 'None';
+        if (TERMINATED.includes(biomeA) || TERMINATED.includes(biomeB)) return none;
 
         // 2. DISAPPEARING: Volcanic/Desert gets a fading trail stub
         if (DISAPPEARING.includes(biomeA) || DISAPPEARING.includes(biomeB)) {
-            return Math.random() < 0.25 ? 'Disappearing' : 'None';
+            const isInfra = Math.random() < 0.25;
+            return isInfra ? { sideA: 'Disappearing', sideB: 'Disappearing' } : none;
+        }
+
+        // 3. SWAMP EXCEPTION: Roads don't lead into swamps, even from Farmland/Urban
+        if (biomeA === 'Swamp' || biomeB === 'Swamp') {
+            const isPath = Math.random() < INFRA_RULES.pathProbability;
+            return isPath ? { sideA: 'Path', sideB: 'Path' } : none;
         }
 
         const canRoadA = INFRA_RULES.allowedRoad.includes(biomeA);
@@ -55,35 +65,34 @@ export class InfrastructureManager {
         const canPathA = INFRA_RULES.allowedPath.includes(biomeA);
         const canPathB = INFRA_RULES.allowedPath.includes(biomeB);
 
-        // 3. ROAD: Both biomes are Road-eligible → Road
+        // 4. ROAD-ROAD: Both biomes are Road-eligible → Road (both sides)
         if (canRoadA && canRoadB) {
-            return Math.random() < INFRA_RULES.roadProbability ? 'Road' : 'None';
+            const isRoad = Math.random() < INFRA_RULES.roadProbability;
+            return isRoad ? { sideA: 'Road', sideB: 'Road' } : none;
         }
 
-        // 4/5. TRANSITION: One Road-eligible, other Path-eligible
+        // TRANSITION (§2.4): Connection between Road-eligible and Path-eligible biomes.
+        // visual split: Road on the civilized/open side, Path on the wild side.
+        // exception: Swamp always downgrades the civilized side to Path (handled above in step 3).
         if ((canRoadA && canPathB) || (canRoadB && canPathA)) {
-            const roadBiome = canRoadA ? biomeA : biomeB;
-
-            // UPGRADE (§2.4): Path entering Urban/Farmland → Road
-            if (INFRA_RULES.civilized.includes(roadBiome)) {
-                return Math.random() < INFRA_RULES.roadProbability ? 'Road' : 'None';
-            }
-
-            // DOWNGRADE (§2.4): Road entering wilderness via Plains → Path
-            return Math.random() < INFRA_RULES.pathProbability ? 'Path' : 'None';
+            return {
+                sideA: canRoadA ? 'Road' : 'Path',
+                sideB: canRoadB ? 'Road' : 'Path'
+            };
         }
 
-        // 6. PATH: Both Path-eligible → Path
+        // 7. PATH-PATH: Both Path-eligible → Path (both sides)
         if (canPathA && canPathB) {
-            return Math.random() < INFRA_RULES.pathProbability ? 'Path' : 'None';
+            const isPath = Math.random() < INFRA_RULES.pathProbability;
+            return isPath ? { sideA: 'Path', sideB: 'Path' } : none;
         }
 
-        // 7. ANCIENT: Magical shortcuts, rare (5%), ignore most biome constraints
+        // 8. ANCIENT: Magical shortcuts
         if (Math.random() < 0.05) {
-            return 'Ancient';
+            return { sideA: 'Ancient', sideB: 'Ancient' };
         }
 
-        return 'None';
+        return none;
     }
 
     /**

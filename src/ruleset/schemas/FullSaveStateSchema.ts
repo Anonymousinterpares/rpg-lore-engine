@@ -32,6 +32,7 @@ export const FullSaveStateSchema = z.object({
     // --- Meta ---
     saveId: z.string(),
     saveVersion: z.number().default(1),
+    worldSeed: z.number().default(12345),
     createdAt: z.string(),
     lastSavedAt: z.string(),
     playTimeSeconds: z.number(),

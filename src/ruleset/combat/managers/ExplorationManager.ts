@@ -4,7 +4,7 @@ import { BiomePoolManager } from '../BiomeRegistry';
 import { HexGenerator } from '../HexGenerator';
 import { Hex } from '../../schemas/HexMapSchema';
 import { BiomeType } from '../../schemas/BiomeSchema';
-import { InfrastructureManager } from '../InfrastructureRules';
+import { InfrastructureManager, InfrastructureType } from '../InfrastructureRules';
 
 /**
  * Handles world exploration, map expansion, and procedural hex generation.
@@ -144,19 +144,30 @@ export class ExplorationManager {
                 const oppositeSideIndex = HexMapManager.getSideIndex(nCoords, coords);
 
                 if (sideIndex !== -1 && oppositeSideIndex !== -1 && neighbor.generated) {
-                    const infraType = InfrastructureManager.rollForInfrastructure(biome, neighbor.biome);
-                    if (infraType !== 'None') {
-                        let typeCode: 'R' | 'P' | 'A' | 'D' = 'P';
-                        if (infraType === 'Road') typeCode = 'R';
-                        else if (infraType === 'Ancient') typeCode = 'A';
-                        else if (infraType === 'Disappearing') typeCode = 'D';
+                    const infraTypes = InfrastructureManager.rollForInfrastructure(biome, neighbor.biome);
+                    if (infraTypes.sideA !== 'None' || infraTypes.sideB !== 'None') {
+                        const getTypeCode = (t: InfrastructureType): 'R' | 'P' | 'A' | 'D' => {
+                            if (t === 'Road') return 'R';
+                            if (t === 'Ancient') return 'A';
+                            if (t === 'Disappearing') return 'D';
+                            return 'P';
+                        };
+
+                        const typeCodeA = getTypeCode(infraTypes.sideA);
+                        const typeCodeB = getTypeCode(infraTypes.sideB);
 
                         // Roll for discovery based on biome context
                         const isFindThePathActive = this.state.findThePathActiveUntil > this.state.worldTime.totalTurns;
-                        let isAutoDiscovered = InfrastructureManager.shouldAutoDiscover(infraType, biome) || isFindThePathActive;
+                        let isAutoDiscoveredA = InfrastructureManager.shouldAutoDiscover(infraTypes.sideA, biome) || isFindThePathActive;
+                        let isAutoDiscoveredB = InfrastructureManager.shouldAutoDiscover(infraTypes.sideB, neighbor.biome) || isFindThePathActive;
 
-                        this.hexMapManager.setConnection(updatedHex, sideIndex, typeCode, isAutoDiscovered);
-                        this.hexMapManager.setConnection(neighbor, oppositeSideIndex, typeCode, isAutoDiscovered);
+                        // Continuity Rule: If one side of a connection is discovered, the other should be visible 
+                        // to prevent "dead end" rendering artifacts (e.g., Road disappearing into nothingness).
+                        if (isAutoDiscoveredA) isAutoDiscoveredB = true;
+                        if (isAutoDiscoveredB) isAutoDiscoveredA = true;
+
+                        this.hexMapManager.setConnection(updatedHex, sideIndex, typeCodeA, isAutoDiscoveredA);
+                        this.hexMapManager.setConnection(neighbor, oppositeSideIndex, typeCodeB, isAutoDiscoveredB);
 
                         // Save neighbor update immediately
                         await this.hexMapManager.setHex(neighbor);

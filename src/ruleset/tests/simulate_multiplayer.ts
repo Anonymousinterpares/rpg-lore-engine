@@ -21,8 +21,10 @@ async function verifyMultiplayer() {
 
     // 2. Mock initial state
     const initialState: FullSaveState = {
-        saveId: "mp-test-1",
+        // --- Meta ---
+        saveId: 'sim_save_001',
         saveVersion: 1,
+        worldSeed: 12345,
         createdAt: new Date().toISOString(),
         lastSavedAt: new Date().toISOString(),
         playTimeSeconds: 0,
