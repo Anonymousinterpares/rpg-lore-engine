@@ -103,7 +103,10 @@ export class LootEngine {
     }
 
     private static getRandomItemOfValue(maxValueInCopper: number): any | null {
-        const commonTreasure = ['Amulet', 'Pouch', 'Flask_or_tankard', 'Mirror__steel'];
+        const commonTreasure = [
+            'Amulet', 'Pouch', 'Flask_or_tankard', 'Mirror__steel',
+            'Ink__1_ounce_bottle_', 'Parchment__one_sheet_', 'Cartographer_s_tools'
+        ];
         const selection = commonTreasure[Math.floor(Math.random() * commonTreasure.length)];
         const item = DataManager.getItem(selection);
 

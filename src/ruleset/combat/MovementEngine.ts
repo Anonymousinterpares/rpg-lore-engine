@@ -51,7 +51,8 @@ export class MovementEngine {
     public move(
         currentCoords: [number, number],
         input: HexDirection | [number, number],
-        pace: TravelPace = 'Normal'
+        pace: TravelPace = 'Normal',
+        hasRoadConnection: boolean = false
     ): MovementResult {
         let direction: HexDirection | null = null;
         let targetCoords: [number, number] | null = null;
@@ -78,7 +79,8 @@ export class MovementEngine {
             return { success: false, newHex: null, requiresGeneration: false, message: 'Current location not found in map registry.', timeCost: 0 };
         }
 
-        if (!this.mapManager.canTraverse(currentHex, direction)) {
+        // Road connection overrides traversability blocks (§4.3)
+        if (!hasRoadConnection && !this.mapManager.canTraverse(currentHex, direction)) {
             return { success: false, newHex: null, requiresGeneration: false, message: `Movement blocked to the ${direction}. Path is impassable.`, timeCost: 0 };
         }
 

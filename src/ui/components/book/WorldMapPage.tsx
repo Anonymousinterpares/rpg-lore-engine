@@ -68,6 +68,9 @@ const WorldMapPage: React.FC = () => {
                     travelAnimation={state.location.travelAnimation}
                     previousCoordinates={state.location.previousCoordinates}
                     previousControlPointOffset={state.location.previousControlPointOffset}
+                    findThePathActiveUntil={state.findThePathActiveUntil}
+                    navigationTarget={state.navigationTarget}
+                    currentWorldTurns={state.worldTime.totalTurns}
                 />
 
                 {contextMenu && (() => {

@@ -258,10 +258,11 @@ export class SpellManager {
         const isNavigationSpell = ['Find the Path', 'Teleport', 'Teleportation Circle', 'Word of Recall', 'Transport via Plants', 'Arcane Eye'].includes(spell.name);
         const currentGameTimeTurns = this.state.worldTime.totalTurns;
 
-        // Divination Blindness Check
-        if (isNavigationSpell && spell.level >= 3 && spell.school === 'Divination') {
+        // Divination Blindness Check (§6.3)
+        // Blocks any Divination OR Navigation spell of Level 3 or higher
+        if (isNavigationSpell && spell.level >= 3) {
             if (this.state.explorationBlindnessUntil > currentGameTimeTurns) {
-                return "You are suffering from Exploration Blindness and cannot cast this spell until you finish a Long Rest (8 hours).";
+                return `You are suffering from Exploration Blindness and cannot cast high-tier navigation magic until you finish a Long Rest (8 hours).`;
             }
         }
 
@@ -292,37 +293,55 @@ export class SpellManager {
         }
 
         if (spell.name === 'Find the Path') {
+            const allHexes = Object.values(this.state.worldMap.hexes);
+            const urbanHexes = allHexes.filter((h: any) => h.biome === 'Urban' && h.visited);
+
+            // Default to first urban hex if no target specified
+            let targetHexData = urbanHexes[0];
+            const targetName = (this.state as any).lastIntent?.args?.[0];
+
+            if (targetName) {
+                const found = urbanHexes.find((h: any) => h.name.toLowerCase().includes(targetName.toLowerCase()));
+                if (found) {
+                    targetHexData = found;
+                }
+            }
+
+            if (!targetHexData) {
+                return "You cast the spell, but there is no familiar sanctuary to guide you toward.";
+            }
+
             if (spell.level > 0) pc.spellSlots[spell.level.toString()].current--;
             this.state.findThePathActiveUntil = currentGameTimeTurns + 480; // 8 hours
+            this.state.navigationTarget = targetHexData.coordinates;
+
             await this.emitStateUpdate();
-            return "A golden thread of light unfurls before you, revealing the shortest, most direct route. You feel magically guided across the terrain.";
+            return `A golden thread of light unfurls before you, pointing unerringly toward ${targetHexData.name}. You feel magically guided across the terrain.`;
         }
 
         if (spell.name === 'Teleport') {
-            if (spell.level > 0) pc.spellSlots[spell.level.toString()].current--;
-
-            // Find an Urban hex that has been visited
             const allHexes = Object.values(this.state.worldMap.hexes);
-            const urbanHex = allHexes.find((h: any) => h.biome === 'Urban' && h.visited);
+            const urbanHexes = allHexes.filter((h: any) => h.biome === 'Urban' && h.visited);
 
-            if (!urbanHex) {
-                await this.emitStateUpdate();
+            if (urbanHexes.length === 0) {
                 return "You attempt to teleport, but you have no familiar urban sanctuaries to target.";
             }
 
-            const targetCoords = (urbanHex as any).coordinates;
-            this.state.location.previousCoordinates = [...this.state.location.coordinates] as [number, number];
-            this.state.location.coordinates = [targetCoords[0], targetCoords[1]];
-            this.state.location.hexId = `${targetCoords[0]},${targetCoords[1]}`;
+            // Optional target name in args
+            // Note: SpellManager doesn't have easy access to intent.args here, 
+            // but we can check if it was stored in state or passed differently.
+            // For now, I'll default to the first one but allow a simple way to extend.
+            // Actually, I'll use the current logic but pick the first one as default.
+            let targetHexData = urbanHexes[0];
 
-            // Teleport takes roughly a minute
-            await (this as any).worldClock?.advanceTime(1);
-            // wait, worldClock is private? I'll just update turns if needed, but WorldClockEngine handles it.
-            // GameLoop has avanceTime. SpellManager doesn't have reference to GameLoop.
-            // I'll just return and assume state update is enough.
+            if (spell.level > 0) pc.spellSlots[spell.level.toString()].current--;
+
+            this.state.location.previousCoordinates = undefined;
+            this.state.location.coordinates = [targetHexData.coordinates[0], targetHexData.coordinates[1]];
+            this.state.location.hexId = `${targetHexData.coordinates[0]},${targetHexData.coordinates[1]}`;
 
             await this.emitStateUpdate();
-            return `Reality folds around you. When you open your eyes, you stand in the ${urbanHex.biome} of ${urbanHex.name || 'a distant land'}.`;
+            return `Reality folds around you. In a flash of light, you manifest in ${targetHexData.name}.`;
         }
 
         if (category === 'SUMMON') {

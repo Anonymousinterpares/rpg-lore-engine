@@ -44,10 +44,18 @@ export class EncounterDirector {
     /**
      * Checks for a random encounter.
      */
-    public checkEncounter(state: GameState, hex: any, isResting: boolean = false): Encounter | null {
+    public checkEncounter(state: GameState, hex: any, isResting: boolean = false, travelType: 'Road' | 'Path' | 'Ancient' | 'Stealth' | 'Wilderness' = 'Wilderness'): Encounter | null {
         if (state.mode !== 'EXPLORATION') return null;
 
-        const chance = this.calculateFinalProbability(state, hex, isResting);
+        const baseChance = this.calculateFinalProbability(state, hex, isResting);
+
+        // Infrastructure Safety Factor (§4.3)
+        let infraMultiplier = 1.0;
+        if (travelType === 'Road') infraMultiplier = 0.3;
+        else if (travelType === 'Path') infraMultiplier = 0.7;
+        else if (travelType === 'Ancient') infraMultiplier = 0.1; // Magical safety!
+
+        const chance = baseChance * infraMultiplier;
 
         if (Math.random() < chance) {
             const difficulty = state.settings?.gameplay?.difficulty || 'normal';

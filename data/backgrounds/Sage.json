@@ -4,7 +4,8 @@
     "description": "You spent years learning the lore of the multiverse. You scoured manuscripts, studied scrolls, and listened to the greatest experts on the subjects that interest you. Your efforts have made you a master in your fields of study, and you have come to realize that there is still much to learn. This knowledge may have come from a formal education in a university, or it could have been the result of years of self-taught research in a dusty library or laboratory.",
     "skillProficiencies": [
         "Arcana",
-        "History"
+        "History",
+        "Cartography"
     ],
     "toolProficiencies": [],
     "languages": [

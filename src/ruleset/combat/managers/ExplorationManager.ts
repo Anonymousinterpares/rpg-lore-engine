@@ -146,10 +146,14 @@ export class ExplorationManager {
                 if (sideIndex !== -1 && oppositeSideIndex !== -1 && neighbor.generated) {
                     const infraType = InfrastructureManager.rollForInfrastructure(biome, neighbor.biome);
                     if (infraType !== 'None') {
-                        const typeCode = infraType === 'Road' ? 'R' : 'P';
+                        let typeCode: 'R' | 'P' | 'A' | 'D' = 'P';
+                        if (infraType === 'Road') typeCode = 'R';
+                        else if (infraType === 'Ancient') typeCode = 'A';
+                        else if (infraType === 'Disappearing') typeCode = 'D';
+
                         // Roll for discovery based on biome context
-                        const isAutoDiscovered = InfrastructureManager.shouldAutoDiscover(infraType, biome) ||
-                            InfrastructureManager.shouldAutoDiscover(infraType, neighbor.biome);
+                        const isFindThePathActive = this.state.findThePathActiveUntil > this.state.worldTime.totalTurns;
+                        let isAutoDiscovered = InfrastructureManager.shouldAutoDiscover(infraType, biome) || isFindThePathActive;
 
                         this.hexMapManager.setConnection(updatedHex, sideIndex, typeCode, isAutoDiscovered);
                         this.hexMapManager.setConnection(neighbor, oppositeSideIndex, typeCode, isAutoDiscovered);

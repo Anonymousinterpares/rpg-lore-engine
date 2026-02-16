@@ -20,7 +20,7 @@ export class TimeManager {
     /**
      * Centralized time advancement that processes intervals (Encounters, Weather)
      */
-    public async advanceTimeAndProcess(totalMinutes: number, isResting: boolean = false): Promise<Encounter | null> {
+    public async advanceTimeAndProcess(totalMinutes: number, isResting: boolean = false, travelType: 'Road' | 'Path' | 'Ancient' | 'Stealth' | 'Wilderness' = 'Wilderness'): Promise<Encounter | null> {
         let remainingMinutes = totalMinutes;
         const INTERVAL = 30; // Check every 30 minutes
         let resultEncounter: Encounter | null = null;
@@ -42,7 +42,7 @@ export class TimeManager {
 
             if (this.state.mode === 'EXPLORATION' && !resultEncounter) {
                 const currentHex = this.hexMapManager.getHex(this.state.location.hexId);
-                const encounter = this.director.checkEncounter(this.state, currentHex || {}, isResting);
+                const encounter = this.director.checkEncounter(this.state, currentHex || {}, isResting, travelType);
                 if (encounter) {
                     resultEncounter = encounter;
                     break;

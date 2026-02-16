@@ -40,6 +40,9 @@ interface HexMapViewProps {
     };
     previousCoordinates?: [number, number];
     previousControlPointOffset?: [number, number];
+    findThePathActiveUntil?: number;
+    navigationTarget?: [number, number];
+    currentWorldTurns?: number;
 }
 
 const HexMapView: React.FC<HexMapViewProps> = ({
@@ -53,7 +56,10 @@ const HexMapView: React.FC<HexMapViewProps> = ({
     isDraggable = true,
     travelAnimation,
     previousCoordinates,
-    previousControlPointOffset
+    previousControlPointOffset,
+    findThePathActiveUntil = 0,
+    navigationTarget,
+    currentWorldTurns = 0
 }) => {
     const baseSize = viewMode === 'zoomed-in' ? 60 : viewMode === 'zoomed-out' ? 15 : 30;
     const size = baseSize * zoomScale;
@@ -179,7 +185,7 @@ const HexMapView: React.FC<HexMapViewProps> = ({
 
     // Calculate Trail Segments (Curved) using Axial Math
     const getInfrastructurePaths = () => {
-        const infrastructure: { d: string, type: 'Road' | 'Path' }[] = [];
+        const infrastructure: { d: string, type: 'Road' | 'Path' | 'Ancient' | 'Disappearing' }[] = [];
         const processedPairs = new Set<string>();
 
         hexes.forEach(hex => {
@@ -197,7 +203,10 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                 if (disco !== '1') return;
 
                 const side = parseInt(sideStr, 10);
-                const type: 'Road' | 'Path' = typeCode === 'R' ? 'Road' : 'Path';
+                let type: 'Road' | 'Path' | 'Ancient' | 'Disappearing' = 'Path';
+                if (typeCode === 'R') type = 'Road';
+                else if (typeCode === 'A') type = 'Ancient';
+                else if (typeCode === 'D') type = 'Disappearing';
 
                 // Calculate neighbor coordinates
                 let nQ = hex.q;
@@ -210,10 +219,6 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                     case 4: nQ--; break; // SW
                     case 5: nQ--; nR++; break; // NW
                 }
-
-                // Check discovered status of neighbor hex if we have it in our list
-                // (Actually, if DiscoveredFlag is 1 on this side, it's enough to draw the line)
-                // To avoid double-drawing, order ID strings
                 const neighborId = `${nQ},${nR}`;
                 const pairKey = [hex.id, neighborId].sort().join('-');
                 if (processedPairs.has(pairKey)) return;
@@ -241,7 +246,7 @@ const HexMapView: React.FC<HexMapViewProps> = ({
 
                 infrastructure.push({
                     d: `M ${sX} ${sY} Q ${ctX} ${ctY} ${eX} ${eY}`,
-                    type
+                    type: type
                 });
             });
         });
@@ -315,6 +320,30 @@ const HexMapView: React.FC<HexMapViewProps> = ({
         }
 
         return paths;
+    };
+
+    const getGoldenThreadPath = () => {
+        if (!navigationTarget || currentWorldTurns >= findThePathActiveUntil) return null;
+
+        const startQ = cameraAxial.q;
+        const startR = cameraAxial.r;
+        const targetQ = navigationTarget[0];
+        const targetR = navigationTarget[1];
+
+        const sX = getX(startQ, startR);
+        const sY = getY(startQ, startR);
+        const eX = getX(targetQ, targetR);
+        const eY = getY(targetQ, targetR);
+
+        // Simple bezier curve toward the target
+        const midQ = (startQ + targetQ) / 2;
+        const midR = (startR + targetR) / 2;
+
+        // Add a slight "magical" arc
+        const cX = getX(midQ + 0.5, midR + 0.5);
+        const cY = getY(midQ + 0.5, midR + 0.5);
+
+        return `M ${sX} ${sY} Q ${cX} ${cY} ${eX} ${eY}`;
     };
 
     return (
@@ -414,11 +443,34 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                                     key={`infra-${i}`}
                                     d={path.d}
                                     fill="none"
-                                    stroke={path.type === 'Road' ? '#5d4037' : '#a1887f'}
-                                    strokeWidth={path.type === 'Road' ? '4' : '2'}
-                                    strokeDasharray={path.type === 'Road' ? 'none' : '6,4'}
-                                    opacity="0.6"
+                                    stroke={
+                                        path.type === 'Road' ? '#5d4037' :
+                                            path.type === 'Ancient' ? '#9c27b0' :
+                                                path.type === 'Disappearing' ? '#c2956b' :
+                                                    '#a1887f'
+                                    }
+                                    strokeWidth={
+                                        path.type === 'Road' ? '4' :
+                                            path.type === 'Ancient' ? '3' :
+                                                path.type === 'Disappearing' ? '1.5' :
+                                                    '2'
+                                    }
+                                    strokeDasharray={
+                                        path.type === 'Road' ? 'none' :
+                                            path.type === 'Ancient' ? '5,5' :
+                                                path.type === 'Disappearing' ? '3,6' :
+                                                    '6,4'
+                                    }
+                                    opacity={
+                                        path.type === 'Ancient' ? 0.8 :
+                                            path.type === 'Disappearing' ? 0.3 :
+                                                0.6
+                                    }
                                     strokeLinecap="round"
+                                    style={
+                                        path.type === 'Ancient' ? { filter: 'drop-shadow(0 0 5px rgba(156, 39, 176, 0.5))' } :
+                                            {}
+                                    }
                                 />
                             ))}
                         </g>
@@ -437,6 +489,36 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                                     style={{ filter: 'drop-shadow(0 0 8px rgba(78, 205, 196, 0.6))' }}
                                 />
                             ))}
+                        </g>
+
+                        {/* Golden Thread (§6.4) */}
+                        <g className="goldenThread">
+                            {(() => {
+                                const d = getGoldenThreadPath();
+                                if (!d) return null;
+                                return (
+                                    <>
+                                        <path
+                                            d={d}
+                                            fill="none"
+                                            stroke="#ffd700"
+                                            strokeWidth="6"
+                                            opacity="0.2"
+                                            strokeLinecap="round"
+                                            style={{ filter: 'blur(4px)' }}
+                                        />
+                                        <path
+                                            d={d}
+                                            fill="none"
+                                            stroke="#fffacd"
+                                            strokeWidth="2"
+                                            opacity="0.8"
+                                            strokeLinecap="round"
+                                            style={{ filter: 'drop-shadow(0 0 12px rgba(255, 215, 0, 0.9))' }}
+                                        />
+                                    </>
+                                );
+                            })()}
                         </g>
                     </svg>
 

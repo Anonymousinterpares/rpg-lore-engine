@@ -116,6 +116,7 @@ export const FullSaveStateSchema = z.object({
     travelStance: z.enum(['Normal', 'Stealth']).default('Normal'),
     explorationBlindnessUntil: z.number().default(0),
     findThePathActiveUntil: z.number().default(0),
+    navigationTarget: z.tuple([z.number(), z.number()]).optional(),
     clearedHexes: z.record(z.string(), z.number()).default({}), // hexId -> timestamp (in turns or game min)
 
     // --- Settings ---

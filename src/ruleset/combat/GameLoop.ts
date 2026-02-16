@@ -119,7 +119,7 @@ export class GameLoop {
 
     public async initialize() {
         // Initial map expansion if needed
-        await this.exploration.expandHorizon(this.state.location.coordinates);
+        await this.exploration.expandHorizon(this.state.location.coordinates as [number, number]);
         await this.emitStateUpdate();
     }
 
@@ -227,27 +227,42 @@ export class GameLoop {
                 if (this.state.location.travelAnimation) return "You are already traveling.";
 
                 const direction = args[0] as any;
-                const result = this.movementEngine.move(this.state.location.coordinates, direction, this.state.travelPace || 'Normal' as any);
+                const startCoords = [...this.state.location.coordinates] as [number, number];
+                const startHex = this.hexMapManager.getHex(`${startCoords[0]},${startCoords[1]}`);
+                const targetCoords_guess = HexMapManager.getNewCoords(startCoords, direction);
+                const sideIndex = HexMapManager.getSideIndex(startCoords, targetCoords_guess);
+                const connection = startHex ? this.hexMapManager.getConnection(startHex, sideIndex) : null;
+                const isFindThePathActive = this.state.worldTime.totalTurns < this.state.findThePathActiveUntil;
+
+                // Road connection exists? (Discovered OR Find the Path active)
+                const hasInfrastructure = !!((isFindThePathActive || (connection && connection.discovered)) && this.state.travelStance !== 'Stealth');
+
+                const pace = this.state.travelPace || 'Normal';
+                const hasInfra: boolean = hasInfrastructure;
+                const result = this.movementEngine.move(startCoords, direction, pace as any, hasInfra);
                 if (!result.success) return result.message || "Can't move there.";
 
-                const startCoords = [...this.state.location.coordinates] as [number, number];
                 const targetCoords = result.newHex!.coordinates;
-                const startHex = this.hexMapManager.getHex(`${startCoords[0]},${startCoords[1]}`);
 
                 // --- Connectivity & Curve Logic ---
                 let curvatureX: number;
                 let curvatureY: number;
-                let travelType: 'Road' | 'Path' | 'Stealth' | 'Wilderness' = 'Wilderness';
+                let travelType: 'Road' | 'Path' | 'Ancient' | 'Stealth' | 'Wilderness' = 'Wilderness';
                 let infraSpeedMod = 1.0;
 
-                const sideIndex = HexMapManager.getSideIndex(startCoords, targetCoords);
-                const connection = startHex ? this.hexMapManager.getConnection(startHex, sideIndex) : null;
-                const isFindThePathActive = this.state.worldTime.totalTurns < this.state.findThePathActiveUntil;
-
-                // Use road/path if discovered AND not in stealth mode
-                if ((isFindThePathActive || (connection && connection.discovered)) && this.state.travelStance !== 'Stealth') {
-                    travelType = (isFindThePathActive || connection?.type === 'R') ? 'Road' : 'Path';
-                    infraSpeedMod = (isFindThePathActive || connection?.type === 'R') ? 0.5 : 0.75;
+                if (hasInfrastructure) {
+                    const typeCode: 'R' | 'P' | 'A' | 'D' = (connection?.type as any) || (isFindThePathActive ? 'R' : 'P');
+                    if (typeCode === 'A') {
+                        travelType = 'Ancient';
+                        infraSpeedMod = 0.4;
+                    } else if (typeCode === 'R') {
+                        travelType = 'Road';
+                        infraSpeedMod = 0.5;
+                    } else {
+                        // Path and Disappearing both grant Path-level benefits
+                        travelType = 'Path';
+                        infraSpeedMod = 0.75;
+                    }
 
                     // Deterministic Curve (seeded by coordinates to ensure visual consistency)
                     const seed = (startCoords[0] * 131 + startCoords[1] * 7 + targetCoords[0] * 31 + targetCoords[1] * 3) % 1000;
@@ -293,8 +308,9 @@ export class GameLoop {
                 this.state.location.travelAnimation = undefined;
 
                 // Advance time for travel (apply infrastructure modifier to game time too)
+                // Pass travelType to process encounters (§4.3)
                 const adjustedTimeCost = Math.max(1, Math.round(result.timeCost * infraSpeedMod));
-                const encounter = await this.time.advanceTimeAndProcess(adjustedTimeCost);
+                const encounter = await this.time.advanceTimeAndProcess(adjustedTimeCost, false, travelType);
                 await this.exploration.expandHorizon(this.state.location.coordinates);
                 await this.time.trackTutorialEvent('moved_hex');
 
@@ -315,8 +331,14 @@ export class GameLoop {
                     const proficiencyBonus = 2 + Math.floor((this.state.character.level - 1) / 4);
                     const total = roll + wisMod + proficiencyBonus;
 
-                    // DC 15 to find hidden paths in most biomes
-                    if (total >= 15) {
+                    // Biome-Scaled DC (§5.4)
+                    const biome = currentHex.biome;
+                    let dc = 15;
+                    if (biome === 'Forest' || biome === 'Hills') dc = 14;
+                    else if (biome === 'Swamp' || biome === 'Jungle' || biome === 'Mountains') dc = 16;
+                    else if (biome === 'Volcanic' || biome === 'Ruins') dc = 18;
+
+                    if (total >= dc) {
                         const connections = currentHex.connections.split(',');
                         let foundIndex = -1;
                         const updatedConnections = connections.map((c, i) => {

@@ -79,14 +79,14 @@ export class HexMapManager {
     /**
      * Parses the connections string and returns data for a specific side.
      */
-    public getConnection(hex: Hex, sideIndex: number): { type: 'R' | 'P', discovered: boolean } | null {
+    public getConnection(hex: Hex, sideIndex: number): { type: 'R' | 'P' | 'A' | 'D', discovered: boolean } | null {
         if (!hex.connections) return null;
         const parts = hex.connections.split(',');
         for (const part of parts) {
             const [side, type, disco] = part.split(':');
             if (parseInt(side, 10) === sideIndex) {
                 return {
-                    type: type as 'R' | 'P',
+                    type: type as 'R' | 'P' | 'A' | 'D',
                     discovered: disco === '1'
                 };
             }
@@ -97,7 +97,7 @@ export class HexMapManager {
     /**
      * Updates or adds a connection to the hex.
      */
-    public setConnection(hex: Hex, sideIndex: number, type: 'R' | 'P', discovered: boolean): void {
+    public setConnection(hex: Hex, sideIndex: number, type: 'R' | 'P' | 'A' | 'D', discovered: boolean): void {
         const newEntry = `${sideIndex}:${type}:${discovered ? '1' : '0'}`;
         if (!hex.connections) {
             hex.connections = newEntry;
