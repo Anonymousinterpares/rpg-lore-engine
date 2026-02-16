@@ -19,6 +19,7 @@ export interface CharacterCreationOptions {
     skillProficiencies: string[];
     selectedCantrips?: string[];
     selectedSpells?: string[];
+    campaignSettings?: any; // Allow injecting fully loaded settings
 }
 
 export class CharacterFactory {
@@ -231,7 +232,7 @@ export class CharacterFactory {
             weather: { type: 'Clear', durationMinutes: 0, intensity: 1.0 },
             travelPace: 'Normal',
             clearedHexes: {},
-            settings: SettingsManager.getGlobalSettings(),
+            settings: options.campaignSettings || SettingsManager.getGlobalSettings(),
             codexEntries: [],
             notifications: []
         };

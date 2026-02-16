@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './DevOverlay.module.css';
 import { GameState } from '../../../ruleset/schemas/FullSaveStateSchema';
 import { BIOME_DEFINITIONS } from '../../../ruleset/data/StaticData';
@@ -9,15 +9,45 @@ interface DevOverlayProps {
 }
 
 const DevOverlay: React.FC<DevOverlayProps> = ({ state }) => {
+    const [renderTrigger, setRenderTrigger] = useState(0);
+
+    // Force re-render during animation to update the `t` calculation
+    useEffect(() => {
+        if (!state.location.travelAnimation) return;
+
+        let rafId: number;
+        const step = () => {
+            setRenderTrigger(prev => prev + 1);
+            rafId = requestAnimationFrame(step);
+        };
+        rafId = requestAnimationFrame(step);
+
+        return () => cancelAnimationFrame(rafId);
+    }, [state.location.travelAnimation]);
+
     if (!state.settings.gameplay.developerMode) return null;
 
-    const currentCoords = state.location.coordinates;
-    const currentHexKey = `${currentCoords[0]},${currentCoords[1]}`;
+    // Calculate animation progress (t)
+    const getAnimationProgress = (): number => {
+        if (!state.location.travelAnimation) return 0;
+        const { startTime, duration } = state.location.travelAnimation;
+        const elapsed = Date.now() - startTime;
+        return Math.min(1, Math.max(0, elapsed / duration));
+    };
 
-    // We can't easily access the full registry from here without a manager instance, 
-    // but the state has the worldMap.hexes registry.
-    const currentHex = state.worldMap.hexes[currentHexKey];
-    const biome = currentHex?.biome || 'Unknown';
+    const t = getAnimationProgress();
+
+    // Determine active coordinates: switch to target when t > 0.5 (visually crossed)
+    let activeCoords: [number, number];
+    if (state.location.travelAnimation && t > 0.5) {
+        activeCoords = state.location.travelAnimation.targetCoordinates;
+    } else {
+        activeCoords = state.location.coordinates;
+    }
+
+    const activeHexKey = `${activeCoords[0]},${activeCoords[1]}`;
+    const activeHex = state.worldMap.hexes[activeHexKey];
+    const biome = activeHex?.biome || 'Unknown';
     const biomeDef = BIOME_DEFINITIONS.find(b => b.id === biome);
 
     // Calculate Speed Modifiers
@@ -25,23 +55,15 @@ const DevOverlay: React.FC<DevOverlayProps> = ({ state }) => {
     const paceMod = state.travelPace === 'Fast' ? 1.33 : (state.travelPace === 'Slow' ? 0.66 : 1.0);
     const stanceMod = state.travelStance === 'Stealth' ? 0.6 : 1.0;
 
-    // Infrastructure check (approximate from state)
-    // In a real scenario we'd use HexMapManager, but we can parse the connections string manually if it exists
-    let infraMod = 1.0;
-    let infraType = 'None';
-
-    // If we're currently moving, we don't have the easy 'connection' lookup here without the destination,
-    // so we show the "Passive" speed of the current hex.
-
-    const baseTime = 4 * 60; // 4 hours
-    const finalTime = Math.round((baseTime / biomeMod) * (1 / (state.travelPace === 'Fast' ? 1.33 : (state.travelPace === 'Slow' ? 0.66 : 1.0))));
+    const baseTime = 4 * 60; // 4 hours in minutes
+    const finalTime = Math.round((baseTime / biomeMod) / paceMod / stanceMod);
 
     return (
         <div className={styles.container}>
             <div className={styles.header}>DIAGNOSTICS</div>
             <div className={styles.row}>
                 <span className={styles.label}>Coords:</span>
-                <span className={styles.value}>[{currentCoords[0]}, {currentCoords[1]}]</span>
+                <span className={styles.value}>[{activeCoords[0]}, {activeCoords[1]}]</span>
             </div>
             <div className={styles.row}>
                 <span className={styles.label}>Biome:</span>
@@ -67,7 +89,7 @@ const DevOverlay: React.FC<DevOverlayProps> = ({ state }) => {
             </div>
             {state.location.travelAnimation && (
                 <div className={styles.animating}>
-                    ANIMATING MOVEMENT...
+                    ANIMATING [{(t * 100).toFixed(0)}%]
                 </div>
             )}
         </div>

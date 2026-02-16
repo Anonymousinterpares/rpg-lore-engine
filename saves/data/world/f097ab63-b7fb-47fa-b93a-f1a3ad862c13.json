@@ -90,7 +90,7 @@
       ],
       "generated": true,
       "biome": "Plains",
-      "name": "Plains (Discovered)",
+      "name": "Plains (Uncharted Territory)",
       "description": "A vast expanse of plains.",
       "traversable_sides": {
         "N": true,
@@ -103,7 +103,7 @@
       "interest_points": [],
       "resourceNodes": [],
       "openedContainers": {},
-      "visited": true,
+      "visited": false,
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 3,
@@ -144,7 +144,7 @@
       ],
       "generated": true,
       "biome": "Hills",
-      "name": "Hills (Uncharted Territory)",
+      "name": "Hills (Discovered)",
       "description": "A vast expanse of hills.",
       "traversable_sides": {
         "N": true,
@@ -157,7 +157,7 @@
       "interest_points": [],
       "resourceNodes": [],
       "openedContainers": {},
-      "visited": false,
+      "visited": true,
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 4,
@@ -246,7 +246,7 @@
       ],
       "generated": true,
       "biome": "Plains",
-      "name": "Plains (Uncharted Territory)",
+      "name": "Uncharted Territory",
       "description": "A vast expanse of plains.",
       "traversable_sides": {
         "N": true,
@@ -272,7 +272,7 @@
       ],
       "openedContainers": {},
       "visited": false,
-      "inLineOfSight": true,
+      "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 2,
       "npcs": []
@@ -348,7 +348,7 @@
       ],
       "generated": true,
       "biome": "Mountains",
-      "name": "Uncharted Territory",
+      "name": "Mountains (Uncharted Territory)",
       "description": "A vast expanse of mountains.",
       "traversable_sides": {
         "N": true,
@@ -362,7 +362,7 @@
       "resourceNodes": [],
       "openedContainers": {},
       "visited": false,
-      "inLineOfSight": false,
+      "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 3,
       "npcs": []
@@ -414,7 +414,7 @@
       ],
       "generated": true,
       "biome": "Plains",
-      "name": "Plains (Uncharted Territory)",
+      "name": "Uncharted Territory",
       "description": "A vast expanse of plains.",
       "traversable_sides": {
         "N": true,
@@ -428,7 +428,7 @@
       "resourceNodes": [],
       "openedContainers": {},
       "visited": false,
-      "inLineOfSight": true,
+      "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 1,
       "npcs": []
@@ -440,7 +440,7 @@
       ],
       "generated": true,
       "biome": "Hills",
-      "name": "Hills (Discovered)",
+      "name": "Hills (Uncharted Territory)",
       "description": "A vast expanse of hills.",
       "traversable_sides": {
         "N": true,
@@ -453,7 +453,7 @@
       "interest_points": [],
       "resourceNodes": [],
       "openedContainers": {},
-      "visited": true,
+      "visited": false,
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 5,
@@ -577,154 +577,22 @@
       "visualVariant": 3,
       "npcs": []
     },
-    "1,2": {
+    "1,-3": {
       "coordinates": [
         1,
-        2
+        -3
       ],
       "generated": true,
       "visited": false,
-      "biome": "Plains",
+      "biome": "Mountains",
       "name": "Uncharted Territory",
-      "description": "A vast expanse of plains.",
-      "inLineOfSight": false,
-      "interest_points": [],
-      "resourceNodes": [
-        {
-          "id": "node_0j809il9r",
-          "resourceType": "Hide",
-          "itemId": "Raw_Hide",
-          "quantityRemaining": 3,
-          "respawnDays": 7,
-          "skillCheck": {
-            "skill": "Nature",
-            "dc": 10
-          }
-        }
-      ],
-      "openedContainers": {},
-      "namingSource": "engine",
-      "visualVariant": 4,
-      "npcs": [],
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      }
-    },
-    "2,1": {
-      "coordinates": [
-        2,
-        1
-      ],
-      "generated": true,
-      "visited": false,
-      "biome": "Jungle",
-      "name": "Uncharted Territory",
-      "description": "A vast expanse of jungle.",
+      "description": "A vast expanse of mountains.",
       "inLineOfSight": false,
       "interest_points": [],
       "resourceNodes": [],
       "openedContainers": {},
       "namingSource": "engine",
       "visualVariant": 5,
-      "npcs": [],
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      }
-    },
-    "3,0": {
-      "coordinates": [
-        3,
-        0
-      ],
-      "generated": true,
-      "visited": false,
-      "biome": "Plains",
-      "name": "Uncharted Territory",
-      "description": "A vast expanse of plains.",
-      "inLineOfSight": false,
-      "interest_points": [],
-      "resourceNodes": [],
-      "openedContainers": {},
-      "namingSource": "engine",
-      "visualVariant": 3,
-      "npcs": [
-        "9d50802f-0dff-4f18-9e07-27a3e494156a"
-      ],
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      }
-    },
-    "3,-1": {
-      "coordinates": [
-        3,
-        -1
-      ],
-      "generated": true,
-      "visited": false,
-      "biome": "Plains",
-      "name": "Plains (Uncharted Territory)",
-      "description": "A vast expanse of plains.",
-      "inLineOfSight": true,
-      "interest_points": [],
-      "resourceNodes": [
-        {
-          "id": "node_xr8k9aooe",
-          "resourceType": "Hide",
-          "itemId": "Raw_Hide",
-          "quantityRemaining": 1,
-          "respawnDays": 7,
-          "skillCheck": {
-            "skill": "Nature",
-            "dc": 10
-          }
-        }
-      ],
-      "openedContainers": {},
-      "namingSource": "engine",
-      "visualVariant": 2,
-      "npcs": [
-        "22e21da7-3312-4330-9007-a53f12d4a314"
-      ],
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      }
-    },
-    "3,-2": {
-      "coordinates": [
-        3,
-        -2
-      ],
-      "generated": true,
-      "visited": false,
-      "biome": "Hills",
-      "name": "Hills (Uncharted Territory)",
-      "description": "A vast expanse of hills.",
-      "inLineOfSight": true,
-      "interest_points": [],
-      "resourceNodes": [],
-      "openedContainers": {},
-      "namingSource": "engine",
-      "visualVariant": 4,
       "npcs": [],
       "traversable_sides": {
         "N": true,
@@ -761,6 +629,74 @@
         "SW": true
       }
     },
+    "3,-1": {
+      "coordinates": [
+        3,
+        -1
+      ],
+      "generated": true,
+      "visited": false,
+      "biome": "Plains",
+      "name": "Uncharted Territory",
+      "description": "A vast expanse of plains.",
+      "inLineOfSight": false,
+      "interest_points": [],
+      "resourceNodes": [
+        {
+          "id": "node_hl7iw8vwj",
+          "resourceType": "Hide",
+          "itemId": "Raw_Hide",
+          "quantityRemaining": 3,
+          "respawnDays": 7,
+          "skillCheck": {
+            "skill": "Nature",
+            "dc": 10
+          }
+        }
+      ],
+      "openedContainers": {},
+      "namingSource": "engine",
+      "visualVariant": 4,
+      "npcs": [
+        "a2a78600-d2ef-4f59-94f8-af248210c08e"
+      ],
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      }
+    },
+    "3,-2": {
+      "coordinates": [
+        3,
+        -2
+      ],
+      "generated": true,
+      "visited": false,
+      "biome": "Hills",
+      "name": "Uncharted Territory",
+      "description": "A vast expanse of hills.",
+      "inLineOfSight": false,
+      "interest_points": [],
+      "resourceNodes": [],
+      "openedContainers": {},
+      "namingSource": "engine",
+      "visualVariant": 4,
+      "npcs": [
+        "4844cbe3-d99c-44b4-ba7a-c2d280cf9107"
+      ],
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      }
+    },
     "3,-3": {
       "coordinates": [
         3,
@@ -775,49 +711,9 @@
       "interest_points": [],
       "resourceNodes": [
         {
-          "id": "node_4uqihp7dt",
+          "id": "node_72j36ulv3",
           "resourceType": "Ore",
-          "itemId": "Iron_Ore",
-          "quantityRemaining": 3,
-          "respawnDays": 7,
-          "skillCheck": {
-            "skill": "Nature",
-            "dc": 10
-          }
-        }
-      ],
-      "openedContainers": {},
-      "namingSource": "engine",
-      "visualVariant": 3,
-      "npcs": [
-        "bd09dddf-dfe1-4596-811a-9f1315d7236c"
-      ],
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      }
-    },
-    "4,-1": {
-      "coordinates": [
-        4,
-        -1
-      ],
-      "generated": true,
-      "visited": false,
-      "biome": "Plains",
-      "name": "Uncharted Territory",
-      "description": "A vast expanse of plains.",
-      "inLineOfSight": false,
-      "interest_points": [],
-      "resourceNodes": [
-        {
-          "id": "node_6epv43pym",
-          "resourceType": "Herb",
-          "itemId": "Kingsbloom",
+          "itemId": "Silver_Ore",
           "quantityRemaining": 2,
           "respawnDays": 7,
           "skillCheck": {
@@ -828,71 +724,7 @@
       ],
       "openedContainers": {},
       "namingSource": "engine",
-      "visualVariant": 1,
-      "npcs": [],
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      }
-    },
-    "4,-2": {
-      "coordinates": [
-        4,
-        -2
-      ],
-      "generated": true,
-      "visited": false,
-      "biome": "Hills",
-      "name": "Uncharted Territory",
-      "description": "A vast expanse of hills.",
-      "inLineOfSight": false,
-      "interest_points": [],
-      "resourceNodes": [],
-      "openedContainers": {},
-      "namingSource": "engine",
-      "visualVariant": 5,
-      "npcs": [],
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      }
-    },
-    "4,-3": {
-      "coordinates": [
-        4,
-        -3
-      ],
-      "generated": true,
-      "visited": false,
-      "biome": "Mountains",
-      "name": "Uncharted Territory",
-      "description": "A vast expanse of mountains.",
-      "inLineOfSight": false,
-      "interest_points": [],
-      "resourceNodes": [
-        {
-          "id": "node_3vvj989ng",
-          "resourceType": "Ore",
-          "itemId": "Gold_Ore",
-          "quantityRemaining": 3,
-          "respawnDays": 7,
-          "skillCheck": {
-            "skill": "Nature",
-            "dc": 10
-          }
-        }
-      ],
-      "openedContainers": {},
-      "namingSource": "engine",
-      "visualVariant": 5,
+      "visualVariant": 3,
       "npcs": [],
       "traversable_sides": {
         "N": true,

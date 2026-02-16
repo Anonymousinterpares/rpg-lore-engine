@@ -13,6 +13,7 @@ import SpellSelectionStep from './SpellSelectionStep';
 interface CharacterCreatorProps {
     onComplete: (state: GameState) => void;
     onCancel: () => void;
+    campaignSettings?: any;
 }
 
 const STEPS = ['Identity', 'Race', 'Class', 'Background', 'Abilities', 'Skills', 'Spells', 'Review'];
@@ -23,7 +24,7 @@ const ALL_SKILLS = [
     "Performance", "Persuasion", "Religion", "Sleight of Hand", "Stealth", "Survival"
 ];
 
-const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCancel }) => {
+const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCancel, campaignSettings }) => {
     const [step, setStep] = useState(0);
     const [loading, setLoading] = useState(true);
 
@@ -114,7 +115,8 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
             abilityScores: abilities,
             skillProficiencies: getFinalSkills(),
             selectedCantrips,
-            selectedSpells
+            selectedSpells,
+            campaignSettings
         });
 
         onComplete(newState);

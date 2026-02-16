@@ -5,6 +5,7 @@ import { NetworkStorageProvider } from '../../ruleset/combat/NetworkStorageProvi
 import { IStorageProvider } from '../../ruleset/combat/IStorageProvider';
 import { DataManager } from '../../ruleset/data/DataManager';
 import { TacticalOption } from '../../ruleset/combat/grid/CombatAnalysisEngine';
+import { SettingsManager } from '../../ruleset/combat/SettingsManager';
 
 interface GameContextType {
     state: GameState | null;
@@ -44,6 +45,16 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsLoading(true);
         try {
             await DataManager.initialize();
+
+            // Force-sync global settings (Dev Mode, Video, Audio) to the campaign state
+            // This ensures that "system" preferences override what's in the save file
+            const globalSettings = await SettingsManager.loadSettings();
+            if (initialState.settings) {
+                initialState.settings = SettingsManager.syncGlobalToCampaign(initialState.settings, globalSettings);
+            } else {
+                initialState.settings = globalSettings;
+            }
+
             const newEngine = new GameLoop(initialState, '/', storage);
             await newEngine.initialize();
 

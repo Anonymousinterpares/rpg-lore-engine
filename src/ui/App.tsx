@@ -277,6 +277,7 @@ const App: React.FC = () => {
                     <CharacterCreator
                         onComplete={handleCharacterComplete}
                         onCancel={() => setIsCreatingCharacter(false)}
+                        campaignSettings={appSettings}
                     />
                 ) : !isActive ? (
                     <>
