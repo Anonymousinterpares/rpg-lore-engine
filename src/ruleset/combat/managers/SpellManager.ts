@@ -42,7 +42,7 @@ export class SpellManager {
             await this.emitStateUpdate();
             return result;
         } else {
-            return await this.handleExplorationCast(spellName);
+            return await this.handleExplorationCast(spellName, targetId);
         }
     }
 
@@ -240,7 +240,7 @@ export class SpellManager {
         await this.emitStateUpdate();
     }
 
-    private async handleExplorationCast(spellName: string): Promise<string> {
+    private async handleExplorationCast(spellName: string, targetId?: string): Promise<string> {
         const spell = DataManager.getSpell(spellName);
         if (!spell) return `Unknown spell: ${spellName}`;
 
@@ -296,19 +296,21 @@ export class SpellManager {
             const allHexes = Object.values(this.state.worldMap.hexes);
             const urbanHexes = allHexes.filter((h: any) => h.biome === 'Urban' && h.visited);
 
-            // Default to first urban hex if no target specified
+            if (urbanHexes.length === 0) {
+                return "You cast the spell, but you have no familiar urban sanctuaries to guide you.";
+            }
+
             let targetHexData = urbanHexes[0];
-            const targetName = (this.state as any).lastIntent?.args?.[0];
+            const targetName = targetId;
 
             if (targetName) {
                 const found = urbanHexes.find((h: any) => h.name.toLowerCase().includes(targetName.toLowerCase()));
                 if (found) {
                     targetHexData = found;
+                } else {
+                    const available = urbanHexes.map((h: any) => `"${h.name}"`).join(", ");
+                    return `You don't know the way to "${targetName}". \nAvailable sanctuaries: ${available}`;
                 }
-            }
-
-            if (!targetHexData) {
-                return "You cast the spell, but there is no familiar sanctuary to guide you toward.";
             }
 
             if (spell.level > 0) pc.spellSlots[spell.level.toString()].current--;
@@ -327,12 +329,21 @@ export class SpellManager {
                 return "You attempt to teleport, but you have no familiar urban sanctuaries to target.";
             }
 
-            // Optional target name in args
-            // Note: SpellManager doesn't have easy access to intent.args here, 
-            // but we can check if it was stored in state or passed differently.
-            // For now, I'll default to the first one but allow a simple way to extend.
-            // Actually, I'll use the current logic but pick the first one as default.
             let targetHexData = urbanHexes[0];
+            const targetName = targetId;
+
+            if (targetName) {
+                const found = urbanHexes.find((h: any) => h.name.toLowerCase().includes(targetName.toLowerCase()));
+                if (found) {
+                    targetHexData = found;
+                } else {
+                    const available = urbanHexes.map((h: any) => `"${h.name}"`).join(", ");
+                    return `You don't know the way to "${targetName}" or it is not a known urban sanctuary. \nAvailable destinations: ${available}`;
+                }
+            } else if (urbanHexes.length > 1) {
+                const available = urbanHexes.map((h: any) => `"${h.name}"`).join(", ");
+                return `You must specify a destination. \nAvailable destinations: ${available} \nUsage: /cast "Teleport" "Destination Name"`;
+            }
 
             if (spell.level > 0) pc.spellSlots[spell.level.toString()].current--;
 

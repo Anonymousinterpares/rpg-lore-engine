@@ -343,7 +343,7 @@ export class GameLoop {
                         let foundIndex = -1;
                         const updatedConnections = connections.map((c, i) => {
                             const [side, type, disco] = c.split(':');
-                            if (type === 'P' && disco === '0') {
+                            if ((type === 'P' || type === 'A') && disco === '0') {
                                 foundIndex = i;
                                 return `${side}:${type}:1`;
                             }
@@ -505,15 +505,15 @@ export class GameLoop {
                 await this.inventory.consumeQuantity("Parchment (one sheet)", 1);
 
                 // 3. Skill Check
-                // Formula: 1d20 + floor((INT + WIS) / 2 - 10) / 2) + ProficiencyBonus
+                // Formula (§5.3): 1d20 + INT_score + floor(WIS_score / 2) + ProficiencyBonus
                 const pc = this.state.character;
                 const intScore = pc.stats['INT'] || 10;
                 const wisScore = pc.stats['WIS'] || 10;
-                const avgMod = Math.floor((Math.floor((intScore - 10) / 2) + Math.floor((wisScore - 10) / 2)) / 2);
+
                 const isProficient = pc.skillProficiencies.includes('Cartography');
                 const profBonus = isProficient ? (2 + Math.floor((pc.level - 1) / 4)) : 0;
                 const roll = Math.floor(Math.random() * 20) + 1;
-                const total = roll + avgMod + profBonus;
+                const total = roll + intScore + Math.floor(wisScore / 2) + profBonus;
 
                 // DC Table
                 const dcMap: Record<string, number> = {
