@@ -401,23 +401,46 @@ export class GameLoop {
 
                 const q = parseInt(args[0] || '0', 10);
                 const r = parseInt(args[1] || '0', 10);
+                const startCoordsMT = [...this.state.location.coordinates] as [number, number];
 
-                const moveResult = this.movementEngine.move(this.state.location.coordinates, [q, r], this.state.travelPace as any);
+                // Infrastructure detection (mirrors 'move' command logic)
+                const startHexMT = this.hexMapManager.getHex(`${startCoordsMT[0]},${startCoordsMT[1]}`);
+                const sideIndexMT = HexMapManager.getSideIndex(startCoordsMT, [q, r]);
+                const connectionMT = startHexMT ? this.hexMapManager.getConnection(startHexMT, sideIndexMT) : null;
+                const isFindThePathActiveMT = this.state.worldTime.totalTurns < this.state.findThePathActiveUntil;
+                const hasInfraMT = !!((isFindThePathActiveMT || (connectionMT && connectionMT.discovered)) && this.state.travelStance !== 'Stealth');
+
+                const moveResult = this.movementEngine.move(this.state.location.coordinates, [q, r], this.state.travelPace as any, hasInfraMT);
                 if (!moveResult.success) return moveResult.message;
 
-                const startCoordsMT = [...this.state.location.coordinates] as [number, number];
                 const targetCoordsMT = moveResult.newHex!.coordinates;
-                // Calculate Base Duration
-                const isFindThePathActiveMT = this.state.worldTime.totalTurns < this.state.findThePathActiveUntil;
-                const travelTypeMT: 'Road' | 'Path' | 'Stealth' | 'Wilderness' = isFindThePathActiveMT ? 'Road' : 'Wilderness';
-                const infraSpeedModMT = isFindThePathActiveMT ? 0.5 : 1.0;
+
+                // Determine travel type and speed from connection data
+                let travelTypeMT: 'Road' | 'Path' | 'Ancient' | 'Stealth' | 'Wilderness' = 'Wilderness';
+                let infraSpeedModMT = 1.0;
+
+                if (hasInfraMT) {
+                    const typeCodeMT: 'R' | 'P' | 'A' | 'D' = (connectionMT?.type as any) || (isFindThePathActiveMT ? 'R' : 'P');
+                    if (typeCodeMT === 'A') {
+                        travelTypeMT = 'Ancient';
+                        infraSpeedModMT = 0.4;
+                    } else if (typeCodeMT === 'R') {
+                        travelTypeMT = 'Road';
+                        infraSpeedModMT = 0.5;
+                    } else {
+                        travelTypeMT = 'Path';
+                        infraSpeedModMT = 0.75;
+                    }
+                } else if (this.state.travelStance === 'Stealth') {
+                    travelTypeMT = 'Stealth';
+                }
 
                 const baseDurationMsMT = (moveResult.timeCost * infraSpeedModMT) * (1000 / 60);
 
                 // --- Curve Calculation ---
                 const randMT = () => (Math.random() + Math.random() + Math.random()) / 3 - 0.5;
-                const curvatureXMT = isFindThePathActiveMT ? (Math.random() * 0.8 - 0.4) : randMT() * 1.5;
-                const curvatureYMT = isFindThePathActiveMT ? (Math.random() * 0.8 - 0.4) : randMT() * 1.5;
+                const curvatureXMT = hasInfraMT ? (Math.random() * 0.8 - 0.4) : randMT() * 1.5;
+                const curvatureYMT = hasInfraMT ? (Math.random() * 0.8 - 0.4) : randMT() * 1.5;
                 const curveFactorMT = 1 + (Math.abs(curvatureXMT) + Math.abs(curvatureYMT)) * 0.2;
                 const durationMsMT = Math.round(baseDurationMsMT * curveFactorMT);
 
@@ -442,7 +465,8 @@ export class GameLoop {
                 this.state.location.hexId = `${targetCoordsMT[0]},${targetCoordsMT[1]}`;
                 this.state.location.travelAnimation = undefined;
 
-                const enc = await this.time.advanceTimeAndProcess(moveResult.timeCost);
+                const adjustedTimeCostMT = Math.max(1, Math.round(moveResult.timeCost * infraSpeedModMT));
+                const enc = await this.time.advanceTimeAndProcess(adjustedTimeCostMT, false, travelTypeMT);
                 await this.exploration.expandHorizon(this.state.location.coordinates);
                 await this.time.trackTutorialEvent('moved_hex');
 

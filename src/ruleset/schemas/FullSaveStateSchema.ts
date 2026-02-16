@@ -76,7 +76,7 @@ export const FullSaveStateSchema = z.object({
             controlPointOffset: z.tuple([z.number(), z.number()]),
             startTime: z.number(),
             duration: z.number(),
-            travelType: z.enum(['Road', 'Path', 'Stealth', 'Wilderness']).optional().default('Wilderness')
+            travelType: z.enum(['Road', 'Path', 'Ancient', 'Stealth', 'Wilderness']).optional().default('Wilderness')
         }).optional()
     }),
     worldTime: WorldClockSchema,
