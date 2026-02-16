@@ -85,11 +85,10 @@ const DevOverlay: React.FC<DevOverlayProps> = ({ state }) => {
 
     // Calculate Speed Modifiers
     const biomeMod = biomeDef?.travelSpeedModifier || 1.0;
-    const paceMod = state.travelPace === 'Fast' ? 1.33 : (state.travelPace === 'Slow' ? 0.66 : 1.0);
-    const stanceMod = state.travelStance === 'Stealth' ? 0.6 : 1.0;
+    const paceMod = state.travelPace === 'Forced March' ? 1.33 : (state.travelPace === 'Cautious' || state.travelPace === 'Stealth' ? 0.66 : 1.0);
 
     const baseTime = 4 * 60; // 4 hours in minutes
-    const finalTime = Math.round((baseTime / biomeMod) / paceMod / stanceMod * infraMod);
+    const finalTime = Math.round((baseTime / biomeMod) / paceMod * infraMod);
 
     return (
         <div className={styles.container}>
@@ -108,12 +107,8 @@ const DevOverlay: React.FC<DevOverlayProps> = ({ state }) => {
             </div>
             <hr className={styles.divider} />
             <div className={styles.row}>
-                <span className={styles.label}>Pace ({state.travelPace}):</span>
+                <span className={styles.label}>Mode ({state.travelPace}):</span>
                 <span className={styles.value}>x{paceMod.toFixed(2)}</span>
-            </div>
-            <div className={styles.row}>
-                <span className={styles.label}>Stance ({state.travelStance}):</span>
-                <span className={styles.value}>x{stanceMod.toFixed(2)}</span>
             </div>
             <hr className={styles.divider} />
             <div className={styles.row}>

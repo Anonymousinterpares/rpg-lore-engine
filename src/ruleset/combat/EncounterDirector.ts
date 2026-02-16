@@ -74,9 +74,9 @@ export class EncounterDirector {
         const hour = state.worldTime.hour;
         const mTime = (hour < 6 || hour > 20) ? 2.0 : 1.0;
 
-        // Activity Multiplier: Slow = 0.5x, Normal = 1.0x, Fast = 1.5x
+        // Activity Multiplier: Cautious = 0.5x, Normal = 1.0x, Forced March = 1.5x, Stealth = 0.25x
         const activity = state.travelPace || 'Normal';
-        const mActivity = activity === 'Slow' ? 0.5 : activity === 'Fast' ? 1.5 : 1.0;
+        const mActivity = activity === 'Cautious' ? 0.5 : activity === 'Forced March' ? 1.5 : activity === 'Stealth' ? 0.25 : 1.0;
 
         // Weather Multiplier (Storm/Blizzard increase danger/obscuration)
         let mWeather = 1.0;

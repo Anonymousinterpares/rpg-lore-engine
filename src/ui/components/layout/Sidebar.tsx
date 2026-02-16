@@ -3,19 +3,23 @@ import styles from './Sidebar.module.css';
 import { Package } from 'lucide-react';
 import CharacterPanel from '../character/CharacterPanel';
 import InventoryGrid from '../inventory/InventoryGrid';
+import LocationPanel from '../exploration/LocationPanel';
 import parchmentStyles from '../../styles/parchment.module.css';
 import { useGameState } from '../../hooks/useGameState';
 
 interface SidebarProps {
     className?: string;
     onCharacter?: () => void;
+    onCompass?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter }) => {
+const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter, onCompass }) => {
     const { state, engine, updateState } = useGameState();
 
     const items = state?.character?.inventory?.items || [];
     const gold = state?.character?.inventory?.gold || { gp: 0, sp: 0, cp: 0 };
+
+    const currentHex = state?.worldMap?.hexes[state?.location?.hexId];
 
     // D&D 5e: Carrying Capacity = Strength Score * 15 lbs
     const strScore = state?.character?.stats?.STR || 10;
@@ -37,6 +41,15 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter }) => {
 
     return (
         <aside className={`${styles.sidebar} ${parchmentStyles.panel} ${parchmentStyles.overflowVisible} ${className}`}>
+            {currentHex && (
+                <LocationPanel
+                    name={currentHex.name || 'Uncharted Territory'}
+                    biome={currentHex.biome || 'Plains'}
+                    description={currentHex.description || ''}
+                    interestPoints={currentHex.interest_points || []}
+                    onCompassClick={onCompass}
+                />
+            )}
             <CharacterPanel onCharacter={onCharacter} />
             <InventoryGrid
                 items={items as any}

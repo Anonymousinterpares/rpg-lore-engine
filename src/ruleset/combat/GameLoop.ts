@@ -235,7 +235,7 @@ export class GameLoop {
                 const isFindThePathActive = this.state.worldTime.totalTurns < this.state.findThePathActiveUntil;
 
                 // Road connection exists? (Discovered OR Find the Path active)
-                const hasInfrastructure = !!((isFindThePathActive || (connection && connection.discovered)) && this.state.travelStance !== 'Stealth');
+                const hasInfrastructure = !!((isFindThePathActive || (connection && connection.discovered)) && this.state.travelPace !== 'Stealth');
 
                 const pace = this.state.travelPace || 'Normal';
                 const hasInfra: boolean = hasInfrastructure;
@@ -270,7 +270,7 @@ export class GameLoop {
                     curvatureX = (pseudoRand(seed) * 0.8 - 0.4); // Tighter deviation for roads
                     curvatureY = (pseudoRand(seed + 1) * 0.8 - 0.4);
                 } else {
-                    if (this.state.travelStance === 'Stealth') {
+                    if (this.state.travelPace === 'Stealth') {
                         travelType = 'Stealth';
                     }
                     // Random deviation for wilderness/stealth
@@ -408,7 +408,7 @@ export class GameLoop {
                 const sideIndexMT = HexMapManager.getSideIndex(startCoordsMT, [q, r]);
                 const connectionMT = startHexMT ? this.hexMapManager.getConnection(startHexMT, sideIndexMT) : null;
                 const isFindThePathActiveMT = this.state.worldTime.totalTurns < this.state.findThePathActiveUntil;
-                const hasInfraMT = !!((isFindThePathActiveMT || (connectionMT && connectionMT.discovered)) && this.state.travelStance !== 'Stealth');
+                const hasInfraMT = !!((isFindThePathActiveMT || (connectionMT && connectionMT.discovered)) && this.state.travelPace !== 'Stealth');
 
                 const moveResult = this.movementEngine.move(this.state.location.coordinates, [q, r], this.state.travelPace as any, hasInfraMT);
                 if (!moveResult.success) return moveResult.message;
@@ -431,7 +431,7 @@ export class GameLoop {
                         travelTypeMT = 'Path';
                         infraSpeedModMT = 0.75;
                     }
-                } else if (this.state.travelStance === 'Stealth') {
+                } else if (this.state.travelPace === 'Stealth') {
                     travelTypeMT = 'Stealth';
                 }
 
@@ -511,9 +511,9 @@ export class GameLoop {
                 return await this.spells.castSpell(args[0], args[1]);
 
             case 'pace':
-                (this.state.settings.gameplay as any).pacing = args[0] as any;
+                this.state.travelPace = args[0] as any;
                 await this.emitStateUpdate();
-                return `Pacing set to ${args[0]}.`;
+                return `Travel mode set to ${args[0]}.`;
 
             case 'survey': {
                 const centerHex = this.hexMapManager.getHex(this.state.location.hexId);

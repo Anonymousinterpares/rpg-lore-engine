@@ -20,7 +20,7 @@
     "difficulty": "normal",
     "tutorials": true,
     "autosave": false,
-    "developerMode": true
+    "developerMode": false
   },
   "ai": {
     "selectedModels": {

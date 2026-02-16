@@ -46,7 +46,6 @@ export const LLM_PROVIDERS: LLMProviderConfig[] = [
             { "id": "nous-hermes-2", "apiName": "nousresearch/nous-hermes-2-mixtral", "displayName": "Nous Hermes 2", "contextWindow": 32000, "costPer1kTokens": 0.0002 },
             { "id": "gemma-2-9b", "apiName": "google/gemma-2-9b-it", "displayName": "Gemma 2 9B", "contextWindow": 8000, "costPer1kTokens": 0.00005 },
             { "id": "qwen-2-7b", "apiName": "qwen/qwen-2-7b-instruct", "displayName": "Qwen 2 7B", "contextWindow": 32000, "costPer1kTokens": 0.00005 },
-            { "id": "gpt-oss-120b", "apiName": "openai/gpt-oss-120b", "displayName": "GPT-OSS 120B", "contextWindow": 128000, "costPer1kTokens": 0.001 },
             { "id": "gemini-2.5-flash", "apiName": "google/gemini-2.5-flash", "displayName": "Gemini 2.5 Flash", "contextWindow": 1000000, "costPer1kTokens": 0.0001 },
             { "id": "gemini-2.5-flash-lite", "apiName": "google/gemini-2.5-flash-lite", "displayName": "Gemini 2.5 Flash Lite", "contextWindow": 1000000, "costPer1kTokens": 0.00005 },
             { "id": "devstral-small", "apiName": "mistralai/devstral-small", "displayName": "Devstral Small", "contextWindow": 32000, "costPer1kTokens": 0.0002 },
@@ -55,7 +54,9 @@ export const LLM_PROVIDERS: LLMProviderConfig[] = [
             { "id": "deepseek-chimera-free", "apiName": "tngtech/deepseek-r1t2-chimera:free", "displayName": "DeepSeek R1T2 Chimera (Free)", "contextWindow": 64000, "costPer1kTokens": 0.0 },
             { "id": "nemotron-nano-free", "apiName": "nvidia/nemotron-3-nano-30b-a3b:free", "displayName": "Nemotron 3 Nano 30B (Free)", "contextWindow": 64000, "costPer1kTokens": 0.0 },
             { "id": "gpt-oss-120b-free", "apiName": "openai/gpt-oss-120b:free", "displayName": "GPT-OSS 120B (Free)", "contextWindow": 128000, "costPer1kTokens": 0.0 },
-            { "id": "llama-3.3-70b-free", "apiName": "meta-llama/llama-3.3-70b-instruct:free", "displayName": "Llama 3.3 70B (Free)", "contextWindow": 128000, "costPer1kTokens": 0.0 }
+            { "id": "gpt-oss-120b", "apiName": "openai/gpt-oss-120b", "displayName": "GPT-OSS 120B", "contextWindow": 128000, "costPer1kTokens": 0.00004 },            
+            { "id": "llama-3.3-70b-free", "apiName": "meta-llama/llama-3.3-70b-instruct:free", "displayName": "Llama 3.3 70B (Free)", "contextWindow": 128000, "costPer1kTokens": 0.0 },
+            { "id": "mimo-v2-flash", "apiName": "xiaomi/mimo-v2-flash", "displayName": "MiMo v2 Flash", "contextWindow": 262144, "costPer1kTokens": 0.00009 }
         ]
     }
 ];

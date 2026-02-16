@@ -114,7 +114,6 @@ export const FullSaveStateSchema = z.object({
     // --- Environmental ---
     weather: WeatherSchema.default({ type: 'Clear', durationMinutes: 0 }),
     travelPace: TravelPaceSchema.default('Normal'),
-    travelStance: z.enum(['Normal', 'Stealth']).default('Normal'),
     explorationBlindnessUntil: z.number().default(0),
     findThePathActiveUntil: z.number().default(0),
     navigationTarget: z.tuple([z.number(), z.number()]).optional(),

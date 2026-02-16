@@ -21,6 +21,7 @@ import SaveLoadModal from './components/menu/SaveLoadModal';
 import { SnapshotService } from './services/SnapshotService';
 import { NarratorService } from '../ruleset/agents/NarratorService';
 import DevOverlay from './components/exploration/DevOverlay';
+import NavigationModal from './components/exploration/NavigationModal';
 import { SettingsManager } from '../ruleset/combat/SettingsManager';
 
 const App: React.FC = () => {
@@ -36,6 +37,7 @@ const App: React.FC = () => {
     const [bookOpen, setBookOpen] = useState(false);
     const [activeBookPageId, setActiveBookPageId] = useState<string>('character');
     const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
+    const [isNavigationModalOpen, setIsNavigationModalOpen] = useState(false);
     const [codexDeepLink, setCodexDeepLink] = useState<{ category: string; entryId?: string } | undefined>(undefined);
 
     const [appSettings, setAppSettings] = useState(SettingsManager.getGlobalSettings());
@@ -70,6 +72,7 @@ const App: React.FC = () => {
                 setBookOpen(false);
                 setShowSaveModal(false);
                 setShowLoadModal(false);
+                setIsNavigationModalOpen(false);
             }
         };
         window.addEventListener('keydown', handleKeyDown);
@@ -321,6 +324,7 @@ const App: React.FC = () => {
                             <Sidebar
                                 className={styles.sidebar}
                                 onCharacter={openCharacterSheet}
+                                onCompass={() => setIsNavigationModalOpen(true)}
                             />
                             <MainViewport className={styles.viewport} />
                             <RightPanel
@@ -362,6 +366,9 @@ const App: React.FC = () => {
                             </div>
                         )}
                         <NotificationOverlay onOpenCodex={openCodex} />
+                        {isNavigationModalOpen && (
+                            <NavigationModal onClose={() => setIsNavigationModalOpen(false)} />
+                        )}
                     </>
                 )}
                 {bookOpen && (

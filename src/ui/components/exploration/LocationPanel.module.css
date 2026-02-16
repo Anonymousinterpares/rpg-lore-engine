@@ -8,6 +8,33 @@
 .header {
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     padding-bottom: var(--spacing-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.headerMain {
+    display: flex;
+    flex-direction: column;
+}
+
+.compassButton {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--color-ink-dim);
+    transition: all 0.2s ease;
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.compassButton:hover {
+    color: var(--color-ink);
+    background: rgba(0, 0, 0, 0.05);
+    transform: rotate(15deg);
 }
 
 .biomeBadge {

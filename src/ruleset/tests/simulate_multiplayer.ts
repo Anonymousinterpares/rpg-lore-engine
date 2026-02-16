@@ -74,7 +74,6 @@ async function verifyMultiplayer() {
         triggeredEvents: [],
         weather: { type: 'Clear', durationMinutes: 0, intensity: 1.0 },
         travelPace: 'Normal',
-        travelStance: 'Normal',
         explorationBlindnessUntil: 0,
         findThePathActiveUntil: 0,
         clearedHexes: {},

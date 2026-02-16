@@ -147,8 +147,8 @@ export class MovementEngine {
         const baseTime = 4 * 60; // 4 hours base
         let timeCost = Math.floor(baseTime / speedMod);
 
-        if (pace === 'Fast') timeCost = Math.floor(timeCost * 0.75); // 3 hours equivalent
-        if (pace === 'Slow') timeCost = Math.floor(timeCost * 1.5);  // 6 hours equivalent
+        if (pace === 'Forced March') timeCost = Math.floor(timeCost * 0.75);
+        if (pace === 'Cautious' || pace === 'Stealth') timeCost = Math.floor(timeCost * 1.5);
 
         return { success: true, newHex, requiresGeneration, message, timeCost };
     }

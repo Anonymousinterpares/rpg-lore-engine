@@ -54,6 +54,6 @@ export const WeatherSchema = z.object({
 export type Weather = z.infer<typeof WeatherSchema>;
 
 export const TravelPaceSchema = z.enum([
-  'Slow', 'Normal', 'Fast'
+  'Cautious', 'Normal', 'Forced March', 'Stealth'
 ]);
 export type TravelPace = z.infer<typeof TravelPaceSchema>;

@@ -4,7 +4,7 @@ import { Clock } from 'lucide-react';
 import { useGameState } from '../../hooks/useGameState';
 import { WorldClockEngine } from '../../../ruleset/combat/WorldClockEngine';
 import { TravelPace } from '../../../ruleset/schemas/BaseSchemas';
-import { Footprints, Wind, Zap } from 'lucide-react';
+import { Footprints, ShieldAlert, Zap, Ghost } from 'lucide-react';
 
 const TimeDisplay: React.FC = () => {
     const { state, engine } = useGameState();
@@ -13,17 +13,18 @@ const TimeDisplay: React.FC = () => {
 
     const timeStr = WorldClockEngine.formatTime(state.worldTime);
 
-    const handlePaceChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const handlePaceChange = async (newPace: string) => {
         if (engine) {
-            await engine.processTurn(`/pace ${e.target.value}`);
+            await engine.processTurn(`/pace ${newPace}`);
         }
     };
 
     const getPaceTooltip = (pace: TravelPace) => {
         switch (pace) {
-            case 'Slow': return 'Slow & Careful: 1.5x travel time. Reduced ambush risk (0.5x).';
-            case 'Normal': return 'Normal Pace: Standard travel time. No modifiers.';
-            case 'Fast': return 'Fast & Loud: 0.75x travel time. Increased ambush risk (1.5x).';
+            case 'Cautious': return 'Cautious: 1.5x travel time. Reduced ambush risk (0.5x). +5 Perception bonus to notice threats.';
+            case 'Normal': return 'Normal Pace: Standard travel time. No special modifiers.';
+            case 'Forced March': return 'Forced March: 0.75x travel time. Increased ambush risk (1.5x). -5 Perception penalty.';
+            case 'Stealth': return 'Stealth: 1.5x travel time. Greatly reduced ambush risk (0.25x). Uses stealth skill to avoid detection.';
             default: return '';
         }
     };
@@ -32,18 +33,38 @@ const TimeDisplay: React.FC = () => {
         <div className={styles.timeDisplay}>
             <div className={styles.paceSection}>
                 <label className={styles.paceLabel} title="Determine your speed and awareness while traveling across the map.">
-                    <Footprints size={14} /> Travel Pace:
+                    Travel Mode
                 </label>
-                <select
-                    className={styles.paceSelect}
-                    value={state.travelPace}
-                    onChange={handlePaceChange}
-                    title={getPaceTooltip(state.travelPace)}
-                >
-                    <option value="Slow" title={getPaceTooltip('Slow')}>🐢 Slow (Safe)</option>
-                    <option value="Normal" title={getPaceTooltip('Normal')}>🚶 Normal</option>
-                    <option value="Fast" title={getPaceTooltip('Fast')}>🐎 Fast (Risky)</option>
-                </select>
+                <div className={styles.modeButtonGroup}>
+                    <button
+                        className={`${styles.modeButton} ${state.travelPace === 'Cautious' ? styles.modeButtonActive : ''}`}
+                        onClick={() => handlePaceChange('Cautious')}
+                        title={getPaceTooltip('Cautious')}
+                    >
+                        <ShieldAlert size={16} />
+                    </button>
+                    <button
+                        className={`${styles.modeButton} ${state.travelPace === 'Normal' ? styles.modeButtonActive : ''}`}
+                        onClick={() => handlePaceChange('Normal')}
+                        title={getPaceTooltip('Normal')}
+                    >
+                        <Footprints size={16} />
+                    </button>
+                    <button
+                        className={`${styles.modeButton} ${state.travelPace === 'Forced March' ? styles.modeButtonActive : ''}`}
+                        onClick={() => handlePaceChange('Forced March')}
+                        title={getPaceTooltip('Forced March')}
+                    >
+                        <Zap size={16} />
+                    </button>
+                    <button
+                        className={`${styles.modeButton} ${state.travelPace === 'Stealth' ? styles.modeButtonActive : ''}`}
+                        onClick={() => handlePaceChange('Stealth')}
+                        title={getPaceTooltip('Stealth')}
+                    >
+                        <Ghost size={16} />
+                    </button>
+                </div>
             </div>
 
             <div className={styles.timeSection}>
