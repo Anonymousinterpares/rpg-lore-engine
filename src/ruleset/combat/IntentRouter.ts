@@ -64,6 +64,10 @@ export class IntentRouter {
                 const parts = trimmed.split(' ');
                 return { type: 'COMMAND', command: parts[0], args: parts.slice(1), originalInput: input };
             }
+            if (lower.startsWith('talk ') || lower.startsWith('talk_')) {
+                const npcId = trimmed.split(' ').slice(1).join(' ');
+                return { type: 'COMMAND', command: 'talk', args: [npcId], originalInput: input };
+            }
         }
 
         // 3. Default to Narrative

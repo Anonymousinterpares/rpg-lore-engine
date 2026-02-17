@@ -84,7 +84,7 @@
           "type": "Adventuring Gear",
           "weight": 0,
           "quantity": 1,
-          "charges": 10,
+          "charges": 8,
           "equipped": false
         },
         {
@@ -157,7 +157,7 @@
           "name": "Parchment (one sheet)",
           "type": "Adventuring Gear",
           "weight": 0,
-          "quantity": 10,
+          "quantity": 8,
           "equipped": false
         }
       ]
@@ -782,7 +782,7 @@
         "namingSource": "engine",
         "visualVariant": 1,
         "npcs": [],
-        "connections": "1:P:0,2:P:1,3:P:1,4:P:0"
+        "connections": "1:P:1,2:P:1,3:P:1,4:P:1"
       },
       "2,-2": {
         "coordinates": [
@@ -982,7 +982,7 @@
         "namingSource": "engine",
         "visualVariant": 4,
         "npcs": [],
-        "connections": "0:P:0,1:P:0,2:P:1,3:P:0,4:P:0"
+        "connections": "0:P:1,1:P:1,2:P:1,3:P:1,4:P:1"
       },
       "-3,0": {
         "coordinates": [
@@ -1021,7 +1021,7 @@
         "namingSource": "engine",
         "visualVariant": 3,
         "npcs": [],
-        "connections": "0:P:0,1:P:1,2:P:1,3:P:1,5:P:0,4:P:1"
+        "connections": "0:P:1,1:P:1,2:P:1,3:P:1,5:P:1,4:P:1"
       },
       "-2,-2": {
         "coordinates": [
@@ -1482,7 +1482,7 @@
           "id": "obj_master_booklet",
           "description": "Master the Booklet: View all pages (Character, Map, Quests, Equipment, Codex)",
           "isCompleted": false,
-          "currentProgress": 1,
+          "currentProgress": 2,
           "maxProgress": 5
         },
         {
@@ -1517,7 +1517,7 @@
   ],
   "factions": [],
   "storySummary": "started their journey as a Half-Elf Ranger with the Sage background.",
-  "lastNarrative": "You stride northward across the rolling plain, the cool night air brushing against your skin as the faint glow of moonlight paints the grass silver. The land stretches out in gentle waves, punctuated here and there by clumps of hardy wildflowers that cling stubbornly to the soil. In the distance, you catch sight of a lone figure—a half‑elf merchant named Halia Silvervein—standing beside a modest wooden cart, its leather straps laden with assorted goods. She pauses, eyes scanning the horizon, perhaps awaiting travelers like yourself. The plains ahead seem calm, the only sounds the soft rustle of the grasses and the occasional hoot of an owl perched on a distant rock outcrop.",
+  "lastNarrative": "The cold night air bites at your skin as the small hours of the third watch settle over the endless grasslands. A thin veil of frost clings to the low blades of grass, and the faint glow of distant stars struggles through a thin, wispy mist that drifts across the horizon. To the south, the edge of a dense jungle looms, its dark canopy a stark contrast to the open plain you stand on; the jungle’s outline is softened by the night’s shadows, but you can make out the occasional rustle of unseen creatures. Northward the plain continues unbroken, rolling gently toward a horizon that fades into an indistinct shroud of mist, hinting at unexplored territory beyond. To the southeast, the grass stretches farther still, merging with the same mist‑filled unknown. Southwest the jungle presses closer, its foliage a tangled wall of green that seems to swallow the light.\n\nTo the northeast, low hills rise in the distance, their silhouettes jagged against the night sky, promising higher ground and perhaps a better view of the surrounding lands. Northwest, more jungle spreads out, its darkness broken only by occasional glimmers of fireflies that dance like fleeting stars. The far horizon in each direction is either uncharted plains, distant hills, or the looming silhouettes of mountains that you can only guess at from the faint outlines on the far edge of your vision.\n\nAmid the open grass, a solitary figure kneels beside a modest wooden cart. Halia Silvervein, the half‑elf merchant of the Lords' Alliance, has set up a small, lantern‑lit stall despite the hour. The lantern’s warm glow casts a circle of light on the surrounding grass, and you can see assorted trinkets, dried herbs, and a few bundles of rope and rope‑made tools neatly arranged on the cart. She looks up as you approach, her eyes reflecting the lantern’s fire, and offers a courteous nod, clearly accustomed to travelers passing through these remote plains even at such an hour.\n\nThe wind whistles softly across the plain, carrying the faint scent of pine from the distant hills and a hint of damp earth from the nearby jungle. No immediate threats are visible, but the night’s chill and the open expanse remind you to stay alert—wild beasts or wandering bandits could be drawn to the light of Halia’s lantern.\n\nYour senses are keen, and the landscape, though largely featureless, offers subtle clues: faint tracks in the frost suggest the passage of a lone wolf pack to the south, while a broken twig points toward a possible hidden path leading into the jungle’s edge. The plains themselves are flat and unobstructed, offering clear sight in every direction, save for the mist‑shrouded horizons that conceal what lies beyond.",
   "conversationHistory": [
     {
       "role": "player",
@@ -1568,14 +1568,59 @@
       "role": "narrator",
       "content": "You stride northward across the rolling plain, the cool night air brushing against your skin as the faint glow of moonlight paints the grass silver. The land stretches out in gentle waves, punctuated here and there by clumps of hardy wildflowers that cling stubbornly to the soil. In the distance, you catch sight of a lone figure—a half‑elf merchant named Halia Silvervein—standing beside a modest wooden cart, its leather straps laden with assorted goods. She pauses, eyes scanning the horizon, perhaps awaiting travelers like yourself. The plains ahead seem calm, the only sounds the soft rustle of the grasses and the occasional hoot of an owl perched on a distant rock outcrop.",
       "turnNumber": 10850
+    },
+    {
+      "role": "system",
+      "content": "[System Error] Narrative generation failed: LLM response did not match expected schema",
+      "turnNumber": 10850
+    },
+    {
+      "role": "player",
+      "content": "/survey",
+      "turnNumber": 10850
+    },
+    {
+      "role": "narrator",
+      "content": "The cold night air bites at your skin as the small hours of the third watch settle over the endless grasslands. A thin veil of frost clings to the low blades of grass, and the faint glow of distant stars struggles through a thin, wispy mist that drifts across the horizon. To the south, the edge of a dense jungle looms, its dark canopy a stark contrast to the open plain you stand on; the jungle’s outline is softened by the night’s shadows, but you can make out the occasional rustle of unseen creatures. Northward the plain continues unbroken, rolling gently toward a horizon that fades into an indistinct shroud of mist, hinting at unexplored territory beyond. To the southeast, the grass stretches farther still, merging with the same mist‑filled unknown. Southwest the jungle presses closer, its foliage a tangled wall of green that seems to swallow the light.\n\nTo the northeast, low hills rise in the distance, their silhouettes jagged against the night sky, promising higher ground and perhaps a better view of the surrounding lands. Northwest, more jungle spreads out, its darkness broken only by occasional glimmers of fireflies that dance like fleeting stars. The far horizon in each direction is either uncharted plains, distant hills, or the looming silhouettes of mountains that you can only guess at from the faint outlines on the far edge of your vision.\n\nAmid the open grass, a solitary figure kneels beside a modest wooden cart. Halia Silvervein, the half‑elf merchant of the Lords' Alliance, has set up a small, lantern‑lit stall despite the hour. The lantern’s warm glow casts a circle of light on the surrounding grass, and you can see assorted trinkets, dried herbs, and a few bundles of rope and rope‑made tools neatly arranged on the cart. She looks up as you approach, her eyes reflecting the lantern’s fire, and offers a courteous nod, clearly accustomed to travelers passing through these remote plains even at such an hour.\n\nThe wind whistles softly across the plain, carrying the faint scent of pine from the distant hills and a hint of damp earth from the nearby jungle. No immediate threats are visible, but the night’s chill and the open expanse remind you to stay alert—wild beasts or wandering bandits could be drawn to the light of Halia’s lantern.\n\nYour senses are keen, and the landscape, though largely featureless, offers subtle clues: faint tracks in the frost suggest the passage of a lone wolf pack to the south, while a broken twig points toward a possible hidden path leading into the jungle’s edge. The plains themselves are flat and unobstructed, offering clear sight in every direction, save for the mist‑shrouded horizons that conceal what lies beyond.",
+      "turnNumber": 10850
     }
   ],
   "triggeredEvents": [
     "moved_hex",
-    "viewed_page:world_map"
+    "viewed_page:world_map",
+    "viewed_page:character"
   ],
-  "codexEntries": [],
-  "notifications": [],
+  "codexEntries": [
+    {
+      "id": "world_lords_alliance_1771278899129",
+      "category": "world",
+      "entityId": "lords_alliance",
+      "title": "The Lords' Alliance",
+      "content": "### The Lords' Alliance\nA political coalition of cities and towns that seeks to bring security and trade to the realms.\n\n**Motto:** Safety through Unity. Prosperity through Law.\n**Goals:** Establishing common laws, protecting trade routes, eliminating banditry and lawlessness.\n**Alignment:** Lawful Neutral\n\nThis coalition of rulers provides common defense and economic stability. Their guards patrol the high roads, and their diplomats forge alliances that keep the realms running. While bureaucratic, they are the strongest bulwark of order in a chaotic world.",
+      "isNew": true,
+      "discoveredAt": 1771278899129
+    }
+  ],
+  "notifications": [
+    {
+      "id": "err_1771278884486",
+      "type": "SYSTEM_ERROR",
+      "message": "LLM response did not match expected schema",
+      "data": null,
+      "isRead": true,
+      "createdAt": 1771278884486
+    },
+    {
+      "id": "notif_lore_lords_alliance_1771278899129",
+      "type": "CODEX_ENTRY",
+      "message": "New Codex Entry: The Lords' Alliance",
+      "data": {
+        "factionId": "lords_alliance"
+      },
+      "isRead": true,
+      "createdAt": 1771278899129
+    }
+  ],
   "weather": {
     "type": "Clear",
     "durationMinutes": 240,

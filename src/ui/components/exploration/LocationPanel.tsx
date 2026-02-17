@@ -10,19 +10,32 @@ interface Poi {
     type?: string;
 }
 
+interface NpcCardData {
+    id: string;
+    name: string;
+    role?: string;
+    factionId?: string;
+    isMerchant: boolean;
+    standing: number;
+}
+
 interface LocationPanelProps {
     name: string;
     biome: string;
     description: string;
     interestPoints: Poi[];
     resourceNodes?: any[];
-    npcs?: { name: string, id: string }[];
+    npcs?: NpcCardData[];
     connections?: string;
     onCompassClick?: () => void;
+    onTalkToNpc?: (npcId: string) => void;
     className?: string;
 }
 
-const LocationPanel: React.FC<LocationPanelProps> = ({ name, biome, description, interestPoints, resourceNodes = [], npcs = [], connections, onCompassClick, className = '' }) => {
+const LocationPanel: React.FC<LocationPanelProps> = ({
+    name, biome, description, interestPoints, resourceNodes = [],
+    npcs = [], connections, onCompassClick, onTalkToNpc, className = ''
+}) => {
     const [isExpanded, setIsExpanded] = React.useState(false);
 
     const getBiomeIcon = (biome: string) => {
@@ -49,6 +62,15 @@ const LocationPanel: React.FC<LocationPanelProps> = ({ name, biome, description,
                 type: type === 'R' ? 'Road' : type === 'A' ? 'Ancient' : 'Path'
             };
         }).filter(c => c !== null);
+    };
+
+    const getStandingLabel = (standing: number): string => {
+        if (standing >= 50) return 'Allied';
+        if (standing >= 25) return 'Friendly';
+        if (standing >= 0) return 'Neutral';
+        if (standing >= -25) return 'Wary';
+        if (standing >= -50) return 'Hostile';
+        return 'Nemesis';
     };
 
     const activeConnections = parseConnections(connections);
@@ -123,11 +145,48 @@ const LocationPanel: React.FC<LocationPanelProps> = ({ name, biome, description,
                                 <Users size={14} />
                                 <span>Known NPCs</span>
                             </div>
-                            <div className={styles.itemList}>
-                                {npcs.map((npc, i) => (
-                                    <div key={i} className={styles.item}>
-                                        <Users size={12} />
-                                        <span>{npc.name}</span>
+                            <div className={styles.npcList}>
+                                {npcs.map((npc) => (
+                                    <div key={npc.id} className={styles.npcCard}>
+                                        <div className={styles.npcHeader}>
+                                            <Users size={14} />
+                                            <span className={styles.npcName}>{npc.name}</span>
+                                        </div>
+                                        <div className={styles.npcMeta}>
+                                            {npc.role && <span className={styles.npcRole}>{npc.role}</span>}
+                                            {npc.factionId && (
+                                                <span className={styles.npcFaction}>
+                                                    {npc.factionId.replace(/_/g, ' ')}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className={styles.npcStanding}>
+                                            <span className={
+                                                npc.standing > 0 ? styles.standingPositive :
+                                                    npc.standing < 0 ? styles.standingNegative :
+                                                        styles.standingNeutral
+                                            }>
+                                                {npc.standing > 0 ? '♥' : npc.standing < 0 ? '☠' : '◆'} {getStandingLabel(npc.standing)}
+                                            </span>
+                                        </div>
+                                        <div className={styles.npcActions}>
+                                            <button
+                                                className={styles.npcActionButton}
+                                                onClick={() => onTalkToNpc?.(npc.id)}
+                                                title={`Talk to ${npc.name}`}
+                                            >
+                                                💬 Talk
+                                            </button>
+                                            {npc.isMerchant && (
+                                                <button
+                                                    className={styles.npcActionButton}
+                                                    disabled
+                                                    title="Trading coming in Phase B"
+                                                >
+                                                    🛒 Trade
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                             </div>

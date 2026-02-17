@@ -50,8 +50,20 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter, onCompass }) 
                     resourceNodes={currentHex.resourceNodes || []}
                     npcs={(currentHex.npcs || []).map(npcId => {
                         const npc = state.worldNpcs.find(n => n.id === npcId);
-                        return { name: npc?.name || 'Unknown NPC', id: npcId };
+                        return {
+                            id: npcId,
+                            name: npc?.name || 'Unknown NPC',
+                            role: npc?.role,
+                            factionId: npc?.factionId,
+                            isMerchant: npc?.isMerchant || false,
+                            standing: npc?.relationship?.standing ?? 0
+                        };
                     })}
+                    onTalkToNpc={(npcId) => {
+                        if (engine) {
+                            engine.processTurn(`/talk ${npcId}`);
+                        }
+                    }}
                     connections={currentHex.connections}
                     onCompassClick={onCompass}
                 />

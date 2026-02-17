@@ -20,6 +20,7 @@ import { CombatAnalysisEngine, TacticalOption } from './grid/CombatAnalysisEngin
 import { CODEX_LORE } from '../data/CodexRegistry';
 import { CombatGridManager } from './grid/CombatGridManager';
 import { IStorageProvider } from './IStorageProvider';
+import { ProfileExtractor } from '../agents/ProfileExtractor';
 
 // New Managers
 import { ExplorationManager } from './managers/ExplorationManager';
@@ -199,16 +200,22 @@ export class GameLoop {
                 // Execute Effects
                 this.applyNarratorEffects(narratorResponse);
 
+                // Step 5: Extract facts from narrator output
+                if (currentHex?.npcs && currentHex.npcs.length > 0) {
+                    const npcsToCheck = this.state.worldNpcs.filter(n => currentHex.npcs!.includes(n.id));
+                    await this.updateNpcProfiles(narratorOutput, npcsToCheck);
+                }
+
                 systemResponse = systemResponse ? `${systemResponse}\n\n${narratorOutput}` : narratorOutput;
             } catch (e: any) {
                 console.error('[GameLoop] Narrative Generation Failed:', e);
-                
+
                 const turn = this.state.worldTime.totalTurns;
                 // Log to history as system so it shows in Right Panel
-                this.state.conversationHistory.push({ 
-                    role: 'system', 
-                    content: `[System Error] Narrative generation failed: ${e.message}`, 
-                    turnNumber: turn 
+                this.state.conversationHistory.push({
+                    role: 'system',
+                    content: `[System Error] Narrative generation failed: ${e.message}`,
+                    turnNumber: turn
                 });
 
                 // Trigger volatile notification for UI Overlay
@@ -336,6 +343,14 @@ export class GameLoop {
                 this.state.location.coordinates = targetCoords;
                 this.state.location.hexId = `${targetCoords[0]},${targetCoords[1]}`;
                 this.state.location.travelAnimation = undefined;
+
+                // Step 2: Register encounter with NPCs in the arrived hex
+                const arrivedHex = this.hexMapManager.getHex(this.state.location.hexId);
+                if (arrivedHex?.npcs) {
+                    for (const npcId of arrivedHex.npcs) {
+                        this.registerNpcEncounter(npcId);
+                    }
+                }
 
                 // Advance time for travel (apply infrastructure modifier to game time too)
                 // Pass travelType to process encounters (§4.3)
@@ -495,6 +510,14 @@ export class GameLoop {
                 this.state.location.hexId = `${targetCoordsMT[0]},${targetCoordsMT[1]}`;
                 this.state.location.travelAnimation = undefined;
 
+                // Step 2: Register encounter with NPCs in the arrived hex
+                const arrivedHexMT = this.hexMapManager.getHex(this.state.location.hexId);
+                if (arrivedHexMT?.npcs) {
+                    for (const npcId of arrivedHexMT.npcs) {
+                        this.registerNpcEncounter(npcId);
+                    }
+                }
+
                 const adjustedTimeCostMT = Math.max(1, Math.round(moveResult.timeCost * infraSpeedModMT));
                 const enc = await this.time.advanceTimeAndProcess(adjustedTimeCostMT, false, travelTypeMT);
                 await this.exploration.expandHorizon(this.state.location.coordinates);
@@ -609,6 +632,38 @@ export class GameLoop {
 
                 await this.initializeCombat(encounter);
                 return `Started combat with ${count}x ${enemyName}.`;
+            }
+
+            case 'talk': {
+                const npcId = args[0];
+                if (!npcId) return "Who do you want to talk to? Usage: /talk [npc_id]";
+
+                const npc = this.state.worldNpcs.find(n => n.id === npcId);
+                if (!npc) return "That person is not here.";
+
+                // Verify NPC is in current hex
+                const currentHex = this.hexMapManager.getHex(this.state.location.hexId);
+                if (!currentHex?.npcs?.includes(npcId)) {
+                    return `${npc.name} is not at your current location.`;
+                }
+
+                // Use the player's last narrative input as the dialogue prompt
+                // If called via UI button, use a greeting
+                const playerMessage = args.slice(1).join(' ') || "Hello.";
+
+                try {
+                    const response = await NPCService.generateDialogue(this.state, npc, playerMessage);
+                    if (response) {
+                        // AUTO-UPDATE: Extract facts from NPC's own dialogue response
+                        await this.updateNpcProfiles(response, [npc]);
+                    }
+
+                    await this.emitStateUpdate();
+                    return response ? `**${npc.name}:** ${response}` : `${npc.name} stays silent.`;
+                } catch (e) {
+                    console.error('[GameLoop] NPC dialogue failed:', e);
+                    return `${npc.name} stares at you in silence. (Dialogue generation failed)`;
+                }
             }
 
             default:
@@ -794,5 +849,82 @@ export class GameLoop {
                 }
             }
         );
+    }
+
+    /**
+     * Phase A: Extract facts from text and update NPC codex entries.
+     * Hooks into both Narrator output and direct Dialogue.
+     */
+    private async updateNpcProfiles(text: string, npcs: any[]): Promise<void> {
+        try {
+            const facts = await ProfileExtractor.extractNpcFacts(text, npcs);
+            let updated = false;
+
+            for (const [npcId, newFacts] of facts) {
+                if (newFacts.length === 0) continue;
+
+                const entry = this.state.codexEntries.find(
+                    e => e.entityId === npcId && e.category === 'npcs'
+                );
+
+                if (entry) {
+                    const turnLabel = `Turn ${this.state.worldTime.totalTurns}`;
+                    entry.content += `\n\n**Learned (${turnLabel}):**\n` +
+                        newFacts.map(f => `- ${f}`).join('\n');
+                    entry.isNew = true; // Re-flag so player sees the update
+                    updated = true;
+                }
+            }
+
+            if (updated) {
+                await this.emitStateUpdate();
+            }
+        } catch (e) {
+            console.warn('[GameLoop] Profile extraction failed (non-critical):', e);
+        }
+    }
+
+    /**
+     * Phase A: Creates a codex entry for an NPC on first encounter.
+     * Purely programmatic — no LLM involved.
+     */
+    private registerNpcEncounter(npcId: string): void {
+        // Skip if already registered
+        if (this.state.codexEntries.some(e => e.entityId === npcId && e.category === 'npcs')) return;
+
+        const npc = this.state.worldNpcs.find(n => n.id === npcId);
+        if (!npc) return;
+
+        const traits = (npc.traits || []).slice(0, 2).join(', ');
+        const role = npc.role || 'Unknown';
+        const faction = npc.factionId?.replace(/_/g, ' ') || 'Unaffiliated';
+        const coords = this.state.location.coordinates;
+
+        const content = [
+            `**Role:** ${role}`,
+            `**Faction:** ${faction}`,
+            `**First Met:** ${this.state.location.hexId} [${coords[0]}, ${coords[1]}], Turn ${this.state.worldTime.totalTurns}`,
+            traits ? `**Known Traits:** ${traits}` : null,
+            npc.isMerchant ? `**Merchant:** Sells goods` : null
+        ].filter(Boolean).join('\n');
+
+        this.state.codexEntries.push({
+            id: `npc_${npcId}_${Date.now()}`,
+            category: 'npcs' as any,
+            entityId: npcId,
+            title: npc.name,
+            content,
+            isNew: true,
+            discoveredAt: this.state.worldTime.totalTurns
+        });
+
+        this.state.notifications.push({
+            id: `notif_npc_${Date.now()}`,
+            type: 'CODEX_ENTRY',
+            message: `New NPC Profile: ${npc.name}`,
+            data: { category: 'npcs', entityId: npcId },
+            isRead: false,
+            createdAt: this.state.worldTime.totalTurns
+        });
     }
 }

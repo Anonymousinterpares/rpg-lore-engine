@@ -70,7 +70,7 @@
     "featureUsages": {},
     "inventory": {
       "gold": {
-        "cp": 0,
+        "cp": 5,
         "sp": 0,
         "ep": 0,
         "gp": 10,
@@ -84,7 +84,7 @@
           "type": "Adventuring Gear",
           "weight": 0,
           "quantity": 1,
-          "charges": 10,
+          "charges": 9,
           "equipped": false
         },
         {
@@ -157,7 +157,7 @@
           "name": "Parchment (one sheet)",
           "type": "Adventuring Gear",
           "weight": 0,
-          "quantity": 10,
+          "quantity": 9,
           "equipped": false
         }
       ]
@@ -166,7 +166,7 @@
       "mainHand": "234c17f2-47a3-4ae4-b961-81d5e84e9f11"
     },
     "attunedItems": [],
-    "xp": 0,
+    "xp": 50,
     "inspiration": false,
     "biography": {
       "background": "Sage",
@@ -212,36 +212,38 @@
       ]
     },
     "knownEntities": {
-      "monsters": [],
+      "monsters": [
+        "Axe_Beak"
+      ],
       "items": []
     }
   },
   "companions": [],
   "mode": "EXPLORATION",
   "location": {
-    "hexId": "-1,-2",
+    "hexId": "-2,-2",
     "coordinates": [
-      -1,
+      -2,
       -2
     ],
     "previousCoordinates": [
-      -2,
-      -1
+      -1,
+      -2
     ],
     "previousControlPointOffset": [
-      -0.08257941553843495,
-      0.37624925196630987
+      -0.1572692716803443,
+      0.24812277901654917
     ],
     "droppedItems": [],
     "combatLoot": []
   },
   "worldTime": {
-    "hour": 9,
-    "minute": 5,
+    "hour": 17,
+    "minute": 42,
     "day": 2,
     "month": 1,
     "year": 1489,
-    "totalTurns": 14450
+    "totalTurns": 19620
   },
   "worldMap": {
     "grid_id": "6a8445e8-0f81-4cc2-9fe5-f8d3a1b908d5",
@@ -1032,7 +1034,7 @@
         ],
         "generated": true,
         "biome": "Hills",
-        "name": "Hills (Uncharted Territory)",
+        "name": "Hills (Discovered)",
         "description": "A vast expanse of hills.",
         "traversable_sides": {
           "N": true,
@@ -1045,7 +1047,7 @@
         "interest_points": [],
         "resourceNodes": [],
         "openedContainers": {},
-        "visited": false,
+        "visited": true,
         "inLineOfSight": true,
         "namingSource": "engine",
         "visualVariant": 3,
@@ -1077,7 +1079,7 @@
         "namingSource": "engine",
         "visualVariant": 1,
         "npcs": [],
-        "connections": "0:R:1,1:R:1,2:R:1,5:R:1,3:R:1"
+        "connections": "0:R:1,1:R:1,2:R:1,5:R:1,3:R:1,4:R:1"
       },
       "-4,2": {
         "coordinates": [
@@ -1182,11 +1184,17 @@
           -3
         ],
         "generated": true,
-        "visited": false,
         "biome": "Mountains",
-        "name": "Uncharted Territory",
+        "name": "Mountains (Uncharted Territory)",
         "description": "A vast expanse of mountains.",
-        "inLineOfSight": false,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
         "interest_points": [],
         "resourceNodes": [
           {
@@ -1202,19 +1210,13 @@
           }
         ],
         "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
         "namingSource": "engine",
         "visualVariant": 5,
         "npcs": [
           "0b6997e4-fb31-477a-9f51-61a6168245a4"
-        ],
-        "traversable_sides": {
-          "N": true,
-          "S": true,
-          "NE": true,
-          "NW": true,
-          "SE": true,
-          "SW": true
-        }
+        ]
       },
       "-1,-3": {
         "coordinates": [
@@ -1222,17 +1224,9 @@
           -3
         ],
         "generated": true,
-        "visited": false,
         "biome": "Mountains",
         "name": "Mountains (Uncharted Territory)",
         "description": "A vast expanse of mountains.",
-        "inLineOfSight": true,
-        "interest_points": [],
-        "resourceNodes": [],
-        "openedContainers": {},
-        "namingSource": "engine",
-        "visualVariant": 4,
-        "npcs": [],
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -1240,7 +1234,15 @@
           "NW": true,
           "SE": true,
           "SW": true
-        }
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": []
       },
       "-3,-2": {
         "coordinates": [
@@ -1248,11 +1250,17 @@
           -2
         ],
         "generated": true,
-        "visited": false,
         "biome": "Plains",
-        "name": "Uncharted Territory",
+        "name": "Plains (Uncharted Territory)",
         "description": "A vast expanse of plains.",
-        "inLineOfSight": false,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
         "interest_points": [],
         "resourceNodes": [
           {
@@ -1268,8 +1276,55 @@
           }
         ],
         "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
         "namingSource": "engine",
         "visualVariant": 4,
+        "npcs": [],
+        "connections": "0:R:1,1:R:1,3:R:1,4:R:1"
+      },
+      "0,-3": {
+        "coordinates": [
+          0,
+          -3
+        ],
+        "generated": true,
+        "biome": "Mountains",
+        "name": "Mountains (Uncharted Territory)",
+        "description": "A vast expanse of mountains.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": []
+      },
+      "-4,-1": {
+        "coordinates": [
+          -4,
+          -1
+        ],
+        "generated": true,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of plains.",
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": false,
+        "namingSource": "engine",
+        "visualVariant": 2,
         "npcs": [],
         "traversable_sides": {
           "N": true,
@@ -1279,51 +1334,7 @@
           "SE": true,
           "SW": true
         },
-        "connections": "0:R:1,1:R:1"
-      },
-      "0,-3": {
-        "coordinates": [
-          0,
-          -3
-        ],
-        "generated": true,
-        "visited": false,
-        "biome": "Mountains",
-        "name": "Mountains (Uncharted Territory)",
-        "description": "A vast expanse of mountains.",
-        "inLineOfSight": true,
-        "interest_points": [],
-        "resourceNodes": [],
-        "openedContainers": {},
-        "namingSource": "engine",
-        "visualVariant": 3,
-        "npcs": [],
-        "traversable_sides": {
-          "N": true,
-          "S": true,
-          "NE": true,
-          "NW": true,
-          "SE": true,
-          "SW": true
-        }
-      },
-      "-4,-1": {
-        "coordinates": [
-          -4,
-          -1
-        ],
-        "generated": false,
-        "visited": false,
-        "biome": "Plains",
-        "name": "Uncharted Territory",
-        "description": "The mists of the unknown cling to this place.",
-        "inLineOfSight": false,
-        "interest_points": [],
-        "resourceNodes": [],
-        "openedContainers": {},
-        "namingSource": "engine",
-        "visualVariant": 1,
-        "npcs": []
+        "connections": "1:R:1,3:R:1"
       },
       "-1,-4": {
         "coordinates": [
@@ -1331,11 +1342,17 @@
           -4
         ],
         "generated": true,
-        "visited": false,
         "biome": "Mountains",
         "name": "Uncharted Territory",
         "description": "A vast expanse of mountains.",
-        "inLineOfSight": false,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
         "interest_points": [],
         "resourceNodes": [
           {
@@ -1351,19 +1368,13 @@
           }
         ],
         "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": false,
         "namingSource": "engine",
         "visualVariant": 2,
         "npcs": [
           "55ff7424-2808-436c-88a9-bb43dd3a95dd"
-        ],
-        "traversable_sides": {
-          "N": true,
-          "S": true,
-          "NE": true,
-          "NW": true,
-          "SE": true,
-          "SW": true
-        }
+        ]
       },
       "0,-4": {
         "coordinates": [
@@ -1371,11 +1382,17 @@
           -4
         ],
         "generated": true,
-        "visited": false,
         "biome": "Mountains",
         "name": "Uncharted Territory",
         "description": "A vast expanse of mountains.",
-        "inLineOfSight": false,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
         "interest_points": [],
         "resourceNodes": [
           {
@@ -1391,17 +1408,11 @@
           }
         ],
         "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": false,
         "namingSource": "engine",
         "visualVariant": 1,
-        "npcs": [],
-        "traversable_sides": {
-          "N": true,
-          "S": true,
-          "NE": true,
-          "NW": true,
-          "SE": true,
-          "SW": true
-        }
+        "npcs": []
       },
       "1,-3": {
         "coordinates": [
@@ -1409,17 +1420,9 @@
           -3
         ],
         "generated": true,
-        "visited": false,
         "biome": "Mountains",
         "name": "Uncharted Territory",
         "description": "A vast expanse of mountains.",
-        "inLineOfSight": false,
-        "interest_points": [],
-        "resourceNodes": [],
-        "openedContainers": {},
-        "namingSource": "engine",
-        "visualVariant": 4,
-        "npcs": [],
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -1427,11 +1430,45 @@
           "NW": true,
           "SE": true,
           "SW": true
-        }
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": false,
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": []
       },
       "1,-4": {
         "coordinates": [
           1,
+          -4
+        ],
+        "generated": true,
+        "biome": "Mountains",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of mountains.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": false,
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": []
+      },
+      "-2,-4": {
+        "coordinates": [
+          -2,
           -4
         ],
         "generated": true,
@@ -1444,8 +1481,10 @@
         "resourceNodes": [],
         "openedContainers": {},
         "namingSource": "engine",
-        "visualVariant": 5,
-        "npcs": [],
+        "visualVariant": 4,
+        "npcs": [
+          "0dedeba7-2e2c-4b8a-8eda-7d5472101d32"
+        ],
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -1454,6 +1493,62 @@
           "SE": true,
           "SW": true
         }
+      },
+      "-3,-3": {
+        "coordinates": [
+          -3,
+          -3
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of plains.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": [
+          "eba14717-7260-4f5d-95b0-a6428c025c9a"
+        ],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "0:R:1"
+      },
+      "-4,-2": {
+        "coordinates": [
+          -4,
+          -2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "A vast expanse of plains.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 1,
+        "npcs": [],
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "0:R:1,1:R:1"
       }
     },
     "coastlines": []
@@ -1535,28 +1630,47 @@
     {
       "id": "0b6997e4-fb31-477a-9f51-61a6168245a4",
       "name": "Bryn Shadowstep",
-      "traits": [
-        "Cheerful",
-        "Orphan"
-      ],
-      "isMerchant": false,
       "relationship": {
         "standing": 0,
         "interactionLog": []
       },
       "dialogue_triggers": [],
+      "role": "Hermit",
+      "isMerchant": false,
       "inventory": [],
-      "conversationHistory": [],
-      "role": "Hermit"
+      "traits": [
+        "Cheerful",
+        "Orphan"
+      ],
+      "conversationHistory": []
     },
     {
       "id": "55ff7424-2808-436c-88a9-bb43dd3a95dd",
       "name": "Ivor Brightwood",
+      "relationship": {
+        "standing": 0,
+        "interactionLog": []
+      },
+      "dialogue_triggers": [],
+      "role": "Miner",
+      "isMerchant": false,
+      "inventory": [],
       "traits": [
         "Chaotic",
         "Boredom (Adventure)",
         "Escaped Convict"
       ],
+      "conversationHistory": []
+    },
+    {
+      "id": "0dedeba7-2e2c-4b8a-8eda-7d5472101d32",
+      "name": "Bryn Silvervein",
+      "traits": [
+        "Zhentarim Mercenary",
+        "Follower",
+        "Cynical",
+        "Ex-Soldier"
+      ],
       "isMerchant": false,
       "relationship": {
         "standing": 0,
@@ -1565,7 +1679,26 @@
       "dialogue_triggers": [],
       "inventory": [],
       "conversationHistory": [],
+      "factionId": "zhentarim",
       "role": "Miner"
+    },
+    {
+      "id": "eba14717-7260-4f5d-95b0-a6428c025c9a",
+      "name": "Fenton Stormborn",
+      "traits": [
+        "Neutral",
+        "Sarcastic",
+        "Chaos (Freedom)"
+      ],
+      "isMerchant": false,
+      "relationship": {
+        "standing": 0,
+        "interactionLog": []
+      },
+      "dialogue_triggers": [],
+      "inventory": [],
+      "conversationHistory": [],
+      "role": "Scout"
     }
   ],
   "activeQuests": [
@@ -1613,7 +1746,7 @@
   ],
   "factions": [],
   "storySummary": "started their journey as a Half-Elf Ranger with the Sage background.",
-  "lastNarrative": "[System Error] Narrative generation failed: LLM API Error (402): . See console for HTML response.",
+  "lastNarrative": "The hills rang with clashing steel as Daa and the monstrous Axe Beak closed a 330‑foot chasm, each stride a thunderous promise. After four relentless rounds of closing distance, Daa adopted a guarded stance,",
   "conversationHistory": [
     {
       "role": "player",
@@ -1664,23 +1797,62 @@
       "role": "narrator",
       "content": "[System Error] Narrative generation failed: LLM API Error (402): . See console for HTML response.",
       "turnNumber": 14450
+    },
+    {
+      "role": "player",
+      "content": "/survey",
+      "turnNumber": 14450
+    },
+    {
+      "role": "narrator",
+      "content": "You pause to take in the terrain around you, the mountain air crisp and thin. To the south, the hills rise gently, their slopes dotted with sparse brush—still uncharted, but you can make out a few knotted trees. The towering peaks to the north and northeast loom, their cliffs sheer and shadowed, promising hidden valleys beyond. East‑southeast, the jagged mountain range continues, while the plains you passed earlier stretch out to the southwest, their grasses swaying in a faint wind.\n\nThe sudden landslide you heard moments ago has already reshaped the landscape. A massive cascade of stone and ice has slammed into the main trail, burying it under a wall of rubble. Where the trail once ran, a narrow, dark fissure now gapes in the rock—a jagged mouth leading into an uncharted cavern that disappears into blackness. The air that seeps out carries a faint scent of damp stone and something metallic, perhaps ore, deep within.\n\nBeyond the immediate area, the horizon is a mix of familiar and unknown: to the far south, the plains you know extend; to the far north, more towering mountains rise, their peaks lost in mist; to the far southwest, a dense jungle looms, its canopy a dark green wall; to the far northwest, untouched plains spread out. No signs of travelers or creatures are visible at the moment, the silence only broken by the occasional tumble of loose rock.\n\nWith the main trail blocked, you must decide whether to attempt to clear a path, explore the newly revealed cavern, or seek an alternate route around the landslide.",
+      "turnNumber": 14450
+    },
+    {
+      "role": "narrator",
+      "content": "The hills rang with clashing steel as Daa and the monstrous Axe Beak closed a 330‑foot chasm, each stride a thunderous promise. After four relentless rounds of closing distance, Daa adopted a guarded stance,",
+      "turnNumber": 19620
     }
   ],
   "triggeredEvents": [
     "moved_hex",
     "viewed_page:world_map"
   ],
-  "codexEntries": [],
-  "notifications": [],
+  "codexEntries": [
+    {
+      "id": "196e57ad-c1f3-4cd5-8de6-f1c4450a7020",
+      "category": "bestiary",
+      "entityId": "Axe_Beak",
+      "title": "Axe‑Beak, the Iron‑Crested Terror",
+      "content": "**Description**\nThe Axe‑Beak is a hulking avian predator, standing roughly nine feet tall at the shoulder and spanning a wingspan of twenty‑four feet. Its most striking feature is the massive, blade‑like beak that curves downward like a war‑axe, forged of a keratinous material so dense it glints with a metallic sheen. The beak’s edges are serrated, capable of cleaving armor as easily as a smith’s chisel. Its plumage is a mottled tapestry of iron‑gray and midnight black, interlaced with iridescent feather‑scales that seem to ripple with a faint, phosphorescent glow when the creature is agitated.\n\n**Biology**\nScholars speculate that the Axe‑Beak’s beak is an evolutionary adaptation to a diet of heavily armored prey—giant beetles, armored salamanders, and even the occasional drake that ventures too close to its nesting cliffs. The beak’s core is reinforced with a lattice of calcified fibers, a trait unique among avian species, granting it both the strength of steel and the flexibility of bone. Its musculature is unusually dense, allowing it to launch powerful, diving strikes that generate shockwaves capable of shattering stone.\n\nIts eyes are a deep amber, granting excellent low‑light vision, while a set of elongated, feather‑covered ears can detect the faintest rustle of prey beneath leaf litter. The Axe‑Beak’s talons, though smaller than its beak, are curved like scythes and coated in a secretion that hardens on contact, acting as natural claws for scaling sheer cliffs.\n\n**Habitat & Ecology**\nAxe‑Beaks are most commonly found in the high, wind‑blasted crags of the Ironspine Mountains, nesting in sheer ledges where few other predators dare to tread. Their nests are constructed from twisted branches, bone fragments, and the shed feathers of fallen foes, forming a macabre tapestry that camouflages the structure from aerial view.\n\nThey are solitary hunters, marking territories with a series of low‑frequency calls that reverberate through the stone. These calls are thought to serve both as a warning to rivals and as a means of communicating with unseen kin—some legends claim they can summon storm clouds to aid their hunt.\n\n**Behavior**\nWhen provoked, an Axe‑Beak will unleash a terrifying screech that can disorient even the hardiest of warriors. It then ascends to a height of fifty feet before diving at its target with a speed that rivals a falcon’s stoop, its beak aimed to pierce armor and bone alike. In combat, it prefers to strike from above, using its wings to generate gusts that can unbalance opponents before delivering a crushing blow.\n\n**Legends & Myths**\nAmong the mountain folk, the Axe‑Beak is spoken of as a guardian of the ancient stone pathways, a living embodiment of the mountains’ wrath. Some tales claim that the creature was forged by a forgotten deity of war, its beak a gift to punish those who would defile the high places. Bards sing of “the Iron‑Crested Harbinger,” a portent of doom that appears before avalanches or landslides, heralding nature’s retribution.\n\nA particularly persistent myth holds that an Axe‑Beak can be tamed by offering a shard of meteoric iron, after which it will serve its benefactor as a mount—though no verified account of such a pact exists.\n\n**Encounter Tips**\n- **Avoid the high winds**: The creature uses gusts to its advantage; staying on lower ground reduces its aerial superiority.\n- **Shield the head**: Its beak targets the crown; a sturdy helm or magical barrier can deflect the initial strike.\n- **Disrupt its screech**: A sudden, loud noise (such as a thunderclap spell) can momentarily silence its warning call, buying precious seconds.\n- **Aim for the wings**: Severing a wing with a well‑placed projectile can ground the beast, making it vulnerable to melee attacks.\n\n**Survivor’s Tale**\n\"I thought the forest would swallow me whole, but the Axe‑Beak's scream was louder than any wind. I watched its iron‑capped beak flash like a blade of moonlight, and for a heartbeat I believed my fate was sealed. Yet, when the creature dove, a sudden crack of thunder—my companion's lightning bolt—shattered its focus. I scrambled beneath the cliff, heart pounding, and as the beast crashed into the stone, I fled with my life, clutching the shattered feather‑scale as proof. Let any who hear my words remember: the mountains are patient, but they do not forgive the reckless.",
+      "isNew": true,
+      "discoveredAt": 19550
+    }
+  ],
+  "notifications": [
+    {
+      "id": "5ebf36f0-6f3b-45ae-8bc4-c4fc1ec8db74",
+      "type": "CODEX_ENTRY",
+      "message": "New codex entry created: Axe‑Beak, the Iron‑Crested Terror",
+      "data": {
+        "category": "bestiary",
+        "entityId": "196e57ad-c1f3-4cd5-8de6-f1c4450a7020"
+      },
+      "isRead": true,
+      "createdAt": 1771322976587
+    }
+  ],
   "weather": {
     "type": "Clear",
-    "durationMinutes": 120,
+    "durationMinutes": 30,
     "intensity": 1
   },
   "travelPace": "Stealth",
   "explorationBlindnessUntil": 0,
   "findThePathActiveUntil": 0,
-  "clearedHexes": {},
+  "clearedHexes": {
+    "-2,-2": 19550
+  },
   "settings": {
     "permadeath": false,
     "variantEncumbrance": false,

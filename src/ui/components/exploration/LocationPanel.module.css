@@ -137,3 +137,104 @@
     background: rgba(0, 0, 0, 0.03);
     color: var(--color-ink);
 }
+
+.npcList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.npcCard {
+    background: rgba(255, 248, 230, 0.08);
+    border: 1px solid rgba(139, 119, 75, 0.2);
+    border-radius: 6px;
+    padding: 10px;
+    transition: all 0.2s ease;
+}
+
+.npcCard:hover {
+    background: rgba(255, 248, 230, 0.12);
+    border-color: rgba(139, 119, 75, 0.4);
+}
+
+.npcHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.npcName {
+    font-weight: 600;
+    font-size: 1.1em;
+    color: var(--color-text-primary);
+    font-family: 'Cinzel', serif;
+}
+
+.npcMeta {
+    display: flex;
+    gap: 8px;
+    font-size: 0.85em;
+    opacity: 0.8;
+    margin-bottom: 6px;
+}
+
+.npcRole {
+    color: #b8944f;
+    font-weight: 500;
+}
+
+.npcFaction {
+    font-style: italic;
+    color: var(--color-text-secondary);
+}
+
+.npcStanding {
+    font-size: 0.85em;
+    margin-bottom: 10px;
+}
+
+.standingPositive {
+    color: #6aaa64;
+}
+
+.standingNegative {
+    color: #c94040;
+}
+
+.standingNeutral {
+    color: #b8944f;
+}
+
+.npcActions {
+    display: flex;
+    gap: 8px;
+}
+
+.npcActionButton {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px;
+    font-size: 0.85em;
+    border: 1px solid rgba(139, 119, 75, 0.3);
+    border-radius: 4px;
+    background: rgba(255, 248, 230, 0.05);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.npcActionButton:hover:not(:disabled) {
+    background: rgba(184, 148, 79, 0.2);
+    border-color: rgba(184, 148, 79, 0.5);
+}
+
+.npcActionButton:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
