@@ -9,12 +9,83 @@ export interface RestResult {
 
 export class RestingEngine {
     /**
-     * Executes a Short Rest (1 hour)
-     * Allows spending hit dice to heal.
+     * Executes a proportional rest based on time spent.
      * @param pc The character resting
-     * @param diceToSpend Number of hit dice the player chooses to spend
+     * @param durationMinutes Total minutes actually spent
+     * @param type Whether this was a 'rest' (recovering) or 'wait' (passing time)
+     */
+    public static applyProportionalRest(pc: PlayerCharacter, durationMinutes: number, type: 'rest' | 'wait'): RestResult {
+        if (type === 'wait') {
+            return {
+                message: `You wait for ${durationMinutes} minutes.`,
+                timeCost: durationMinutes
+            };
+        }
+
+        // Rest ratio (based on 8-hour long rest)
+        const ratio = Math.min(1.0, durationMinutes / 480);
+
+        // 1. HP Recovery
+        // Long rest (8h) recovers 100%. Fractional rest recovers ratio * max.
+        const oldHp = pc.hp.current;
+        const hpToRecover = Math.floor(pc.hp.max * ratio);
+        pc.hp.current = Math.min(pc.hp.max, pc.hp.current + hpToRecover);
+        const actualHpHealed = pc.hp.current - oldHp;
+
+        // 2. Hit Dice Recovery
+        // Long rest (8h) recovers 50% max dice. Fractional recovers ratio * 50% max.
+        const maxRegain = Math.max(1, Math.floor(pc.hitDice.max / 2));
+        const regainAmount = Math.floor(maxRegain * ratio);
+        const oldDice = pc.hitDice.current;
+        pc.hitDice.current = Math.min(pc.hitDice.max, pc.hitDice.current + regainAmount);
+        const actualDiceRegained = pc.hitDice.current - oldDice;
+
+        // 3. Spell Slot Recovery
+        // We calculate total "slot levels" missing and recover a proportional amount.
+        let totalMissingSlots = 0;
+        let totalMaxSlots = 0;
+        Object.values(pc.spellSlots).forEach(slot => {
+            totalMissingSlots += (slot.max - slot.current);
+            totalMaxSlots += slot.max;
+        });
+
+        let slotsToRecover = Math.floor(totalMaxSlots * ratio);
+        let actualSlotsRegained = 0;
+
+        if (slotsToRecover > 0) {
+            // Restore from lowest level up
+            const levels = Object.keys(pc.spellSlots).sort((a, b) => parseInt(a) - parseInt(b));
+            for (const level of levels) {
+                const slot = pc.spellSlots[level];
+                const space = slot.max - slot.current;
+                const canRecover = Math.min(space, slotsToRecover);
+                slot.current += canRecover;
+                slotsToRecover -= canRecover;
+                actualSlotsRegained += canRecover;
+                if (slotsToRecover <= 0) break;
+            }
+        }
+
+        let message = `${pc.name} rested for ${durationMinutes} minutes. `;
+        if (actualHpHealed > 0) message += `Recovered ${actualHpHealed} HP. `;
+        if (actualDiceRegained > 0) message += `Regained ${actualDiceRegained} Hit Dice. `;
+        if (actualSlotsRegained > 0) message += `Restored ${actualSlotsRegained} spell slots. `;
+
+        if (actualHpHealed === 0 && actualDiceRegained === 0 && actualSlotsRegained === 0) {
+            message += `The rest was too short to provide significant recovery.`;
+        }
+
+        return {
+            message: message.trim(),
+            timeCost: durationMinutes
+        };
+    }
+
+    /**
+     * Executes a Short Rest (1 hour) - Legacy wrapper or specific logic
      */
     public static shortRest(pc: PlayerCharacter, diceToSpend: number = 0): RestResult {
+        // We keep the hit dice spending mechanic for explicit short rests if called
         if (diceToSpend > pc.hitDice.current) {
             return { message: `Not enough hit dice remaining (Current: ${pc.hitDice.current}).`, timeCost: 0 };
         }
@@ -32,41 +103,20 @@ export class RestingEngine {
         pc.hp.current = Math.min(pc.hp.max, pc.hp.current + totalHealed);
         const actualHealed = pc.hp.current - oldHp;
 
-        let msg = `${pc.name} takes a Short Rest. Spent ${diceToSpend} Hit Dice. Healed ${actualHealed} HP.`;
+        // Also apply 1/8th of long rest benefits because 1 hour passed
+        const propResult = this.applyProportionalRest(pc, 60, 'rest');
 
-        // Refreshes (Simplified: Warlock slots, etc. would go here)
-        if (pc.class === 'Warlock') {
-            Object.keys(pc.spellSlots).forEach(level => {
-                pc.spellSlots[level].current = pc.spellSlots[level].max;
-            });
-            msg += ` Spell slots refreshed.`;
-        }
-
-        return { message: msg, timeCost: 60 };
+        return {
+            message: `Short Rest: Spent ${diceToSpend} Hit Dice, healed ${actualHealed} HP. ` + propResult.message,
+            timeCost: 60
+        };
     }
 
     /**
-     * Executes a Long Rest (8 hours)
-     * Full HP, regain half hit dice, regain all spell slots.
+     * Executes a Long Rest (8 hours) - Regains all
      */
     public static longRest(pc: PlayerCharacter): RestResult {
-        pc.hp.current = pc.hp.max;
-
-        // Regain half hit dice (minimum 1)
-        const regainAmount = Math.max(1, Math.floor(pc.hitDice.max / 2));
-        pc.hitDice.current = Math.min(pc.hitDice.max, pc.hitDice.current + regainAmount);
-
-        // Regain all spell slots
-        Object.keys(pc.spellSlots).forEach(level => {
-            pc.spellSlots[level].current = pc.spellSlots[level].max;
-        });
-
-        // Clear inspiration if applicable (depends on variant rules, but usually kept)
-
-        return {
-            message: `${pc.name} takes a Long Rest. HP and Spell Slots fully restored. Regained ${regainAmount} Hit Dice (Current: ${pc.hitDice.current}/${pc.hitDice.max}).`,
-            timeCost: 480
-        };
+        return this.applyProportionalRest(pc, 480, 'rest');
     }
 
     /**

@@ -1049,8 +1049,8 @@ export class GameLoop {
         return result;
     }
 
-    public completeRest(durationMinutes: number): string {
-        return this.time.completeRest(durationMinutes);
+    public completeRest(durationMinutes: number, type: 'rest' | 'wait' = 'rest'): string {
+        return this.time.completeRest(durationMinutes, type);
     }
 
     private applyNarratorEffects(output: NarratorOutput) {

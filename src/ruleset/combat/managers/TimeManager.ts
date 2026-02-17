@@ -56,15 +56,8 @@ export class TimeManager {
     /**
      * Applies the mechanical benefits of resting after time has passed.
      */
-    public completeRest(durationMinutes: number): string {
-        let restResult;
-        if (durationMinutes >= 480) {
-            restResult = RestingEngine.longRest(this.state.character);
-        } else if (durationMinutes >= 60) {
-            restResult = RestingEngine.shortRest(this.state.character);
-        } else {
-            restResult = RestingEngine.wait(durationMinutes);
-        }
+    public completeRest(durationMinutes: number, type: 'rest' | 'wait' = 'rest'): string {
+        const restResult = RestingEngine.applyProportionalRest(this.state.character, durationMinutes, type);
         this.emitStateUpdate();
         return restResult.message;
     }

@@ -344,7 +344,7 @@
       ],
       "generated": true,
       "biome": "Hills",
-      "name": "Hills (Uncharted Territory)",
+      "name": "Hills (Discovered)",
       "description": "A vast expanse of hills.",
       "traversable_sides": {
         "N": true,
@@ -357,7 +357,7 @@
       "interest_points": [],
       "resourceNodes": [],
       "openedContainers": {},
-      "visited": false,
+      "visited": true,
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 4,
@@ -678,7 +678,7 @@
       ],
       "generated": true,
       "biome": "Hills",
-      "name": "Uncharted Territory",
+      "name": "Hills (Uncharted Territory)",
       "description": "A vast expanse of hills.",
       "traversable_sides": {
         "N": true,
@@ -692,10 +692,11 @@
       "resourceNodes": [],
       "openedContainers": {},
       "visited": false,
-      "inLineOfSight": false,
+      "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 3,
-      "npcs": []
+      "npcs": [],
+      "connections": "4:P:0"
     },
     "2,-3": {
       "coordinates": [
@@ -759,7 +760,8 @@
       "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 2,
-      "npcs": []
+      "npcs": [],
+      "connections": "3:R:1"
     },
     "1,-4": {
       "coordinates": [
@@ -1096,6 +1098,33 @@
       "namingSource": "engine",
       "visualVariant": 1,
       "npcs": []
+    },
+    "-2,-2": {
+      "coordinates": [
+        -2,
+        -2
+      ],
+      "generated": true,
+      "visited": false,
+      "biome": "Hills",
+      "name": "Uncharted Territory",
+      "description": "A vast expanse of hills.",
+      "inLineOfSight": false,
+      "interest_points": [],
+      "resourceNodes": [],
+      "openedContainers": {},
+      "namingSource": "engine",
+      "visualVariant": 5,
+      "npcs": [],
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      },
+      "connections": "0:P:1,1:P:0"
     }
   },
   "coastlines": []

@@ -39,6 +39,13 @@ const RestWaitModal: React.FC<RestWaitModalProps> = ({ engine, onCancel }) => {
 
     const handleCancel = () => {
         cancelledRef.current = true;
+
+        // Apply proportional rewards for time already spent
+        const passedMins = totalMinutesToPass - remainingMinutes;
+        if (passedMins > 0) {
+            engine.completeRest(passedMins, activeTab);
+        }
+
         onCancel();
     };
 
@@ -49,13 +56,7 @@ const RestWaitModal: React.FC<RestWaitModalProps> = ({ engine, onCancel }) => {
             if (!isCountingDown || remainingMinutes <= 0) {
                 if (isCountingDown && remainingMinutes <= 0 && !cancelledRef.current) {
                     // Done!
-                    const action = activeTab;
-                    if (action === 'rest') {
-                        await engine.completeRest(totalMinutesToPass);
-                    } else {
-                        // Wait doesn't need completion benefits, just time passed (already done in step)
-                        await engine.advanceTimeAndProcess(0); // Trigger final state update
-                    }
+                    await engine.completeRest(totalMinutesToPass, activeTab);
                     onCancel();
                 }
                 return;
