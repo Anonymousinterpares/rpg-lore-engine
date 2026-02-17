@@ -238,3 +238,50 @@
     cursor: not-allowed;
     filter: grayscale(1);
 }
+
+.npcThinking {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px;
+    font-size: 0.85em;
+    border: 1px solid rgba(139, 119, 75, 0.3);
+    border-radius: 4px;
+    background: rgba(255, 248, 230, 0.1);
+    color: var(--color-ink-dim);
+    font-style: italic;
+    cursor: wait;
+}
+
+.thinkingText {
+    margin-left: 4px;
+}
+
+.thinkingDot {
+    animation: thinking 1.4s infinite;
+    opacity: 0;
+}
+
+.thinkingDot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.thinkingDot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes thinking {
+    0% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}

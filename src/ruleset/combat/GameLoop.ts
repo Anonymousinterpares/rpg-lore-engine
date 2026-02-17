@@ -116,6 +116,10 @@ export class GameLoop {
             (msg) => this.addCombatLog(msg),
             (type, target, val) => this.emitCombatEvent(type, target, val)
         );
+
+        // Safety Check: Register any NPCs in the current hex on load
+        // This catches cases where the player loads into a hex with NPCs but didn't "move" there
+        this.scanCurrentHexForNpcs();
     }
 
     public async initialize() {
@@ -881,6 +885,21 @@ export class GameLoop {
             }
         } catch (e) {
             console.warn('[GameLoop] Profile extraction failed (non-critical):', e);
+        }
+    }
+
+    /**
+     * Scans the current hex for NPCs and ensures they are registered in the codex.
+     * Useful for resuming a game session in a populated hex.
+     */
+    private scanCurrentHexForNpcs(): void {
+        const hexId = this.state.location.hexId;
+        const currentHex = this.hexMapManager.getHex(hexId);
+
+        if (currentHex?.npcs) {
+            for (const npcId of currentHex.npcs) {
+                this.registerNpcEncounter(npcId);
+            }
         }
     }
 

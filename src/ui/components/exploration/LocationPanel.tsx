@@ -29,12 +29,13 @@ interface LocationPanelProps {
     connections?: string;
     onCompassClick?: () => void;
     onTalkToNpc?: (npcId: string) => void;
+    talkingNpcId?: string | null;
     className?: string;
 }
 
 const LocationPanel: React.FC<LocationPanelProps> = ({
     name, biome, description, interestPoints, resourceNodes = [],
-    npcs = [], connections, onCompassClick, onTalkToNpc, className = ''
+    npcs = [], connections, onCompassClick, onTalkToNpc, talkingNpcId, className = ''
 }) => {
     const [isExpanded, setIsExpanded] = React.useState(false);
 
@@ -170,13 +171,23 @@ const LocationPanel: React.FC<LocationPanelProps> = ({
                                             </span>
                                         </div>
                                         <div className={styles.npcActions}>
-                                            <button
-                                                className={styles.npcActionButton}
-                                                onClick={() => onTalkToNpc?.(npc.id)}
-                                                title={`Talk to ${npc.name}`}
-                                            >
-                                                💬 Talk
-                                            </button>
+                                            {talkingNpcId === npc.id ? (
+                                                <div className={styles.npcThinking}>
+                                                    <span className={styles.thinkingDot}>.</span>
+                                                    <span className={styles.thinkingDot}>.</span>
+                                                    <span className={styles.thinkingDot}>.</span>
+                                                    <span className={styles.thinkingText}>Listening</span>
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    className={styles.npcActionButton}
+                                                    onClick={() => onTalkToNpc?.(npc.id)}
+                                                    title={`Talk to ${npc.name}`}
+                                                    disabled={!!talkingNpcId} // Disable all buttons while talking
+                                                >
+                                                    💬 Talk
+                                                </button>
+                                            )}
                                             {npc.isMerchant && (
                                                 <button
                                                     className={styles.npcActionButton}

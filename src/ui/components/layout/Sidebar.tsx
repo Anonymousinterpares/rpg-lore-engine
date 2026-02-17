@@ -39,6 +39,8 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter, onCompass }) 
         }
     };
 
+    const [talkingNpcId, setTalkingNpcId] = React.useState<string | null>(null);
+
     return (
         <aside className={`${styles.sidebar} ${parchmentStyles.panel} ${parchmentStyles.overflowVisible} ${className}`}>
             {currentHex && (
@@ -59,9 +61,15 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter, onCompass }) 
                             standing: npc?.relationship?.standing ?? 0
                         };
                     })}
-                    onTalkToNpc={(npcId) => {
+                    talkingNpcId={talkingNpcId}
+                    onTalkToNpc={async (npcId) => {
                         if (engine) {
-                            engine.processTurn(`/talk ${npcId}`);
+                            setTalkingNpcId(npcId);
+                            try {
+                                await engine.processTurn(`/talk ${npcId}`);
+                            } finally {
+                                setTalkingNpcId(null);
+                            }
                         }
                     }}
                     connections={currentHex.connections}

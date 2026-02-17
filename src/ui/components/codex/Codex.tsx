@@ -26,6 +26,7 @@ const CATEGORIES = [
     { id: 'races', label: 'Races', icon: Users },
     { id: 'classes', label: 'Classes', icon: Swords },
     { id: 'bestiary', label: 'Bestiary', icon: Skull },
+    { id: 'npcs', label: 'NPCs', icon: Users },
     { id: 'conditions', label: 'Conditions', icon: Book },
     { id: 'items', label: 'Items', icon: Map }
 ];
@@ -208,6 +209,7 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                 );
             case 'items':
             case 'bestiary':
+            case 'npcs':
                 const dynamicEntries = state?.codexEntries?.filter(e => e.category === activeCategory) || [];
                 if (dynamicEntries.length === 0) {
                     return (
