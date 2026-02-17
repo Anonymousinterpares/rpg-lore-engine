@@ -120,6 +120,14 @@ const DevOverlay: React.FC<DevOverlayProps> = ({ state }) => {
                     ANIMATING [{(t * 100).toFixed(0)}%]
                 </div>
             )}
+
+            <hr className={styles.divider} />
+            <div className={styles.logHeader}>System Log</div>
+            <div className={styles.debugLog}>
+                {(state.debugLog || []).map((msg, idx) => (
+                    <div key={idx} className={styles.logEntry}>{msg}</div>
+                ))}
+            </div>
         </div>
     );
 };

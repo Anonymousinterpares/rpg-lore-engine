@@ -28,6 +28,7 @@ async function verifyMultiplayer() {
         createdAt: new Date().toISOString(),
         lastSavedAt: new Date().toISOString(),
         playTimeSeconds: 0,
+        debugLog: [],
         character: {
             name: "HostPlayer",
             level: 1,

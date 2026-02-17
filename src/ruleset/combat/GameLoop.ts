@@ -31,6 +31,7 @@ import { TimeManager } from './managers/TimeManager';
 import { CombatOrchestrator } from './managers/CombatOrchestrator';
 import { MERCHANT_POOLS, BIOME_COMMERCE, COMMON_ITEMS, DEFAULT_COMMERCE } from '../data/MerchantInventoryPool';
 import { WorldNPC } from '../schemas/WorldEnrichmentSchema';
+import { NPCMovementEngine } from './managers/NPCMovementEngine';
 import { Dice } from './Dice';
 import { z } from 'zod';
 
@@ -57,6 +58,7 @@ export class GameLoop {
     private time: TimeManager;
     private combatOrchestrator: CombatOrchestrator;
     private scribe: StoryScribe;
+    private npcMovement: NPCMovementEngine;
 
     private onStateUpdate?: (state: GameState) => Promise<void>;
     private listeners: ((state: GameState) => void)[] = [];
@@ -109,6 +111,19 @@ export class GameLoop {
             this.director,
             () => this.emitStateUpdate(),
             (enc) => this.initializeCombat(enc)
+        );
+
+        this.npcMovement = new NPCMovementEngine(
+            this.state,
+            this.hexMapManager,
+            () => this.emitStateUpdate(),
+            (msg) => {
+                if (msg.startsWith('[NPC]')) {
+                    this.addDebugLog(msg);
+                } else {
+                    this.addCombatLog(msg);
+                }
+            }
         );
 
         this.combatOrchestrator = new CombatOrchestrator(
@@ -304,6 +319,7 @@ export class GameLoop {
             // Time Advancement (5 mins per turn)
             if (intent.type !== 'COMMAND') {
                 const encounter = await this.time.advanceTimeAndProcess(5);
+                this.npcMovement.processTurn(this.state.worldTime.totalTurns);
                 if (encounter) {
                     await this.initializeCombat(encounter);
                     // Append to existing narrative if success, or just state it if fail
@@ -593,6 +609,7 @@ export class GameLoop {
 
                 const adjustedTimeCostMT = Math.max(1, Math.round(moveResult.timeCost * infraSpeedModMT));
                 const enc = await this.time.advanceTimeAndProcess(adjustedTimeCostMT, false, travelTypeMT);
+                this.npcMovement.processTurn(this.state.worldTime.totalTurns);
                 await this.exploration.expandHorizon(this.state.location.coordinates);
                 await this.time.trackTutorialEvent('moved_hex');
 
@@ -623,6 +640,16 @@ export class GameLoop {
 
             case 'item_equip':
                 return await this.inventory.equipItem(args[0]);
+
+            case 'wait': {
+                const minutes = parseInt(args[0] || '60');
+                const waitEnc = await this.time.advanceTimeAndProcess(minutes);
+                if (waitEnc) {
+                    await this.initializeCombat(waitEnc);
+                    return "Your wait is interrupted by an encounter!";
+                }
+                return `You wait for ${minutes} minutes.`;
+            }
 
             case 'rest':
                 const duration = parseInt(args[0] || '480');
@@ -959,7 +986,17 @@ export class GameLoop {
     }
 
     private addCombatLog(message: string) {
-        if (!this.state.combat) return;
+        if (!this.state.combat) {
+            // Narrative/Exploration log entry
+            this.state.conversationHistory.push({
+                role: 'narrator',
+                content: message,
+                turnNumber: this.state.worldTime.totalTurns
+            });
+            this.emitStateUpdate();
+            return;
+        }
+
         if (!message || !message.trim()) return;
 
         this.state.combat.logs.push({
@@ -968,6 +1005,23 @@ export class GameLoop {
             message: message.trim(),
             turn: this.state.combat.round
         });
+        this.emitStateUpdate();
+    }
+
+    public addDebugLog(message: string) {
+        if (!this.state.debugLog) this.state.debugLog = [];
+        const timestamp = new Date().toLocaleTimeString();
+        this.state.debugLog.push(`[${timestamp}] ${message}`);
+
+        // Keep last 50 entries
+        if (this.state.debugLog.length > 50) {
+            this.state.debugLog.shift();
+        }
+
+        // Only emit if developer mode is on to avoid unnecessary re-renders in normal play
+        if (this.state.settings.gameplay.developerMode) {
+            this.emitStateUpdate();
+        }
     }
 
     private emitCombatEvent(type: string, targetId: string, value: number) {
@@ -989,6 +1043,16 @@ export class GameLoop {
         await this.emitStateUpdate();
     }
 
+    public async advanceTimeAndProcess(totalMinutes: number, isResting: boolean = false, travelType: 'Road' | 'Path' | 'Ancient' | 'Stealth' | 'Wilderness' = 'Wilderness'): Promise<Encounter | null> {
+        const result = await this.time.advanceTimeAndProcess(totalMinutes, isResting, travelType);
+        this.npcMovement.processTurn(this.state.worldTime.totalTurns);
+        return result;
+    }
+
+    public completeRest(durationMinutes: number): string {
+        return this.time.completeRest(durationMinutes);
+    }
+
     private applyNarratorEffects(output: NarratorOutput) {
         EngineDispatcher.dispatch(
             output.engine_calls || [],
@@ -999,6 +1063,7 @@ export class GameLoop {
                 worldClock: {
                     advanceTime: async (state: GameState, hours: number) => {
                         await this.time.advanceTimeAndProcess(hours * 60);
+                        this.npcMovement.processTurn(this.state.worldTime.totalTurns);
                     }
                 }
             }

@@ -139,6 +139,7 @@ export class CharacterFactory {
             playTimeSeconds: 0,
             explorationBlindnessUntil: 0,
             findThePathActiveUntil: 0,
+            debugLog: [],
             character: {
                 name: name,
                 level: 1,

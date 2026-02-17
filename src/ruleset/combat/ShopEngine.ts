@@ -5,8 +5,50 @@ import { Dice } from './Dice';
 import { WorldNPC } from '../schemas/WorldEnrichmentSchema';
 import { MechanicsEngine } from './MechanicsEngine';
 import { DataManager } from '../data/DataManager';
+import { BiomeType } from '../schemas/BiomeSchema';
+import { MERCHANT_POOLS, COMMON_ITEMS } from '../data/MerchantInventoryPool';
 
 export class ShopEngine {
+    /**
+     * Refreshes a merchant's inventory based on their current biome.
+     * Simulates local trade and supply changes during movement.
+     */
+    public static refreshInventory(npc: WorldNPC, biome: BiomeType): void {
+        if (!npc.shopState) return;
+
+        // 1. Cull old items (simulate sales)
+        const cullCount = Dice.roll('1d2');
+        for (let i = 0; i < cullCount; i++) {
+            if (npc.shopState.inventory.length > 5) {
+                const idx = Math.floor(Math.random() * npc.shopState.inventory.length);
+                npc.shopState.inventory.splice(idx, 1);
+            }
+        }
+
+        // 2. Add new items from local biome pool
+        const pool = MERCHANT_POOLS[biome] || COMMON_ITEMS;
+        const addCount = Dice.roll('1d3');
+        for (let i = 0; i < addCount; i++) {
+            const item = pool[Math.floor(Math.random() * pool.length)];
+            if (!npc.shopState.inventory.includes(item)) {
+                npc.shopState.inventory.push(item);
+            }
+        }
+
+        // 3. Clear buyback eligibility as the merchant is no longer in the same spot
+        this.clearBuybackEligibility(npc);
+    }
+
+    /**
+     * Clears all items currently eligible for buyback.
+     * Called when the NPC moves or when sufficient time/distance has passed.
+     */
+    public static clearBuybackEligibility(npc: WorldNPC): void {
+        if (npc.shopState) {
+            npc.shopState.soldByPlayer = [];
+        }
+    }
+
     /**
      * Attempts to negotiate a better price for a specific item.
      */

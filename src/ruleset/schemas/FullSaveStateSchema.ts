@@ -130,7 +130,10 @@ export const FullSaveStateSchema = z.object({
     clearedHexes: z.record(z.string(), z.number()).default({}), // hexId -> timestamp (in turns or game min)
 
     // --- Settings ---
-    settings: CampaignSettingsSchema
+    settings: CampaignSettingsSchema,
+
+    // --- Runtime / Debug ---
+    debugLog: z.array(z.string()).default([])
 });
 
 export type FullSaveState = z.infer<typeof FullSaveStateSchema>;
