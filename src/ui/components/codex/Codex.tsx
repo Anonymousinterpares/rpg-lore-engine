@@ -448,7 +448,50 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                                             <p className={styles.spellDescription}>{selectedEntry.description}</p>
                                         </>
                                     )}
-                                    {(activeCategory === 'bestiary' || activeCategory === 'items' || activeCategory === 'npcs') && (
+                                    {activeCategory === 'npcs' && selectedEntry.npcProfile ? (
+                                        <div className={styles.npcProfile}>
+                                            {selectedEntry.npcProfile.appearance && (
+                                                <div className={styles.profileSection}>
+                                                    <h4>Appearance</h4>
+                                                    <p>{parseInlines(selectedEntry.npcProfile.appearance)}</p>
+                                                </div>
+                                            )}
+                                            {selectedEntry.npcProfile.personality && (
+                                                <div className={styles.profileSection}>
+                                                    <h4>Personality</h4>
+                                                    <p>{parseInlines(selectedEntry.npcProfile.personality)}</p>
+                                                </div>
+                                            )}
+                                            {selectedEntry.npcProfile.background && (
+                                                <div className={styles.profileSection}>
+                                                    <h4>Background</h4>
+                                                    <p>{parseInlines(selectedEntry.npcProfile.background)}</p>
+                                                </div>
+                                            )}
+                                            {selectedEntry.npcProfile.occupation && (
+                                                <div className={styles.profileSection}>
+                                                    <h4>Occupation</h4>
+                                                    <p>{parseInlines(selectedEntry.npcProfile.occupation)}</p>
+                                                </div>
+                                            )}
+                                            {selectedEntry.npcProfile.relationships && (
+                                                <div className={styles.profileSection}>
+                                                    <h4>Relationships</h4>
+                                                    <p>{parseInlines(selectedEntry.npcProfile.relationships)}</p>
+                                                </div>
+                                            )}
+                                            {selectedEntry.npcProfile.notableQuotes && selectedEntry.npcProfile.notableQuotes.length > 0 && (
+                                                <div className={styles.profileSection}>
+                                                    <h4>Notable Quotes</h4>
+                                                    {selectedEntry.npcProfile.notableQuotes.map((quote: string, i: number) => (
+                                                        <div key={i} className={styles.quoteBlock}>
+                                                            "{parseInlines(quote)}"
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ) : (activeCategory === 'bestiary' || activeCategory === 'items' || activeCategory === 'npcs') && (
                                         <div className={styles.markdownContent}>
                                             {selectedEntry.content.split('\n').map((line: string, i: number) => {
                                                 if (line.startsWith('###')) return <h4 key={i} className={styles.mdH3}>{parseInlines(line.replace('###', '').trim())}</h4>;

@@ -921,34 +921,36 @@ export class GameLoop {
      */
     private async updateNpcProfiles(text: string, npcs: any[]): Promise<void> {
         try {
-            const facts = await ProfileExtractor.extractNpcFacts(text, npcs);
             let updated = false;
 
-            for (const [npcId, newFacts] of facts) {
-                if (newFacts.length === 0) continue;
-
+            for (const npc of npcs) {
                 const entry = this.state.codexEntries.find(
-                    e => e.entityId === npcId && e.category === 'npcs'
+                    e => e.entityId === npc.id && e.category === 'npcs'
                 );
 
                 if (entry) {
-                    const turnLabel = `Turn ${this.state.worldTime.totalTurns}`;
-                    entry.content += `\n\n**Learned (${turnLabel}):**\n` +
-                        newFacts.map(f => `- ${f}`).join('\n');
-                    entry.isNew = true; // Re-flag so player sees the update
-                    updated = true;
+                    const mergedProfile = await ProfileExtractor.mergeNpcProfile(
+                        text,
+                        npc.name,
+                        entry.npcProfile as any
+                    );
 
-                    // Fix 6C: Push notification on update
-                    const npcObj = npcs.find(n => n.id === npcId);
-                    const npcName = npcObj?.name || entry.title || 'Unknown';
-                    this.state.notifications.push({
-                        id: `notif_npc_update_${Date.now()}_${npcId}`,
-                        type: 'CODEX_ENTRY',
-                        message: `NPC Profile Updated: ${npcName}`,
-                        data: { category: 'npcs', entityId: npcId },
-                        isRead: false,
-                        createdAt: Date.now()
-                    });
+                    if (mergedProfile) {
+                        entry.npcProfile = mergedProfile as any;
+                        entry.isNew = true; // Re-flag so player sees the update
+                        updated = true;
+
+                        // Fix 6C: Push notification on update
+                        const npcName = npc?.name || entry.title || 'Unknown';
+                        this.state.notifications.push({
+                            id: `notif_npc_update_${Date.now()}_${npc.id}`,
+                            type: 'CODEX_ENTRY',
+                            message: `NPC Profile Updated: ${npcName}`,
+                            data: { category: 'npcs', entityId: npc.id },
+                            isRead: false,
+                            createdAt: Date.now()
+                        });
+                    }
                 }
             }
 
@@ -956,7 +958,7 @@ export class GameLoop {
                 await this.emitStateUpdate();
             }
         } catch (e) {
-            console.warn('[GameLoop] Profile extraction failed (non-critical):', e);
+            console.warn('[GameLoop] Profile update failed (non-critical):', e);
         }
     }
 
@@ -991,13 +993,16 @@ export class GameLoop {
         const faction = npc.factionId?.replace(/_/g, ' ') || 'Unaffiliated';
         const coords = this.state.location.coordinates;
 
-        const content = [
-            `**Role:** ${role}`,
-            `**Faction:** ${faction}`,
-            `**First Met:** ${this.state.location.hexId} [${coords[0]}, ${coords[1]}], Turn ${this.state.worldTime.totalTurns}`,
-            traits ? `**Known Traits:** ${traits}` : null,
-            npc.isMerchant ? `**Merchant:** Sells goods` : null
-        ].filter(Boolean).join('\n');
+        const content = `${npc.name}, a ${role} first encountered in ${this.state.location.hexId} on ${this.formatGameDate()}.`;
+
+        const npcProfile = {
+            appearance: '',
+            personality: traits || '',
+            background: '',
+            occupation: role + (npc.isMerchant ? ' (Merchant)' : ''),
+            relationships: `Faction: ${faction}`,
+            notableQuotes: []
+        };
 
         this.state.codexEntries.push({
             id: `npc_${npcId}_${Date.now()}`,
@@ -1005,6 +1010,7 @@ export class GameLoop {
             entityId: npcId,
             title: npc.name,
             content,
+            npcProfile: npcProfile as any,
             isNew: true,
             discoveredAt: this.state.worldTime.totalTurns
         });
@@ -1017,5 +1023,14 @@ export class GameLoop {
             isRead: false,
             createdAt: Date.now() // Fix 6B: Use Date.now() instead of turn number
         });
+    }
+    /**
+     * Helper to get a human-readable game date/time string.
+     */
+    private formatGameDate(): string {
+        const t = this.state.worldTime;
+        const hour = t.hour;
+        const timeOfDay = hour < 6 ? 'Night' : hour < 12 ? 'Morning' : hour < 18 ? 'Afternoon' : 'Evening';
+        return `Day ${t.day}, ${timeOfDay}`;
     }
 }

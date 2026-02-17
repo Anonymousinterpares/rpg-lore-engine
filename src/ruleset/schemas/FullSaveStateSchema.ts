@@ -100,6 +100,14 @@ export const FullSaveStateSchema = z.object({
         entityId: z.string(),
         title: z.string(),
         content: z.string(),
+        npcProfile: z.object({
+            appearance: z.string().default(''),
+            personality: z.string().default(''),
+            background: z.string().default(''),
+            occupation: z.string().default(''),
+            relationships: z.string().default(''),
+            notableQuotes: z.array(z.string()).default([])
+        }).optional(),
         isNew: z.boolean().default(true),
         discoveredAt: z.number()
     })).default([]),

@@ -375,3 +375,39 @@
         opacity: 1;
     }
 }
+
+.npcProfile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+}
+
+.profileSection {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.profileSection h4 {
+    font-family: var(--font-narrative);
+    color: var(--parchment-accent);
+    margin: 0;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(139, 115, 85, 0.2);
+    padding-bottom: 4px;
+}
+
+.profileSection p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.quoteBlock {
+    font-style: italic;
+    padding-left: var(--spacing-lg);
+    border-left: 2px solid var(--parchment-accent);
+    margin: var(--spacing-xs) 0;
+    color: rgba(60, 40, 20, 0.8);
+}

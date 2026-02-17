@@ -1,41 +1,65 @@
 import { AgentManager } from './AgentManager';
 import { LLMClient } from '../combat/LLMClient';
 import { LLM_PROVIDERS } from '../data/StaticData';
-import { WorldNPC } from '../schemas/WorldEnrichmentSchema';
+
+export interface NPCProfile {
+    appearance: string;
+    personality: string;
+    background: string;
+    occupation: string;
+    relationships: string;
+    notableQuotes: string[];
+}
 
 export class ProfileExtractor {
     /**
-     * Extract factual information about NPCs from narrative text.
-     * Uses a strict prompt to prevent hallucination.
-     * Returns a map of npcId → extracted facts (string[]).
+     * Merges a new factual narrative into an existing NPC profile using LLM.
+     * Returns a complete updated NPCProfile object.
      */
-    public static async extractNpcFacts(
+    public static async mergeNpcProfile(
         narrativeText: string,
-        npcsInHex: WorldNPC[]
-    ): Promise<Map<string, string[]>> {
-        const results = new Map<string, string[]>();
-        if (!narrativeText || npcsInHex.length === 0) return results;
+        npcName: string,
+        existingProfile?: NPCProfile
+    ): Promise<NPCProfile | null> {
+        if (!narrativeText) return existingProfile || null;
 
         const profile = AgentManager.getAgentProfile('DIRECTOR');
         const providerConfig = LLM_PROVIDERS.find(p => p.id === profile.providerId);
         const modelConfig = providerConfig?.models.find(m => m.id === profile.modelId);
 
-        if (!providerConfig || !modelConfig) return results;
+        if (!providerConfig || !modelConfig) return existingProfile || null;
 
-        const npcNames = npcsInHex.map(n => n.name).join(', ');
-        const systemPrompt = `You are a factual data extractor for an RPG codex.
+        const existingStr = existingProfile
+            ? JSON.stringify(existingProfile, null, 2)
+            : "No existing profile. This is the first encounter.";
+
+        const systemPrompt = `You are an RPG chronicler maintaining a structured NPC codex.
 TASK:
-Analyze the provided text and extract NEW factual information about these specific NPCs: ${npcNames}.
+Analyze the "NEW NARRATIVE" and merge any new factual information into the "EXISTING PROFILE" for NPC: ${npcName}.
+
+OUTPUT FORMAT:
+Return a complete, rewritten JSON object matching this schema:
+{
+  "appearance": "Physical description and clothing.",
+  "personality": "Traits, mannerisms, and temperament.",
+  "background": "History, origins, and past deeds.",
+  "occupation": "Current role, shop details, or daily activities.",
+  "relationships": "Factions, friends, enemies, or attitudes toward groups.",
+  "notableQuotes": ["Up to 5 short, direct quotes from their dialogue."]
+}
 
 STRICT CONSTRAINTS:
-1. Extract ONLY facts explicitly stated in the text (e.g., appearance, equipment, stated origins, visible actions).
-2. Do NOT infer, speculate, or add information not in the text.
-3. If the text mentions nothing new or specific about an NPC, return nothing for them.
-4. If a fact is already likely known (like "he is a shopkeeper" when they are a merchant), skip it.
-5. Format your response as a JSON object where keys are NPC names and values are arrays of strings (facts).
-6. If no facts are found for any NPC, return an empty JSON object {}.
+1. DO NOT speculate. Only include facts explicitly stated or strongly implied in the NEW NARRATIVE.
+2. MERGE with existing data. Do not delete existing info unless the new text directly contradicts it.
+3. DEDUPLICATE. Do not repeat facts. If new info refines old info, rewrite the relevant section to be cohesive.
+4. KEEP IT CONCISE. Use evocative but efficient prose.
+5. QUOTES: Only include actual dialogue. Maintain a max of 5. If adding a 6th, drop the least significant one.
+6. If the NEW NARRATIVE contains no new info about ${npcName}, return the "EXISTING PROFILE" as-is.
 
-TEXT TO ANALYZE:
+EXISTING PROFILE:
+${existingStr}
+
+NEW NARRATIVE TO ANALYZE:
 "${narrativeText}"
 
 JSON output:`;
@@ -46,32 +70,38 @@ JSON output:`;
                 modelConfig,
                 {
                     systemPrompt,
-                    userMessage: "Extract facts in JSON format.",
+                    userMessage: `Merge new facts for ${npcName} and return the updated structured JSON profile.`,
                     temperature: 0.1, // High precision
-                    maxTokens: 500,
-                    responseFormat: 'json' // CRITICAL: We expect JSON output
+                    maxTokens: 800,
+                    responseFormat: 'json'
                 }
             );
 
-            if (!response) return results;
+            if (!response) return existingProfile || null;
 
             // Attempt to parse JSON
             try {
                 const cleanedResponse = response.replace(/```json/g, '').replace(/```/g, '').trim();
                 const parsed = JSON.parse(cleanedResponse);
 
-                for (const npc of npcsInHex) {
-                    if (parsed[npc.name] && Array.isArray(parsed[npc.name])) {
-                        results.set(npc.id, parsed[npc.name]);
-                    }
+                // Basic validation
+                if (typeof parsed === 'object' && parsed !== null) {
+                    return {
+                        appearance: parsed.appearance || '',
+                        personality: parsed.personality || '',
+                        background: parsed.background || '',
+                        occupation: parsed.occupation || '',
+                        relationships: parsed.relationships || '',
+                        notableQuotes: Array.isArray(parsed.notableQuotes) ? parsed.notableQuotes.slice(0, 5) : []
+                    };
                 }
             } catch (jsonError) {
-                console.warn('[ProfileExtractor] JSON parse failed:', jsonError, response);
+                console.warn('[ProfileExtractor] JSON parse failed during merge:', jsonError, response);
             }
         } catch (e) {
-            console.error('[ProfileExtractor] Fact extraction failed:', e);
+            console.error('[ProfileExtractor] Profile merge failed:', e);
         }
 
-        return results;
+        return existingProfile || null;
     }
 }
