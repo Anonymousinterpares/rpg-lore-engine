@@ -29,13 +29,15 @@ interface LocationPanelProps {
     connections?: string;
     onCompassClick?: () => void;
     onTalkToNpc?: (npcId: string) => void;
+    onTradeWithNpc?: (npcId: string) => void;
     talkingNpcId?: string | null;
     className?: string;
+    onCodex?: (category?: string, entryId?: string) => void;
 }
 
 const LocationPanel: React.FC<LocationPanelProps> = ({
     name, biome, description, interestPoints, resourceNodes = [],
-    npcs = [], connections, onCompassClick, onTalkToNpc, talkingNpcId, className = ''
+    npcs = [], connections, onCompassClick, onTalkToNpc, onTradeWithNpc, talkingNpcId, className = '', onCodex
 }) => {
     const [isExpanded, setIsExpanded] = React.useState(false);
 
@@ -200,8 +202,8 @@ const LocationPanel: React.FC<LocationPanelProps> = ({
                                             {npc.isMerchant && (
                                                 <button
                                                     className={styles.npcActionButton}
-                                                    disabled
-                                                    title="Trading coming in Phase B"
+                                                    onClick={() => onTradeWithNpc?.(npc.id)}
+                                                    title={`Trade with ${npc.name}`}
                                                 >
                                                     🛒 Trade
                                                 </button>

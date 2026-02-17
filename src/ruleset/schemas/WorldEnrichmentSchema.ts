@@ -7,10 +7,19 @@ export type Disposition = z.infer<typeof DispositionSchema>;
 
 export const ShopStateSchema = z.object({
     inventory: z.array(z.string()).default([]), // Item IDs
+    soldByPlayer: z.array(z.object({      // NEW: tracks player-sold items
+        itemId: z.string(),
+        originalSellPrice: z.number(),     // copper value paid to player
+        buybackEligible: z.boolean().default(true) // cleared on hex change / NPC move
+    })).default([]),
+    lastHaggleFailure: z.record(z.string(), z.number()).default({}), // itemId -> turnNumber
     markup: z.number().default(1.0),
     discount: z.number().default(0.0),
-    isOpen: z.boolean().default(true)
+    isOpen: z.boolean().default(true),
+    gold: z.number().default(50)           // Merchant's gold in GP
 });
+
+export type ShopState = z.infer<typeof ShopStateSchema>;
 
 export const WorldNPCSchema = z.object({
     id: z.string(),
@@ -25,14 +34,17 @@ export const WorldNPCSchema = z.object({
         id: z.string(),
         quantity: z.number().default(1)
     })).default([]),
-    stats: z.record(AbilityScoreSchema, z.number()).optional(),
+    stats: z.record(AbilityScoreSchema, z.number()).default({
+        'STR': 10, 'DEX': 10, 'CON': 10, 'INT': 10, 'WIS': 10, 'CHA': 10
+    }),
     description: z.string().optional(),
     traits: z.array(z.string()).default([]),
     conversationHistory: z.array(z.object({
         speaker: z.string(),
         text: z.string(),
         timestamp: z.string()
-    })).default([])
+    })).default([]),
+    npcProfile: z.any().optional() // Structured profile
 });
 
 export type WorldNPC = z.infer<typeof WorldNPCSchema>;

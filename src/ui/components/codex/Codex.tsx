@@ -7,7 +7,7 @@ import { SpellbookEngine } from '../../../ruleset/combat/SpellbookEngine';
 import { Spell } from '../../../ruleset/schemas/SpellSchema';
 import skillsData from '../../../data/codex/skills.json';
 import conditionsData from '../../../data/codex/conditions.json';
-import mechanicsData from '../../../data/codex/mechanics.json';
+import { CODEX_LORE } from '../../../ruleset/data/CodexRegistry';
 import worldData from '../../../data/codex/world.json';
 
 interface CodexProps {
@@ -72,7 +72,7 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                 let data: any[] = [];
                 switch (initialDeepLink.category) {
                     case 'world': data = worldData; break;
-                    case 'mechanics': data = mechanicsData; break;
+                    case 'mechanics': data = Object.values(CODEX_LORE.MECHANICS); break;
                     case 'magic': data = DataManager.getSpells(); break;
                     case 'skills': data = skillsData; break;
                     case 'conditions': data = conditionsData; break;
@@ -133,11 +133,11 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
             case 'mechanics':
                 return (
                     <div className={styles.entriesGrid}>
-                        {mechanicsData.map(item => (
+                        {Object.values(CODEX_LORE.MECHANICS).map((item: any) => (
                             <div
-                                key={item.id}
-                                id={`entry-${item.id}`}
-                                className={`${styles.entryCard} ${selectedEntry?.id === item.id ? styles.active : ''}`}
+                                key={item.id || item.name} // Registry items might use name as key if ID missing
+                                id={`entry-${item.id || item.name}`}
+                                className={`${styles.entryCard} ${selectedEntry?.name === item.name ? styles.active : ''}`}
                                 onClick={() => setSelectedEntry(item)}
                             >
                                 <h4>{item.name}</h4>
@@ -354,7 +354,7 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                                     {(activeCategory === 'mechanics' || activeCategory === 'world') && (
                                         <>
                                             <div className={styles.markdownContent}>
-                                                {selectedEntry.description.split('\n').map((line: string, i: number) => {
+                                                {(selectedEntry.content || selectedEntry.description || '').split('\n').map((line: string, i: number) => {
                                                     if (line.startsWith('###')) return <h4 key={i} className={styles.mdH3}>{parseInlines(line.replace('###', '').trim())}</h4>;
                                                     if (line.startsWith('-')) return <li key={i} className={styles.mdLi}>{parseInlines(line.replace('-', '').trim())}</li>;
                                                     return <p key={i}>{parseInlines(line)}</p>;

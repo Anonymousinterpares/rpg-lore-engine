@@ -1,4 +1,5 @@
-import { ShopEngine, ShopState } from '../combat/ShopEngine';
+import { ShopEngine } from '../combat/ShopEngine';
+import { ShopState } from '../schemas/WorldEnrichmentSchema';
 import { CurrencyEngine } from '../combat/CurrencyEngine';
 import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
 import { Item } from '../schemas/ItemSchema';
@@ -54,11 +55,11 @@ function testShop() {
 
     // Test Negotiation
     console.log("\nAttempting Negotiation (CHA +2)...");
-    const negResult = ShopEngine.negotiate(pc, 2, npc);
+    const negResult = ShopEngine.negotiate(pc, npc, "Longsword", 100);
     console.log(negResult.message);
 
     if (npc.shopState.isOpen && npc.shopState.discount > 0) {
-        console.log("New Longsword Price:", CurrencyEngine.format(ShopEngine.getBuyPrice(sword, npc)));
+        console.log("New Longsword Price:", CurrencyEngine.format(ShopEngine.getBuyPrice(sword, npc, pc)));
     }
 
     // Test Buy
@@ -71,7 +72,7 @@ function testShop() {
     // Test Sell
     if (pc.inventory.items.length > 0) {
         console.log("\nSelling Longsword back...");
-        const sellMsg = ShopEngine.sellItem(pc, pc.inventory.items[0].id, npc, sword);
+        const sellMsg = ShopEngine.sellItem(pc, pc.inventory.items[0].id!, npc, sword);
         console.log(sellMsg);
         console.log("Gold after sale:", CurrencyEngine.format(pc.inventory.gold));
     }

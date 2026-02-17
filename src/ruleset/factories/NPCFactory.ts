@@ -43,11 +43,14 @@ export class NPCFactory {
                 standing: 0,
                 interactionLog: []
             },
-            dialogue_triggers: [],
-            inventory: [],
-            conversationHistory: [],
+            dialogue_triggers: [] as string[],
+            inventory: [] as { id: string, quantity: number }[],
+            conversationHistory: [] as { speaker: string, text: string, timestamp: string }[],
             factionId,
-            role
+            role,
+            stats: {
+                'STR': 10, 'DEX': 10, 'CON': 10, 'INT': 10, 'WIS': 10, 'CHA': 10
+            }
         };
     }
 

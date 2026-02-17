@@ -21,6 +21,7 @@ import { CODEX_LORE } from '../data/CodexRegistry';
 import { CombatGridManager } from './grid/CombatGridManager';
 import { IStorageProvider } from './IStorageProvider';
 import { ProfileExtractor } from '../agents/ProfileExtractor';
+import { ShopEngine } from './ShopEngine';
 
 // New Managers
 import { ExplorationManager } from './managers/ExplorationManager';
@@ -28,7 +29,9 @@ import { InventoryManager } from './managers/InventoryManager';
 import { SpellManager } from './managers/SpellManager';
 import { TimeManager } from './managers/TimeManager';
 import { CombatOrchestrator } from './managers/CombatOrchestrator';
-
+import { MERCHANT_POOLS, BIOME_COMMERCE, COMMON_ITEMS, DEFAULT_COMMERCE } from '../data/MerchantInventoryPool';
+import { WorldNPC } from '../schemas/WorldEnrichmentSchema';
+import { Dice } from './Dice';
 import { z } from 'zod';
 
 type Combatant = z.infer<typeof CombatantSchema>;
@@ -192,6 +195,14 @@ export class GameLoop {
 
         if (intent.type === 'COMMAND') {
             systemResponse = await this.handleCommand(intent);
+
+            // Trade commands are fully deterministic — bypass the LLM narrator pipeline entirely.
+            const tradeCommands = ['trade', 'buy', 'sell', 'haggle', 'intimidate', 'deceive', 'buyback', 'closetrade'];
+            if (tradeCommands.includes(intent.command || '')) {
+                this.state.lastNarrative = systemResponse;
+                await this.emitStateUpdate();
+                return systemResponse;
+            }
         } else if (intent.type === 'COMBAT_ACTION' && this.state.mode === 'COMBAT') {
             systemResponse = await this.combatOrchestrator.handleCombatAction(intent);
 
@@ -338,6 +349,10 @@ export class GameLoop {
                 if (!result.success) return result.message || "Can't move there.";
 
                 const targetCoords = result.newHex!.coordinates;
+
+                // Clear buyback eligibility on move
+                this.clearBuybackEligibility();
+
 
                 // --- Connectivity & Curve Logic ---
                 let curvatureX: number;
@@ -692,6 +707,81 @@ export class GameLoop {
                 return `Started combat with ${count}x ${enemyName}.`;
             }
 
+            case 'trade': {
+                const npcId = args[0];
+                const npc = this.state.worldNpcs.find(n => n.id === npcId);
+                if (!npc) return "No such NPC found.";
+                if (!npc.isMerchant) return `${npc.name} is not interested in trading.`;
+
+                this.state.activeTradeNpcId = npcId;
+                return `Opened trade with ${npc.name}.`;
+            }
+
+            case 'buy': {
+                if (!this.state.activeTradeNpcId) return "No active trade.";
+                const itemName = args.join(' ');
+                const npc = this.state.worldNpcs.find(n => n.id === this.state.activeTradeNpcId);
+                const itemData = DataManager.getItem(itemName);
+                if (!npc || !itemData) return "Transaction error: NPC or Item not found.";
+
+                return ShopEngine.buyItem(this.state.character, itemData, npc);
+            }
+
+            case 'sell': {
+                if (!this.state.activeTradeNpcId) return "No active trade.";
+                const itemName = args.join(' ');
+                const npc = this.state.worldNpcs.find(n => n.id === this.state.activeTradeNpcId);
+                const pcItem = this.state.character.inventory.items.find(i => i.name.toLowerCase() === itemName.toLowerCase());
+                if (!pcItem) return `You don't have a ${itemName}.`;
+
+                const itemData = DataManager.getItem(pcItem.name);
+                if (!npc || !itemData) return "Transaction error.";
+
+                return ShopEngine.sellItem(this.state.character, pcItem.id, npc, itemData);
+            }
+
+            case 'haggle': {
+                if (!this.state.activeTradeNpcId) return "No active trade.";
+                const itemName = args.join(' ');
+                const npc = this.state.worldNpcs.find(n => n.id === this.state.activeTradeNpcId);
+                if (!npc) return "NPC not found.";
+
+                const result = ShopEngine.negotiate(this.state.character, npc, itemName, this.state.worldTime.totalTurns);
+                return result.message;
+            }
+
+            case 'intimidate': {
+                if (!this.state.activeTradeNpcId) return "No active trade.";
+                const npc = this.state.worldNpcs.find(n => n.id === this.state.activeTradeNpcId);
+                if (!npc) return "NPC not found.";
+
+                const result = ShopEngine.intimidate(this.state.character, npc);
+                return result.message;
+            }
+
+            case 'deceive': {
+                if (!this.state.activeTradeNpcId) return "No active trade.";
+                const npc = this.state.worldNpcs.find(n => n.id === this.state.activeTradeNpcId);
+                if (!npc) return "NPC not found.";
+
+                const result = ShopEngine.deceive(this.state.character, npc);
+                return result.message;
+            }
+
+            case 'buyback': {
+                if (!this.state.activeTradeNpcId) return "No active trade.";
+                const itemName = args.join(' ');
+                const npc = this.state.worldNpcs.find(n => n.id === this.state.activeTradeNpcId);
+                if (!npc) return "NPC not found.";
+
+                return ShopEngine.buybackItem(this.state.character, npc, itemName);
+            }
+
+            case 'closetrade': {
+                this.state.activeTradeNpcId = null;
+                return "Closed trading.";
+            }
+
             case 'talk': {
                 const npcIdOrName = args.join(' ');
                 const npcToTalk = this.state.worldNpcs.find(n =>
@@ -988,6 +1078,13 @@ export class GameLoop {
         const npc = this.state.worldNpcs.find(n => n.id === npcId);
         if (!npc) return;
 
+        // Populate merchant inventory if not already done
+        if (npc.isMerchant && (!npc.shopState || npc.shopState.inventory.length === 0)) {
+            const hex = this.hexMapManager.getHex(this.state.location.hexId);
+            this.populateMerchantInventory(npc, hex?.biome || 'Plains');
+        }
+
+
         const traits = (npc.traits || []).slice(0, 2).join(', ');
         const role = npc.role || 'Unknown';
         const faction = npc.factionId?.replace(/_/g, ' ') || 'Unaffiliated';
@@ -1033,4 +1130,50 @@ export class GameLoop {
         const timeOfDay = hour < 6 ? 'Night' : hour < 12 ? 'Morning' : hour < 18 ? 'Afternoon' : 'Evening';
         return `Day ${t.day}, ${timeOfDay}`;
     }
+
+    private populateMerchantInventory(npc: WorldNPC, biome: string): void {
+        const commerce = BIOME_COMMERCE[biome] || DEFAULT_COMMERCE;
+
+        // 1. Roll for number of items (5-15)
+        const itemThreads = Dice.roll(commerce.itemDice);
+        const itemCount = Math.min(15, Math.max(5, itemThreads));
+
+        // 2. Pick random items from pool
+        const pool = MERCHANT_POOLS[biome] || MERCHANT_POOLS['Urban'];
+        const pickedItems = new Set<string>(COMMON_ITEMS);
+
+        const shuffledPool = [...pool].sort(() => Math.random() - 0.5);
+        for (let i = 0; i < itemCount && i < shuffledPool.length; i++) {
+            pickedItems.add(shuffledPool[i]);
+        }
+
+        // 3. Roll for Gold (in GP)
+        const goldGP = Dice.roll(commerce.goldDice);
+
+        // 4. Initialize ShopState
+        npc.shopState = {
+            inventory: Array.from(pickedItems),
+            soldByPlayer: [],
+            lastHaggleFailure: {},
+            markup: 1.0 + (Math.random() * 0.2), // Random markup between 1.0 and 1.2
+            discount: 0.0,
+            isOpen: true,
+            gold: goldGP
+        };
+    }
+
+    /**
+     * Clears 'buybackEligible' flag for all NPCs when player leaves hex (or NPC moves).
+     */
+    private clearBuybackEligibility(): void {
+        this.state.worldNpcs.forEach(npc => {
+            if (npc.shopState && npc.shopState.soldByPlayer.length > 0) {
+                npc.shopState.soldByPlayer.forEach(sale => {
+                    sale.buybackEligible = false;
+                });
+            }
+        });
+    }
 }
+
+

@@ -11,9 +11,10 @@ interface SidebarProps {
     className?: string;
     onCharacter?: () => void;
     onCompass?: () => void;
+    onCodex?: (category?: string, entryId?: string) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter, onCompass }) => {
+const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter, onCompass, onCodex }) => {
     const { state, engine, updateState } = useGameState();
 
     const items = state?.character?.inventory?.items || [];
@@ -72,8 +73,14 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter, onCompass }) 
                             await engine.processTurn(`/talk ${npcId}`);
                         }
                     }}
+                    onTradeWithNpc={async (npcId) => {
+                        if (engine) {
+                            await engine.processTurn(`/trade ${npcId}`);
+                        }
+                    }}
                     connections={currentHex.connections}
                     onCompassClick={onCompass}
+                    onCodex={onCodex} // Pass down for future use (e.g. clicking biome/faction badges)
                 />
             )}
             <CharacterPanel onCharacter={onCharacter} />

@@ -22,6 +22,7 @@ import { SnapshotService } from './services/SnapshotService';
 import { NarratorService } from '../ruleset/agents/NarratorService';
 import DevOverlay from './components/exploration/DevOverlay';
 import NavigationModal from './components/exploration/NavigationModal';
+import TradeModal from './components/exploration/TradeModal';
 import { SettingsManager } from '../ruleset/combat/SettingsManager';
 
 const App: React.FC = () => {
@@ -73,6 +74,9 @@ const App: React.FC = () => {
                 setShowSaveModal(false);
                 setShowLoadModal(false);
                 setIsNavigationModalOpen(false);
+                if (state?.activeTradeNpcId) {
+                    engine?.processTurn('/closetrade');
+                }
             }
         };
         window.addEventListener('keydown', handleKeyDown);
@@ -325,6 +329,7 @@ const App: React.FC = () => {
                                 className={styles.sidebar}
                                 onCharacter={openCharacterSheet}
                                 onCompass={() => setIsNavigationModalOpen(true)}
+                                onCodex={openCodex}
                             />
                             <MainViewport className={styles.viewport} />
                             <RightPanel
@@ -368,6 +373,12 @@ const App: React.FC = () => {
                         <NotificationOverlay onOpenCodex={openCodex} />
                         {isNavigationModalOpen && (
                             <NavigationModal onClose={() => setIsNavigationModalOpen(false)} />
+                        )}
+                        {state?.activeTradeNpcId && (
+                            <TradeModal
+                                onClose={async () => await engine?.processTurn('/closetrade')}
+                                onOpenCodex={openCodex}
+                            />
                         )}
                     </>
                 )}

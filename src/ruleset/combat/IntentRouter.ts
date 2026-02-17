@@ -72,6 +72,15 @@ export class IntentRouter {
             if (lower === 'endtalk' || lower === 'end talk' || lower === 'leave' || lower === 'goodbye') {
                 return { type: 'COMMAND', command: 'endtalk', args: [], originalInput: input };
             }
+
+            if (lower.startsWith('trade ') || lower.startsWith('trade_')) {
+                const npcId = trimmed.split(' ').slice(1).join(' ');
+                return { type: 'COMMAND', command: 'trade', args: [npcId], originalInput: input };
+            }
+
+            if (lower === 'closetrade' || lower === 'close trade' || lower === 'close') {
+                return { type: 'COMMAND', command: 'closetrade', args: [], originalInput: input };
+            }
         }
 
         // 3. Default to Narrative
