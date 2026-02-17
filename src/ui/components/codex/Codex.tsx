@@ -5,10 +5,7 @@ import { useGameState } from '../../hooks/useGameState';
 import { DataManager } from '../../../ruleset/data/DataManager';
 import { SpellbookEngine } from '../../../ruleset/combat/SpellbookEngine';
 import { Spell } from '../../../ruleset/schemas/SpellSchema';
-import skillsData from '../../../data/codex/skills.json';
-import conditionsData from '../../../data/codex/conditions.json';
 import { CODEX_LORE } from '../../../ruleset/data/CodexRegistry';
-import worldData from '../../../data/codex/world.json';
 
 interface CodexProps {
     isOpen: boolean;
@@ -71,11 +68,11 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
             if (initialDeepLink?.entryId) {
                 let data: any[] = [];
                 switch (initialDeepLink.category) {
-                    case 'world': data = worldData; break;
+                    case 'world': data = Object.values(CODEX_LORE.WORLD); break;
                     case 'mechanics': data = Object.values(CODEX_LORE.MECHANICS); break;
                     case 'magic': data = DataManager.getSpells(); break;
-                    case 'skills': data = skillsData; break;
-                    case 'conditions': data = conditionsData; break;
+                    case 'skills': data = Object.values(CODEX_LORE.SKILLS); break;
+                    case 'conditions': data = Object.values(CODEX_LORE.CONDITIONS); break;
                     case 'races': data = DataManager.getRaces(); break;
                     case 'classes': data = DataManager.getClasses(); break;
                     case 'bestiary':
@@ -118,11 +115,11 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
             case 'world':
                 return (
                     <div className={styles.entriesGrid}>
-                        {worldData.map((item: any) => (
+                        {Object.values(CODEX_LORE.WORLD).map((item: any) => (
                             <div
-                                key={item.id}
-                                id={`entry-${item.id}`}
-                                className={`${styles.entryCard} ${selectedEntry?.id === item.id ? styles.active : ''}`}
+                                key={item.id || item.name}
+                                id={`entry-${item.id || item.name}`}
+                                className={`${styles.entryCard} ${selectedEntry?.name === item.name || selectedEntry?.id === item.id ? styles.active : ''}`}
                                 onClick={() => setSelectedEntry(item)}
                             >
                                 <h4>{item.name}</h4>
@@ -148,7 +145,7 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
             case 'skills':
                 return (
                     <div className={styles.entriesGrid}>
-                        {skillsData.map(skill => (
+                        {Object.values(CODEX_LORE.SKILLS).map((skill: any) => (
                             <div
                                 key={skill.name}
                                 id={`entry-${skill.name}`}
@@ -196,7 +193,7 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
             case 'conditions':
                 return (
                     <div className={styles.entriesGrid}>
-                        {conditionsData.map(cond => (
+                        {Object.values(CODEX_LORE.CONDITIONS).map((cond: any) => (
                             <div
                                 key={cond.name}
                                 id={`entry-${cond.name}`}
@@ -419,7 +416,7 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                                             <p style={{ fontStyle: 'italic', marginBottom: '1rem', opacity: 0.8 }}>
                                                 Status effects and mechanical restrictions that can affect creatures during gameplay.
                                             </p>
-                                            <p>{selectedEntry.description}</p>
+                                            <p>{selectedEntry.content || selectedEntry.description}</p>
                                         </>
                                     )}
                                     {activeCategory === 'magic' && (
@@ -493,7 +490,7 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                                         </div>
                                     ) : (activeCategory === 'bestiary' || activeCategory === 'items' || activeCategory === 'npcs') && (
                                         <div className={styles.markdownContent}>
-                                            {selectedEntry.content.split('\n').map((line: string, i: number) => {
+                                            {(selectedEntry.content || selectedEntry.description || '').split('\n').map((line: string, i: number) => {
                                                 if (line.startsWith('###')) return <h4 key={i} className={styles.mdH3}>{parseInlines(line.replace('###', '').trim())}</h4>;
                                                 if (line.startsWith('-')) return <li key={i} className={styles.mdLi}>{parseInlines(line.replace('-', '').trim())}</li>;
                                                 return <p key={i}>{parseInlines(line)}</p>;

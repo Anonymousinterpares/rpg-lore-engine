@@ -21,6 +21,10 @@ export const CODEX_LORE = {
         [FACTION_LORE.ZHENTARIM.id]: {
             name: FACTION_LORE.ZHENTARIM.name,
             content: `### The Zhentarim\n${FACTION_LORE.ZHENTARIM.description}\n\n**Motto:** ${FACTION_LORE.ZHENTARIM.motto}\n**Goals:** ${FACTION_LORE.ZHENTARIM.goals}\n**Alignment:** ${FACTION_LORE.ZHENTARIM.alignment}\n\nThe "Black Network" is often feared for its ruthlessness, but they are also reliable providers of mercenary labor and high-value goods. They value loyalty and profit above all, and their influence can be felt from the highest courts to the deepest dungeons.`
+        },
+        'time_and_calendar': {
+            name: 'Time and the Harptos Calendar',
+            content: `In the Forgotten Realms, time is measured by the Calendar of Harptos.\n\n### The Year\nA year consists of 365 days, divided into twelve months of thirty days each. There are also five special holidays that fall between certain months, which are not part of any month itself.\n\n### The Months (in order):\n1. **Hammer** (Deepwinter)\n2. **Alturiak** (The Claw of Winter)\n3. **Ches** (The Claw of Sunsets)\n4. **Tarsakh** (The Garden)\n5. **Mirtul** (The Melting)\n6. **Kythorn** (The Time of Flowers)\n7. **Flamerule** (Summertide)\n8. **Eleasis** (Highsun)\n9. **Eleint** (The Fading)\n10. **Marpenoth** (Leafall)\n11. **Uktar** (The Rotting)\n12. **Nightal** (The Drawing Down)\n\n### The Week: Tendays\nInstead of a seven-day week, the Harptos calendar uses a **Tenday**. A month consists of exactly three tendays. This means every month starts on the first day of a tenday and ends on the last day of the third tenday.\n\n### Special Holidays\nBetween certain months, the world celebrates major festivals:\n- **Midwinter**: Between Hammer and Alturiak.\n- **Greengrass**: Between Tarsakh and Mirtul.\n- **Midsummer**: Between Flamerule and Eleasis. (Shieldmeet occurs every 4 years after Midsummer).\n- **Higharvestide**: Between Eleint and Marpenoth.\n- **The Feast of the Moon**: Between Uktar and Nightal.\n\nTime of day is generally measured by the bells and the position of the sun, with most folk being active between dawn and dusk.`
         }
     },
     MECHANICS: {
@@ -113,6 +117,180 @@ Your standing with NPCs affects prices:
 - Neutral (0): Standard prices
 - Friendly (25+): Better sell rates (60% of item value)
 - Trusted (75+): Excellent sell rates (70% of item value)`
+        }
+    },
+    SKILLS: {
+        'acrobatics': {
+            name: 'Acrobatics',
+            ability: 'DEX',
+            content: `### Acrobatics\nYour Dexterity (Acrobatics) check covers your attempt to stay on your feet in a tricky situation.`,
+            examples: ["Walking across an icy surface", "Balancing on a tightrope", "Staying upright on a rocking ship's deck"]
+        },
+        'animal_handling': {
+            name: 'Animal Handling',
+            ability: 'WIS',
+            content: `### Animal Handling\nWhen there is any question whether you can calm down a domesticated animal, keep a mount from getting spooked, or intuit an animal’s intentions, the GM might call for a Wisdom (Animal Handling) check.`,
+            examples: ["Calming a frightened horse", "Training a hound", "Moving a stubborn ox"]
+        },
+        'arcana': {
+            name: 'Arcana',
+            ability: 'INT',
+            content: `### Arcana\nYour Intelligence (Arcana) check measures your knowledge about spells, magic items, eldritch symbols, magical traditions, the planes of existence, and the inhabitants of those planes.`,
+            examples: ["Recalling lore about a magic circle", "Identifying a spell being cast", "Understanding a portal's destination"]
+        },
+        'athletics': {
+            name: 'Athletics',
+            ability: 'STR',
+            content: `### Athletics\nYour Strength (Athletics) check covers difficult situations you encounter while climbing, jumping, or swimming.`,
+            examples: ["Climbing a sheer cliff", "Jumping a wide chasm", "Swimming against a strong current"]
+        },
+        'deception': {
+            name: 'Deception',
+            ability: 'CHA',
+            content: `### Deception\nYour Charisma (Deception) check determines whether you can convincingly hide the truth, either verbally or through your actions.`,
+            examples: ["Fast-talking a guard", "Passing yourself off in a disguise", "Spreading false rumors"]
+        },
+        'history': {
+            name: 'History',
+            ability: 'INT',
+            content: `### History\nYour Intelligence (History) check measures what you know about historical events, legendary people, ancient kingdoms, past disputes, recent wars, and lost civilizations.`,
+            examples: ["Identifying an ancient ruin", "Recalling a legendary figure's deeds", "Understanding the origins of a lost artifact"]
+        },
+        'insight': {
+            name: 'Insight',
+            ability: 'WIS',
+            content: `### Insight\nYour Wisdom (Insight) check decides whether you can determine the true intentions of a creature, such as when searching out a lie or predicting someone’s next move.`,
+            examples: ["Gauging if someone is lying", "Determining an NPC's emotional state", "Detecting a hidden message in a conversation"]
+        },
+        'intimidation': {
+            name: 'Intimidation',
+            ability: 'CHA',
+            content: `### Intimidation\nWhen you attempt to influence someone through overt threats, hostile actions, and physical violence, the GM might ask you to make a Charisma (Intimidation) check.`,
+            examples: ["Prying information from a prisoner", "Scaring off a group of thugs", "Using threats to get what you want"]
+        },
+        'investigation': {
+            name: 'Investigation',
+            ability: 'INT',
+            content: `### Investigation\nWhen you look around for clues and make deductions based on those clues, you make an Intelligence (Investigation) check.`,
+            examples: ["Searching for a hidden door", "Examining a crime scene", "Deducing the contents of a complex mechanism"]
+        },
+        'medicine': {
+            name: 'Medicine',
+            ability: 'WIS',
+            content: `### Medicine\nA Wisdom (Medicine) check lets you try to stabilize a dying companion or diagnose an illness.`,
+            examples: ["First aid to stop bleeding", "Identifying a disease", "Treating a poisoned wound"]
+        },
+        'nature': {
+            name: 'Nature',
+            ability: 'INT',
+            content: `### Nature\nYour Intelligence (Nature) check measures your knowledge about terrain, plants and animals, the weather, and natural cycles.`,
+            examples: ["Identifying a poisonous plant", "Predicting weather patterns", "Recalling lore about a wild beast"]
+        },
+        'perception': {
+            name: 'Perception',
+            ability: 'WIS',
+            content: `### Perception\nYour Wisdom (Perception) check lets you spot, hear, or otherwise detect the presence of something.`,
+            examples: ["Hearing footsteps in a hallway", "Spotting a hidden trap", "Detecting a lurker in the shadows"]
+        },
+        'performance': {
+            name: 'Performance',
+            ability: 'CHA',
+            content: `### Performance\nYour Charisma (Performance) check determines how well you can delight an audience with music, dance, acting, storytelling, or some other form of entertainment.`,
+            examples: ["Playing a lute in a tavern", "Telling a captivating legend", "Impressing a noble with a courtly dance"]
+        },
+        'persuasion': {
+            name: 'Persuasion',
+            ability: 'CHA',
+            content: `### Persuasion\nWhen you attempt to influence someone or a group of people with tact, social graces, or good nature, the GM might ask you to make a Charisma (Persuasion) check.`,
+            examples: ["Negotiating a better price", "Convincing a king to grant an audience", "Calming a heated debate"]
+        },
+        'religion': {
+            name: 'Religion',
+            ability: 'INT',
+            content: `### Religion\nYour Intelligence (Religion) check measures your knowledge about deities, rites and prayers, religious hierarchies, holy symbols, and the practices of secret cults.`,
+            examples: ["Identifying a holy symbol", "Recognizing a religious rite", "Understanding divine hierarchy"]
+        },
+        'sleight_of_hand': {
+            name: 'Sleight of Hand',
+            ability: 'DEX',
+            content: `### Sleight of Hand\nWhenever you attempt an act of legerdemain or manual trickery, such as planting something on someone else or concealing an object on your person, you make a Dexterity (Sleight of Hand) check.`,
+            examples: ["Picking a pocket", "Palming a small object", "Performing a card trick"]
+        },
+        'stealth': {
+            name: 'Stealth',
+            ability: 'DEX',
+            content: `### Stealth\nMake a Dexterity (Stealth) check when you attempt to conceal yourself from enemies, slink past guards, slip away without being noticed, or sneak up on someone without being seen or heard.`,
+            examples: ["Hiding in the shadows", "Creeping past a sleeping dragon", "Following someone in a crowd"]
+        },
+        'survival': {
+            name: 'Survival',
+            ability: 'WIS',
+            content: `### Survival\nThe GM might ask you to make a Wisdom (Survival) check to follow tracks, hunt wild game, guide your group through frozen wastelands, identify signs that owlbears live nearby, predict detrimental weather, or avoid quicksand and other natural hazards.`,
+            examples: ["Tracking a deer", "Navigating a trackless forest", "Setting up a safe campsite"]
+        },
+        'cartography': {
+            name: 'Cartography',
+            ability: 'INT',
+            content: `### Cartography\nYour Intelligence (Cartography) check measures your ability to create and read maps, and to translate the physical world into a mathematical record. It is essential for documenting infrastructure and surveying uncharted lands.`,
+            examples: ["Creating a map of a dungeon", "Surveying a new territory", "Finding road stubs in the mists"]
+        }
+    },
+    CONDITIONS: {
+        'blinded': {
+            name: 'Blinded',
+            content: `A blinded creature can’t see and automatically fails any ability check that requires sight. Attack rolls against the creature have advantage, and the creature’s attack rolls have disadvantage.`
+        },
+        'charmed': {
+            name: 'Charmed',
+            content: `A charmed creature can’t attack the charmer or target the charmer with harmful abilities or magical effects. The charmer has advantage on any ability check to interact socially with the creature.`
+        },
+        'deafened': {
+            name: 'Deafened',
+            content: `A deafened creature can’t hear and automatically fails any ability check that requires hearing.`
+        },
+        'frightened': {
+            name: 'Frightened',
+            content: `A frightened creature has disadvantage on ability checks and attack rolls while the source of its fear is within line of sight. The creature can’t willingly move closer to the source of its fear.`
+        },
+        'grappled': {
+            name: 'Grappled',
+            content: `A grappled creature’s speed becomes 0, and it can’t benefit from any bonus to its speed. The condition ends if the grappler is incapacitated or if an effect removes the grappled creature from the reach of the grappler.`
+        },
+        'incapacitated': {
+            name: 'Incapacitated',
+            content: `An incapacitated creature can’t take actions or reactions.`
+        },
+        'invisible': {
+            name: 'Invisible',
+            content: `An invisible creature is impossible to see without the aid of magic or a special sense. For the purpose of hiding, the creature is heavily obscured. Attack rolls against the creature have disadvantage, and the creature’s attack rolls have advantage.`
+        },
+        'paralyzed': {
+            name: 'Paralyzed',
+            content: `A paralyzed creature is incapacitated and can’t move or speak. The creature automatically fails Strength and Dexterity saving throws. Attack rolls against the creature have advantage. Any attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature.`
+        },
+        'petrified': {
+            name: 'Petrified',
+            content: `A petrified creature is transformed, along with any object it is wearing or carrying, into a solid inanimate substance. Its weight increases by a factor of ten, and it ceases aging. The creature is incapacitated, can’t move or speak, and is unaware of its surroundings. Attack rolls against the creature have advantage. The creature automatically fails Strength and Dexterity saving throws. The creature has resistance to all damage. The creature is immune to poison and disease, although a poison or disease already in its system is suspended, not neutralized.`
+        },
+        'poisoned': {
+            name: 'Poisoned',
+            content: `A poisoned creature has disadvantage on attack rolls and ability checks.`
+        },
+        'prone': {
+            name: 'Prone',
+            content: `A prone creature’s only movement option is to crawl, unless it stands up and thereby ends the condition. The creature has disadvantage on attack rolls. An attack roll against the creature has advantage if the attacker is within 5 feet of the creature. Otherwise, the attack roll has disadvantage.`
+        },
+        'restrained': {
+            name: 'Restrained',
+            content: `A restrained creature’s speed becomes 0, and it can’t benefit from any bonus to its speed. Attack rolls against the creature have advantage, and the creature’s attack rolls have disadvantage. The creature has disadvantage on Dexterity saving throws.`
+        },
+        'stunned': {
+            name: 'Stunned',
+            content: `A stunned creature is incapacitated, can’t move, and can speak only falteringly. The creature automatically fails Strength and Dexterity saving throws. Attack rolls against the creature have advantage.`
+        },
+        'unconscious': {
+            name: 'Unconscious',
+            content: `An unconscious creature is incapacitated, can’t move or speak, and is unaware of its surroundings. The creature drops whatever it’s holding and falls prone. The creature automatically fails Strength and Dexterity saving throws. Attack rolls against the creature have advantage. Any attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature.`
         }
     }
 };

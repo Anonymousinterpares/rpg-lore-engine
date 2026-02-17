@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import styles from './SkillLink.module.css';
-import skillsData from '../../../data/codex/skills.json';
+import { CODEX_LORE } from '../../../ruleset/data/CodexRegistry';
 import { X, Info } from 'lucide-react';
 
 interface Skill {
     name: string;
     ability: string;
-    description: string;
+    content?: string;
+    description?: string;
     examples: string[];
 }
 
@@ -22,7 +23,8 @@ const SkillLink: React.FC<SkillLinkProps> = ({ skillName, className, inheritColo
 
     // Find skill data, handling case sensitivity and "Skill: " prefix
     const cleanName = skillName.replace('Skill: ', '');
-    const skill = (skillsData as Skill[]).find(s => s.name.toLowerCase() === cleanName.toLowerCase());
+    const skillsList = Object.values(CODEX_LORE.SKILLS) as Skill[];
+    const skill = skillsList.find(s => s.name.toLowerCase() === cleanName.toLowerCase());
 
     if (!skill) return <span className={className}>{skillName}</span>;
 
@@ -55,7 +57,7 @@ const SkillLink: React.FC<SkillLinkProps> = ({ skillName, className, inheritColo
                             <div className={styles.statLine}>
                                 <strong>Governing Ability:</strong> {skill.ability}
                             </div>
-                            <p className={styles.description}>{skill.description}</p>
+                            <p className={styles.description}>{skill.content || skill.description}</p>
 
                             <div className={styles.examplesSection}>
                                 <h4>Common Uses:</h4>
