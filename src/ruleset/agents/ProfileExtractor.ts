@@ -48,7 +48,8 @@ JSON output:`;
                     systemPrompt,
                     userMessage: "Extract facts in JSON format.",
                     temperature: 0.1, // High precision
-                    maxTokens: 500
+                    maxTokens: 500,
+                    responseFormat: 'json' // CRITICAL: We expect JSON output
                 }
             );
 

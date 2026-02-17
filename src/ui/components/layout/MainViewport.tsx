@@ -202,6 +202,7 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
                     <PlayerInputField
                         suggestedActions={suggestedActions}
                         onSubmit={handlePlayerInput}
+                        placeholder={state?.activeDialogueNpcId ? `Say something to ${state.worldNpcs.find(n => n.id === state.activeDialogueNpcId)?.name}...` : "What do you do?"}
                     />
                 )}
             </div>

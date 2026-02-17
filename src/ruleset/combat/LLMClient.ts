@@ -233,6 +233,13 @@ export class LLMClient {
         }
 
         console.log(`[LLMClient] Content length: ${result.length} characters.`);
+
+        // Debug: Log full response structure when content is empty
+        if (!result || result.length === 0) {
+            console.warn('[LLMClient] Empty content received. Full response structure:');
+            console.warn(JSON.stringify(data, null, 2));
+        }
+
         return result;
     }
 }

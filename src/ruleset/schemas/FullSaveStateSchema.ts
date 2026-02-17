@@ -44,6 +44,7 @@ export const FullSaveStateSchema = z.object({
 
     // --- World State ---
     mode: z.string(), // Bridge to GameMode enum
+    activeDialogueNpcId: z.string().nullable().optional(),
     combat: CombatStateSchema.optional(), // Combat State
     location: z.object({
         hexId: z.string(),

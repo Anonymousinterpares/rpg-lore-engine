@@ -188,6 +188,15 @@ const LocationPanel: React.FC<LocationPanelProps> = ({
                                                     💬 Talk
                                                 </button>
                                             )}
+                                            {talkingNpcId === npc.id && (
+                                                <button
+                                                    className={`${styles.npcActionButton} ${styles.endTalkButton}`}
+                                                    onClick={() => onTalkToNpc?.('__end__')}
+                                                    title="End Conversation"
+                                                >
+                                                    🚪 Exit
+                                                </button>
+                                            )}
                                             {npc.isMerchant && (
                                                 <button
                                                     className={styles.npcActionButton}

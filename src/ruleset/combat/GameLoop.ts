@@ -120,6 +120,9 @@ export class GameLoop {
         // Safety Check: Register any NPCs in the current hex on load
         // This catches cases where the player loads into a hex with NPCs but didn't "move" there
         this.scanCurrentHexForNpcs();
+
+        // Emitter Fix (6B): Ensure initial scan state is propagated
+        setTimeout(() => this.emitStateUpdate(), 0);
     }
 
     public async initialize() {
@@ -132,6 +135,57 @@ export class GameLoop {
      * Main entry point for player input.
      */
     public async processTurn(input: string): Promise<string> {
+        // DIALOGUE MODE INTERCEPT
+        if (this.state.activeDialogueNpcId && this.state.mode === 'EXPLORATION') {
+            const dialogueIntent = IntentRouter.parse(input, false);
+
+            // Allow /endtalk to exit, and other commands to trigger/exit
+            if (dialogueIntent.type === 'COMMAND') {
+                if (dialogueIntent.command === 'endtalk') {
+                    this.state.activeDialogueNpcId = null;
+                    await this.emitStateUpdate();
+                    return "You end the conversation.";
+                }
+                // Any other command exits dialogue mode first
+                this.state.activeDialogueNpcId = null;
+                await this.emitStateUpdate();
+                return await this.handleCommand(dialogueIntent);
+            }
+
+            // Route ALL free-text input to NPCService
+            const npc = this.state.worldNpcs.find(n => n.id === this.state.activeDialogueNpcId);
+            if (!npc) {
+                this.state.activeDialogueNpcId = null;
+                await this.emitStateUpdate();
+                return "The person you were talking to is no longer here.";
+            }
+
+            try {
+                const response = await NPCService.generateDialogue(this.state, npc, input);
+                if (response) {
+                    await this.updateNpcProfiles(response, [npc]);
+                }
+
+                // History Update
+                const turn = this.state.worldTime.totalTurns;
+                this.state.conversationHistory.push({ role: 'player', content: input, turnNumber: turn });
+                this.state.conversationHistory.push({ role: 'narrator', content: `**${npc.name}:** ${response || '...'}`, turnNumber: turn });
+
+                // CRITICAL: Set lastNarrative so the UI displays the response
+                const formattedResponse = response ? `**${npc.name}:** ${response}` : `${npc.name} stays silent.`;
+                this.state.lastNarrative = formattedResponse;
+
+                await this.emitStateUpdate();
+                return formattedResponse;
+            } catch (e: any) {
+                console.error('[GameLoop] Dialogue failed:', e);
+                const errorMsg = `${npc.name} seems unable to respond. (Dialogue generation failed: ${e.message})`;
+                this.state.lastNarrative = errorMsg;
+                await this.emitStateUpdate();
+                return errorMsg;
+            }
+        }
+
         const intent = IntentRouter.parse(input, this.state.mode === 'COMBAT');
 
         let systemResponse = '';
@@ -639,39 +693,45 @@ export class GameLoop {
             }
 
             case 'talk': {
-                const npcId = args[0];
-                if (!npcId) return "Who do you want to talk to? Usage: /talk [npc_id]";
+                const npcIdOrName = args.join(' ');
+                const npcToTalk = this.state.worldNpcs.find(n =>
+                    n.id === npcIdOrName || n.name.toLowerCase() === npcIdOrName.toLowerCase()
+                );
 
-                const npc = this.state.worldNpcs.find(n => n.id === npcId);
-                if (!npc) return "That person is not here.";
+                if (!npcToTalk) return `You don't see anyone named "${npcIdOrName}" here.`;
 
-                // Verify NPC is in current hex
-                const currentHex = this.hexMapManager.getHex(this.state.location.hexId);
-                if (!currentHex?.npcs?.includes(npcId)) {
-                    return `${npc.name} is not at your current location.`;
+                // Check if NPC is in current hex
+                const currentHexForTalk = this.hexMapManager.getHex(this.state.location.hexId);
+                if (!currentHexForTalk?.npcs?.includes(npcToTalk.id)) {
+                    return `${npcToTalk.name} is not in this location.`;
                 }
 
-                // Use the player's last narrative input as the dialogue prompt
-                // If called via UI button, use a greeting
-                const playerMessage = args.slice(1).join(' ') || "Hello.";
+                this.state.activeDialogueNpcId = npcToTalk.id;
+                await this.emitStateUpdate();
 
+                // Generate initial greeting
                 try {
-                    const response = await NPCService.generateDialogue(this.state, npc, playerMessage);
-                    if (response) {
-                        // AUTO-UPDATE: Extract facts from NPC's own dialogue response
-                        await this.updateNpcProfiles(response, [npc]);
+                    const greeting = await NPCService.generateDialogue(this.state, npcToTalk, "[GREETING / START CONVERSATION]");
+                    if (greeting) {
+                        await this.updateNpcProfiles(greeting, [npcToTalk]);
                     }
-
                     await this.emitStateUpdate();
-                    return response ? `**${npc.name}:** ${response}` : `${npc.name} stays silent.`;
+
+                    // History Update
+                    const turnStart = this.state.worldTime.totalTurns;
+                    this.state.conversationHistory.push({ role: 'narrator', content: `**${npcToTalk.name}:** ${greeting || '...'}`, turnNumber: turnStart });
+
+                    return greeting ? `**${npcToTalk.name}:** ${greeting}` : `${npcToTalk.name} acknowledges you.`;
                 } catch (e) {
-                    console.error('[GameLoop] NPC dialogue failed:', e);
-                    return `${npc.name} stares at you in silence. (Dialogue generation failed)`;
+                    return `You approach ${npcToTalk.name}, but they are occupied.`;
                 }
             }
-
+            case 'endtalk':
+                this.state.activeDialogueNpcId = null;
+                await this.emitStateUpdate();
+                return "You end the conversation.";
             default:
-                return `Command "${cmd}" not recognized.`;
+                return `Unknown command: ${cmd}`;
         }
     }
 
@@ -877,6 +937,18 @@ export class GameLoop {
                         newFacts.map(f => `- ${f}`).join('\n');
                     entry.isNew = true; // Re-flag so player sees the update
                     updated = true;
+
+                    // Fix 6C: Push notification on update
+                    const npcObj = npcs.find(n => n.id === npcId);
+                    const npcName = npcObj?.name || entry.title || 'Unknown';
+                    this.state.notifications.push({
+                        id: `notif_npc_update_${Date.now()}_${npcId}`,
+                        type: 'CODEX_ENTRY',
+                        message: `NPC Profile Updated: ${npcName}`,
+                        data: { category: 'npcs', entityId: npcId },
+                        isRead: false,
+                        createdAt: Date.now()
+                    });
                 }
             }
 
@@ -943,7 +1015,7 @@ export class GameLoop {
             message: `New NPC Profile: ${npc.name}`,
             data: { category: 'npcs', entityId: npcId },
             isRead: false,
-            createdAt: this.state.worldTime.totalTurns
+            createdAt: Date.now() // Fix 6B: Use Date.now() instead of turn number
         });
     }
 }

@@ -233,6 +233,16 @@
     border-color: rgba(184, 148, 79, 0.5);
 }
 
+.endTalkButton {
+    background: rgba(139, 0, 0, 0.1);
+    color: #8b0000;
+}
+
+.endTalkButton:hover {
+    background: rgba(139, 0, 0, 0.2);
+    border-color: #8b0000;
+}
+
 .npcActionButton:disabled {
     opacity: 0.4;
     cursor: not-allowed;

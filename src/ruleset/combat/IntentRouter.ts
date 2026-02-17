@@ -68,6 +68,10 @@ export class IntentRouter {
                 const npcId = trimmed.split(' ').slice(1).join(' ');
                 return { type: 'COMMAND', command: 'talk', args: [npcId], originalInput: input };
             }
+
+            if (lower === 'endtalk' || lower === 'end talk' || lower === 'leave' || lower === 'goodbye') {
+                return { type: 'COMMAND', command: 'endtalk', args: [], originalInput: input };
+            }
         }
 
         // 3. Default to Narrative

@@ -80,6 +80,7 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                     case 'classes': data = DataManager.getClasses(); break;
                     case 'bestiary':
                     case 'items':
+                    case 'npcs':
                         data = state?.codexEntries?.filter(e => e.category === initialDeepLink.category) || [];
                         break;
                 }
@@ -212,9 +213,14 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
             case 'npcs':
                 const dynamicEntries = state?.codexEntries?.filter(e => e.category === activeCategory) || [];
                 if (dynamicEntries.length === 0) {
+                    let placeholderText = 'More lore coming soon...';
+                    if (activeCategory === 'items') placeholderText = 'Collect items to unlock their lore...';
+                    else if (activeCategory === 'bestiary') placeholderText = 'Encounter creatures to record their history...';
+                    else if (activeCategory === 'npcs') placeholderText = 'Talk to people to learn their stories...';
+
                     return (
                         <div className={styles.placeholder}>
-                            {activeCategory === 'items' ? 'Collect items to unlock their lore...' : 'Encounter creatures to record their history...'}
+                            {placeholderText}
                         </div>
                     );
                 }
@@ -294,7 +300,7 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                         let hasNew = false;
                         if (cat.id === 'magic') {
                             hasNew = (state?.character?.unseenSpells?.length ?? 0) > 0;
-                        } else if (cat.id === 'bestiary' || cat.id === 'items') {
+                        } else if (cat.id === 'bestiary' || cat.id === 'items' || cat.id === 'npcs') {
                             hasNew = state?.codexEntries?.some(e => e.category === cat.id && e.isNew) ?? false;
                         }
                         return (
@@ -333,7 +339,7 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                         {selectedEntry ? (
                             <div className={styles.entryDetail}>
                                 <h3>
-                                    {selectedEntry.name}
+                                    {selectedEntry.name || selectedEntry.title}
                                     {activeCategory === 'magic' && (
                                         <img
                                             src={`/assets/spells/${selectedEntry.name.toLowerCase().replace(/ /g, '_')}.png`}
@@ -442,7 +448,7 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
                                             <p className={styles.spellDescription}>{selectedEntry.description}</p>
                                         </>
                                     )}
-                                    {(activeCategory === 'bestiary' || activeCategory === 'items') && (
+                                    {(activeCategory === 'bestiary' || activeCategory === 'items' || activeCategory === 'npcs') && (
                                         <div className={styles.markdownContent}>
                                             {selectedEntry.content.split('\n').map((line: string, i: number) => {
                                                 if (line.startsWith('###')) return <h4 key={i} className={styles.mdH3}>{parseInlines(line.replace('###', '').trim())}</h4>;

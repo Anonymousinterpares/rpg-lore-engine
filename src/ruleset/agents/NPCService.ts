@@ -107,7 +107,8 @@ Respond to the player's message in character.
                     systemPrompt,
                     userMessage: playerInput,
                     temperature: 0.8,
-                    maxTokens: 150
+                    maxTokens: profile.maxTokens, // Use configured value, not hardcoded
+                    responseFormat: 'text' // Explicit: we want free-text dialogue, not JSON
                 }
             );
 

@@ -39,7 +39,8 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter, onCompass }) 
         }
     };
 
-    const [talkingNpcId, setTalkingNpcId] = React.useState<string | null>(null);
+    // Derive talking state from game state instead of managing local ephemeral state
+    const talkingNpcId = state?.activeDialogueNpcId || null;
 
     return (
         <aside className={`${styles.sidebar} ${parchmentStyles.panel} ${parchmentStyles.overflowVisible} ${className}`}>
@@ -64,12 +65,11 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter, onCompass }) 
                     talkingNpcId={talkingNpcId}
                     onTalkToNpc={async (npcId) => {
                         if (engine) {
-                            setTalkingNpcId(npcId);
-                            try {
-                                await engine.processTurn(`/talk ${npcId}`);
-                            } finally {
-                                setTalkingNpcId(null);
+                            if (npcId === '__end__') {
+                                await engine.processTurn('/endtalk');
+                                return;
                             }
+                            await engine.processTurn(`/talk ${npcId}`);
                         }
                     }}
                     connections={currentHex.connections}
