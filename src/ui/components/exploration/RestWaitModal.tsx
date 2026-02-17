@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './RestWaitModal.module.css';
 
 interface RestWaitModalProps {
@@ -12,8 +12,9 @@ const RestWaitModal: React.FC<RestWaitModalProps> = ({ engine, onCancel }) => {
     const [remainingMinutes, setRemainingMinutes] = useState<number>(0);
     const [isCountingDown, setIsCountingDown] = useState(false);
     const [totalMinutesToPass, setTotalMinutesToPass] = useState(0);
+    const cancelledRef = useRef(false);
 
-    // Slider range: 30 min (0.5h) to 1440 min (24h) in 30 min steps
+    // ... slider logic unchanged ...
     const minVal = 30;
     const maxVal = 1440;
     const step = 30;
@@ -36,10 +37,17 @@ const RestWaitModal: React.FC<RestWaitModalProps> = ({ engine, onCancel }) => {
         setIsCountingDown(true);
     };
 
+    const handleCancel = () => {
+        cancelledRef.current = true;
+        onCancel();
+    };
+
     useEffect(() => {
         const tick = async () => {
+            if (cancelledRef.current) return;
+
             if (!isCountingDown || remainingMinutes <= 0) {
-                if (isCountingDown && remainingMinutes <= 0) {
+                if (isCountingDown && remainingMinutes <= 0 && !cancelledRef.current) {
                     // Done!
                     const action = activeTab;
                     if (action === 'rest') {
@@ -56,6 +64,8 @@ const RestWaitModal: React.FC<RestWaitModalProps> = ({ engine, onCancel }) => {
             const step = 30;
             const encounter = await engine.advanceTimeAndProcess(step, activeTab === 'rest');
 
+            if (cancelledRef.current) return;
+
             if (encounter) {
                 await engine.initializeCombat(encounter);
                 onCancel();
@@ -66,7 +76,9 @@ const RestWaitModal: React.FC<RestWaitModalProps> = ({ engine, onCancel }) => {
         };
 
         const timer = setTimeout(tick, 500); // Pass 30 mins every 500ms
-        return () => clearTimeout(timer);
+        return () => {
+            clearTimeout(timer);
+        };
     }, [isCountingDown, remainingMinutes, activeTab, engine, onCancel, totalMinutesToPass]);
 
     return (
@@ -129,7 +141,7 @@ const RestWaitModal: React.FC<RestWaitModalProps> = ({ engine, onCancel }) => {
                 </div>
 
                 <div className={styles.footer}>
-                    <button className={styles.cancelBtn} onClick={onCancel} disabled={isCountingDown}>Cancel</button>
+                    <button className={styles.cancelBtn} onClick={handleCancel}>Cancel</button>
                     {!isCountingDown && (
                         <button className={styles.confirmBtn} onClick={handleConfirm}>
                             {activeTab === 'rest' ? 'Rest' : 'Wait'}
