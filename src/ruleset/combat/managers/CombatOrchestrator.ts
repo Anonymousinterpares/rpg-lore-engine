@@ -414,6 +414,42 @@ export class CombatOrchestrator {
         this.addCombatLog(summaryMsg);
 
         if (victory) {
+            // SYNC STATE BACK TO GLOBAL
+            const pcCombatant = combatState.combatants.find(c => c.isPlayer);
+            if (pcCombatant) {
+                const char = this.state.character;
+                char.hp.current = pcCombatant.hp.current;
+                char.hp.temp = pcCombatant.hp.temp;
+                if (pcCombatant.spellSlots) {
+                    Object.entries(pcCombatant.spellSlots).forEach(([lv, data]) => {
+                        if (char.spellSlots[lv]) char.spellSlots[lv].current = data.current;
+                    });
+                }
+                // Sync persistent conditions (simplified string mapping)
+                const persistentIDs = ['poisoned', 'blinded', 'deafened', 'frightened', 'paralyzed', 'stunned'];
+                pcCombatant.statusEffects.forEach(effect => {
+                    const id = effect.id.toLowerCase();
+                    if (persistentIDs.includes(id) && !char.conditions.includes(effect.name)) {
+                        char.conditions.push(effect.name);
+                    }
+                });
+            }
+
+            // Sync Companions
+            this.state.companions.forEach((companion, index) => {
+                const compId = `companion_${index}`;
+                const compCombatant = combatState.combatants.find(c => c.id === compId);
+                if (compCombatant) {
+                    companion.hp.current = compCombatant.hp.current;
+                    companion.hp.temp = compCombatant.hp.temp;
+                    if (compCombatant.spellSlots) {
+                        Object.entries(compCombatant.spellSlots).forEach(([lv, data]) => {
+                            if (companion.spellSlots[lv]) companion.spellSlots[lv].current = data.current;
+                        });
+                    }
+                }
+            });
+
             let totalXP = 0;
             const enemies = combatState.combatants.filter(c => c.type === 'enemy');
             for (const enemy of enemies) {
@@ -452,6 +488,7 @@ export class CombatOrchestrator {
                 char.hp.max += 10;
                 char.hp.current = char.hp.max;
                 Object.values(char.spellSlots).forEach(s => s.current = s.max);
+                this.addCombatLog(`LEVEL UP! You are now level ${char.level}. HP and Spell Slots restored.`);
             }
         }
 

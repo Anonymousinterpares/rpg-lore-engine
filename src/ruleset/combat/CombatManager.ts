@@ -47,7 +47,7 @@ export class CombatManager {
 
             // Add Companions
             for (let i = 0; i < this.state.companions.length; i++) {
-                const companion = CombatFactory.fromPlayer(this.state.companions[i]);
+                const companion = CombatFactory.fromPlayer(this.state.companions[i], `companion_${i}`);
                 companion.initiative = Dice.d20() + MechanicsEngine.getModifier(companion.stats.DEX || 10);
 
                 // Deployment: Pick unique positions from player zone
