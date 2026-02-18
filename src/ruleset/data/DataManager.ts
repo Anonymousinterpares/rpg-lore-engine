@@ -74,6 +74,14 @@ export class DataManager {
                 const mod: any = await itemModules[path]();
                 const item = mod.default || mod;
                 if (item.name) {
+                    // Inject ID and Quantity if missing at source
+                    if (!item.id) {
+                        item.id = item.name.toLowerCase().replace(/\s+/g, '_');
+                    }
+                    if (item.quantity === undefined) {
+                        item.quantity = 1;
+                    }
+
                     this.items[item.name] = item;
                     this.items[item.name.toLowerCase()] = item;
                     this.items[item.name.toLowerCase().replace(/ /g, '_')] = item;

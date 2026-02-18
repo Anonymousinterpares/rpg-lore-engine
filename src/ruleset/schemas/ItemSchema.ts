@@ -10,6 +10,7 @@ export const ModifierSchema = z.object({
 });
 
 export const BaseItemSchema = z.object({
+    id: z.string().optional(), // Populated by DataManager
     name: z.string(),
     type: ItemTypeSchema,
     cost: CurrencySchema,
@@ -18,7 +19,8 @@ export const BaseItemSchema = z.object({
     isMagic: z.boolean().default(false),
     modifiers: z.array(ModifierSchema).default([]),
     tags: z.array(z.string()).default([]),
-    charges: z.number().optional()
+    charges: z.number().optional(),
+    quantity: z.number().default(1)
 });
 
 export const WeaponSchema = BaseItemSchema.extend({

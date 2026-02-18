@@ -478,7 +478,11 @@ export class CombatOrchestrator {
                     char.inventory.gold.gp += loot.gold.gp;
                     char.inventory.gold.pp += loot.gold.pp;
                     if (!this.state.location.combatLoot) this.state.location.combatLoot = [];
-                    this.state.location.combatLoot.push(...loot.items.map(i => ({ ...i, instanceId: `loot_${Date.now()}_${Math.random()}`, equipped: false })));
+                    this.state.location.combatLoot.push(...loot.items.map(i => ({
+                        ...i,
+                        instanceId: `loot_${Date.now()}_${Math.random()}`,
+                        equipped: false
+                    })));
                 }
             }
 
