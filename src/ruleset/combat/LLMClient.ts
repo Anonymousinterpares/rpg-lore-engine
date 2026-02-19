@@ -234,6 +234,15 @@ export class LLMClient {
 
         console.log(`[LLMClient] Content length: ${result.length} characters.`);
 
+        // Detect silent token timeout (Thinking models failing to write content)
+        if (!result && provider.id !== 'gemini' && provider.id !== 'anthropic') {
+            const finishReason = data.choices?.[0]?.finish_reason || data.choices?.[0]?.native_finish_reason;
+            if (finishReason === 'length') {
+                console.error('[LLMClient] Model exhausted tokens during reasoning phase.');
+                throw new Error(`Model ran out of tokens before generating content (Thinking phase too long). Max tokens was set to ${maxTokens}.`);
+            }
+        }
+
         // Debug: Log full response structure when content is empty
         if (!result || result.length === 0) {
             console.warn('[LLMClient] Empty content received. Full response structure:');

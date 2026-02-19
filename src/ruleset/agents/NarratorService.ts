@@ -135,7 +135,7 @@ ${logSummary}`;
                     systemPrompt,
                     userMessage: "Write a dramatic summary of this battle.",
                     temperature: 0.7,
-                    maxTokens: 500,
+                    maxTokens: 1200,
                     responseFormat: 'text'
                 }
             );
@@ -276,9 +276,16 @@ RULES:
         if (!providerConfig || !modelConfig) return "The adventure continues...";
 
         // Context gathering
-        const recentHistory = state.conversationHistory.slice(-5).map(h => `${h.role}: ${h.content}`).join('\n');
+        const recentHistory = (state.conversationHistory || []).slice(-5).map(h => `${h.role}: ${h.content}`).join('\n');
         const storySummary = state.storySummary || 'The journey has just begun.';
-        const lastEvent = state.lastNarrative || 'Standing ready.';
+        let lastEvent = state.lastNarrative || 'Standing ready.';
+
+        let combatContext = "";
+        if (state.mode === 'COMBAT' && state.combat) {
+            lastEvent = "Engaged in combat!";
+            const recentLogs = (state.combat.logs || []).slice(-10).map(l => l.message).join('\n');
+            combatContext = `\n## COMBAT STATUS (CURRENTLY FIGHTING)\nRound: ${state.combat.round}\nRecent Combat Actions:\n${recentLogs}`;
+        }
 
         const systemPrompt = `You are a legendary bard. 
 Summarize the current state and recent events of the adventure in 2-3 evocative sentences. 
@@ -290,7 +297,7 @@ Keep it strictly under 50 words.
 ${storySummary}
 
 ## RECENT HISTORY
-${recentHistory}
+${recentHistory}${combatContext}
 
 ## LATEST EVENT
 ${lastEvent}`;
@@ -303,15 +310,30 @@ ${lastEvent}`;
                     systemPrompt,
                     userMessage: "Write a short summary for this save game.",
                     temperature: 0.7,
-                    maxTokens: 150,
+                    maxTokens: 800,
                     responseFormat: 'text'
                 }
             );
 
-            return this.extractJson(rawResponse).replace(/\{[\s\S]*\}/, '').trim() || rawResponse.trim();
-        } catch (e) {
+            // Clean the response (strip markdown wrappers)
+            let finalSummary = rawResponse.replace(/```json/i, '').replace(/```/g, '').trim();
+            // If the LLM still tries to wrap it in a JSON block despite responseFormat: 'text'
+            if (finalSummary.startsWith('{') && finalSummary.endsWith('}')) {
+                try {
+                    const parsed = JSON.parse(finalSummary);
+                    if (parsed.narrative_output) {
+                        finalSummary = parsed.narrative_output.trim();
+                    } else if (parsed.summary) {
+                        finalSummary = parsed.summary.trim();
+                    }
+                } catch (e) {
+                    // Ignore JSON parse errors and just use the raw text if it wasn't actually JSON
+                }
+            }
+            return finalSummary || "The adventure continues at " + state.location.hexId;
+        } catch (e: any) {
             console.error('[NarratorService] Save summary failed:', e);
-            return "The adventure continues at " + state.location.hexId;
+            return `[Summarize Error] ${e.message} (Location: ${state.location.hexId})`;
         }
     }
 
