@@ -150,15 +150,18 @@ export class CombatManager {
     /**
      * Executes a movement on the grid.
      */
-    public moveCombatant(combatant: Combatant, targetPos: GridPosition): string {
+    public moveCombatant(combatant: Combatant, targetPos: GridPosition, costMultiplier: number = 1): string {
         if (!this.gridManager) return "No grid available.";
 
         const path = this.gridManager.findPath(combatant.position, targetPos, this.state.combat?.combatants || []);
         if (!path) return "Target is unreachable or blocked.";
 
         const distance = path.length - 1; // Number of steps
-        if (distance > combatant.movementRemaining) {
-            return `Too far! You only have ${combatant.movementRemaining * 5}ft of movement left.`;
+        const totalCost = distance * costMultiplier;
+
+        if (totalCost > combatant.movementRemaining) {
+            const possibleFt = Math.floor(combatant.movementRemaining / costMultiplier) * 5;
+            return `Too far! At this pace, you only have enough movement for ${possibleFt}ft.`;
         }
 
         const direction = this.gridManager.getRelativeDirection(combatant.position, targetPos);
@@ -194,7 +197,7 @@ export class CombatManager {
             : '';
 
         combatant.position = targetPos;
-        combatant.movementRemaining -= distance;
+        combatant.movementRemaining -= totalCost;
 
         let hazardMsg = '';
         const hazardResult = this.checkHazard(combatant, targetPos);
@@ -202,7 +205,12 @@ export class CombatManager {
             hazardMsg = `\n[HAZARD] ${hazardResult}`;
         }
 
-        return `${combatant.name} moves ${distanceFt}ft ${direction}${featureSuffix}${opponentContext}.${hazardMsg}`;
+        let paceDesc = 'at a normal pace';
+        if (costMultiplier > 1) paceDesc = 'cautiously';
+        if (costMultiplier < 1) paceDesc = 'recklessly';
+        if (combatant.statusEffects.some(se => se.id === 'sprint_reckless')) paceDesc = 'at a full sprint';
+
+        return `${combatant.name} moves ${distanceFt}ft ${direction} ${paceDesc}${featureSuffix}${opponentContext}.${hazardMsg}`;
     }
 
     private checkHazard(combatant: Combatant, pos: GridPosition): string | null {

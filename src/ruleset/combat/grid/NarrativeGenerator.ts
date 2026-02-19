@@ -61,6 +61,11 @@ export class NarrativeGenerator {
                     label: `Press the Attack`,
                     description: `Close in on ${targetName}, maintaining pressure and denying retreat. ⚔️ Advantage on next melee. ½ movement. ${remainingText}`
                 };
+            case 'approach':
+                return {
+                    label: `Standard Approach`,
+                    description: `Move towards ${targetName} at a normal pace. 🛡️ No penalties. Action remains available. ${remainingText}`
+                };
 
             // Category B: Supportive / Formation
             case 'phalanx':

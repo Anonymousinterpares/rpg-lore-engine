@@ -103,8 +103,12 @@ export class CombatAnalysisEngine {
             }
 
             // A2. Stalk (Stealthy approach)
-            if (dist >= 3) {
-                const targetPos = this.getApproachPosition(reachable, enemy.position, 1);
+            // Calculate reachable with double cost (half speed)
+            const stalkSpeed = Math.floor(combatant.movementRemaining / 2);
+            if (dist >= 3 && stalkSpeed >= 1) {
+                const reachableStalk = this.gridManager.getReachablePositions(combatant.position, stalkSpeed, allCombatants);
+                const targetPos = this.getApproachPosition(reachableStalk, enemy.position, 1);
+
                 if (targetPos) {
                     const actualMoveDist = this.gridManager.getDistance(combatant.position, targetPos);
                     const nar = NarrativeGenerator.generate('stalk', combatant, enemy, biome, weather, '', actualMoveDist);
@@ -169,6 +173,23 @@ export class CombatAnalysisEngine {
                             cons: ['Half Movement']
                         });
                     }
+                }
+            } else {
+                // A4. Standard Approach (Normal Movement)
+                // If not in "Press" range (<=4) and not Charging or Stalking preference, offer standard move
+                const targetPos = this.getApproachPosition(reachable, enemy.position, 1);
+                if (targetPos) {
+                    const actualMoveDist = this.gridManager.getDistance(combatant.position, targetPos);
+                    const nar = NarrativeGenerator.generate('approach', combatant, enemy, biome, weather, '', actualMoveDist);
+                    options.push({
+                        id: `approach_${enemy.id}`,
+                        label: nar.label,
+                        description: nar.description,
+                        targetPosition: targetPos,
+                        type: 'AGGRESSION',
+                        command: `/move ${targetPos.x} ${targetPos.y} normal`,
+                        pros: ['No Penalties', 'Action Available']
+                    });
                 }
             }
         });

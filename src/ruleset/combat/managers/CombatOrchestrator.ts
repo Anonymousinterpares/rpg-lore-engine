@@ -9,6 +9,7 @@ import { CombatUtils } from '../CombatUtils';
 import { MechanicsEngine } from '../MechanicsEngine';
 import { Dice } from '../Dice';
 import { DataManager } from '../../data/DataManager';
+import { BIOME_TACTICAL_DATA } from '../BiomeRegistry';
 import { LootEngine } from '../LootEngine';
 import { WorldClockEngine } from '../WorldClockEngine';
 import { NarratorService } from '../../agents/NarratorService';
@@ -158,7 +159,7 @@ export class CombatOrchestrator {
 
             let resultMsg = '';
 
-            const nonActionCommands = ['target', 'end turn'];
+            const nonActionCommands = ['target', 'end turn', 'move'];
             if (currentCombatant.resources.actionSpent && !nonActionCommands.includes(intent.command || '')) {
                 return `You have already used your main action this turn. Use "End Turn".`;
             }
@@ -313,29 +314,60 @@ export class CombatOrchestrator {
             } else if (intent.command === 'move') {
                 const x = parseInt(intent.args?.[0] || '0');
                 const y = parseInt(intent.args?.[1] || '0');
-                const mode = intent.args?.[2];
+                const modeInput = (intent.args?.[2] || 'normal').toLowerCase();
 
-                if (mode === 'sprint') {
-                    currentCombatant.movementRemaining = (currentCombatant.movementSpeed || 6) * 2;
+                let costMultiplier = 1;
+
+                if (modeInput === 'sprint' || modeInput === 'dash') {
+                    // Sprint doubles speed but costs the Action
+                    currentCombatant.movementRemaining *= 2;
                     currentCombatant.statusEffects.push({ id: 'sprint_reckless', name: 'Reckless Sprint', type: 'DEBUFF', duration: 1, sourceId: currentCombatant.id });
-                } else if (mode === 'evasive') {
+                    currentCombatant.resources.actionSpent = true;
+                } else if (modeInput === 'evasive') {
                     currentCombatant.statusEffects.push({ id: 'evasive_movement', name: 'Evasive Movement', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
-                } else if (mode === 'press') {
-                    currentCombatant.movementRemaining = Math.floor(currentCombatant.movementRemaining / 2);
+                } else if (modeInput === 'press') {
+                    costMultiplier = 2;
                     currentCombatant.statusEffects.push({ id: 'press_advantage', name: 'Pressing Attack', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
-                } else if (mode === 'stalk') {
-                    currentCombatant.movementRemaining = Math.floor(currentCombatant.movementRemaining / 2);
+                } else if (modeInput === 'stalk') {
+                    costMultiplier = 2;
                     currentCombatant.statusEffects.push({ id: 'stalking', name: 'Stalking', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
-                } else if (mode === 'flank') {
+
+                    // Stealth Check Implementation
+                    const biome = this.state.location.subLocationId || 'Plains';
+                    const dc = BIOME_TACTICAL_DATA[biome]?.passivePerception || 12; // Default to 12 (Forest) if unknown
+
+                    const dex = currentCombatant.stats.DEX || 10;
+                    const mod = MechanicsEngine.getModifier(dex);
+                    let prof = 0;
+
+                    if (currentCombatant.isPlayer) {
+                        // Cross-reference player sheet for proficiency
+                        if (this.state.character.skillProficiencies.includes('Stealth')) {
+                            prof = MechanicsEngine.getProficiencyBonus(this.state.character.level);
+                        }
+                    }
+
+                    const roll = Dice.d20();
+                    const total = roll + mod + prof;
+
+                    if (total >= dc) {
+                        currentCombatant.statusEffects.push({ id: 'unseen', name: 'Unseen', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
+                        this.addCombatLog(`${currentCombatant.name} stalks silently (Stealth ${total} vs DC ${dc}). Success! They are Unseen.`);
+                    } else {
+                        this.addCombatLog(`${currentCombatant.name} attempts to stalk (Stealth ${total} vs DC ${dc}) but is heard.`);
+                    }
+
+                } else if (modeInput === 'flank') {
                     currentCombatant.statusEffects.push({ id: 'flanking', name: 'Flanking', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
-                } else if (mode === 'phalanx') {
+                } else if (modeInput === 'phalanx') {
                     currentCombatant.statusEffects.push({ id: 'phalanx_formation', name: 'Phalanx Formation', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
-                } else if (mode === 'hunker') {
+                } else if (modeInput === 'hunker') {
                     currentCombatant.statusEffects.push({ id: 'hunkered_down', name: 'Hunkered Down', type: 'BUFF', duration: 1, sourceId: currentCombatant.id });
                 }
 
-                resultMsg = this.combatManager.moveCombatant(currentCombatant, { x, y });
+                resultMsg = this.combatManager.moveCombatant(currentCombatant, { x, y }, costMultiplier);
                 this.state.combat.turnActions.push(resultMsg);
+
             } else if (intent.command === 'target') {
                 const targetIdOrName = intent.args?.[0];
                 const target = this.state.combat.combatants.find(c =>
@@ -565,7 +597,28 @@ export class CombatOrchestrator {
                         (actor as any).virtualAmmo--;
                     }
 
-                    const result = CombatResolutionEngine.resolveAttack(actor, target, actionData.attackBonus || 0, actionData.damage || "1d6", 0, isRanged);
+                    if (!this.state.combat?.grid) break;
+                    const gridManager = new CombatGridManager(this.state.combat.grid);
+                    const distCells = gridManager.getDistance(actor.position, target.position);
+                    const normalRange = actor.tactical.range ? Math.ceil(actor.tactical.range.normal / 5) : 1;
+
+                    let forceDisadvantage = false;
+                    if (isRanged && distCells > normalRange) {
+                        forceDisadvantage = true;
+                        this.addCombatLog(`${actor.name} attacks from long range (Disadvantage).`);
+                    }
+                    if (isRanged) {
+                        const threatened = this.state.combat.combatants.some(c =>
+                            c.type !== actor.type && c.hp.current > 0 && gridManager.getDistance(actor.position, c.position) <= 1
+                        );
+                        if (threatened) {
+                            forceDisadvantage = true;
+                            this.addCombatLog(`${actor.name} is threatened while shooting (Disadvantage).`);
+                        }
+                    }
+
+                    const result = CombatResolutionEngine.resolveAttack(actor, target, actionData.attackBonus || 0, actionData.damage || "1d6", 0, isRanged, forceDisadvantage);
+
 
                     // Trigger UI Dice Animation
                     if (this.state.combat && result.details) {

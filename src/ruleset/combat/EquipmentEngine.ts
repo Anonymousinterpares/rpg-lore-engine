@@ -64,35 +64,51 @@ export class EquipmentEngine {
         return false;
     }
 
+    private static readonly ARMOR_TABLE: Record<string, { baseAC: number, maxDex: number }> = {
+        'padded': { baseAC: 11, maxDex: Infinity },
+        'leather': { baseAC: 11, maxDex: Infinity },
+        'studded leather': { baseAC: 12, maxDex: Infinity },
+        'hide': { baseAC: 12, maxDex: 2 },
+        'chain shirt': { baseAC: 13, maxDex: 2 },
+        'scale mail': { baseAC: 14, maxDex: 2 },
+        'breastplate': { baseAC: 14, maxDex: 2 },
+        'half plate': { baseAC: 15, maxDex: 2 },
+        'ring mail': { baseAC: 14, maxDex: 0 },
+        'chain mail': { baseAC: 16, maxDex: 0 },
+        'splint': { baseAC: 17, maxDex: 0 },
+        'plate': { baseAC: 18, maxDex: 0 }
+    };
+
     private static recalculateAC(pc: PlayerCharacter) {
         const dexMod = Math.floor(((pc.stats['DEX'] || 10) - 10) / 2);
-        let finalAC = 10 + dexMod; // Default unarmored
+        let baseAC = 10 + dexMod; // Default unarmored
         let shieldBonus = 0;
-        let otherBonus = 0;
-
-        // Find equipped items
-        const equippedItems = pc.inventory.items.filter(i => i.equipped);
 
         // 1. Check for Armor
-        const armorItem = pc.inventory.items.find(i => i.equipped && (pc.equipmentSlots as any).armor === i.name);
-        if (armorItem) {
-            // In a real system, we'd load the full item data. 
-            // For now, we'll use a heuristic or look for 'acCalculated' if we had the full Item object.
-            // Since we only have the inventory item summary, we simulate the logic:
-            if (armorItem.name.includes('Plate')) finalAC = 18;
-            else if (armorItem.name.includes('Chain Shirt')) finalAC = 13 + Math.min(2, dexMod);
-            else if (armorItem.name.includes('Leather')) finalAC = 11 + dexMod;
-            else finalAC = 10 + dexMod;
+        const armorItemName = (pc.equipmentSlots as any).armor;
+        if (armorItemName) {
+            const normalizedName = armorItemName.toLowerCase().replace(/_/g, ' ');
+            const armorData = this.ARMOR_TABLE[normalizedName];
+
+            if (armorData) {
+                baseAC = armorData.baseAC + Math.min(dexMod, armorData.maxDex);
+            } else {
+                // Fallback for custom or unknown armor: try to parse numeric if available in item data
+                // In our current system, we default to unarmored if not in table
+                baseAC = 10 + dexMod;
+            }
         }
 
-        // 2. Check for Shield
-        const shieldItem = pc.inventory.items.find(i => i.equipped &&
-            ((pc.equipmentSlots as any).mainHand === i.name || (pc.equipmentSlots as any).offHand === i.name) &&
-            i.name.includes('Shield'));
-        if (shieldItem) shieldBonus = 2;
+        // 2. Check for Shield in either hand
+        const mainHandItem = (pc.equipmentSlots as any).mainHand;
+        const offHandItem = (pc.equipmentSlots as any).offHand;
 
-        // 3. Misc Modifiers (from Magic Items etc if we had details)
+        const hasShield = (name?: string) => name && name.toLowerCase().includes('shield');
 
-        pc.ac = finalAC + shieldBonus + otherBonus;
+        if (hasShield(mainHandItem) || hasShield(offHandItem)) {
+            shieldBonus = 2;
+        }
+
+        pc.ac = baseAC + shieldBonus;
     }
 }
