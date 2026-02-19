@@ -102,7 +102,9 @@
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 3,
-      "npcs": [],
+      "npcs": [
+        "177ea972-602d-4d12-9aae-dfe516fbe134"
+      ],
       "connections": "4:R:1"
     },
     "1,0": {
@@ -511,9 +513,7 @@
       "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 2,
-      "npcs": [
-        "9ba7b87a-df12-4187-8197-23fd6f7cfd59"
-      ],
+      "npcs": [],
       "connections": "1:P:0"
     },
     "-2,1": {
@@ -540,9 +540,7 @@
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 1,
-      "npcs": [
-        "177ea972-602d-4d12-9aae-dfe516fbe134"
-      ],
+      "npcs": [],
       "connections": "1:P:1,2:P:1,3:P:1,4:P:1"
     },
     "2,-2": {
@@ -1112,7 +1110,9 @@
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 3,
-      "npcs": [],
+      "npcs": [
+        "fda5bdc0-b900-4299-a7a0-467be7b0e57d"
+      ],
       "connections": "0:R:1,2:R:1,5:R:1,4:R:1"
     },
     "-5,2": {
@@ -1205,7 +1205,10 @@
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 3,
-      "npcs": [],
+      "npcs": [
+        "9ba7b87a-df12-4187-8197-23fd6f7cfd59",
+        "f703edaf-097c-4c0a-9655-cf20ee7dd929"
+      ],
       "connections": "0:P:0,1:P:1,2:P:1,3:P:1"
     },
     "-4,-2": {
@@ -1271,9 +1274,7 @@
       "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 4,
-      "npcs": [
-        "fda5bdc0-b900-4299-a7a0-467be7b0e57d"
-      ],
+      "npcs": [],
       "connections": "0:R:1,1:R:1,2:R:1,5:R:1"
     },
     "-6,2": {
@@ -1351,9 +1352,7 @@
       "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 1,
-      "npcs": [
-        "b07f29d2-ba79-4ca5-b540-c31f05da3a7d"
-      ],
+      "npcs": [],
       "connections": "0:P:0,1:P:0,3:P:0"
     },
     "-6,0": {
@@ -1381,7 +1380,7 @@
       "namingSource": "engine",
       "visualVariant": 5,
       "npcs": [
-        "f703edaf-097c-4c0a-9655-cf20ee7dd929"
+        "b07f29d2-ba79-4ca5-b540-c31f05da3a7d"
       ],
       "connections": "0:P:0,2:P:1"
     }

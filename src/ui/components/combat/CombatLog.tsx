@@ -15,15 +15,14 @@ interface CombatLogProps {
 }
 
 const CombatLog: React.FC<CombatLogProps> = ({ logs, className = '' }) => {
-    const scrollRef = useRef<HTMLDivElement>(null);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    };
 
     useEffect(() => {
-        if (scrollRef.current) {
-            const scrollContainer = scrollRef.current;
-            requestAnimationFrame(() => {
-                scrollContainer.scrollTop = scrollContainer.scrollHeight;
-            });
-        }
+        scrollToBottom();
     }, [logs]);
 
     const getTypeClass = (type: string) => {
@@ -39,13 +38,14 @@ const CombatLog: React.FC<CombatLogProps> = ({ logs, className = '' }) => {
     return (
         <div className={`${styles.container} ${terminalStyles.panel} ${className}`}>
             <div className={styles.header}>Combat Log</div>
-            <div className={styles.scrollArea} ref={scrollRef}>
+            <div className={styles.scrollArea}>
                 {logs.map((log) => (
                     <div key={log.id} className={`${styles.entry} ${getTypeClass(log.type)}`}>
                         {log.turn !== undefined && <span className={styles.turn}>[T{log.turn}]</span>}
                         <span className={styles.message}>{log.message}</span>
                     </div>
                 ))}
+                <div ref={messagesEndRef} />
             </div>
         </div>
     );

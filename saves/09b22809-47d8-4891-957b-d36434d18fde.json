@@ -35,7 +35,7 @@
       "Survival"
     ],
     "hp": {
-      "current": 3,
+      "current": 11,
       "max": 11,
       "temp": 0
     },
@@ -70,7 +70,7 @@
     "featureUsages": {},
     "inventory": {
       "gold": {
-        "cp": 12,
+        "cp": 18,
         "sp": 0,
         "ep": 0,
         "gp": 10,
@@ -175,7 +175,7 @@
           "name": "Arrow",
           "type": "Adventuring Gear",
           "weight": 1,
-          "quantity": 40,
+          "quantity": 37,
           "equipped": false
         },
         {
@@ -206,76 +206,30 @@
           "equipped": true
         },
         {
+          "id": "Scimitar",
+          "instanceId": "loot_1771495959428_0.3665251901023635",
           "name": "Scimitar",
           "type": "Weapon",
-          "cost": {
-            "cp": 0,
-            "sp": 0,
-            "ep": 0,
-            "gp": 25,
-            "pp": 0
-          },
           "weight": 3,
-          "damage": {
-            "dice": "1d6",
-            "type": "Slashing"
-          },
-          "properties": [
-            "Finesse",
-            "Light"
-          ],
-          "range": {
-            "normal": 5
-          },
-          "id": "Scimitar",
           "quantity": 1,
-          "instanceId": "loot_1771495959428_0.3665251901023635",
           "equipped": false
         },
         {
+          "id": "Shortbow",
+          "instanceId": "loot_1771495959428_0.4556363545807378",
           "name": "Shortbow",
           "type": "Weapon",
-          "cost": {
-            "cp": 0,
-            "sp": 0,
-            "ep": 0,
-            "gp": 25,
-            "pp": 0
-          },
           "weight": 2,
-          "damage": {
-            "dice": "1d6",
-            "type": "Piercing"
-          },
-          "properties": [
-            "Ammunition",
-            "Two-Handed"
-          ],
-          "range": {
-            "normal": 80,
-            "long": 320
-          },
-          "id": "Shortbow",
           "quantity": 1,
-          "instanceId": "loot_1771495959428_0.4556363545807378",
           "equipped": false
         },
         {
+          "id": "Chain Shirt",
+          "instanceId": "loot_1771495959428_0.6125310091498152",
           "name": "Chain Shirt",
           "type": "Armor",
-          "cost": {
-            "cp": 0,
-            "sp": 0,
-            "ep": 0,
-            "gp": 50,
-            "pp": 0
-          },
           "weight": 20,
-          "acCalculated": "13",
-          "stealthDisadvantage": false,
-          "id": "Chain Shirt",
           "quantity": 1,
-          "instanceId": "loot_1771495959428_0.6125310091498152",
           "equipped": false
         }
       ]
@@ -285,7 +239,7 @@
       "mainHand": "dev_1771367465235_0"
     },
     "attunedItems": [],
-    "xp": 125,
+    "xp": 175,
     "inspiration": false,
     "biography": {
       "background": "Sage",
@@ -333,7 +287,8 @@
     "knownEntities": {
       "monsters": [
         "Giant_Weasel",
-        "goblin"
+        "goblin",
+        "Boar"
       ],
       "items": []
     }
@@ -358,12 +313,12 @@
     "combatLoot": []
   },
   "worldTime": {
-    "hour": 2,
-    "minute": 23,
+    "hour": 11,
+    "minute": 59,
     "day": 3,
     "month": 1,
     "year": 1489,
-    "totalTurns": 24830
+    "totalTurns": 30590
   },
   "worldMap": {
     "grid_id": "6a8445e8-0f81-4cc2-9fe5-f8d3a1b908d5",
@@ -469,7 +424,9 @@
         "inLineOfSight": true,
         "namingSource": "engine",
         "visualVariant": 3,
-        "npcs": [],
+        "npcs": [
+          "177ea972-602d-4d12-9aae-dfe516fbe134"
+        ],
         "connections": "4:R:1"
       },
       "1,0": {
@@ -878,9 +835,7 @@
         "inLineOfSight": false,
         "namingSource": "engine",
         "visualVariant": 2,
-        "npcs": [
-          "9ba7b87a-df12-4187-8197-23fd6f7cfd59"
-        ],
+        "npcs": [],
         "connections": "1:P:0"
       },
       "-2,1": {
@@ -907,9 +862,7 @@
         "inLineOfSight": true,
         "namingSource": "engine",
         "visualVariant": 1,
-        "npcs": [
-          "177ea972-602d-4d12-9aae-dfe516fbe134"
-        ],
+        "npcs": [],
         "connections": "1:P:1,2:P:1,3:P:1,4:P:1"
       },
       "2,-2": {
@@ -1479,7 +1432,9 @@
         "inLineOfSight": true,
         "namingSource": "engine",
         "visualVariant": 3,
-        "npcs": [],
+        "npcs": [
+          "fda5bdc0-b900-4299-a7a0-467be7b0e57d"
+        ],
         "connections": "0:R:1,2:R:1,5:R:1,4:R:1"
       },
       "-5,2": {
@@ -1572,7 +1527,10 @@
         "inLineOfSight": true,
         "namingSource": "engine",
         "visualVariant": 3,
-        "npcs": [],
+        "npcs": [
+          "9ba7b87a-df12-4187-8197-23fd6f7cfd59",
+          "f703edaf-097c-4c0a-9655-cf20ee7dd929"
+        ],
         "connections": "0:P:0,1:P:1,2:P:1,3:P:1"
       },
       "-4,-2": {
@@ -1638,9 +1596,7 @@
         "inLineOfSight": false,
         "namingSource": "engine",
         "visualVariant": 4,
-        "npcs": [
-          "fda5bdc0-b900-4299-a7a0-467be7b0e57d"
-        ],
+        "npcs": [],
         "connections": "0:R:1,1:R:1,2:R:1,5:R:1"
       },
       "-6,2": {
@@ -1718,9 +1674,7 @@
         "inLineOfSight": false,
         "namingSource": "engine",
         "visualVariant": 1,
-        "npcs": [
-          "b07f29d2-ba79-4ca5-b540-c31f05da3a7d"
-        ],
+        "npcs": [],
         "connections": "0:P:0,1:P:0,3:P:0"
       },
       "-6,0": {
@@ -1748,7 +1702,7 @@
         "namingSource": "engine",
         "visualVariant": 5,
         "npcs": [
-          "f703edaf-097c-4c0a-9655-cf20ee7dd929"
+          "b07f29d2-ba79-4ca5-b540-c31f05da3a7d"
         ],
         "connections": "0:P:0,2:P:1"
       }
@@ -1805,11 +1759,13 @@
       "isMerchant": true,
       "shopState": {
         "inventory": [
-          "Shortbow",
-          "Saddle__riding",
+          "Blowgun",
+          "Hammer",
+          "Backpack",
           "Mess_kit",
-          "Tent__two-person",
-          "Rations__1_day_"
+          "Waterskin",
+          "Rations__1_day_",
+          "Bedroll"
         ],
         "soldByPlayer": [],
         "lastHaggleFailure": {},
@@ -1836,7 +1792,7 @@
       "movementBehavior": {
         "type": "TRADE_ROUTE",
         "interval": 24,
-        "lastMoveTurn": 24770,
+        "lastMoveTurn": 30590,
         "patrolRadius": 3,
         "routeIndex": 0,
         "routeDirection": 1,
@@ -1870,7 +1826,7 @@
       "movementBehavior": {
         "type": "WANDER",
         "interval": 24,
-        "lastMoveTurn": 24770,
+        "lastMoveTurn": 30590,
         "patrolRadius": 3,
         "routeIndex": 0,
         "routeDirection": 1,
@@ -1910,7 +1866,7 @@
       "movementBehavior": {
         "type": "PATROL",
         "interval": 12,
-        "lastMoveTurn": 24770,
+        "lastMoveTurn": 30590,
         "anchorHex": "-4,0",
         "patrolRadius": 3,
         "routeIndex": 0,
@@ -1981,7 +1937,7 @@
       "movementBehavior": {
         "type": "PATROL",
         "interval": 24,
-        "lastMoveTurn": 24770,
+        "lastMoveTurn": 30590,
         "anchorHex": "-3,-2",
         "patrolRadius": 2,
         "routeIndex": 0,
@@ -2016,7 +1972,7 @@
       "movementBehavior": {
         "type": "WANDER",
         "interval": 24,
-        "lastMoveTurn": 24770,
+        "lastMoveTurn": 30590,
         "patrolRadius": 3,
         "routeIndex": 0,
         "routeDirection": 1,
@@ -2057,7 +2013,7 @@
       "movementBehavior": {
         "type": "TRADE_ROUTE",
         "interval": 24,
-        "lastMoveTurn": 24770,
+        "lastMoveTurn": 30590,
         "patrolRadius": 3,
         "routeIndex": 0,
         "routeDirection": 1,
@@ -2093,7 +2049,7 @@
       "movementBehavior": {
         "type": "WANDER",
         "interval": 24,
-        "lastMoveTurn": 24770,
+        "lastMoveTurn": 30590,
         "patrolRadius": 3,
         "routeIndex": 0,
         "routeDirection": 1,
@@ -2122,8 +2078,8 @@
         {
           "id": "obj_study_gear",
           "description": "Study Your Gear: Examine an item in your inventory",
-          "isCompleted": false,
-          "currentProgress": 0,
+          "isCompleted": true,
+          "currentProgress": 1,
           "maxProgress": 1
         },
         {
@@ -2151,7 +2107,7 @@
   ],
   "factions": [],
   "storySummary": "started their journey as a Half-Elf Ranger with the Sage background.",
-  "lastNarrative": "Across the wind",
+  "lastNarrative": "On the open plains, Daa stalked the hulking boar from three hundred yards away, letting loose a first arrow that sang through the wind and bit the beast for three wounds. The boar retreated, thundering northwest, but Daa’s eyes never wavered; a second, razor‑sharp shot pierced its hide, adding another three points of pain. Closing the gap, Daa let loose a final, thunderous bolt that slammed into the boar’s flank, crushing its heart with ten vicious damage. The creature collapsed, and the plains fell silent as victory rang out.",
   "conversationHistory": [
     {
       "role": "player",
@@ -2362,13 +2318,39 @@
       "role": "narrator",
       "content": "Picked up Chain Shirt.",
       "turnNumber": 24830
+    },
+    {
+      "role": "narrator",
+      "content": "On the open plains, Daa stalked the hulking boar from three hundred yards away, letting loose a first arrow that sang through the wind and bit the beast for three wounds. The boar retreated, thundering northwest, but Daa’s eyes never wavered; a second, razor‑sharp shot pierced its hide, adding another three points of pain. Closing the gap, Daa let loose a final, thunderous bolt that slammed into the boar’s flank, crushing its heart with ten vicious damage. The creature collapsed, and the plains fell silent as victory rang out.",
+      "turnNumber": 26390
+    },
+    {
+      "role": "narrator",
+      "content": "Halia Silvervein (Merchant) arrives in your location.",
+      "turnNumber": 26690
+    },
+    {
+      "role": "narrator",
+      "content": "Halia Silvervein (Merchant) packs up and departs.",
+      "turnNumber": 26990
+    },
+    {
+      "role": "narrator",
+      "content": "Halia Silvervein (Merchant) arrives in your location.",
+      "turnNumber": 27590
+    },
+    {
+      "role": "narrator",
+      "content": "Halia Silvervein (Merchant) packs up and departs.",
+      "turnNumber": 27890
     }
   ],
   "triggeredEvents": [
     "moved_hex",
     "viewed_page:world_map",
     "viewed_page:character",
-    "viewed_page:codex"
+    "viewed_page:codex",
+    "examined_item:Chain Shirt"
   ],
   "codexEntries": [
     {
@@ -2429,8 +2411,17 @@
       "entityId": "goblin",
       "title": "The Cunning    …………………  …… …  …   … ...…  … … …… … …… … …… … … … … … … … … … … … … … … … … ...… … ...… ……… … ……… …… …… ………………………… …………………………………………………………………………………………………………………………… …………… … … ……………",
       "content": "Historical records are silent on this matter.",
-      "isNew": true,
+      "isNew": false,
       "discoveredAt": 14810
+    },
+    {
+      "id": "e7e7ba93-37fc-49d5-adaa-4b52ec63efe6",
+      "category": "bestiary",
+      "entityId": "Boar",
+      "title": "The Stout-Hearted Boar of the Wilds",
+      "content": "**Physical Description**\nThe common boar of the realms is a hulking, bristled beast, standing three to four feet at the shoulder and weighing between 300 and 500 pounds. Its hide is a thick, coarse armor of dark brown to ashen black, interlaced with a network of wiry, iron‑gray hair that bristles when the creature is alarmed. The most striking feature is its massive, curved tusks—often two to three feet in length—that grow outward from the lower jaw in a graceful, deadly arc. The boar’s snout is elongated and muscular, capable of rooting through earth and underbrush with astonishing force.\n\n**Biology**\nBoars are omnivorous, possessing a dentition that allows them to crush roots, tubers, and the occasional carrion. Their stomachs contain a highly acidic gastric juice that can dissolve fibrous plant matter, while a secondary chamber ferments the ingested material, granting the boar a remarkable ability to extract nutrients from otherwise indigestible matter. Their blood is thick and copper‑tinged, a trait that has given rise to rumors of alchemical potency. Boars possess a keen sense of smell—estimated to be ten times that of a human—and a low‑frequency hearing range that lets them detect the footfalls of predators and prey alike.\n\n**Ecology**\nThese creatures favor temperate forests, mist‑cloaked valleys, and the edges of swamplands where dense undergrowth provides both cover and forage. They are solitary hunters for much of the year, but during the autumnal rut they gather in loosely organized sounders of up to twelve individuals. The rut is marked by fierce clashes of tusks, the sound of which can be heard echoing through the canopy for miles. Boars are known to create shallow wallows—mud‑filled depressions that serve both as cooling baths and as territorial markers. Their foraging habits can dramatically reshape the forest floor, toppling saplings and scattering seed pods, inadvertently aiding the spread of certain fire‑resistant flora.\n\n**Behavior & Tactics**\nWhen threatened, a boar will first attempt a warning snort, followed by a rapid charge that can reach speeds of up to thirty miles per hour. Its low center of gravity and powerful hindquarters allow it to plow through brambles and fallen logs with little loss of momentum. In combat, the boar employs a three‑phase strategy: a head‑butt to unbalance, a side‑swipe with its tusks to rend flesh, and a final, crushing grapple that can pin a foe to the ground. A wounded boar may retreat to a wallow, using the mud to mask its scent and to soothe injuries.\n\n**Myths & Legends**\nFolklore across the realms speaks of the \"Heart‑of‑Stone Boar,\" a legendary beast said to possess a hide as hard as granite and tusks that can cleave the very earth. Some claim that the blood of such a boar can turn iron to steel, while others whisper that the creature guards ancient druidic groves, attacking any who would desecrate the sanctified soil. In the northern highlands, hunters tell tales of a spectral boar that appears only under a blood‑red moon, its eyes glowing like ember, leading lost travelers to safety—or to their doom, depending on the traveler’s respect for the wild.\n\n**Adventurer’s Account**\n\"I thought I could outrun the beast, but its snort froze my blood before I could draw my blade. It barreled through the thicket like a living battering ram, tusks flashing in the moonlight. I ducked behind a fallen oak, feeling the ground tremble as it slammed into the trunk, splintering wood like parchment. When it finally lunged at me, I slipped into a shallow wallow, the mud soaking my armor and muffling my breath. The boar’s tusks raked the surface, missing me by a hair’s breadth. I held my ground, heart pounding, and when it finally retreated, I emerged with a bruised shoulder and a story that still haunts my dreams. —Thalia Windrider, Ranger of the Silver Vale\"\n",
+      "isNew": false,
+      "discoveredAt": 26330
     }
   ],
   "notifications": [
@@ -2536,18 +2527,29 @@
       },
       "isRead": true,
       "createdAt": 1771368924273
+    },
+    {
+      "id": "bcd3c263-405a-492d-85e3-c8ef256595e0",
+      "type": "CODEX_ENTRY",
+      "message": "New codex entry created: The Stout-Hearted Boar of the Wilds",
+      "data": {
+        "category": "bestiary",
+        "entityId": "e7e7ba93-37fc-49d5-adaa-4b52ec63efe6"
+      },
+      "isRead": true,
+      "createdAt": 1771503130799
     }
   ],
   "weather": {
     "type": "Clear",
-    "durationMinutes": 180,
+    "durationMinutes": 270,
     "intensity": 1
   },
   "travelPace": "Cautious",
   "explorationBlindnessUntil": 0,
   "findThePathActiveUntil": 0,
   "clearedHexes": {
-    "-4,0": 24770
+    "-4,0": 26330
   },
   "settings": {
     "permadeath": false,
@@ -2575,55 +2577,55 @@
     }
   },
   "debugLog": [
-    "[14:44:07] [NPC] Elowen Stormborn ready to move (Turns: 300 >= 24)",
-    "[14:44:07] [NPC] Elowen Stormborn (Trade Route) - Found 5 road(s), picking -3,2",
-    "[14:44:07] [NPC] Elowen Stormborn moving from -3,1 to -3,2",
-    "[14:44:07] [NPC] Fenton Oakheart ready to move (Turns: 300 >= 24)",
-    "[14:44:07] [NPC] Fenton Oakheart (Wander) - Found 4 valid biomes, picking -6,0",
-    "[14:44:07] [NPC] Fenton Oakheart moving from -6,1 to -6,0",
-    "[14:44:07] [NPC] Processing turn 24470 for 9 NPCs",
-    "[14:44:07] [NPC] Halia Silvervein ready to move (Turns: 300 >= 24)",
-    "[14:44:07] [NPC] Halia Silvervein (Trade Route) - Found 6 road(s), picking -5,0",
-    "[14:44:07] [NPC] Halia Silvervein moving from -4,0 to -5,0",
-    "[14:44:07] [NPC] Garrick Thornbusk ready to move (Turns: 300 >= 24)",
-    "[14:44:07] [NPC] Garrick Thornbusk (Wander) - Found 5 valid biomes, picking -2,1",
-    "[14:44:07] [NPC] Garrick Thornbusk moving from -3,1 to -2,1",
-    "[14:44:07] [NPC] Halia Shadowstep ready to move (Turns: 300 >= 12)",
-    "[14:44:07] [NPC] Halia Shadowstep (Patrol) - Found 4 neighbors, picking -1,0",
-    "[14:44:07] [NPC] Halia Shadowstep moving from -1,-1 to -1,0",
-    "[14:44:07] [NPC] Bryn Ironfoot ready to move (Turns: 300 >= 24)",
-    "[14:44:07] [NPC] Bryn Ironfoot (Patrol) - Found 3 neighbors, picking -2,-2",
-    "[14:44:07] [NPC] Bryn Ironfoot moving from -1,-2 to -2,-2",
-    "[14:44:07] [NPC] Caelum Shadowstep ready to move (Turns: 300 >= 24)",
-    "[14:44:07] [NPC] Caelum Shadowstep (Wander) - Found 2 valid biomes, picking -5,0",
-    "[14:44:07] [NPC] Caelum Shadowstep moving from -6,0 to -5,0",
-    "[14:44:07] [NPC] Elowen Stormborn ready to move (Turns: 300 >= 24)",
-    "[14:44:07] [NPC] Elowen Stormborn (Trade Route) - Found 1 road(s), picking -3,1",
-    "[14:44:07] [NPC] Elowen Stormborn moving from -3,2 to -3,1",
-    "[14:44:07] [NPC] Fenton Oakheart ready to move (Turns: 300 >= 24)",
-    "[14:44:07] [NPC] Fenton Oakheart (Wander) - Found 2 valid biomes, picking -5,0",
-    "[14:44:07] [NPC] Fenton Oakheart moving from -6,0 to -5,0",
-    "[14:44:08] [NPC] Processing turn 24770 for 9 NPCs",
-    "[14:44:08] [NPC] Halia Silvervein ready to move (Turns: 300 >= 24)",
-    "[14:44:08] [NPC] Halia Silvervein (Trade Route) - Found 4 road(s), picking -5,-1",
-    "[14:44:08] [NPC] Halia Silvervein moving from -5,0 to -5,-1",
-    "[14:44:08] [NPC] Garrick Thornbusk ready to move (Turns: 300 >= 24)",
-    "[14:44:08] [NPC] Garrick Thornbusk (Wander) - Found 3 valid biomes, picking -2,2",
-    "[14:44:08] [NPC] Garrick Thornbusk moving from -2,1 to -2,2",
-    "[14:44:08] [NPC] Halia Shadowstep ready to move (Turns: 300 >= 12)",
-    "[14:44:08] [NPC] Halia Shadowstep (Patrol) - Found 3 neighbors, picking -2,0",
-    "[14:44:08] [NPC] Halia Shadowstep moving from -1,0 to -2,0",
-    "[14:44:08] [NPC] Bryn Ironfoot ready to move (Turns: 300 >= 24)",
-    "[14:44:08] [NPC] Bryn Ironfoot (Patrol) - Found 6 neighbors, picking -3,-2",
-    "[14:44:08] [NPC] Bryn Ironfoot moving from -2,-2 to -3,-2",
-    "[14:44:08] [NPC] Caelum Shadowstep ready to move (Turns: 300 >= 24)",
-    "[14:44:08] [NPC] Caelum Shadowstep (Wander) - Found 3 valid biomes, picking -6,1",
-    "[14:44:08] [NPC] Caelum Shadowstep moving from -5,0 to -6,1",
-    "[14:44:08] [NPC] Elowen Stormborn ready to move (Turns: 300 >= 24)",
-    "[14:44:08] [NPC] Elowen Stormborn (Trade Route) - Found 5 road(s), picking -2,1",
-    "[14:44:08] [NPC] Elowen Stormborn moving from -3,1 to -2,1",
-    "[14:44:08] [NPC] Fenton Oakheart ready to move (Turns: 300 >= 24)",
-    "[14:44:08] [NPC] Fenton Oakheart (Wander) - Found 3 valid biomes, picking -6,0",
-    "[14:44:08] [NPC] Fenton Oakheart moving from -5,0 to -6,0"
+    "[13:17:21] [NPC] Elowen Stormborn ready to move (Turns: 300 >= 24)",
+    "[13:17:21] [NPC] Elowen Stormborn (Trade Route) - Found 4 road(s), picking -1,0",
+    "[13:17:21] [NPC] Elowen Stormborn moving from -1,-1 to -1,0",
+    "[13:17:21] [NPC] Fenton Oakheart ready to move (Turns: 300 >= 24)",
+    "[13:17:21] [NPC] Fenton Oakheart (Wander) - Found 4 valid biomes, picking -6,0",
+    "[13:17:21] [NPC] Fenton Oakheart moving from -6,1 to -6,0",
+    "[13:17:22] [NPC] Processing turn 30290 for 9 NPCs",
+    "[13:17:22] [NPC] Halia Silvervein ready to move (Turns: 300 >= 24)",
+    "[13:17:22] [NPC] Halia Silvervein (Trade Route) - Found 5 road(s), picking -3,-2",
+    "[13:17:22] [NPC] Halia Silvervein moving from -3,-1 to -3,-2",
+    "[13:17:22] [NPC] Garrick Thornbusk ready to move (Turns: 300 >= 24)",
+    "[13:17:22] [NPC] Garrick Thornbusk (Wander) - Found 4 valid biomes, picking -5,1",
+    "[13:17:22] [NPC] Garrick Thornbusk moving from -6,1 to -5,1",
+    "[13:17:22] [NPC] Halia Shadowstep ready to move (Turns: 300 >= 12)",
+    "[13:17:22] [NPC] Halia Shadowstep (Patrol) - Found 6 neighbors, picking -3,0",
+    "[13:17:22] [NPC] Halia Shadowstep moving from -3,1 to -3,0",
+    "[13:17:22] [NPC] Bryn Ironfoot ready to move (Turns: 300 >= 24)",
+    "[13:17:22] [NPC] Bryn Ironfoot (Patrol) - Found 5 neighbors, picking -3,-1",
+    "[13:17:22] [NPC] Bryn Ironfoot moving from -3,-2 to -3,-1",
+    "[13:17:22] [NPC] Caelum Shadowstep ready to move (Turns: 300 >= 24)",
+    "[13:17:22] [NPC] Caelum Shadowstep (Wander) - Found 5 valid biomes, picking -5,0",
+    "[13:17:22] [NPC] Caelum Shadowstep moving from -5,1 to -5,0",
+    "[13:17:22] [NPC] Elowen Stormborn ready to move (Turns: 300 >= 24)",
+    "[13:17:22] [NPC] Elowen Stormborn (Trade Route) - Found 3 road(s), picking -1,-1",
+    "[13:17:22] [NPC] Elowen Stormborn moving from -1,0 to -1,-1",
+    "[13:17:22] [NPC] Fenton Oakheart ready to move (Turns: 300 >= 24)",
+    "[13:17:22] [NPC] Fenton Oakheart (Wander) - Found 2 valid biomes, picking -6,1",
+    "[13:17:22] [NPC] Fenton Oakheart moving from -6,0 to -6,1",
+    "[13:17:22] [NPC] Processing turn 30590 for 9 NPCs",
+    "[13:17:22] [NPC] Halia Silvervein ready to move (Turns: 300 >= 24)",
+    "[13:17:22] [NPC] Halia Silvervein (Trade Route) - Found 4 road(s), picking -4,-1",
+    "[13:17:22] [NPC] Halia Silvervein moving from -3,-2 to -4,-1",
+    "[13:17:22] [NPC] Garrick Thornbusk ready to move (Turns: 300 >= 24)",
+    "[13:17:22] [NPC] Garrick Thornbusk (Wander) - Found 5 valid biomes, picking -5,0",
+    "[13:17:22] [NPC] Garrick Thornbusk moving from -5,1 to -5,0",
+    "[13:17:22] [NPC] Halia Shadowstep ready to move (Turns: 300 >= 12)",
+    "[13:17:22] [NPC] Halia Shadowstep (Patrol) - Found 6 neighbors, picking -2,0",
+    "[13:17:22] [NPC] Halia Shadowstep moving from -3,0 to -2,0",
+    "[13:17:22] [NPC] Bryn Ironfoot ready to move (Turns: 300 >= 24)",
+    "[13:17:22] [NPC] Bryn Ironfoot (Patrol) - Found 6 neighbors, picking -3,-2",
+    "[13:17:22] [NPC] Bryn Ironfoot moving from -3,-1 to -3,-2",
+    "[13:17:22] [NPC] Caelum Shadowstep ready to move (Turns: 300 >= 24)",
+    "[13:17:22] [NPC] Caelum Shadowstep (Wander) - Found 3 valid biomes, picking -6,0",
+    "[13:17:22] [NPC] Caelum Shadowstep moving from -5,0 to -6,0",
+    "[13:17:22] [NPC] Elowen Stormborn ready to move (Turns: 300 >= 24)",
+    "[13:17:22] [NPC] Elowen Stormborn (Trade Route) - Found 4 road(s), picking 0,-1",
+    "[13:17:22] [NPC] Elowen Stormborn moving from -1,-1 to 0,-1",
+    "[13:17:22] [NPC] Fenton Oakheart ready to move (Turns: 300 >= 24)",
+    "[13:17:22] [NPC] Fenton Oakheart (Wander) - Found 4 valid biomes, picking -5,0",
+    "[13:17:22] [NPC] Fenton Oakheart moving from -6,1 to -5,0"
   ]
 }
