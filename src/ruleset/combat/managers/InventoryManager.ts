@@ -42,6 +42,9 @@ export class InventoryManager {
         if (existingItem && isStackable) {
             existingItem.quantity = (existingItem.quantity || 1) + (item.quantity || 1);
         } else {
+            if (char.inventory.items.length >= 20) {
+                return "Not enough space in your inventory!";
+            }
             char.inventory.items.push({ ...item, equipped: false });
         }
 
@@ -164,6 +167,11 @@ export class InventoryManager {
         if (existing) {
             existing.quantity = (existing.quantity || 1) + (item.quantity || 1);
         } else {
+            if (this.state.character.inventory.items.length >= 20) {
+                this.addCombatLog(`Not enough space in your inventory!`);
+                return;
+            }
+
             // Normalizing ID to name for ALL items to ensure DataManager compatibility
             const newItem = { ...item, equipped: false };
             newItem.id = item.name; // Force Template ID
@@ -199,6 +207,12 @@ export class InventoryManager {
         if (existingItem && isStackable) {
             existingItem.quantity = (existingItem.quantity || 1) + count;
         } else {
+            // Count how many new slots are needed
+            const newSlotsNeeded = isStackable ? 1 : count;
+            if (char.inventory.items.length + newSlotsNeeded > 20) {
+                return "Not enough space in your inventory!";
+            }
+
             for (let i = 0; i < count; i++) {
                 // Fix: Use item name as ID for ALL items (Legacy Architecture)
                 // This ensures DataManager.getItem(id) works for CombatOrchestrator

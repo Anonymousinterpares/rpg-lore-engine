@@ -77,11 +77,11 @@ const TradeModal: React.FC<TradeModalProps> = ({ onClose, onOpenCodex }) => {
         const result = await engine.processTurn(cmd);
 
         // Show local toast instead of relying on narrative log
-        const isError = result.includes("Insufficient") || result.includes("Too heavy") || result.includes("failed") || result.includes("remains firm") || result.includes("refuses");
+        const isError = result.includes("Insufficient") || result.includes("Too heavy") || result.includes("Not enough space") || result.includes("failed") || result.includes("remains firm") || result.includes("refuses");
         setToast({ message: result, type: isError ? 'error' : 'success' });
 
-        // Clear toast after 3s
-        setTimeout(() => setToast(null), 3000);
+        // Clear toast after 1s
+        setTimeout(() => setToast(null), 1000);
     };
 
     const handleCodexClick = () => {

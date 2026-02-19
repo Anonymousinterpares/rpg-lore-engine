@@ -221,20 +221,32 @@ export class ShopEngine {
             return `Too heavy! You cannot carry ${item.name} without exceeding your capacity.`;
         }
 
+        const typeLower = (item.type || '').toLowerCase();
+        const isStackable = !['weapon', 'armor', 'shield'].some(t => typeLower.includes(t));
+        const existing = pc.inventory.items.find(i => (i.id === item.name || i.id === item.name.toLowerCase().replace(/ /g, '_')) && isStackable);
+
+        if (!existing && pc.inventory.items.length >= 20) {
+            return "Not enough space in your inventory!";
+        }
+
         const newGold = CurrencyEngine.subtract(pc.inventory.gold, price);
         if (newGold) {
             pc.inventory.gold = newGold;
 
             // Player gets item
-            pc.inventory.items.push({
-                id: item.name.toLowerCase().replace(/ /g, '_'),
-                instanceId: crypto.randomUUID(),
-                name: item.name,
-                type: item.type || 'Misc',
-                weight: item.weight,
-                quantity: 1,
-                equipped: false
-            });
+            if (existing) {
+                existing.quantity = (existing.quantity || 1) + 1;
+            } else {
+                pc.inventory.items.push({
+                    id: item.name, // Matched with InventoryManager
+                    instanceId: crypto.randomUUID(),
+                    name: item.name,
+                    type: item.type || 'Misc',
+                    weight: item.weight,
+                    quantity: 1,
+                    equipped: false
+                });
+            }
 
             // Merchant loses item ID from inventory
             const idx = npc.shopState.inventory.indexOf(item.name);
@@ -268,11 +280,21 @@ export class ShopEngine {
 
         // Weight Check
         const itemData = DataManager.getItem(itemId);
+        let existing: any = null;
+
         if (itemData) {
             const currentWeight = pc.inventory.items.reduce((sum, i) => sum + (i.weight * (i.quantity || 1)), 0);
             const capacity = (pc.stats['STR'] || 10) * 15;
             if (currentWeight + itemData.weight > capacity) {
                 return `Too heavy! You cannot buyback ${itemId}.`;
+            }
+
+            const typeLower = (itemData.type || '').toLowerCase();
+            const isStackable = !['weapon', 'armor', 'shield'].some(t => typeLower.includes(t));
+            existing = pc.inventory.items.find(i => (i.id === itemId || i.id === itemId.toLowerCase().replace(/ /g, '_')) && isStackable);
+
+            if (!existing && pc.inventory.items.length >= 20) {
+                return "Not enough space in your inventory!";
             }
         }
 
@@ -286,17 +308,20 @@ export class ShopEngine {
         if (invIdx !== -1) npc.shopState.inventory.splice(invIdx, 1);
 
         // Add to player
-        const item = DataManager.getItem(itemId);
-        if (item) {
-            pc.inventory.items.push({
-                id: itemId.toLowerCase().replace(/ /g, '_'),
-                instanceId: crypto.randomUUID(),
-                name: item.name,
-                type: item.type || 'Misc',
-                weight: item.weight,
-                quantity: 1,
-                equipped: false
-            });
+        if (itemData) {
+            if (existing) {
+                existing.quantity = (existing.quantity || 1) + 1;
+            } else {
+                pc.inventory.items.push({
+                    id: itemData.name, // Matched with InventoryManager
+                    instanceId: crypto.randomUUID(),
+                    name: itemData.name,
+                    type: itemData.type || 'Misc',
+                    weight: itemData.weight,
+                    quantity: 1,
+                    equipped: false
+                });
+            }
         }
 
         // Merchant loses gold

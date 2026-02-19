@@ -2,8 +2,8 @@ import { z } from 'zod';
 import { AbilityScoreSchema, SizeSchema, WeatherSchema } from './BaseSchemas';
 
 export const GridPositionSchema = z.object({
-    x: z.number().min(0).max(19),
-    y: z.number().min(0).max(19)
+    x: z.number().min(0),
+    y: z.number().min(0)
 });
 
 export type GridPosition = z.infer<typeof GridPositionSchema>;
