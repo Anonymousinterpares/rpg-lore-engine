@@ -61,3 +61,15 @@
 .dropButton:hover {
     background: rgba(255, 82, 82, 0.1) !important;
 }
+
+.requirementUnmet {
+    opacity: 0.6;
+    color: #ff5252 !important;
+    /* Red text for the error */
+    cursor: not-allowed !important;
+    background: rgba(255, 82, 82, 0.05);
+}
+
+.requirementUnmet:hover {
+    background: rgba(255, 82, 82, 0.1) !important;
+}

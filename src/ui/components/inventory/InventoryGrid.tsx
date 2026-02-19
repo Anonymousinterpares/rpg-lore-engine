@@ -5,7 +5,10 @@ import { Package, Sword, Shield, FlaskConical, Scroll, Coins, ChevronDown } from
 import ItemContextMenu from './ItemContextMenu';
 import ItemDatasheet from './ItemDatasheet';
 import { DataManager } from '../../../ruleset/data/DataManager';
+import { EquipmentEngine } from '../../../ruleset/combat/EquipmentEngine';
+import { Item as RulesetItem } from '../../../ruleset/schemas/ItemSchema';
 import DroppedItemsPanel from './DroppedItemsPanel';
+import { useGameState } from '../../hooks/useGameState';
 
 interface Item {
     id: string;
@@ -40,6 +43,7 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
     onItemAction,
     className = ''
 }) => {
+    const { state } = useGameState();
     const [contextMenu, setContextMenu] = useState<{ x: number, y: number, item: Item } | null>(null);
     const [datasheetItem, setDatasheetItem] = useState<any>(null);
     const [showDropped, setShowDropped] = useState(false);
@@ -195,16 +199,23 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                 />
             )}
 
-            {contextMenu && (
-                <ItemContextMenu
-                    x={contextMenu.x}
-                    y={contextMenu.y}
-                    itemName={contextMenu.item.name}
-                    isEquippable={['weapon', 'armor', 'shield'].some(t => contextMenu.item.type.toLowerCase().includes(t))}
-                    onClose={() => setContextMenu(null)}
-                    onAction={handleAction}
-                />
-            )}
+            {contextMenu && (() => {
+                const fullItem = DataManager.getItem(contextMenu.item.id);
+                if (!state || !fullItem) return null;
+                const validation = EquipmentEngine.canEquip(state.character, fullItem as any);
+                return (
+                    <ItemContextMenu
+                        x={contextMenu.x}
+                        y={contextMenu.y}
+                        itemName={contextMenu.item.name}
+                        isEquippable={['weapon', 'armor', 'shield'].some(t => contextMenu.item.type.toLowerCase().includes(t))}
+                        equipAllowed={validation.valid}
+                        equipReason={validation.reason}
+                        onClose={() => setContextMenu(null)}
+                        onAction={handleAction}
+                    />
+                );
+            })()}
 
             {datasheetItem && (
                 <ItemDatasheet

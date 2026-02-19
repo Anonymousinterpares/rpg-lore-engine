@@ -1,6 +1,8 @@
 import { Dice } from './Dice';
 import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
 import { Monster } from '../schemas/MonsterSchema';
+import { Item } from '../schemas/ItemSchema';
+import { Combatant } from '../schemas/CombatSchema';
 import { AbilityScore, SkillName } from '../schemas/BaseSchemas';
 
 export interface RollResult {
@@ -205,5 +207,101 @@ export class MechanicsEngine {
         if (cr === 10) return 5900;
         // higher CRs can be added as needed or calculated roughly
         return Math.floor(cr * 600); // Very rough approximation for CR > 10
+    }
+
+    /**
+     * Calculates the effective stat of a character after all modifiers.
+     */
+    public static getEffectiveStat(actor: PlayerCharacter | Monster | Combatant, stat: AbilityScore): number {
+        const base = (actor as any).stats[stat] || 10;
+        let bonus = 0;
+
+        // 1. From Equipment (if PC)
+        if ('equipmentSlots' in actor) {
+            const pc = actor as PlayerCharacter;
+            // Scan all items for StatBonus modifiers
+            pc.inventory.items.forEach(item => {
+                if (item.equipped && (item as any).modifiers) {
+                    (item as any).modifiers.forEach((mod: any) => {
+                        if (mod.type === 'StatBonus' && mod.target === stat) {
+                            bonus += mod.value;
+                        }
+                    });
+                }
+            });
+        }
+
+        // 2. From Status Effects
+        const statusEffects = (actor as any).statusEffects;
+        if (statusEffects && Array.isArray(statusEffects)) {
+            statusEffects.forEach((effect: any) => {
+                if (effect.type === 'BUFF' && (effect as any).stat === stat) {
+                    bonus += (effect as any).value || (effect as any).modifier || 0;
+                }
+            });
+        }
+
+        return base + bonus;
+    }
+
+    /**
+     * Calculates proportional range penalty for a ranged attack.
+     */
+    public static calculateRangePenalty(
+        attacker: PlayerCharacter | Monster | Combatant,
+        distance: number,
+        weapon: Item | null | undefined,
+        ammoModifier: number = 0
+    ): { penalty: number; log: string } {
+        if (!weapon || weapon.type !== 'Weapon' || !weapon.range) return { penalty: 0, log: "" };
+
+        const normalRange = weapon.range.normal;
+        if (distance <= normalRange) return { penalty: 0, log: "" };
+
+        // Proportional Penalty Logic
+        // For each full range increment beyond the first, apply -2
+        // distance 1-30 (normal) -> 0
+        // distance 31-60 -> -2
+        // distance 61-90 -> -4
+        const increments = Math.floor((distance - 1) / normalRange);
+
+        // Base penalty
+        let penaltyPerIncrement = -2;
+
+        // Item/Ammo Reductions
+        let reduction = ammoModifier;
+        if ((weapon as any).modifiers) {
+            (weapon as any).modifiers.forEach((mod: any) => {
+                if (mod.type === 'RangePenaltyReduction') {
+                    reduction += mod.value;
+                }
+            });
+        }
+
+        const effectivePenaltyPerInc = Math.min(0, penaltyPerIncrement + reduction);
+        const basePenalty = increments * effectivePenaltyPerInc;
+
+        // Mitigation (Stats)
+        const dexMod = this.getModifier(this.getEffectiveStat(attacker, 'DEX'));
+        const wisMod = this.getModifier(this.getEffectiveStat(attacker, 'WIS'));
+        const statMitigation = Math.max(dexMod, wisMod);
+
+        // Mitigation (Skills - Perception)
+        let skillMitigation = 0;
+        if ('skillProficiencies' in attacker) {
+            const pc = attacker as PlayerCharacter;
+            if (pc.skillProficiencies.includes('Perception')) {
+                skillMitigation = this.getProficiencyBonus(pc.level);
+            }
+        }
+
+        const totalPenalty = Math.min(0, basePenalty + statMitigation + skillMitigation);
+
+        let log = `Range: ${distance * 5}ft (Inc: ${increments}). Penalty: ${basePenalty}. Mitigation: +${statMitigation + skillMitigation}. Total: ${totalPenalty}`;
+
+        return {
+            penalty: totalPenalty,
+            log
+        };
     }
 }

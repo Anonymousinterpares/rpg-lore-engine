@@ -1,0 +1,6 @@
+export const CombatConstants = {
+    RANGE_PENALTY_PER_INCREMENT: -2,
+    MAX_RANGE_PENALTY: -10,
+    HEAVY_WEAPON_STR_REQ: 13,
+    DEFAULT_STR_REQ_OVERRIDE: 0
+};

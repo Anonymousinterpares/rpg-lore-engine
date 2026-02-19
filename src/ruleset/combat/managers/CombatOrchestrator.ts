@@ -239,11 +239,14 @@ export class CombatOrchestrator {
                 }
 
                 let rangePrefix = "";
-                if (isRanged && distance > normalRangeCells) {
-                    forceDisadvantage = true;
-                    rangePrefix = "(Long Range! Disadvantage) ";
-                }
                 if (isRanged) {
+                    const rangeResult = MechanicsEngine.calculateRangePenalty(currentCombatant as any, distance, mainHandItem);
+                    if (rangeResult.penalty < 0) {
+                        attackBonus += rangeResult.penalty;
+                        rangePrefix = `(Range: ${rangeResult.penalty}) `;
+                        // console.log(`[Combat] ${rangeResult.log}`);
+                    }
+
                     const isThreatened = combatState.combatants.some(c =>
                         c.type === 'enemy' && c.hp.current > 0 && gridManager.getDistance(currentCombatant.position, c.position) === 1
                     );

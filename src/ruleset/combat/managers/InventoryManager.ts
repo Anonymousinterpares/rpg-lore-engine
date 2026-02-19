@@ -1,6 +1,7 @@
 import { GameState } from '../../schemas/FullSaveStateSchema';
 import { DataManager } from '../../data/DataManager';
 import { MechanicsEngine } from '../MechanicsEngine';
+import { EquipmentEngine } from '../EquipmentEngine';
 
 /**
  * Handles inventory operations, items, equipment, and equipment-related stat recalculations.
@@ -103,6 +104,14 @@ export class InventoryManager {
             else if (type.includes('shield')) slot = 'offHand';
 
             if (!slot) return `${item.name} cannot be equipped.`;
+
+            // NEW: Hardware validation (STR requirements, etc.)
+            const validation = EquipmentEngine.validateEquip(char, item as any);
+            if (!validation.valid) {
+                const errorMsg = `${item.name} cannot be equipped: ${validation.reason}`;
+                this.addCombatLog(errorMsg); // Ensure it shows in combat log if triggered
+                return errorMsg;
+            }
 
             const slots = char.equipmentSlots as Record<string, string | undefined>;
             const currentInSlotId = slots[slot];

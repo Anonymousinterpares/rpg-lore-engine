@@ -9,12 +9,14 @@ interface ItemContextMenuProps {
     onAction: (action: string) => void;
     itemName: string;
     isEquippable?: boolean;
+    equipAllowed?: boolean;
+    equipReason?: string;
     isConsumable?: boolean;
     customActions?: { id: string, label: string, icon: string }[];
 }
 
 const ItemContextMenu: React.FC<ItemContextMenuProps> = ({
-    x, y, onClose, onAction, itemName, isEquippable, isConsumable, customActions
+    x, y, onClose, onAction, itemName, isEquippable, equipAllowed = true, equipReason, isConsumable, customActions
 }) => {
     const menuRef = useRef<HTMLDivElement>(null);
 
@@ -54,7 +56,11 @@ const ItemContextMenu: React.FC<ItemContextMenuProps> = ({
                     </button>
 
                     {isEquippable && (
-                        <button onClick={() => onAction('equip')}>
+                        <button
+                            onClick={() => equipAllowed && onAction('equip')}
+                            className={!equipAllowed ? styles.requirementUnmet : ''}
+                            title={!equipAllowed ? equipReason : ''}
+                        >
                             <ArrowUpCircle size={14} /> Equip / Unequip
                         </button>
                     )}

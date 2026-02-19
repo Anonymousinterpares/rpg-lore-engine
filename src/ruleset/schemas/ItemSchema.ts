@@ -4,7 +4,7 @@ import { CurrencySchema, DamageTypeSchema, DiceRollSchema } from './BaseSchemas'
 export const ItemTypeSchema = z.enum(['Weapon', 'Armor', 'Shield', 'Adventuring Gear', 'Tool', 'Misc', 'Magic Item', 'Spell Scroll']);
 
 export const ModifierSchema = z.object({
-    type: z.enum(['StatBonus', 'ACBonus', 'DamageAdd', 'AbilitySET']),
+    type: z.enum(['StatBonus', 'ACBonus', 'DamageAdd', 'AbilitySET', 'RangePenaltyReduction']),
     target: z.string(), // e.g., "AC", "STR", "Attack"
     value: z.number()
 });
