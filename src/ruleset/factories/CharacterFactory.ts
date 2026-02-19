@@ -149,6 +149,7 @@ export class CharacterFactory {
                 stats: finalStats,
                 savingThrowProficiencies: characterClass.savingThrowProficiencies,
                 skillProficiencies: skillProficiencies as any,
+                weaponProficiencies: [],
                 hp: { current: maxHp, max: maxHp, temp: 0 },
                 deathSaves: { successes: 0, failures: 0 },
                 hitDice: { current: 1, max: 1, dieType: characterClass.hitDie },

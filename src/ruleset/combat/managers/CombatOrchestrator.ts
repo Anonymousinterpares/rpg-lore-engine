@@ -301,7 +301,8 @@ export class CombatOrchestrator {
                         value: result.details.roll || 0,
                         modifier: result.details.modifier || 0,
                         total: (result.details.roll || 0) + (result.details.modifier || 0),
-                        label: 'Attack'
+                        label: 'Attack',
+                        breakdown: result.details.rollDetails?.modifiers
                     };
                 } else {
                     combatState.lastRoll = 0;
@@ -607,78 +608,165 @@ export class CombatOrchestrator {
                 const target = this.state.combat.combatants.find(c => c.id === action.targetId);
                 if (!target) break;
 
-                const monsterData = DataManager.getMonster(actor.name);
+                let modifiers: Modifier[] = [];
+                let damageFormula = "1d4"; // Unarmed default
+                let isRanged = false;
+                let forceDisadvantage = false;
+                let rangeLog = "";
 
-                // Parity: Tactical selection (Range vs Reach)
-                let actionData = monsterData?.actions?.[0];
-                if (monsterData?.actions && monsterData.actions.length > 1) {
-                    const preference = actor.tactical.isRanged ? 'range' : 'reach';
-                    actionData = monsterData.actions.find(a => a.description.toLowerCase().includes(preference)) || monsterData.actions[0];
+                // --- PLAYER ATTACK LOGIC ---
+                if (actor.type === 'player') {
+                    const pc = this.state.character; // In single player, actor is state.character
+                    // Identify Weapon
+                    const mainHand = pc.equipmentSlots?.mainHand ? pc.inventory.items.find(i => i.name === pc.equipmentSlots.mainHand) : null;
+                    const weapon = mainHand; // Default to main hand for now
+                    const weaponAny = weapon as any;
+
+                    // 1. Stat Modifier
+                    const isFinesse = weaponAny?.properties?.includes('Finesse');
+                    isRanged = weaponAny?.properties?.includes('Ranged') || weaponAny?.type === 'Weapon (Ranged)'; // Basic check
+
+                    const strScore = MechanicsEngine.getEffectiveStat(pc, 'STR');
+                    const dexScore = MechanicsEngine.getEffectiveStat(pc, 'DEX');
+
+                    let statUsed = 'STR';
+                    let statMod = MechanicsEngine.getModifier(strScore);
+
+                    if (isRanged || (isFinesse && dexScore > strScore)) {
+                        statUsed = 'DEX';
+                        statMod = MechanicsEngine.getModifier(dexScore);
+                    }
+
+                    modifiers.push({ label: statUsed, value: statMod, source: 'Stat' });
+
+                    // 2. Proficiency
+                    const isProficient = weapon ? (pc.weaponProficiencies?.some((p: string) => weapon.type.includes(p)) || true) : true; // Assuming proficient for now/all simple
+                    if (isProficient) {
+                        const prof = MechanicsEngine.getProficiencyBonus(pc.level);
+                        modifiers.push({ label: 'Proficiency', value: prof, source: 'Level' });
+                    }
+
+                    // 3. Weapon Magic/Bonuses
+                    if (weapon && weaponAny.modifiers) {
+                        weaponAny.modifiers.forEach((mod: any) => {
+                            if (mod.type === 'AttackBonus') {
+                                modifiers.push({ label: weapon.name, value: mod.value, source: 'Item' });
+                            }
+                        });
+                    }
+                    if (weapon) damageFormula = weaponAny.damage?.dice || (typeof weaponAny.damage === 'string' ? weaponAny.damage : "1d4");
+
+                    // 4. Range Penalties (Proportional)
+                    if (this.state.combat?.grid && target) {
+                        const gridManager = new CombatGridManager(this.state.combat.grid);
+                        const dist = gridManager.getDistance(actor.position, target.position);
+
+                        // Mechanics: Range Penalty
+                        const rangeResult = MechanicsEngine.calculateRangePenalty(pc, dist, weapon as any);
+                        if (rangeResult.penalty < 0) {
+                            modifiers.push({ label: 'Range', value: rangeResult.penalty, source: 'Rule' });
+                            rangeLog = rangeResult.log;
+                        }
+                    }
+
+                }
+                // --- MONSTER ATTACK LOGIC ---
+                else {
+                    const monsterData = DataManager.getMonster(actor.name);
+
+                    // Parity: Tactical selection (Range vs Reach)
+                    let actionData = monsterData?.actions?.[0];
+                    if (monsterData?.actions && monsterData.actions.length > 1) {
+                        const preference = actor.tactical.isRanged ? 'range' : 'reach';
+                        actionData = monsterData.actions.find(a => a.description.toLowerCase().includes(preference)) || monsterData.actions[0];
+                    }
+
+                    if (actionData) {
+                        isRanged = actionData.description.toLowerCase().includes('ranged') || actionData.name?.toLowerCase().includes('bow') || actionData.name?.toLowerCase().includes('crossbow');
+                        damageFormula = actionData.damage || "1d6";
+
+
+                        // Decompose Attack Bonus
+                        const totalBonus = actionData.attackBonus || 0;
+                        const cr = Number(monsterData?.cr) || 0;
+                        const prof = MechanicsEngine.getMonsterProficiency(cr);
+                        let statMod = totalBonus - prof;
+
+                        // Infer Stat Label
+                        let statLabel = 'Ability';
+                        const strMod = MechanicsEngine.getModifier(actor.stats['STR'] || 10);
+                        const dexMod = MechanicsEngine.getModifier(actor.stats['DEX'] || 10);
+
+                        if (statMod === strMod) statLabel = 'STR';
+                        else if (statMod === dexMod) statLabel = 'DEX';
+                        else if (isRanged) statLabel = 'DEX'; // Fallback implication
+                        else statLabel = 'STR'; // Fallback implication
+
+                        modifiers.push({ label: statLabel, value: statMod, source: 'Stat' });
+                        modifiers.push({ label: 'Proficiency', value: prof, source: 'Rules' });
+
+                        // Virtual Ammo Check
+                        if (isRanged) {
+                            if (actor.virtualAmmo === undefined) (actor as any).virtualAmmo = 20;
+                            if ((actor as any).virtualAmmo <= 0) {
+                                this.addCombatLog(`${actor.name} is out of ammo!`);
+                                break;
+                            }
+                            (actor as any).virtualAmmo--;
+                        }
+
+                        // Parity: Proportional Range Penalty
+                        if (this.state.combat?.grid && target) {
+                            const gridManager = new CombatGridManager(this.state.combat.grid);
+                            const dist = gridManager.getDistance(actor.position, target.position);
+
+                            const mockWeapon = {
+                                range: actor.tactical.range || { normal: 30, long: 120 }, // Fallback
+                                properties: [] as string[]
+                            };
+
+                            const rangeResult = MechanicsEngine.calculateRangePenalty(actor as any, dist, mockWeapon as any);
+                            if (rangeResult.penalty < 0) {
+                                modifiers.push({ label: 'Range', value: rangeResult.penalty, source: 'Rule' });
+                            }
+
+                        }
+                    }
                 }
 
-                if (actionData) {
-                    // Parity: Virtual Ammo
-                    const isRanged = actionData.description.toLowerCase().includes('ranged') || actionData.name?.toLowerCase().includes('bow') || actionData.name?.toLowerCase().includes('crossbow');
-                    if (isRanged) {
-                        if (actor.virtualAmmo === undefined) (actor as any).virtualAmmo = 20;
-                        if ((actor as any).virtualAmmo <= 0) {
-                            this.addCombatLog(`${actor.name} is out of ammo!`);
-                            break;
-                        }
-                        (actor as any).virtualAmmo--;
-                    }
+                if (!damageFormula) break;
 
-                    if (!this.state.combat?.grid) break;
-                    const gridManager = new CombatGridManager(this.state.combat.grid);
-                    const distCells = gridManager.getDistance(actor.position, target.position);
-                    const normalRange = actor.tactical.range ? Math.ceil(actor.tactical.range.normal / 5) : 1;
-
-                    let forceDisadvantage = false;
-                    if (isRanged && distCells > normalRange) {
-                        forceDisadvantage = true;
-                        this.addCombatLog(`${actor.name} attacks from long range (Disadvantage).`);
-                    }
-                    if (isRanged) {
-                        const threatened = this.state.combat.combatants.some(c =>
-                            c.type !== actor.type && c.hp.current > 0 && gridManager.getDistance(actor.position, c.position) <= 1
-                        );
-                        if (threatened) {
-                            forceDisadvantage = true;
-                            this.addCombatLog(`${actor.name} is threatened while shooting (Disadvantage).`);
-                        }
-                    }
-
-                    const result = CombatResolutionEngine.resolveAttack(
-                        actor,
-                        target,
-                        [{ label: 'Attack Bonus', value: actionData.attackBonus || 0, source: 'Stat' }],
-                        actionData.damage || "1d6",
-                        0,
-                        isRanged,
-                        forceDisadvantage
-                    );
+                const result = CombatResolutionEngine.resolveAttack(
+                    actor,
+                    target,
+                    modifiers,
+                    damageFormula,
+                    0, // statMod already in modifiers for players, baked in for monsters
+                    isRanged,
+                    forceDisadvantage
+                );
 
 
-                    // Trigger UI Dice Animation
-                    if (this.state.combat && result.details) {
-                        this.state.combat.lastRoll = {
-                            value: result.details.roll || 0,
-                            modifier: result.details.modifier || 0,
-                            total: (result.details.roll || 0) + (result.details.modifier || 0),
-                            breakdown: result.details.rollDetails?.modifiers,
-                            label: 'Attack'
-                        };
-                    }
+                // Trigger UI Dice Animation
+                if (this.state.combat && result.details) {
+                    this.state.combat.lastRoll = {
+                        value: result.details.roll || 0,
+                        modifier: result.details.modifier || 0,
+                        total: (result.details.roll || 0) + (result.details.modifier || 0),
+                        label: 'Attack',
+                        breakdown: result.details.rollDetails?.modifiers
+                    };
+                }
 
-                    this.emitCombatEvent(result.type, target.id, result.damage || 0);
-                    await this.applyCombatDamage(target, result.damage);
-                    const logMsg = CombatLogFormatter.format(result, actor.name, target.name, isRanged);
-                    this.addCombatLog(logMsg);
-                    this.state.combat.turnActions.push(logMsg);
-                    break;
-                } else break;
+                this.emitCombatEvent(result.type, target.id, result.damage || 0);
+                await this.applyCombatDamage(target, result.damage);
+                const logMsg = CombatLogFormatter.format(result, actor.name, target.name, isRanged);
+                this.addCombatLog(logMsg);
+                this.state.combat.turnActions.push(logMsg);
+                break;
             } else break;
         }
+        this.turnProcessing = false;
     }
 
     public async useAbility(abilityName: string): Promise<string> {

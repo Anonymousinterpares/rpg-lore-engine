@@ -34,6 +34,20 @@ export class MechanicsEngine {
     }
 
     /**
+     * Calculates proficiency bonus based on CR
+     */
+    public static getMonsterProficiency(cr: number): number {
+        if (cr >= 29) return 9;
+        if (cr >= 25) return 8;
+        if (cr >= 21) return 7;
+        if (cr >= 17) return 6;
+        if (cr >= 13) return 5;
+        if (cr >= 9) return 4;
+        if (cr >= 5) return 3;
+        return 2;
+    }
+
+    /**
      * Resolves a skill check or saving throw
      */
     public static resolveCheck(
@@ -250,12 +264,13 @@ export class MechanicsEngine {
     public static calculateRangePenalty(
         attacker: PlayerCharacter | Monster | Combatant,
         distance: number,
-        weapon: Item | null | undefined,
+        weapon: Item | { range?: { normal: number, long: number }, properties?: string[] } | null | undefined,
         ammoModifier: number = 0
     ): { penalty: number; log: string } {
-        if (!weapon || weapon.type !== 'Weapon' || !weapon.range) return { penalty: 0, log: "" };
+        const weaponAny = weapon as any;
+        if (!weapon || !weaponAny.range || (weaponAny.type !== 'Weapon' && !weaponAny.range)) return { penalty: 0, log: "" };
 
-        const normalRange = weapon.range.normal;
+        const normalRange = weaponAny.range.normal;
         if (distance <= normalRange) return { penalty: 0, log: "" };
 
         // Proportional Penalty Logic

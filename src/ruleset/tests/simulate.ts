@@ -19,6 +19,7 @@ function runSimulation() {
         stats: { 'STR': 10, 'DEX': 14, 'CON': 12, 'INT': 16, 'WIS': 12, 'CHA': 10 },
         savingThrowProficiencies: ['INT', 'WIS'],
         skillProficiencies: ['Arcana', 'Investigation'],
+        weaponProficiencies: [],
         hp: { current: 7, max: 7, temp: 0 },
         hitDice: { current: 1, max: 1, dieType: '1d6' },
         spellSlots: { '1': { current: 2, max: 2 } },

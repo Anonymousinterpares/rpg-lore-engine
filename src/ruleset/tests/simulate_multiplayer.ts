@@ -38,6 +38,7 @@ async function verifyMultiplayer() {
             stats: { STR: 16, DEX: 12, CON: 14, INT: 10, WIS: 12, CHA: 10 },
             savingThrowProficiencies: ["STR", "CON"],
             skillProficiencies: ["Athletics"],
+            weaponProficiencies: [],
             hp: { current: 12, max: 12, temp: 0 },
             deathSaves: { successes: 0, failures: 0 },
             hitDice: { current: 1, max: 1, dieType: "1d10" },

@@ -15,6 +15,7 @@ function runExpandedCombatSimulation() {
         stats: { 'STR': 16, 'DEX': 14, 'CON': 14, 'INT': 10, 'WIS': 12, 'CHA': 10 },
         savingThrowProficiencies: ['STR', 'DEX'],
         skillProficiencies: ['Athletics', 'Perception', 'Stealth'],
+        weaponProficiencies: [],
         hp: { current: 40, max: 40, temp: 0 },
         hitDice: { current: 5, max: 5, dieType: '1d10' },
         spellSlots: {},

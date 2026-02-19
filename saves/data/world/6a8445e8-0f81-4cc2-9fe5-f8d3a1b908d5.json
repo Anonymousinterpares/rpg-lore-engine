@@ -514,7 +514,7 @@
       "namingSource": "engine",
       "visualVariant": 2,
       "npcs": [],
-      "connections": "1:P:0,5:P:0"
+      "connections": "1:P:0"
     },
     "-2,1": {
       "coordinates": [
@@ -696,6 +696,33 @@
       ],
       "generated": true,
       "biome": "Jungle",
+      "name": "Uncharted Territory",
+      "description": "A vast expanse of jungle.",
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      },
+      "interest_points": [],
+      "resourceNodes": [],
+      "openedContainers": {},
+      "visited": false,
+      "inLineOfSight": false,
+      "namingSource": "engine",
+      "visualVariant": 5,
+      "npcs": [],
+      "connections": "3:P:0"
+    },
+    "-3,1": {
+      "coordinates": [
+        -3,
+        1
+      ],
+      "generated": true,
+      "biome": "Jungle",
       "name": "Jungle (Uncharted Territory)",
       "description": "A vast expanse of jungle.",
       "traversable_sides": {
@@ -710,33 +737,6 @@
       "resourceNodes": [],
       "openedContainers": {},
       "visited": false,
-      "inLineOfSight": true,
-      "namingSource": "engine",
-      "visualVariant": 5,
-      "npcs": [],
-      "connections": "3:P:0,0:P:0,5:P:0"
-    },
-    "-3,1": {
-      "coordinates": [
-        -3,
-        1
-      ],
-      "generated": true,
-      "biome": "Jungle",
-      "name": "Jungle (Discovered)",
-      "description": "A vast expanse of jungle.",
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      },
-      "interest_points": [],
-      "resourceNodes": [],
-      "openedContainers": {},
-      "visited": true,
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 4,
@@ -843,6 +843,33 @@
       ],
       "generated": true,
       "biome": "Jungle",
+      "name": "Uncharted Territory",
+      "description": "A vast expanse of jungle.",
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      },
+      "interest_points": [],
+      "resourceNodes": [],
+      "openedContainers": {},
+      "visited": false,
+      "inLineOfSight": false,
+      "namingSource": "engine",
+      "visualVariant": 2,
+      "npcs": [],
+      "connections": "3:P:0"
+    },
+    "-4,1": {
+      "coordinates": [
+        -4,
+        1
+      ],
+      "generated": true,
+      "biome": "Jungle",
       "name": "Jungle (Uncharted Territory)",
       "description": "A vast expanse of jungle.",
       "traversable_sides": {
@@ -857,33 +884,6 @@
       "resourceNodes": [],
       "openedContainers": {},
       "visited": false,
-      "inLineOfSight": true,
-      "namingSource": "engine",
-      "visualVariant": 2,
-      "npcs": [],
-      "connections": "3:P:0,0:P:0,5:P:0"
-    },
-    "-4,1": {
-      "coordinates": [
-        -4,
-        1
-      ],
-      "generated": true,
-      "biome": "Jungle",
-      "name": "Jungle (Discovered)",
-      "description": "A vast expanse of jungle.",
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      },
-      "interest_points": [],
-      "resourceNodes": [],
-      "openedContainers": {},
-      "visited": true,
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 1,
@@ -1122,7 +1122,7 @@
       ],
       "generated": true,
       "biome": "Jungle",
-      "name": "Jungle (Uncharted Territory)",
+      "name": "Uncharted Territory",
       "description": "A vast expanse of jungle.",
       "traversable_sides": {
         "N": true,
@@ -1136,11 +1136,11 @@
       "resourceNodes": [],
       "openedContainers": {},
       "visited": false,
-      "inLineOfSight": true,
+      "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 5,
       "npcs": [],
-      "connections": "4:P:0,0:P:0,5:P:0"
+      "connections": "4:P:0"
     },
     "-5,1": {
       "coordinates": [
@@ -1314,7 +1314,7 @@
       "namingSource": "engine",
       "visualVariant": 2,
       "npcs": [],
-      "connections": "1:P:0,3:P:0,0:P:0"
+      "connections": "1:P:0,3:P:0"
     },
     "-6,1": {
       "coordinates": [
@@ -1383,126 +1383,6 @@
         "b07f29d2-ba79-4ca5-b540-c31f05da3a7d"
       ],
       "connections": "0:P:0,2:P:1"
-    },
-    "-3,3": {
-      "coordinates": [
-        -3,
-        3
-      ],
-      "generated": true,
-      "visited": false,
-      "biome": "Jungle",
-      "name": "Uncharted Territory",
-      "description": "A vast expanse of jungle.",
-      "inLineOfSight": false,
-      "interest_points": [],
-      "resourceNodes": [],
-      "openedContainers": {},
-      "namingSource": "engine",
-      "visualVariant": 4,
-      "npcs": [],
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      },
-      "connections": "3:P:0,2:P:0,4:P:0"
-    },
-    "-4,3": {
-      "coordinates": [
-        -4,
-        3
-      ],
-      "generated": true,
-      "visited": false,
-      "biome": "Jungle",
-      "name": "Uncharted Territory",
-      "description": "A vast expanse of jungle.",
-      "inLineOfSight": false,
-      "interest_points": [],
-      "resourceNodes": [],
-      "openedContainers": {},
-      "namingSource": "engine",
-      "visualVariant": 3,
-      "npcs": [],
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      },
-      "connections": "3:P:0,1:P:0,2:P:0"
-    },
-    "-5,3": {
-      "coordinates": [
-        -5,
-        3
-      ],
-      "generated": true,
-      "visited": false,
-      "biome": "Jungle",
-      "name": "Uncharted Territory",
-      "description": "A vast expanse of jungle.",
-      "inLineOfSight": false,
-      "interest_points": [],
-      "resourceNodes": [
-        {
-          "id": "node_qn5d733hz",
-          "resourceType": "Herb",
-          "itemId": "Silverleaf",
-          "quantityRemaining": 1,
-          "respawnDays": 7,
-          "skillCheck": {
-            "skill": "Nature",
-            "dc": 10
-          }
-        }
-      ],
-      "openedContainers": {},
-      "namingSource": "engine",
-      "visualVariant": 1,
-      "npcs": [],
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      },
-      "connections": "3:P:0,2:P:0"
-    },
-    "-6,3": {
-      "coordinates": [
-        -6,
-        3
-      ],
-      "generated": true,
-      "visited": false,
-      "biome": "Jungle",
-      "name": "Uncharted Territory",
-      "description": "A vast expanse of jungle.",
-      "inLineOfSight": false,
-      "interest_points": [],
-      "resourceNodes": [],
-      "openedContainers": {},
-      "namingSource": "engine",
-      "visualVariant": 5,
-      "npcs": [],
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      },
-      "connections": "3:P:0,2:P:0"
     }
   },
   "coastlines": []

@@ -15,6 +15,7 @@ function runMechanicsSimulation() {
         stats: { 'STR': 16, 'DEX': 10, 'CON': 16, 'INT': 8, 'WIS': 12, 'CHA': 10 },
         savingThrowProficiencies: ['STR', 'CON'],
         skillProficiencies: ['Athletics'],
+        weaponProficiencies: [],
         hp: { current: 15, max: 35, temp: 0 },
         hitDice: { current: 1, max: 3, dieType: '1d10' },
         spellSlots: {},

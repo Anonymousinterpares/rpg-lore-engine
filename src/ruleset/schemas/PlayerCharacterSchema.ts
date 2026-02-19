@@ -28,6 +28,7 @@ export const PlayerCharacterSchema = z.object({
     stats: z.record(AbilityScoreSchema, z.number()),
     savingThrowProficiencies: z.array(AbilityScoreSchema).default([]),
     skillProficiencies: z.array(SkillNameSchema).default([]),
+    weaponProficiencies: z.array(z.string()).default([]), // e.g. "Simple Weapons", "Longsword"
     hp: z.object({
         current: z.number(),
         max: z.number(),

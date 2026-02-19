@@ -110,6 +110,7 @@ export class CharacterCreationEngine {
             stats: finalStats,
             savingThrowProficiencies: request.classData.savingThrowProficiencies as AbilityScore[],
             skillProficiencies: skillProficiencies as SkillName[],
+            weaponProficiencies: [],
             hp: {
                 current: maxHP,
                 max: maxHP,
