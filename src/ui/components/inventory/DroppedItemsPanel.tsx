@@ -18,7 +18,7 @@ interface Item {
 interface DroppedItemsPanelProps {
     items: Item[];
     onClose: () => void;
-    onPickup: (items: Item[]) => void;
+    onPickup: (items: Item[], x?: number, y?: number) => void;
     onAction?: (action: string, item: Item) => void;
 }
 
@@ -96,16 +96,16 @@ const DroppedItemsPanel: React.FC<DroppedItemsPanelProps> = ({
             const fullData = DataManager.getItem(item.id);
             setDatasheetItem({ ...fullData, ...item });
         } else if (action === 'pickup') {
-            onPickup([item]);
+            onPickup([item], contextMenu.x, contextMenu.y);
         } else if (onAction) {
             onAction(action, item);
         }
     };
 
-    const handleBatchPickup = () => {
+    const handleBatchPickup = (e: React.MouseEvent) => {
         const selectedItems = items.filter(i => selectedIds.has(i.instanceId || i.id));
         if (selectedItems.length > 0) {
-            onPickup(selectedItems);
+            onPickup(selectedItems, e.clientX, e.clientY);
             setSelectedIds(new Set());
         }
     };

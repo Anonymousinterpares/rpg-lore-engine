@@ -49,16 +49,16 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
     const [showDropped, setShowDropped] = useState(false);
     const [showLoot, setShowLoot] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const [toast, setToast] = useState<string | null>(null);
+    const [toast, setToast] = useState<{ msg: string, x?: number, y?: number } | null>(null);
 
     const totalWeight = items.reduce((sum, item) => sum + (item.weight * (item.quantity || 1)), 0);
 
-    const showToast = (msg: string) => {
-        setToast(msg);
+    const showToast = (msg: string, x?: number, y?: number) => {
+        setToast({ msg, x, y });
         setTimeout(() => setToast(null), 1500);
     };
 
-    const handlePickupWithValidation = (itemsToPick: Item[], actionType: 'pickup' | 'pickupLoot') => {
+    const handlePickupWithValidation = (itemsToPick: Item[], actionType: 'pickup' | 'pickupLoot', x?: number, y?: number) => {
         let currentSlots = items.length;
         let currentWgt = totalWeight;
         let successCount = 0;
@@ -68,12 +68,12 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
             const existing = items.find(i => (i.id === item.id || i.id === item.name || i.id === item.name.toLowerCase().replace(/ /g, '_')) && isStackable);
 
             if (currentWgt + (item.weight * (item.quantity || 1)) > capacity) {
-                showToast("Too heavy!");
+                showToast("Too heavy!", x, y);
                 break;
             }
             if (!existing) {
                 if (currentSlots >= maxSlots) {
-                    showToast("Not enough space in your inventory!");
+                    showToast("Not enough space in your inventory!", x, y);
                     break;
                 }
                 currentSlots++;
@@ -118,8 +118,14 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
     return (
         <div className={`${styles.container} ${className}`}>
             {toast && (
-                <div className={styles.inventoryToast}>
-                    {toast}
+                <div
+                    className={styles.inventoryToast}
+                    style={{
+                        left: toast.x ? `${toast.x}px` : '50%',
+                        top: toast.y ? `${toast.y}px` : '50%'
+                    }}
+                >
+                    {toast.msg}
                 </div>
             )}
             <div className={styles.header}>
@@ -214,8 +220,8 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                 <DroppedItemsPanel
                     items={droppedItems}
                     onClose={() => setShowDropped(false)}
-                    onPickup={(itemsToPick: Item[]) => {
-                        const picked = handlePickupWithValidation(itemsToPick, 'pickup');
+                    onPickup={(itemsToPick: Item[], x?: number, y?: number) => {
+                        const picked = handlePickupWithValidation(itemsToPick, 'pickup', x, y);
                         if (droppedItems.length <= picked) setShowDropped(false);
                     }}
                     onAction={onItemAction}
@@ -226,8 +232,8 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                 <DroppedItemsPanel
                     items={combatLoot!}
                     onClose={() => setShowLoot(false)}
-                    onPickup={(itemsToPick: Item[]) => {
-                        const picked = handlePickupWithValidation(itemsToPick, 'pickupLoot');
+                    onPickup={(itemsToPick: Item[], x?: number, y?: number) => {
+                        const picked = handlePickupWithValidation(itemsToPick, 'pickupLoot', x, y);
                         if (combatLoot!.length <= picked) setShowLoot(false);
                     }}
                     onAction={(action, item) => {
