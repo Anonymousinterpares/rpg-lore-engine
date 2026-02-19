@@ -1,16 +1,14 @@
-import React, { useRef, useEffect } from 'react';
+import * as React from 'react';
+import { useRef, useEffect } from 'react';
 import styles from './CombatLog.module.css';
 import terminalStyles from '../../styles/terminal.module.css';
 
-interface LogEntry {
-    id: string;
-    type: 'info' | 'warning' | 'error' | 'success';
-    message: string;
-    turn?: number;
-}
+import { CombatLogEntry } from '../../../ruleset/schemas/CombatSchema';
+
+// interface LogEntry { ... } // Replaced by import
 
 interface CombatLogProps {
-    logs: LogEntry[];
+    logs: CombatLogEntry[];
     className?: string;
 }
 
@@ -42,7 +40,18 @@ const CombatLog: React.FC<CombatLogProps> = ({ logs, className = '' }) => {
                 {logs.map((log) => (
                     <div key={log.id} className={`${styles.entry} ${getTypeClass(log.type)}`}>
                         {log.turn !== undefined && <span className={styles.turn}>[T{log.turn}]</span>}
-                        <span className={styles.message}>{log.message}</span>
+                        <span className={styles.message}>
+                            {log.message}
+                            {(log as any).details?.rollDetails?.modifiers && (
+                                <span className={styles.rollDetail} title="Roll Breakdown">
+                                    {' '}(
+                                    {(log as any).details.rollDetails.modifiers.map((m: any, i: number) =>
+                                        `${i > 0 ? ', ' : ''}${m.label}: ${m.value >= 0 ? '+' : ''}${m.value}`
+                                    ).join('')}
+                                    )
+                                </span>
+                            )}
+                        </span>
                     </div>
                 ))}
                 <div ref={messagesEndRef} />

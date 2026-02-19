@@ -2,7 +2,7 @@ import { Dice } from './Dice';
 import { MechanicsEngine } from './MechanicsEngine';
 import { Spell } from '../schemas/SpellSchema';
 import { z } from 'zod';
-import { CombatantSchema } from '../schemas/FullSaveStateSchema';
+import { CombatantSchema, Modifier, RollDetails } from '../schemas/CombatSchema';
 
 type Combatant = z.infer<typeof CombatantSchema>;
 
@@ -19,6 +19,7 @@ export interface CombatActionResult {
         targetAC?: number;
         saveDC?: number;
         isCrit?: boolean;
+        rollDetails?: RollDetails;
     };
 }
 
@@ -29,7 +30,7 @@ export class CombatResolutionEngine {
     public static resolveAttack(
         attacker: Combatant,
         target: Combatant,
-        attackBonus: number,
+        attackModifiers: Modifier[],
         damageFormula: string,
         statMod: number,
         isRanged: boolean = false,
@@ -69,6 +70,8 @@ export class CombatResolutionEngine {
         const isRangedAttacker = isRanged || (attacker.tactical?.isRanged || false);
         if (isEvasive && (isRangedAttacker || forceDisadvantage)) effectiveAC += 2;
 
+        // Calculate total attack bonus from modifiers
+        const attackBonus = attackModifiers.reduce((sum, mod) => sum + mod.value, 0);
         const total = d20 + attackBonus;
         const hit = isCrit || total >= effectiveAC;
 
@@ -93,6 +96,14 @@ export class CombatResolutionEngine {
             message = `${attacker.name} misses ${target.name}.`;
         }
 
+        const rollDetails: RollDetails = {
+            baseRoll: d20,
+            modifiers: attackModifiers,
+            total: total,
+            isCrit: isCrit,
+            isCritFail: d20 === 1
+        };
+
         return {
             type: isCrit ? 'CRIT' : (hit ? 'HIT' : 'MISS'),
             damage,
@@ -101,9 +112,10 @@ export class CombatResolutionEngine {
             details: {
                 roll: d20,
                 modifier: attackBonus,
-                total,
-                targetAC: target.ac,
-                isCrit
+                total: total,
+                targetAC: effectiveAC,
+                isCrit: isCrit,
+                rollDetails: rollDetails
             }
         };
     }

@@ -96,12 +96,34 @@ export const CombatantSchema = z.object({
 
 export type Combatant = z.infer<typeof CombatantSchema>;
 
+export const ModifierSchema = z.object({
+    label: z.string(),
+    value: z.number(),
+    source: z.string().optional()
+});
+
+export type Modifier = z.infer<typeof ModifierSchema>;
+
+export const RollDetailsSchema = z.object({
+    baseRoll: z.number(),
+    modifiers: z.array(ModifierSchema),
+    total: z.number(),
+    isCrit: z.boolean(),
+    isCritFail: z.boolean()
+});
+
+export type RollDetails = z.infer<typeof RollDetailsSchema>;
+
 export const CombatLogEntrySchema = z.object({
     id: z.string(),
     type: z.enum(['info', 'warning', 'error', 'success']),
     message: z.string(),
-    turn: z.number().optional()
+    turn: z.number().optional(),
+    details: z.object({
+        rollDetails: RollDetailsSchema.optional()
+    }).optional()
 });
+export type CombatLogEntry = z.infer<typeof CombatLogEntrySchema>;
 
 export const CombatEventSchema = z.object({
     id: z.string(),
@@ -165,7 +187,8 @@ export const CombatStateSchema = z.object({
             value: z.number(),
             modifier: z.number(),
             total: z.number(),
-            label: z.string().optional()
+            label: z.string().optional(),
+            breakdown: z.array(ModifierSchema).optional()
         })
     ]).optional(),
     activeBanner: z.object({

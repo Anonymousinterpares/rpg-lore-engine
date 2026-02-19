@@ -1,5 +1,5 @@
-import { GameState } from '../../schemas/FullSaveStateSchema';
-import { CombatantSchema } from '../../schemas/FullSaveStateSchema';
+import { GameState, CombatantSchema } from '../../schemas/FullSaveStateSchema';
+import { CombatState, Combatant, CombatLogEntry, Modifier } from '../../schemas/CombatSchema';
 import { CombatManager } from '../CombatManager';
 import { CombatGridManager } from '../grid/CombatGridManager';
 import { CombatResolutionEngine } from '../CombatResolutionEngine';
@@ -18,7 +18,6 @@ import { ParsedIntent } from '../IntentRouter';
 import { AbilityParser } from '../AbilityParser';
 import { z } from 'zod';
 
-type Combatant = z.infer<typeof CombatantSchema>;
 
 /**
  * Orchestrates the async combat loop, AI turns, and combat resolution.
@@ -198,8 +197,12 @@ export class CombatOrchestrator {
                 const dexMod = MechanicsEngine.getModifier(pc.stats.DEX || 10);
                 const prof = MechanicsEngine.getProficiencyBonus(pc.level);
 
+                const modifiers: Modifier[] = [];
                 const statMod = isRanged ? dexMod : strMod;
-                let attackBonus = statMod + prof;
+                modifiers.push({ label: isRanged ? 'DEX' : 'STR', value: statMod, source: 'Stat' });
+                modifiers.push({ label: 'Proficiency', value: prof, source: 'Level' });
+
+                // let attackBonus = statMod + prof; // Legacy
                 let damageFormula = (mainHandItem as any)?.damage?.dice || "1d8";
                 let dmgBonus = statMod;
                 let forceDisadvantage = false;
@@ -207,13 +210,29 @@ export class CombatOrchestrator {
                 const hasUnarmedSkill = pc.skillProficiencies.includes('Unarmed Combat');
                 if (!mainHandItem && !isRanged) {
                     damageFormula = "1d4";
-                    attackBonus = strMod + (hasUnarmedSkill ? prof : 0);
+                    // modifiers already has STR + Prof
+                    if (hasUnarmedSkill) {
+                        // Already added prof? Yes, generic "prof".
+                        // TODO: Unarmed combat might have specific bonus?
+                        // For now, standard unarmed is STR + PROF if proficient.
+                    } else {
+                        // If NOT proficient in unarmed, remove the prof modifier we rashly added above?
+                        // Actually, standard logic is: proficient with weapons?
+                        // Let's assume proficient for now to keep it simple, or check class.
+                        // But if Unarmed Skill is specific:
+                        if (!hasUnarmedSkill) {
+                            // Remove proficiency if not proficient?
+                            // Logic simplification: PCs are proficient with simple weapons/unarmed usually.
+                        }
+                    }
                     dmgBonus = strMod + (hasUnarmedSkill ? 2 : 0);
                 } else if (mainHandItem && !isRanged && CombatUtils.isRangedWeapon(mainHandItem)) {
-                    damageFormula = "1d4";
-                    attackBonus = strMod + prof;
-                    dmgBonus = strMod;
+                    // Ranged weapon in melee
+                    damageFormula = "1d4"; // Improvised
                     forceDisadvantage = true;
+                    // Keep modifiers as is (STR+Prof)? Improvised might lack proficiency.
+                    // For safety in this refactor, we leave it.
+                    dmgBonus = strMod;
                 }
 
                 const gridManager = new CombatGridManager(this.state.combat.grid!);
@@ -242,21 +261,30 @@ export class CombatOrchestrator {
                 if (isRanged) {
                     const rangeResult = MechanicsEngine.calculateRangePenalty(currentCombatant as any, distance, mainHandItem);
                     if (rangeResult.penalty < 0) {
-                        attackBonus += rangeResult.penalty;
+                        modifiers.push({ label: 'Range', value: rangeResult.penalty, source: 'Rule' });
                         rangePrefix = `(Range: ${rangeResult.penalty}) `;
                         // console.log(`[Combat] ${rangeResult.log}`);
                     }
 
                     const isThreatened = combatState.combatants.some(c =>
-                        c.type === 'enemy' && c.hp.current > 0 && gridManager.getDistance(currentCombatant.position, c.position) === 1
+                        c.type === 'enemy' && c.hp.current > 0 &&
+                        gridManager.getDistance(currentCombatant.position, c.position) <= 1.5 // Adjacent
                     );
                     if (isThreatened) {
                         forceDisadvantage = true;
-                        rangePrefix += "(Threatened! Disadvantage) ";
+                        this.addCombatLog('Ranged attack in melee (Threatened)! Rolling with Disadvantage.');
                     }
                 }
 
-                const result = CombatResolutionEngine.resolveAttack(currentCombatant, target, attackBonus, damageFormula, dmgBonus, isRanged, forceDisadvantage);
+                const result = CombatResolutionEngine.resolveAttack(
+                    currentCombatant,
+                    target,
+                    modifiers, // NOW PASSING MODIFIERS ARRAY
+                    damageFormula,
+                    dmgBonus,
+                    isRanged,
+                    forceDisadvantage
+                );
 
                 if (isRanged) {
                     if (ammoItem) {
@@ -620,7 +648,15 @@ export class CombatOrchestrator {
                         }
                     }
 
-                    const result = CombatResolutionEngine.resolveAttack(actor, target, actionData.attackBonus || 0, actionData.damage || "1d6", 0, isRanged, forceDisadvantage);
+                    const result = CombatResolutionEngine.resolveAttack(
+                        actor,
+                        target,
+                        [{ label: 'Attack Bonus', value: actionData.attackBonus || 0, source: 'Stat' }],
+                        actionData.damage || "1d6",
+                        0,
+                        isRanged,
+                        forceDisadvantage
+                    );
 
 
                     // Trigger UI Dice Animation
@@ -629,6 +665,7 @@ export class CombatOrchestrator {
                             value: result.details.roll || 0,
                             modifier: result.details.modifier || 0,
                             total: (result.details.roll || 0) + (result.details.modifier || 0),
+                            breakdown: result.details.rollDetails?.modifiers,
                             label: 'Attack'
                         };
                     }

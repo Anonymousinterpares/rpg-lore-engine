@@ -35,7 +35,7 @@
       "Survival"
     ],
     "hp": {
-      "current": 11,
+      "current": 10,
       "max": 11,
       "temp": 0
     },
@@ -70,7 +70,7 @@
     "featureUsages": {},
     "inventory": {
       "gold": {
-        "cp": 18,
+        "cp": 20,
         "sp": 0,
         "ep": 0,
         "gp": 10,
@@ -175,7 +175,7 @@
           "name": "Arrow",
           "type": "Adventuring Gear",
           "weight": 1,
-          "quantity": 37,
+          "quantity": 35,
           "equipped": false
         },
         {
@@ -231,6 +231,79 @@
           "weight": 20,
           "quantity": 1,
           "equipped": false
+        },
+        {
+          "name": "Scimitar",
+          "type": "Weapon",
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 25,
+            "pp": 0
+          },
+          "weight": 3,
+          "damage": {
+            "dice": "1d6",
+            "type": "Slashing"
+          },
+          "properties": [
+            "Finesse",
+            "Light"
+          ],
+          "range": {
+            "normal": 5
+          },
+          "id": "Scimitar",
+          "quantity": 1,
+          "instanceId": "loot_1771510809133_0.04375954623052647",
+          "equipped": false
+        },
+        {
+          "name": "Shortbow",
+          "type": "Weapon",
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 25,
+            "pp": 0
+          },
+          "weight": 2,
+          "damage": {
+            "dice": "1d6",
+            "type": "Piercing"
+          },
+          "properties": [
+            "Ammunition",
+            "Two-Handed"
+          ],
+          "range": {
+            "normal": 80,
+            "long": 320
+          },
+          "id": "Shortbow",
+          "quantity": 1,
+          "instanceId": "loot_1771510809133_0.27223716577460955",
+          "equipped": false
+        },
+        {
+          "name": "Chain Shirt",
+          "type": "Armor",
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 50,
+            "pp": 0
+          },
+          "weight": 20,
+          "acCalculated": "13",
+          "stealthDisadvantage": false,
+          "id": "Chain Shirt",
+          "quantity": 1,
+          "instanceId": "loot_1771510809133_0.3745219286607684",
+          "equipped": false
         }
       ]
     },
@@ -239,7 +312,7 @@
       "mainHand": "dev_1771367465235_0"
     },
     "attunedItems": [],
-    "xp": 175,
+    "xp": 225,
     "inspiration": false,
     "biography": {
       "background": "Sage",
@@ -313,12 +386,12 @@
     "combatLoot": []
   },
   "worldTime": {
-    "hour": 11,
-    "minute": 59,
+    "hour": 12,
+    "minute": 5,
     "day": 3,
     "month": 1,
     "year": 1489,
-    "totalTurns": 30590
+    "totalTurns": 30650
   },
   "worldMap": {
     "grid_id": "6a8445e8-0f81-4cc2-9fe5-f8d3a1b908d5",
@@ -2107,7 +2180,7 @@
   ],
   "factions": [],
   "storySummary": "started their journey as a Half-Elf Ranger with the Sage background.",
-  "lastNarrative": "On the open plains, Daa stalked the hulking boar from three hundred yards away, letting loose a first arrow that sang through the wind and bit the beast for three wounds. The boar retreated, thundering northwest, but Daa’s eyes never wavered; a second, razor‑sharp shot pierced its hide, adding another three points of pain. Closing the gap, Daa let loose a final, thunderous bolt that slammed into the boar’s flank, crushing its heart with ten vicious damage. The creature collapsed, and the plains fell silent as victory rang out.",
+  "lastNarrative": "Across the wind‑swept plains, Daa’s arrow sang a swift arc, striking the lone goblin with a thudding impact that marked the opening salvo. The goblin, snarling, darted back and unleashed a desperate, disadvantage‑laden volley, each bolt biting Daa’s armor for a sting of pain. Seizing the moment, Daa surged forward, eyes narrowed, and let loose a precise shot that pierced the goblin’s defenses, the bolt sinking deep. With a final, fateful thrust of steel, the creature fell, silence reclaiming the field as Daa claimed victory.",
   "conversationHistory": [
     {
       "role": "player",
@@ -2343,6 +2416,26 @@
       "role": "narrator",
       "content": "Halia Silvervein (Merchant) packs up and departs.",
       "turnNumber": 27890
+    },
+    {
+      "role": "narrator",
+      "content": "Across the wind‑swept plains, Daa’s arrow sang a swift arc, striking the lone goblin with a thudding impact that marked the opening salvo. The goblin, snarling, darted back and unleashed a desperate, disadvantage‑laden volley, each bolt biting Daa’s armor for a sting of pain. Seizing the moment, Daa surged forward, eyes narrowed, and let loose a precise shot that pierced the goblin’s defenses, the bolt sinking deep. With a final, fateful thrust of steel, the creature fell, silence reclaiming the field as Daa claimed victory.",
+      "turnNumber": 30650
+    },
+    {
+      "role": "narrator",
+      "content": "Picked up Scimitar.",
+      "turnNumber": 30650
+    },
+    {
+      "role": "narrator",
+      "content": "Picked up Shortbow.",
+      "turnNumber": 30650
+    },
+    {
+      "role": "narrator",
+      "content": "Picked up Chain Shirt.",
+      "turnNumber": 30650
     }
   ],
   "triggeredEvents": [
@@ -2350,7 +2443,8 @@
     "viewed_page:world_map",
     "viewed_page:character",
     "viewed_page:codex",
-    "examined_item:Chain Shirt"
+    "examined_item:Chain Shirt",
+    "examined_item:Scimitar"
   ],
   "codexEntries": [
     {
@@ -2549,7 +2643,7 @@
   "explorationBlindnessUntil": 0,
   "findThePathActiveUntil": 0,
   "clearedHexes": {
-    "-4,0": 26330
+    "-4,0": 30590
   },
   "settings": {
     "permadeath": false,

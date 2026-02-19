@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import * as React from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from './DiceRoller.module.css';
 
 interface RollResult {
@@ -82,6 +83,12 @@ const DiceRoller: React.FC<DiceRollerProps> = ({ result, sides = 20, isRolling =
         else if (result.modifier > 0) resultColorClass = styles.resGreen;
         else if (result.modifier < 0) resultColorClass = styles.resRed;
 
+        // Enhanced: Breakdown visual
+        // We look for 'details' in the result, or we might need to update the prop type?
+        // The result prop is 'RollResult' or 'number'.
+        // Let's assume result might extend RollResult with breakdown data or we update the interface in this file.
+        const breakdown = (result as any).breakdown || (result as any).rollDetails?.modifiers;
+
         return (
             <div className={styles.enhancedContainer}>
                 <div className={styles.dieSection}>
@@ -98,6 +105,19 @@ const DiceRoller: React.FC<DiceRollerProps> = ({ result, sides = 20, isRolling =
                         </span>
                     </div>
                 </div>
+
+                {/* Subtle Breakdown Row */}
+                {breakdown && Array.isArray(breakdown) && (
+                    <div className={styles.breakdownRow} style={{ fontSize: '0.7rem', color: '#888', marginTop: '4px' }}>
+                        {breakdown.map((mod: any, i: number) => (
+                            <span key={i}>
+                                {i > 0 && ", "}
+                                {mod.label} {mod.value >= 0 ? '+' : ''}{mod.value}
+                            </span>
+                        ))}
+                    </div>
+                )}
+
                 <div className={styles.mathSection}>
                     <div className={`${styles.finalResult} ${resultColorClass}`}>
                         {result.total}
