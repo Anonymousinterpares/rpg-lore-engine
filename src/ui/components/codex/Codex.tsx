@@ -68,11 +68,11 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
             if (initialDeepLink?.entryId) {
                 let data: any[] = [];
                 switch (initialDeepLink.category) {
-                    case 'world': data = Object.values(CODEX_LORE.WORLD); break;
-                    case 'mechanics': data = Object.values(CODEX_LORE.MECHANICS); break;
+                    case 'world': data = Object.entries(CODEX_LORE.WORLD).map(([id, item]) => ({ id, ...(item as any) })); break;
+                    case 'mechanics': data = Object.entries(CODEX_LORE.MECHANICS).map(([id, item]) => ({ id, ...(item as any) })); break;
                     case 'magic': data = DataManager.getSpells(); break;
-                    case 'skills': data = Object.values(CODEX_LORE.SKILLS); break;
-                    case 'conditions': data = Object.values(CODEX_LORE.CONDITIONS); break;
+                    case 'skills': data = Object.entries(CODEX_LORE.SKILLS).map(([id, item]) => ({ id, ...(item as any) })); break;
+                    case 'conditions': data = Object.entries(CODEX_LORE.CONDITIONS).map(([id, item]) => ({ id, ...(item as any) })); break;
                     case 'races': data = DataManager.getRaces(); break;
                     case 'classes': data = DataManager.getClasses(); break;
                     case 'bestiary':
@@ -115,12 +115,12 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
             case 'world':
                 return (
                     <div className={styles.entriesGrid}>
-                        {Object.values(CODEX_LORE.WORLD).map((item: any) => (
+                        {Object.entries(CODEX_LORE.WORLD).map(([id, item]: [string, any]) => (
                             <div
-                                key={item.id || item.name}
-                                id={`entry-${item.id || item.name}`}
-                                className={`${styles.entryCard} ${selectedEntry?.name === item.name || selectedEntry?.id === item.id ? styles.active : ''}`}
-                                onClick={() => setSelectedEntry(item)}
+                                key={id}
+                                id={`entry-${id}`}
+                                className={`${styles.entryCard} ${selectedEntry?.name === item.name || selectedEntry?.id === id ? styles.active : ''}`}
+                                onClick={() => setSelectedEntry({ id, ...item })}
                             >
                                 <h4>{item.name}</h4>
                             </div>
@@ -130,12 +130,12 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
             case 'mechanics':
                 return (
                     <div className={styles.entriesGrid}>
-                        {Object.values(CODEX_LORE.MECHANICS).map((item: any) => (
+                        {Object.entries(CODEX_LORE.MECHANICS).map(([id, item]: [string, any]) => (
                             <div
-                                key={item.id || item.name} // Registry items might use name as key if ID missing
-                                id={`entry-${item.id || item.name}`}
-                                className={`${styles.entryCard} ${selectedEntry?.name === item.name ? styles.active : ''}`}
-                                onClick={() => setSelectedEntry(item)}
+                                key={id}
+                                id={`entry-${id}`}
+                                className={`${styles.entryCard} ${selectedEntry?.name === item.name || selectedEntry?.id === id ? styles.active : ''}`}
+                                onClick={() => setSelectedEntry({ id, ...item })}
                             >
                                 <h4>{item.name}</h4>
                             </div>
@@ -145,12 +145,12 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
             case 'skills':
                 return (
                     <div className={styles.entriesGrid}>
-                        {Object.values(CODEX_LORE.SKILLS).map((skill: any) => (
+                        {Object.entries(CODEX_LORE.SKILLS).map(([id, skill]: [string, any]) => (
                             <div
-                                key={skill.name}
-                                id={`entry-${skill.name}`}
-                                className={`${styles.entryCard} ${selectedEntry?.name === skill.name ? styles.active : ''}`}
-                                onClick={() => setSelectedEntry(skill)}
+                                key={id}
+                                id={`entry-${id}`}
+                                className={`${styles.entryCard} ${selectedEntry?.name === skill.name || selectedEntry?.id === id ? styles.active : ''}`}
+                                onClick={() => setSelectedEntry({ id, ...skill })}
                             >
                                 <h4>{skill.name}</h4>
                                 <span className={styles.entryType}>{skill.ability}</span>
@@ -193,12 +193,12 @@ const Codex: React.FC<CodexProps> = ({ isOpen, onClose, initialDeepLink, isPage 
             case 'conditions':
                 return (
                     <div className={styles.entriesGrid}>
-                        {Object.values(CODEX_LORE.CONDITIONS).map((cond: any) => (
+                        {Object.entries(CODEX_LORE.CONDITIONS).map(([id, cond]: [string, any]) => (
                             <div
-                                key={cond.name}
-                                id={`entry-${cond.name}`}
-                                className={`${styles.entryCard} ${selectedEntry?.name === cond.name ? styles.active : ''}`}
-                                onClick={() => setSelectedEntry(cond)}
+                                key={id}
+                                id={`entry-${id}`}
+                                className={`${styles.entryCard} ${selectedEntry?.name === cond.name || selectedEntry?.id === id ? styles.active : ''}`}
+                                onClick={() => setSelectedEntry({ id, ...cond })}
                             >
                                 <h4>{cond.name}</h4>
                             </div>

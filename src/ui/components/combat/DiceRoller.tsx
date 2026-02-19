@@ -48,8 +48,8 @@ const DiceRoller: React.FC<DiceRollerProps> = ({ result, sides = 20, isRolling =
                     setAnimating(false);
                     setShowResult(true);
 
-                    // Hide glow after 3 seconds (slightly longer for reading math)
-                    setTimeout(() => setShowResult(false), 3000);
+                    // Keeping result visible until next roll
+                    // setTimeout(() => setShowResult(false), 3000);
                 }
             }, 50);
 
