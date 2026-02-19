@@ -18,9 +18,10 @@ import { useCallback, useEffect } from 'react';
 
 interface MainViewportProps {
     className?: string;
+    onCodex?: (category: string, entryId: string) => void;
 }
 
-const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
+const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
     const { state, processCommand, isLoading, endGame, engine, startGame, loadGame, loadLastSave, getSaveRegistry } = useGameState();
     const [showLoadModal, setShowLoadModal] = useState(false);
     const [showRestModal, setShowRestModal] = useState(false);
@@ -190,6 +191,7 @@ const MainViewport: React.FC<MainViewportProps> = ({ className }) => {
                             sides={20}
                             result={state.combat.lastRoll}
                             isRolling={isLoading} // Simple approximation
+                            onOpenCodex={onCodex}
                         />
                     </div>
                 )}

@@ -80,6 +80,10 @@ export const CODEX_LORE = {
             name: 'Hit Points',
             content: `### Hit Points\nHit points represent a combination of physical and mental durability, the will to live, and luck. Creatures with more hit points are more difficult to kill. Those with fewer hit points are more fragile.`
         },
+        'combat_modifiers': {
+            name: 'Combat Modifiers',
+            content: `### Combat Modifiers & Dice Math\n\nWhen you attack, the 20-sided die (d20) roll is modified by several factors to determine your final result against the enemy's Armor Class (AC).\n\n**Common Modifiers:**\n- **Stat (STR/DEX):** Your base physical power or agility. Melee uses Strength; Ranged uses Dexterity (unless Finesse).\n- **Proficiency:** A bonus added if you are trained in the weapon type.\n- **Weapon:** Magical weapons or masterwork items grant innate bonuses to hit.\n- **Range:** Shooting beyond a weapon's 'Normal Range' imposes a cumulative -2 penalty for every distance increment.`
+        },
         'magic_overview': {
             name: 'Understanding Magic',
             content: `Magic is a pervasive force in the world, channeled through prayer, study, or innate talent. Spells are the primary way this power is manifested.\n\n### Cantrips\nCantrips are simple but powerful spells that you can cast at will. While they are weak compared to higher-level magic, they don't require spell slots and are always available for use.\n\n### Spell Slots\nMost spells require a burst of focused energy to manifest. This energy is represented by spell slots. You have a limited number of slots for each spell level you can cast. When you cast a spell, you expend a slot of that level or higher.\n\n### Preparation & Known Spells\nSome classes, like Wizards and Clerics, must choose a selection of spells from their wider library to have ready each day (Preparation). Others, like Sorcerers, have a fixed set of spells they always have active (Known Spells).`

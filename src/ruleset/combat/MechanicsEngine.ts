@@ -270,15 +270,15 @@ export class MechanicsEngine {
         const weaponAny = weapon as any;
         if (!weapon || !weaponAny.range || (weaponAny.type !== 'Weapon' && !weaponAny.range)) return { penalty: 0, log: "" };
 
-        const normalRange = weaponAny.range.normal;
-        if (distance <= normalRange) return { penalty: 0, log: "" };
+        const normalRangeCells = Math.floor(weaponAny.range.normal / 5);
+        if (distance <= normalRangeCells) return { penalty: 0, log: "" };
 
         // Proportional Penalty Logic
         // For each full range increment beyond the first, apply -2
         // distance 1-30 (normal) -> 0
         // distance 31-60 -> -2
         // distance 61-90 -> -4
-        const increments = Math.floor((distance - 1) / normalRange);
+        const increments = Math.floor((distance - 1) / normalRangeCells);
 
         // Base penalty
         let penaltyPerIncrement = -2;

@@ -331,7 +331,7 @@ const App: React.FC = () => {
                                 onCompass={() => setIsNavigationModalOpen(true)}
                                 onCodex={openCodex}
                             />
-                            <MainViewport className={styles.viewport} />
+                            <MainViewport className={styles.viewport} onCodex={openCodex} />
                             <RightPanel
                                 className={styles.rightPanel}
                                 onWorldMap={openWorldMap}

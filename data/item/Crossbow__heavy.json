@@ -22,12 +22,5 @@
   "range": {
     "normal": 100,
     "long": 400
-  },
-  "modifiers": [
-    {
-      "type": "StatBonus",
-      "target": "STR_REQ",
-      "value": 15
-    }
-  ]
+  }
 }

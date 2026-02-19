@@ -14,9 +14,10 @@ interface DiceRollerProps {
     sides?: number;
     isRolling?: boolean;
     className?: string;
+    onOpenCodex?: (category: string, entryId: string) => void;
 }
 
-const DiceRoller: React.FC<DiceRollerProps> = ({ result, sides = 20, isRolling = false, className = '' }) => {
+const DiceRoller: React.FC<DiceRollerProps> = ({ result, sides = 20, isRolling = false, className = '', onOpenCodex }) => {
     const [displayValue, setDisplayValue] = useState<number | null>(null);
     const [animating, setAnimating] = useState(false);
     const [showResult, setShowResult] = useState(false);
@@ -106,15 +107,17 @@ const DiceRoller: React.FC<DiceRollerProps> = ({ result, sides = 20, isRolling =
                     </div>
                 </div>
 
-                {/* Subtle Breakdown Row */}
+                {/* Subtle Breakdown Info */}
                 {breakdown && Array.isArray(breakdown) && (
-                    <div className={styles.breakdownRow} style={{ fontSize: '0.7rem', color: '#888', marginTop: '4px' }}>
-                        {breakdown.map((mod: any, i: number) => (
-                            <span key={i}>
-                                {i > 0 && ", "}
-                                {mod.label} {mod.value >= 0 ? '+' : ''}{mod.value}
-                            </span>
-                        ))}
+                    <div
+                        className={styles.breakdownInfo}
+                        style={{ marginLeft: '8px', cursor: 'help', color: '#00dc82', fontSize: '0.8rem', fontWeight: 'bold' }}
+                        title={breakdown.map((mod: any) => `${mod.label} ${mod.value >= 0 ? '+' : ''}${mod.value}`).join(' | ')}
+                        onClick={() => {
+                            if (onOpenCodex) onOpenCodex('mechanics', 'combat_modifiers');
+                        }}
+                    >
+                        [?]
                     </div>
                 )}
 

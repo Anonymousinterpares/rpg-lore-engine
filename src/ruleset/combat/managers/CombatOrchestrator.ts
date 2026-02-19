@@ -202,9 +202,25 @@ export class CombatOrchestrator {
                 modifiers.push({ label: isRanged ? 'DEX' : 'STR', value: statMod, source: 'Stat' });
                 modifiers.push({ label: 'Proficiency', value: prof, source: 'Level' });
 
-                // let attackBonus = statMod + prof; // Legacy
+                // Parse Weapon Modifiers
+                if (mainHandItem && mainHandItem.modifiers) {
+                    mainHandItem.modifiers.forEach((mod: any) => {
+                        if (mod.type === 'AttackBonus') {
+                            modifiers.push({ label: mainHandItem.name, value: mod.value, source: 'Item' });
+                        }
+                    });
+                }
+
                 let damageFormula = (mainHandItem as any)?.damage?.dice || "1d8";
                 let dmgBonus = statMod;
+                if (mainHandItem && mainHandItem.modifiers) {
+                    mainHandItem.modifiers.forEach((mod: any) => {
+                        if (mod.type === 'DamageBonus') {
+                            dmgBonus += mod.value;
+                        }
+                    });
+                }
+
                 let forceDisadvantage = false;
 
                 const hasUnarmedSkill = pc.skillProficiencies.includes('Unarmed Combat');
