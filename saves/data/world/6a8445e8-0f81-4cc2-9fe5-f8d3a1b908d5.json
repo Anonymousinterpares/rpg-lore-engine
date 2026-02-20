@@ -891,7 +891,7 @@
       ],
       "generated": true,
       "biome": "Plains",
-      "name": "Plains (Discovered)",
+      "name": "Plains (Uncharted Territory)",
       "description": "A vast expanse of plains.",
       "traversable_sides": {
         "N": true,
@@ -904,7 +904,7 @@
       "interest_points": [],
       "resourceNodes": [],
       "openedContainers": {},
-      "visited": true,
+      "visited": false,
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 1,
@@ -1095,7 +1095,7 @@
       ],
       "generated": true,
       "biome": "Plains",
-      "name": "Plains (Uncharted Territory)",
+      "name": "Uncharted Territory",
       "description": "A vast expanse of plains.",
       "traversable_sides": {
         "N": true,
@@ -1121,7 +1121,7 @@
       ],
       "openedContainers": {},
       "visited": false,
-      "inLineOfSight": true,
+      "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 4,
       "npcs": [
@@ -1509,47 +1509,6 @@
       "isQuestReserved": false,
       "isNpcNamed": false,
       "fogOfWarLevel": "HIDDEN"
-    },
-    "-3,-3": {
-      "coordinates": [
-        -3,
-        -3
-      ],
-      "generated": true,
-      "visited": false,
-      "biome": "Plains",
-      "name": "Uncharted Territory",
-      "description": "A vast expanse of plains.",
-      "inLineOfSight": false,
-      "interest_points": [],
-      "resourceNodes": [
-        {
-          "id": "node_dog0xrtga",
-          "resourceType": "Herb",
-          "itemId": "Kingsbloom",
-          "quantityRemaining": 3,
-          "respawnDays": 7,
-          "skillCheck": {
-            "skill": "Nature",
-            "dc": 10
-          }
-        }
-      ],
-      "openedContainers": {},
-      "namingSource": "engine",
-      "visualVariant": 3,
-      "npcs": [],
-      "isQuestReserved": false,
-      "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN",
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      }
     }
   },
   "coastlines": []
