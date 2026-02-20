@@ -112,6 +112,7 @@ const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests
                         isDraggable={false}
                         travelAnimation={state.location.travelAnimation}
                         previousCoordinates={state.location.previousCoordinates}
+                        previousPreviousCoordinates={state.location.previousPreviousCoordinates}
                         previousControlPointOffset={state.location.previousControlPointOffset}
                         findThePathActiveUntil={state.findThePathActiveUntil}
                         navigationTarget={state.navigationTarget}

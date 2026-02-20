@@ -51,6 +51,7 @@ export const FullSaveStateSchema = z.object({
         hexId: z.string(),
         coordinates: z.tuple([z.number(), z.number()]),
         previousCoordinates: z.tuple([z.number(), z.number()]).optional(),
+        previousPreviousCoordinates: z.tuple([z.number(), z.number()]).optional(),
         previousControlPointOffset: z.tuple([z.number(), z.number()]).optional(),
         subLocationId: z.string().optional(),
         roomId: z.string().optional(),

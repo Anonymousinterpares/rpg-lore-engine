@@ -427,6 +427,7 @@ export class GameLoop {
                 await new Promise(resolve => setTimeout(resolve, durationMs));
 
                 // Arrived
+                this.state.location.previousPreviousCoordinates = this.state.location.previousCoordinates;
                 this.state.location.previousCoordinates = startCoords;
                 this.state.location.previousControlPointOffset = [curvatureX, curvatureY];
                 this.state.location.coordinates = targetCoords;
@@ -593,6 +594,7 @@ export class GameLoop {
                 await new Promise(resolve => setTimeout(resolve, durationMsMT));
 
                 // 3. Finalize Movement
+                this.state.location.previousPreviousCoordinates = this.state.location.previousCoordinates;
                 this.state.location.previousCoordinates = startCoordsMT;
                 this.state.location.previousControlPointOffset = [curvatureXMT, curvatureYMT];
                 this.state.location.coordinates = targetCoordsMT;

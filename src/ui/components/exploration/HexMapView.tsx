@@ -40,6 +40,7 @@ interface HexMapViewProps {
         travelType?: 'Road' | 'Path' | 'Ancient' | 'Stealth' | 'Wilderness';
     };
     previousCoordinates?: [number, number];
+    previousPreviousCoordinates?: [number, number];
     previousControlPointOffset?: [number, number];
     findThePathActiveUntil?: number;
     navigationTarget?: [number, number];
@@ -57,6 +58,7 @@ const HexMapView: React.FC<HexMapViewProps> = ({
     isDraggable = true,
     travelAnimation,
     previousCoordinates,
+    previousPreviousCoordinates,
     previousControlPointOffset,
     findThePathActiveUntil = 0,
     navigationTarget,
@@ -341,7 +343,12 @@ const HexMapView: React.FC<HexMapViewProps> = ({
 
     // Calculate Trail Segments matching the wiggles
     const getTrailPaths = () => {
-        const paths: string[] = [];
+        const result = {
+            head: '',
+            fullTails: [] as string[],
+            recentFadeTail: null as { pathD: string, grad: { x1: number, y1: number, x2: number, y2: number, stop1: number, stop2: number } } | null,
+            olderFadeTail: null as { pathD: string, grad: { x1: number, y1: number, x2: number, y2: number, stop1: number, stop2: number } } | null
+        };
 
         const getConnectionType = (hex: any, targetQ: number, targetR: number): 'Road' | 'Path' | 'Ancient' | 'Wilderness' => {
             if (!hex || !hex.connections) return 'Wilderness';
@@ -368,6 +375,72 @@ const HexMapView: React.FC<HexMapViewProps> = ({
             return 'Wilderness';
         };
 
+        const buildFullSegment = (prev: [number, number], current: [number, number], tMode: string, animT: number = 0) => {
+            const tailPath: string[] = [];
+            const STEPS = 16;
+            for (let i = 0; i <= STEPS; i++) {
+                const stepT = 1.0 - (i / STEPS);
+                const res = getAxialWiggle(prev[0], prev[1], current[0], current[1], stepT, tMode as any);
+                const pX = getX(res.q, res.r);
+                const pY = getY(res.q, res.r);
+                if (i === 0) tailPath.push(`M ${pX} ${pY}`);
+                else tailPath.push(`L ${pX} ${pY}`);
+            }
+            if (animT > 0) {
+                const startPoint = getAxialWiggle(prev[0], prev[1], current[0], current[1], 1.0, tMode as any);
+                const endPoint = getAxialWiggle(prev[0], prev[1], current[0], current[1], 0.0, tMode as any);
+                return {
+                    pathD: tailPath.join(' '),
+                    grad: {
+                        x1: getX(startPoint.q, startPoint.r),
+                        y1: getY(startPoint.q, startPoint.r),
+                        x2: getX(endPoint.q, endPoint.r),
+                        y2: getY(endPoint.q, endPoint.r),
+                        stop1: (1.0 - animT) * 100,
+                        stop2: ((1.0 - animT) + 0.5) * 100
+                    }
+                };
+            }
+            return { pathD: tailPath.join(' '), grad: null };
+        };
+
+        const buildFadingSegment = (prev: [number, number], current: [number, number], tMode: string, animT: number = 0) => {
+            const tailPath: string[] = [];
+            const STEPS = 16;
+
+            const minT = 0.5 + (0.5 * animT);
+
+            if (minT > 0.99) return null;
+
+            for (let i = 0; i <= STEPS; i++) {
+                // Smoothly map i=0..STEPS onto stepT=1.0..minT
+                const stepT = 1.0 - ((1.0 - minT) * (i / STEPS));
+
+                const res = getAxialWiggle(prev[0], prev[1], current[0], current[1], stepT, tMode as any);
+                const pX = getX(res.q, res.r);
+                const pY = getY(res.q, res.r);
+                if (i === 0) tailPath.push(`M ${pX} ${pY}`);
+                else tailPath.push(`L ${pX} ${pY}`);
+            }
+
+            // The gradient slides up to minT to match the shrinking path.
+            const startPoint = getAxialWiggle(prev[0], prev[1], current[0], current[1], 1.0, tMode as any);
+            const MathEndPointT = Math.min(1.0, minT + 0.05);
+            const endPoint = getAxialWiggle(prev[0], prev[1], current[0], current[1], MathEndPointT, tMode as any);
+
+            return {
+                pathD: tailPath.join(' '),
+                grad: {
+                    x1: getX(startPoint.q, startPoint.r),
+                    y1: getY(startPoint.q, startPoint.r),
+                    x2: getX(endPoint.q, endPoint.r),
+                    y2: getY(endPoint.q, endPoint.r),
+                    stop1: 0,
+                    stop2: 100
+                }
+            };
+        };
+
         if (travelAnimation) {
             const { startCoordinates, targetCoordinates, travelType } = travelAnimation;
 
@@ -387,57 +460,52 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                     if (i === 0) headPath.push(`M ${pX} ${pY}`);
                     else headPath.push(`L ${pX} ${pY}`);
                 }
-                paths.push(headPath.join(' '));
+                result.head = headPath.join(' ');
             }
 
             if (previousCoordinates) {
-                // 2. Tail Segment (Shrinking): Previous -> Anchor (Start)
-                const tailSteps = Math.max(2, Math.floor((1 - t) * 16));
-                if (t < 0.99) {
-                    const startHex = hexes.find(h => h.q === startCoordinates[0] && h.r === startCoordinates[1]);
-                    const tailTravelType = startHex ? getConnectionType(startHex, previousCoordinates[0], previousCoordinates[1]) : 'Wilderness';
+                // Full segment trailing the current start coordinates
+                const startHex = hexes.find(h => h.q === startCoordinates[0] && h.r === startCoordinates[1]);
+                const travelMode = startHex ? getConnectionType(startHex, previousCoordinates[0], previousCoordinates[1]) : 'Wilderness';
+                const fullTailData = buildFullSegment(previousCoordinates, startCoordinates, travelMode, t);
 
-                    const tailPath: string[] = [];
-                    for (let i = 0; i <= tailSteps; i++) {
-                        const stepT = t + (1 - t) * (i / tailSteps);
-                        const res = getAxialWiggle(
-                            previousCoordinates[0], previousCoordinates[1],
-                            startCoordinates[0], startCoordinates[1],
-                            stepT, tailTravelType
-                        );
-                        const pX = getX(res.q, res.r);
-                        const pY = getY(res.q, res.r);
-                        if (i === 0) tailPath.push(`M ${pX} ${pY}`);
-                        else tailPath.push(`L ${pX} ${pY}`);
+                if (fullTailData.grad) {
+                    result.recentFadeTail = fullTailData as any;
+                } else {
+                    result.fullTails.push(fullTailData.pathD);
+                }
+
+                if (previousPreviousCoordinates && t < 1.0) {
+                    // Fading segment trailing behind that one (A back to Start)
+                    const prevHex = hexes.find(h => h.q === previousCoordinates[0] && h.r === previousCoordinates[1]);
+                    const olderTravelMode = prevHex ? getConnectionType(prevHex, previousPreviousCoordinates[0], previousPreviousCoordinates[1]) : 'Wilderness';
+                    const fadedSeg = buildFadingSegment(previousPreviousCoordinates, previousCoordinates, olderTravelMode, t);
+
+                    if (fadedSeg) {
+                        result.olderFadeTail = fadedSeg;
                     }
-                    paths.push(tailPath.join(' '));
                 }
             }
         } else if (previousCoordinates) {
             const currentHex = hexes.find(h => h.isCurrent);
             if (currentHex) {
-                const idlePath: string[] = [];
                 const currentCoords: [number, number] = [currentHex.q, currentHex.r];
-                const idleTravelType = getConnectionType(currentHex, previousCoordinates[0], previousCoordinates[1]);
+                const travelMode = getConnectionType(currentHex, previousCoordinates[0], previousCoordinates[1]);
+                const fullTailData = buildFullSegment(previousCoordinates, currentCoords, travelMode, 0);
+                result.fullTails.push(fullTailData.pathD);
 
-                const STEPS = 16;
-                for (let i = 0; i <= STEPS; i++) {
-                    const stepT = i / STEPS;
-                    const res = getAxialWiggle(
-                        previousCoordinates[0], previousCoordinates[1],
-                        currentCoords[0], currentCoords[1],
-                        stepT, idleTravelType
-                    );
-                    const pX = getX(res.q, res.r);
-                    const pY = getY(res.q, res.r);
-                    if (i === 0) idlePath.push(`M ${pX} ${pY}`);
-                    else idlePath.push(`L ${pX} ${pY}`);
+                if (previousPreviousCoordinates) {
+                    const prevHex = hexes.find(h => h.q === previousCoordinates[0] && h.r === previousCoordinates[1]);
+                    const olderTravelMode = prevHex ? getConnectionType(prevHex, previousPreviousCoordinates[0], previousPreviousCoordinates[1]) : 'Wilderness';
+                    const fadedSeg = buildFadingSegment(previousPreviousCoordinates, previousCoordinates, olderTravelMode, 0);
+                    if (fadedSeg) {
+                        result.olderFadeTail = fadedSeg;
+                    }
                 }
-                paths.push(idlePath.join(' '));
             }
         }
 
-        return paths;
+        return result;
     };
 
     const getGoldenThreadPath = () => {
@@ -594,19 +662,78 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                         </g>
 
                         <g className="playerTrail">
-                            {getTrailPaths().map((pathData, i) => (
-                                <path
-                                    key={`trail-${i}`}
-                                    d={pathData}
-                                    fill="none"
-                                    stroke="#343d3dff"
-                                    strokeWidth="4"
-                                    strokeDasharray="8,6"
-                                    opacity="0.8"
-                                    strokeLinecap="round"
-                                    style={{ filter: 'drop-shadow(0 0 8px rgba(78, 205, 196, 0.6))' }}
-                                />
-                            ))}
+                            {(() => {
+                                const trailData = getTrailPaths();
+                                return (
+                                    <>
+                                        {trailData.recentFadeTail && (
+                                            <defs>
+                                                <linearGradient id="recentFadeTailGrad" x1={trailData.recentFadeTail.grad.x1} y1={trailData.recentFadeTail.grad.y1} x2={trailData.recentFadeTail.grad.x2} y2={trailData.recentFadeTail.grad.y2} gradientUnits="userSpaceOnUse">
+                                                    <stop offset={`${trailData.recentFadeTail.grad.stop1}%`} stopColor="#343d3dff" stopOpacity="0.8" />
+                                                    <stop offset={`${trailData.recentFadeTail.grad.stop2}%`} stopColor="#343d3dff" stopOpacity="0" />
+                                                </linearGradient>
+                                            </defs>
+                                        )}
+                                        {trailData.recentFadeTail && (
+                                            <path
+                                                d={trailData.recentFadeTail.pathD}
+                                                fill="none"
+                                                stroke="url(#recentFadeTailGrad)"
+                                                strokeWidth="4"
+                                                strokeDasharray="8,6"
+                                                strokeLinecap="round"
+                                                style={{ filter: 'drop-shadow(0 0 8px rgba(78, 205, 196, 0.6))' }}
+                                            />
+                                        )}
+
+                                        {trailData.olderFadeTail && (
+                                            <defs>
+                                                <linearGradient id="olderFadeTailGrad" x1={trailData.olderFadeTail.grad.x1} y1={trailData.olderFadeTail.grad.y1} x2={trailData.olderFadeTail.grad.x2} y2={trailData.olderFadeTail.grad.y2} gradientUnits="userSpaceOnUse">
+                                                    <stop offset={`${trailData.olderFadeTail.grad.stop1}%`} stopColor="#343d3dff" stopOpacity="0.8" />
+                                                    <stop offset={`${trailData.olderFadeTail.grad.stop2}%`} stopColor="#343d3dff" stopOpacity="0" />
+                                                </linearGradient>
+                                            </defs>
+                                        )}
+                                        {trailData.olderFadeTail && (
+                                            <path
+                                                d={trailData.olderFadeTail.pathD}
+                                                fill="none"
+                                                stroke="url(#olderFadeTailGrad)"
+                                                strokeWidth="4"
+                                                strokeDasharray="8,6"
+                                                strokeLinecap="round"
+                                                style={{ filter: 'drop-shadow(0 0 8px rgba(78, 205, 196, 0.6))' }}
+                                            />
+                                        )}
+
+                                        {trailData.fullTails.map((tPath, idx) => (
+                                            <path
+                                                key={`fulltail-${idx}`}
+                                                d={tPath}
+                                                fill="none"
+                                                stroke="#343d3dff"
+                                                strokeWidth="4"
+                                                strokeDasharray="8,6"
+                                                strokeLinecap="round"
+                                                opacity="0.8"
+                                                style={{ filter: 'drop-shadow(0 0 8px rgba(78, 205, 196, 0.6))' }}
+                                            />
+                                        ))}
+                                        {trailData.head && (
+                                            <path
+                                                d={trailData.head}
+                                                fill="none"
+                                                stroke="#343d3dff"
+                                                strokeWidth="4"
+                                                strokeDasharray="8,6"
+                                                opacity="0.8"
+                                                strokeLinecap="round"
+                                                style={{ filter: 'drop-shadow(0 0 8px rgba(78, 205, 196, 0.6))' }}
+                                            />
+                                        )}
+                                    </>
+                                );
+                            })()}
                         </g>
 
                         {/* Golden Thread (§6.4) */}
