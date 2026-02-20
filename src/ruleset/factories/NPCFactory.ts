@@ -45,6 +45,7 @@ export class NPCFactory {
             },
             dialogue_triggers: [] as string[],
             inventory: [] as { id: string, quantity: number }[],
+            availableQuests: [] as string[],
             conversationHistory: [] as { speaker: string, text: string, timestamp: string }[],
             factionId,
             role,

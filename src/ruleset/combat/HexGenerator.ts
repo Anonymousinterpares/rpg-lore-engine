@@ -24,7 +24,8 @@ export class HexGenerator {
         clusterSizes: Record<BiomeType, number>,
         pool?: BiomePoolManager,
         coastlines: Coastline[] = [],
-        seed: number = 12345 // Default seed if none provided
+        seed: number = 12345, // Default seed if none provided
+        existingStub?: Partial<Hex>
     ): GeneratedHexResult {
         const result = BiomeGenerationEngine.selectBiome(coords, coastlines, seed);
         const biome = result.biome;
@@ -74,17 +75,22 @@ export class HexGenerator {
             npcIds.push(npc.id);
         }
 
+        const finalName = (existingStub?.isQuestReserved && existingStub?.name)
+            ? existingStub.name
+            : `${biome} (Unknown)`;
+
         return {
             hex: {
+                ...existingStub,
                 coordinates: coords,
-                name: `${biome} (Unknown)`,
+                name: finalName,
                 generated: true,
                 biome: biome,
-                description: `A vast expanse of ${biome.toLowerCase()}.`,
+                description: existingStub?.description || `A vast expanse of ${biome.toLowerCase()}.`,
                 traversable_sides: { 'N': true, 'S': true, 'NE': true, 'NW': true, 'SE': true, 'SW': true },
-                interest_points: [],
+                interest_points: existingStub?.interest_points && existingStub.interest_points.length > 0 ? existingStub.interest_points : [],
                 resourceNodes: nodes,
-                openedContainers: {},
+                openedContainers: existingStub?.openedContainers || {},
                 visited: false,
                 inLineOfSight: false,
                 namingSource: 'engine',

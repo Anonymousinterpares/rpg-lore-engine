@@ -41,6 +41,8 @@ export const PointOfInterestSchema = z.object({
 export const HexSchema = z.object({
     coordinates: z.tuple([z.number(), z.number()]),
     generated: z.boolean().default(false),
+    isQuestReserved: z.boolean().default(false),
+    questId: z.string().optional(),
     biome: BiomeTypeSchema.default('Plains'),
     name: z.string().optional(),
     description: z.string().optional(),
@@ -61,7 +63,6 @@ export const HexSchema = z.object({
     connections: z.string().optional(),
 
     // --- Phase D/E Architecture ---
-    isQuestReserved: z.boolean().default(false),
     questReservationId: z.string().optional(),
     isNpcNamed: z.boolean().default(false),
     fogOfWarLevel: z.enum(['HIDDEN', 'SILHOUETTE', 'DISCOVERED', 'VISITED']).default('HIDDEN')

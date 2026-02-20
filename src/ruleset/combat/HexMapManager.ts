@@ -14,9 +14,6 @@ export class HexMapManager {
         this.registry = registry;
     }
 
-    /**
-     * Bootstraps the registry from storage if empty.
-     */
     public async initialize(): Promise<void> {
         // If the registry is empty, try to bootstrap it from the local file if it exists
         // This ensures Option A still respects pre-existing world data during development
@@ -26,6 +23,62 @@ export class HexMapManager {
             this.registry.hexes = fileRegistry.hexes;
             this.registry.grid_id = fileRegistry.grid_id || this.registry.grid_id;
         }
+    }
+
+    /**
+     * Finds and reserves an ungenerated hex within a given radius for a quest.
+     */
+    public async reserveQuestHex(startCoords: [number, number], minRadius: number, maxRadius: number, questId: string, customName: string): Promise<[number, number] | null> {
+        const [sq, sr] = startCoords;
+        let targetCoords: [number, number] | null = null;
+        let attempts = 0;
+        let valid = false;
+
+        // Try to find an ungenerated hex
+        while (!valid && attempts < 50) {
+            attempts++;
+            const dq = Math.floor(Math.random() * (maxRadius * 2 + 1)) - maxRadius;
+            const dr = Math.floor(Math.random() * (maxRadius * 2 + 1)) - maxRadius;
+            const dist = (Math.abs(dq) + Math.abs(dr) + Math.abs(-dq - dr)) / 2;
+
+            if (dist >= minRadius && dist <= maxRadius) {
+                const targetQ = sq + dq;
+                const targetR = sr + dr;
+                const key = `${targetQ},${targetR}`;
+                if (!this.registry.hexes[key] || !this.registry.hexes[key].generated) {
+                    targetCoords = [targetQ, targetR];
+                    valid = true;
+                }
+            }
+        }
+
+        if (targetCoords) {
+            const key = `${targetCoords[0]},${targetCoords[1]}`;
+            // Preserve existing stuff if there's an ungenerated stub (e.g., coastlines might make stubs, though usually ExplorationManager makes them. Just in case.)
+            const existing = this.registry.hexes[key] || {};
+
+            this.registry.hexes[key] = {
+                ...existing,
+                coordinates: targetCoords,
+                generated: false,
+                isQuestReserved: true,
+                questId: questId,
+                name: customName,
+                biome: existing.biome || 'Plains',
+                interest_points: existing.interest_points || [],
+                resourceNodes: existing.resourceNodes || [],
+                openedContainers: existing.openedContainers || {},
+                visited: false,
+                inLineOfSight: false,
+                namingSource: 'engine',
+                visualVariant: existing.visualVariant || 1,
+                npcs: existing.npcs || []
+            };
+
+            await this.save();
+        }
+
+        return targetCoords;
     }
 
     /**

@@ -58,6 +58,7 @@ export const WorldNPCSchema = z.object({
         id: z.string(),
         quantity: z.number().default(1)
     })).default([]),
+    availableQuests: z.array(z.string()).default([]),
     stats: z.record(AbilityScoreSchema, z.number()).default({
         'STR': 10, 'DEX': 10, 'CON': 10, 'INT': 10, 'WIS': 10, 'CHA': 10
     }),

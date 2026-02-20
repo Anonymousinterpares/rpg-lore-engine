@@ -106,7 +106,7 @@ export class ExplorationManager {
                 clusterSizes[b] = neighborWithBiome ? this.hexMapManager.getClusterSize(neighborWithBiome) : 0;
             }
 
-            const result = HexGenerator.generateHex(coords, neighbors, clusterSizes, this.biomePool, this.state.worldMap.coastlines || []);
+            const result = HexGenerator.generateHex(coords, neighbors, clusterSizes, this.biomePool, this.state.worldMap.coastlines || [], 12345, hex);
             generatedData = result.hex;
             biome = (result.hex as any).biome;
             variant = (result.hex as any).visualVariant;
@@ -118,7 +118,9 @@ export class ExplorationManager {
         }
 
         let newName: string;
-        if (isVisible && !isVisited) {
+        if (hex.isQuestReserved && hex.name) {
+            newName = hex.name;
+        } else if (isVisible && !isVisited) {
             newName = `${biome} (Uncharted Territory)`;
         } else if (isVisited) {
             newName = `${biome} (Discovered)`;

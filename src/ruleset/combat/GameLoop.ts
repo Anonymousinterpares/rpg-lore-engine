@@ -33,6 +33,7 @@ import { MERCHANT_POOLS, BIOME_COMMERCE, COMMON_ITEMS, DEFAULT_COMMERCE } from '
 import { WorldNPC } from '../schemas/WorldEnrichmentSchema';
 import { NPCMovementEngine } from './managers/NPCMovementEngine';
 import { QuestEngine } from './managers/QuestEngine';
+import { QuestGenerator } from './managers/QuestGenerator';
 import { Dice } from './Dice';
 import { z } from 'zod';
 
@@ -61,6 +62,7 @@ export class GameLoop {
     private scribe: StoryScribe;
     private npcMovement: NPCMovementEngine;
     private questEngine: QuestEngine;
+    private questGenerator: QuestGenerator;
 
     private onStateUpdate?: (state: GameState) => Promise<void>;
     private listeners: ((state: GameState) => void)[] = [];
@@ -142,6 +144,12 @@ export class GameLoop {
             this.inventory,
             () => this.emitStateUpdate(),
             (msg) => this.addCombatLog(msg)
+        );
+
+        this.questGenerator = new QuestGenerator(
+            this.state,
+            this.hexMapManager,
+            () => this.emitStateUpdate()
         );
 
         // Safety Check: Register any NPCs in the current hex on load
@@ -330,6 +338,7 @@ export class GameLoop {
                 const encounter = await this.time.advanceTimeAndProcess(5);
                 this.npcMovement.processTurn(this.state.worldTime.totalTurns);
                 await this.questEngine.checkDeadlines(this.state.worldTime.totalTurns);
+                await this.questGenerator.processTurn(this.state.worldTime.totalTurns);
                 if (encounter) {
                     await this.initializeCombat(encounter);
                     // Append to existing narrative if success, or just state it if fail
