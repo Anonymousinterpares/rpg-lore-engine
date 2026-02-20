@@ -29,7 +29,8 @@ export class SettingsManager {
             tutorials: true,
             autosave: false,
             developerMode: false
-        }
+        },
+        ai: {}
     };
 
     /**

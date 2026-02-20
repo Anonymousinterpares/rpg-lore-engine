@@ -191,7 +191,10 @@ export class HexMapManager {
                     openedContainers: {},
                     namingSource: 'engine',
                     visualVariant: 1,
-                    npcs: []
+                    npcs: [],
+                    isQuestReserved: false,
+                    isNpcNamed: false,
+                    fogOfWarLevel: 'HIDDEN'
                 };
                 this.registry.hexes[key] = placeholder;
             }

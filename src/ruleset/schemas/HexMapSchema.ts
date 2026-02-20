@@ -58,7 +58,13 @@ export const HexSchema = z.object({
     visualVariant: z.number().int().min(1).max(20).default(1),
     oceanDirection: z.enum(['N', 'S', 'E', 'W', 'NE', 'SE', 'NW', 'SW']).optional(),
     npcs: z.array(z.string()).default([]),
-    connections: z.string().optional()
+    connections: z.string().optional(),
+
+    // --- Phase D/E Architecture ---
+    isQuestReserved: z.boolean().default(false),
+    questReservationId: z.string().optional(),
+    isNpcNamed: z.boolean().default(false),
+    fogOfWarLevel: z.enum(['HIDDEN', 'SILHOUETTE', 'DISCOVERED', 'VISITED']).default('HIDDEN')
 });
 
 export type Hex = z.infer<typeof HexSchema>;

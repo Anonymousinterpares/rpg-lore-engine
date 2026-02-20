@@ -2,6 +2,7 @@ import { GameState } from '../../schemas/FullSaveStateSchema';
 import { DataManager } from '../../data/DataManager';
 import { MechanicsEngine } from '../MechanicsEngine';
 import { EquipmentEngine } from '../EquipmentEngine';
+import { EventBusManager } from './EventBusManager';
 
 /**
  * Handles inventory operations, items, equipment, and equipment-related stat recalculations.
@@ -50,6 +51,7 @@ export class InventoryManager {
 
         droppedItems.splice(itemIndex, 1);
         await this.emitStateUpdate();
+        EventBusManager.publish('ITEM_ACQUIRED', { itemId: item.id || item.name, quantity: item.quantity || 1 });
         return `Picked up ${item.name}.`;
     }
 
@@ -79,6 +81,7 @@ export class InventoryManager {
         });
 
         await this.emitStateUpdate();
+        EventBusManager.publish('ITEM_LOST', { itemId: item.id || item.name, quantity: item.quantity || 1 });
         return `Dropped ${item.name}.`;
     }
 
@@ -187,6 +190,7 @@ export class InventoryManager {
         this.state.location.combatLoot.splice(itemIndex, 1);
         this.addCombatLog(`Picked up ${item.name}.`);
         await this.emitStateUpdate();
+        EventBusManager.publish('ITEM_ACQUIRED', { itemId: item.name, quantity: item.quantity || 1 });
     }
 
     public async addItem(itemName: string, count: number = 1): Promise<string> {
@@ -239,6 +243,7 @@ export class InventoryManager {
         }
 
         await this.emitStateUpdate();
+        EventBusManager.publish('ITEM_ACQUIRED', { itemId: item.name, quantity: count });
         return `Added ${count}x ${item.name} to inventory.`;
     }
 
@@ -265,6 +270,7 @@ export class InventoryManager {
         }
 
         await this.emitStateUpdate();
+        EventBusManager.publish('ITEM_LOST', { itemId: item.name, quantity: 1 });
         return true;
     }
 
@@ -279,6 +285,7 @@ export class InventoryManager {
         }
 
         await this.emitStateUpdate();
+        EventBusManager.publish('ITEM_LOST', { itemId: item.name, quantity: count });
         return true;
     }
 }

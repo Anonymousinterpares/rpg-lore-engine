@@ -240,11 +240,12 @@ export class CharacterFactory {
                     title: 'The First Step',
                     description: 'You awake in a strange clearing. The air is fresh, but the silence is heavy. You must get your bearings.',
                     status: 'ACTIVE',
+                    turnAccepted: 0,
                     isNew: true,
                     objectives: [
-                        { id: 'obj_master_booklet', description: 'Master the Booklet: View all pages (Character, Map, Quests, Equipment, Codex)', isCompleted: false, currentProgress: 0, maxProgress: 5 },
-                        { id: 'obj_study_gear', description: 'Study Your Gear: Examine an item in your inventory', isCompleted: false, currentProgress: 0, maxProgress: 1 },
-                        { id: 'obj_begin_journey', description: 'Begin the Journey: Move to a neighboring hex', isCompleted: false, currentProgress: 0, maxProgress: 1 }
+                        { id: 'obj_master_booklet', type: 'EXPLORE', targetId: 'tutorial', isHidden: false, description: 'Master the Booklet: View all pages (Character, Map, Quests, Equipment, Codex)', isCompleted: false, currentProgress: 0, maxProgress: 5 },
+                        { id: 'obj_study_gear', type: 'EXPLORE', targetId: 'tutorial', isHidden: false, description: 'Study Your Gear: Examine an item in your inventory', isCompleted: false, currentProgress: 0, maxProgress: 1 },
+                        { id: 'obj_begin_journey', type: 'EXPLORE', targetId: 'tutorial', isHidden: false, description: 'Begin the Journey: Move to a neighboring hex', isCompleted: false, currentProgress: 0, maxProgress: 1 }
                     ],
                     rewards: {
                         xp: 50,

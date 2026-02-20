@@ -2,24 +2,24 @@
     "NARRATOR": {
         "id": "NARRATOR",
         "name": "The Narrator",
-        "providerId": "anthropic",
-        "modelId": "claude-4-5-sonnet",
+        "providerId": "openrouter",
+        "modelId": "openai/gpt-oss-120b",
         "temperature": 0.8,
         "maxTokens": 1500
     },
     "DIRECTOR": {
         "id": "DIRECTOR",
         "name": "The Director",
-        "providerId": "google",
-        "modelId": "gemini-3-0-flash",
+        "providerId": "openrouter",
+        "modelId": "openai/gpt-oss-120b",
         "temperature": 0.7,
         "maxTokens": 500
     },
     "NPC_CONTROLLER": {
         "id": "NPC_CONTROLLER",
         "name": "NPC Controller",
-        "providerId": "google",
-        "modelId": "gemini-3-0-flash",
+        "providerId": "openrouter",
+        "modelId": "openai/gpt-oss-120b",
         "temperature": 0.9,
         "maxTokens": 800
     },
@@ -27,7 +27,7 @@
         "id": "LORE_KEEPER",
         "name": "Lore Keeper",
         "providerId": "openrouter",
-        "modelId": "mistral-7b",
+        "modelId": "openai/gpt-oss-120b",
         "temperature": 0.7,
         "maxTokens": 2000
     }

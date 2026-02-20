@@ -5,6 +5,7 @@ import { HexGenerator } from '../HexGenerator';
 import { Hex } from '../../schemas/HexMapSchema';
 import { BiomeType } from '../../schemas/BiomeSchema';
 import { InfrastructureManager, InfrastructureType } from '../InfrastructureRules';
+import { EventBusManager } from './EventBusManager';
 
 /**
  * Handles world exploration, map expansion, and procedural hex generation.
@@ -48,6 +49,7 @@ export class ExplorationManager {
                 } else if (!nHex.inLineOfSight) {
                     nHex.inLineOfSight = true;
                     await this.hexMapManager.setHex(nHex);
+                    EventBusManager.publish('HEX_DISCOVERED', { coordinates: neighbor.coordinates, hexId: nKey });
                 }
             }
         }
@@ -177,6 +179,10 @@ export class ExplorationManager {
         }
 
         await this.hexMapManager.setHex(updatedHex);
+
+        if (isVisible) {
+            EventBusManager.publish('HEX_DISCOVERED', { coordinates: coords, hexId: `${coords[0]},${coords[1]}` });
+        }
     }
 
     /**

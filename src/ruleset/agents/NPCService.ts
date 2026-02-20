@@ -3,6 +3,7 @@ import { AgentManager } from './AgentManager';
 import { LLMClient } from '../combat/LLMClient';
 import { LLM_PROVIDERS } from '../data/StaticData';
 import { WorldNPC } from '../schemas/WorldEnrichmentSchema';
+import { EventBusManager } from '../combat/managers/EventBusManager';
 
 export class NPCService {
     /**
@@ -125,6 +126,8 @@ Respond to the player's message in character.
                     timestamp: new Date().toISOString()
                 });
             }
+
+            EventBusManager.publish('NPC_INTERACTION', { npcId: npc.id, nodeTopic: playerInput.substring(0, 50) });
 
             return response;
         } catch (e) {

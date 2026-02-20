@@ -24,7 +24,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, onSave, initialS
         setSettings(initialSettings);
     }, [initialSettings]);
     const [apiKeys, setApiKeys] = useState<Record<string, string>>({});
-    const [selectedModels, setSelectedModels] = useState<Record<string, string>>({});
+    const [selectedModels, setSelectedModels] = useState<Record<string, string>>(initialSettings?.ai?.selectedModels || {});
     const [testResults, setTestResults] = useState<Record<string, TestResult>>({});
     const [testingProvider, setTestingProvider] = useState<string | null>(null);
     const [testingAgent, setTestingAgent] = useState<string | null>(null);
@@ -33,12 +33,14 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, onSave, initialS
     useEffect(() => {
         const loadKeys = async () => {
             const keys: Record<string, string> = {};
-            const models: Record<string, string> = {};
+            const models: Record<string, string> = { ...(initialSettings?.ai?.selectedModels || {}) };
 
             for (const p of LLM_PROVIDERS) {
                 const key = await LLMClient.getApiKey(p);
                 if (key) keys[p.id] = key;
-                models[p.id] = p.models[0].id;
+                if (!models[p.id]) {
+                    models[p.id] = p.models[0].id;
+                }
             }
             setApiKeys(keys);
             setSelectedModels(models);

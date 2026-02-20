@@ -26,6 +26,9 @@ export const CampaignSettingsSchema = z.object({
         tutorials: z.boolean().default(true),
         autosave: z.boolean().default(false),
         developerMode: z.boolean().default(false)
+    }).default({}),
+    ai: z.object({
+        selectedModels: z.record(z.string(), z.string()).optional()
     }).default({})
 });
 

@@ -105,7 +105,10 @@ export class MovementEngine {
                 openedContainers: {},
                 namingSource: 'engine',
                 visualVariant: 1,
-                npcs: []
+                npcs: [],
+                isQuestReserved: false,
+                isNpcNamed: false,
+                fogOfWarLevel: 'HIDDEN'
             };
             this.mapManager.setHex(newHex!);
             requiresGeneration = true;

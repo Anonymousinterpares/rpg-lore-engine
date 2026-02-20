@@ -16,6 +16,7 @@ import { NarratorService } from '../../agents/NarratorService';
 import { ContextManager } from '../../agents/ContextManager';
 import { ParsedIntent } from '../IntentRouter';
 import { AbilityParser } from '../AbilityParser';
+import { EventBusManager } from './EventBusManager';
 import { z } from 'zod';
 
 
@@ -553,6 +554,9 @@ export class CombatOrchestrator {
 
             const defeatedEnemies = combatState.combatants.filter(c => c.type === 'enemy');
             for (const enemy of defeatedEnemies) {
+                // Publish kill event for Quest Engine decoupled tracking
+                EventBusManager.publish('COMBAT_KILL', { targetId: enemy.name, count: 1 });
+
                 const monsterData = DataManager.getMonster(enemy.name);
                 if (monsterData) {
                     const loot = LootEngine.processDefeat(monsterData);
