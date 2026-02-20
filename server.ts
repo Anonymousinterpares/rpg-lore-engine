@@ -46,7 +46,15 @@ const resolvePath = (clientPath: string) => {
     }
 
     // 5. Join with saves root
-    return path.join(rootSavesDir, normalized);
+    const resolvedPath = path.join(rootSavesDir, normalized);
+
+    // Security: Prevent directory traversal (e.g. "../filename")
+    const relative = path.relative(rootSavesDir, resolvedPath);
+    if (relative.startsWith('..') || path.isAbsolute(relative)) {
+        throw new Error('Access denied: Invalid path');
+    }
+
+    return resolvedPath;
 };
 
 app.post('/api/exists', async (req, res) => {

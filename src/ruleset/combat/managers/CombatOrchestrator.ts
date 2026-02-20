@@ -39,6 +39,9 @@ export class CombatOrchestrator {
         if (!this.state.combat || this.turnProcessing) return;
         this.turnProcessing = true;
 
+        // Ensure monsters are loaded if game was resumed mid-combat
+        await DataManager.loadMonsters();
+
         try {
             while (this.state.combat && !await this.checkCombatEnd()) {
                 const actor = this.state.combat.combatants[this.state.combat.currentTurnIndex];
