@@ -20,6 +20,7 @@ interface HexData {
     interest_points?: { name: string }[];
     inLineOfSight?: boolean;
     oceanDirection?: 'N' | 'S' | 'E' | 'W' | 'NE' | 'SE' | 'NW' | 'SW';
+    questStatus?: 'AVAILABLE' | 'ACTIVE_TARGET' | 'TURN_IN';
 }
 
 interface HexMapViewProps {
@@ -765,6 +766,53 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                                 );
                             })()}
                         </g>
+
+                        {/* Quest Markers */}
+                        <g className="questMarkers">
+                            {hexes.map((hex) => {
+                                if (!hex.questStatus) return null;
+
+                                const x = getX(hex.q, hex.r);
+                                const y = getY(hex.q, hex.r) - (size * 0.7); // Float slightly above center
+
+                                let symbol = '';
+                                let color = '';
+                                let dropShadow = '';
+
+                                if (hex.questStatus === 'AVAILABLE') {
+                                    symbol = '!';
+                                    color = '#ffd700'; // Gold
+                                    dropShadow = 'rgba(255, 215, 0, 0.8)';
+                                } else if (hex.questStatus === 'ACTIVE_TARGET') {
+                                    symbol = '★'; // Target star
+                                    color = '#4ecdc4'; // Teal/Blue
+                                    dropShadow = 'rgba(78, 205, 196, 0.8)';
+                                } else if (hex.questStatus === 'TURN_IN') {
+                                    symbol = '?';
+                                    color = '#ffd700'; // Gold
+                                    dropShadow = 'rgba(255, 215, 0, 0.8)';
+                                }
+
+                                return (
+                                    <text
+                                        key={`quest-${hex.id}`}
+                                        x={x}
+                                        y={y}
+                                        fontSize={size * 1.5}
+                                        fontWeight="bold"
+                                        textAnchor="middle"
+                                        fill={color}
+                                        style={{
+                                            filter: `drop-shadow(0 0 8px ${dropShadow})`,
+                                            pointerEvents: 'none',
+                                            userSelect: 'none'
+                                        }}
+                                    >
+                                        {symbol}
+                                    </text>
+                                );
+                            })}
+                        </g>
                     </svg>
 
                     <div
@@ -777,6 +825,17 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                     />
                 </div>
             </div>
+
+            {/* Recenter Button - Only show if draggable (World Map view) */}
+            {isDraggable && (panOffset.x !== 0 || panOffset.y !== 0) && (
+                <button
+                    className={styles.recenterButton}
+                    onClick={() => setPanOffset({ x: 0, y: 0 })}
+                    title="Recenter on Player"
+                >
+                    <MapPin size={24} />
+                </button>
+            )}
         </div>
     );
 };

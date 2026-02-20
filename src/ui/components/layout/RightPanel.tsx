@@ -43,23 +43,52 @@ const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests
     const closeMenu = () => setContextMenu(null);
 
     // Map state.worldMap.hexes to HexMapView format
-    const hexData = Object.entries(state.worldMap.hexes).map(([id, hex]) => ({
-        id,
-        q: hex.coordinates[0],
-        r: hex.coordinates[1],
-        biome: hex.biome,
-        isVisited: hex.visited,
-        isCurrent: state.location.hexId === id,
-        isDiscovered: hex.visited || hex.inLineOfSight || false, // Show if visited or in LOS
-        name: hex.name,
-        playerName: hex.playerName,
-        namingSource: hex.namingSource,
-        visualVariant: hex.visualVariant,
-        resourceNodes: hex.resourceNodes,
-        interest_points: hex.interest_points,
-        oceanDirection: (hex as any).oceanDirection,
-        connections: hex.connections
-    }));
+    const hexData = Object.entries(state.worldMap.hexes).map(([id, hex]) => {
+        let questStatus: 'AVAILABLE' | 'ACTIVE_TARGET' | 'TURN_IN' | undefined = undefined;
+
+        // 1. Check for AVAILABLE quests
+        const npcsInHex = (hex.npcs || []).map(npcId => state.worldNpcs.find(n => n.id === npcId)).filter(Boolean);
+        const hasAvailableQuests = npcsInHex.some(npc => npc && npc.availableQuests && npc.availableQuests.length > 0);
+        if (hasAvailableQuests) {
+            questStatus = 'AVAILABLE';
+        }
+
+        // 2 & 3. Check for ACTIVE Targets and TURN_INs
+        state.activeQuests.forEach(quest => {
+            const isAllCompleted = quest.objectives.every(o => o.isCompleted);
+            if (isAllCompleted && quest.status === 'ACTIVE') {
+                if (quest.giverNpcId && (hex.npcs || []).includes(quest.giverNpcId)) {
+                    questStatus = 'TURN_IN';
+                }
+            } else if (quest.status === 'ACTIVE') {
+                const hasObjectiveHere = quest.objectives.some(o =>
+                    !o.isCompleted && o.targetCoords && o.targetCoords[0] === hex.coordinates[0] && o.targetCoords[1] === hex.coordinates[1]
+                );
+                if (hasObjectiveHere && questStatus !== 'TURN_IN') {
+                    questStatus = 'ACTIVE_TARGET';
+                }
+            }
+        });
+
+        return {
+            id,
+            q: hex.coordinates[0],
+            r: hex.coordinates[1],
+            biome: hex.biome,
+            isVisited: hex.visited,
+            isCurrent: state.location.hexId === id,
+            isDiscovered: hex.visited || hex.inLineOfSight || hex.isQuestReserved || false, // Show if visited, in LOS, or quest reserved
+            name: hex.name,
+            playerName: hex.playerName,
+            namingSource: hex.namingSource,
+            visualVariant: hex.visualVariant,
+            resourceNodes: hex.resourceNodes,
+            interest_points: hex.interest_points,
+            oceanDirection: (hex as any).oceanDirection,
+            connections: hex.connections,
+            questStatus
+        };
+    });
 
     // Filter based on viewMode
     const currentHex = state.worldMap.hexes[state.location.hexId];
