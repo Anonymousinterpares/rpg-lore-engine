@@ -31,12 +31,12 @@ const RightPanel: React.FC<RightPanelProps> = ({ className, onWorldMap, onQuests
 
     const handleMove = async (destination: string | [number, number]) => {
         if (engine) {
+            setContextMenu(null);
             if (typeof destination === 'string') {
                 await engine.processTurn(`/move ${destination}`);
             } else {
                 await engine.processTurn(`/moveto ${destination[0]} ${destination[1]}`);
             }
-            setContextMenu(null);
         }
     };
 

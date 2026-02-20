@@ -37,6 +37,7 @@ interface HexMapViewProps {
         controlPointOffset: [number, number];
         startTime: number;
         duration: number;
+        travelType?: 'Road' | 'Path' | 'Ancient' | 'Stealth' | 'Wilderness';
     };
     previousCoordinates?: [number, number];
     previousControlPointOffset?: [number, number];
@@ -103,25 +104,102 @@ const HexMapView: React.FC<HexMapViewProps> = ({
         }
     }, [travelAnimation]);
 
+    // Extract the shared wiggle logic so roads, camera, and trails are perfectly synced.
+    const getAxialWiggle = (
+        startQ: number, startR: number,
+        endQ: number, endR: number,
+        t: number,
+        travelType: 'Road' | 'Path' | 'Ancient' | 'Stealth' | 'Wilderness' = 'Wilderness'
+    ) => {
+        // Simple hash function for consistent seeds
+        const hashString = (str: string) => {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash |= 0;
+            }
+            return Math.abs(hash);
+        };
+
+        // For paths/roads, we want the seed to be identical regardless of travel direction
+        const isReversed = startQ > endQ || (startQ === endQ && startR > endR);
+        const canonStartQ = isReversed ? endQ : startQ;
+        const canonStartR = isReversed ? endR : startR;
+        const canonEndQ = isReversed ? startQ : endQ;
+        const canonEndR = isReversed ? startR : endR;
+
+        // If wandering wilderness, we can use a different seed or the raw coordinates
+        // so it looks like walking off-path.
+        const seedStr = (travelType === 'Stealth' || travelType === 'Wilderness')
+            ? `${startQ},${startR}-${endQ},${endR}-wild`
+            : `${canonStartQ},${canonStartR}-${canonEndQ},${canonEndR}`;
+
+        const seed = hashString(seedStr);
+        const pseudoRand = (s: number) => ((s * 9301 + 49297) % 233280) / 233280;
+
+        // Amplitude values based on travel type
+        // Roads are tighter, wilderness is wilder
+        let baseAmp = 1.0;
+        if (travelType === 'Stealth') baseAmp = 1.5;
+        if (travelType === 'Road') baseAmp = 0.5;
+
+        const amp1 = (pseudoRand(seed) - 0.5) * 0.15 * baseAmp;
+        const amp2 = (pseudoRand(seed + 1) - 0.5) * 0.25 * baseAmp;
+        const amp3 = (pseudoRand(seed + 2) - 0.5) * 0.20 * baseAmp;
+        const amp4 = (pseudoRand(seed + 3) - 0.5) * 0.15 * baseAmp;
+        const amp5 = (pseudoRand(seed + 4) - 0.5) * 0.10 * baseAmp;
+
+        const getDisplacement = (val: number) => {
+            // Evaluates the fourier series for a canonical t from 0 to 1
+            return amp1 * Math.sin(Math.PI * val) +
+                amp2 * Math.sin(2 * Math.PI * val) +
+                amp3 * Math.sin(3 * Math.PI * val) +
+                amp4 * Math.sin(4 * Math.PI * val) +
+                amp5 * Math.sin(5 * Math.PI * val);
+        };
+
+        // If we are traveling 'reversed' down a canonical path, we evaluate the curve backwards
+        const canonicalT = isReversed ? 1.0 - t : t;
+        const disp = getDisplacement(canonicalT);
+
+        // Vector math in RAW screen space (ignoring camera and pan offsets for now, we just want the geometric shape)
+        const sX = size * (3 / 2 * canonStartQ);
+        const sY = -size * (Math.sqrt(3) / 2 * canonStartQ + Math.sqrt(3) * canonStartR);
+        const eX = size * (3 / 2 * canonEndQ);
+        const eY = -size * (Math.sqrt(3) / 2 * canonEndQ + Math.sqrt(3) * canonEndR);
+
+        const vX = eX - sX;
+        const vY = eY - sY;
+        const len = Math.sqrt(vX * vX + vY * vY) || 1;
+
+        // Normal vector to the axis line
+        let nX = -vY / len;
+        let nY = vX / len;
+
+        // Apply normal displacement in screen space
+        const pixelDisp = disp * size;
+
+        // Pure un-offset pixel position of the point on the curve
+        const rawPX = sX + vX * canonicalT + nX * pixelDisp;
+        const rawPY = sY + vY * canonicalT + nY * pixelDisp;
+
+        // Convert back to pure axial coordinates
+        const q = rawPX / (size * 1.5);
+        const r = (rawPY / -size - (Math.sqrt(3) / 2) * q) / Math.sqrt(3);
+
+        return { q, r };
+    };
+
     const getCameraAxial = () => {
         if (travelAnimation) {
-            const { startCoordinates, targetCoordinates, controlPointOffset } = travelAnimation;
-
-            const startQ = startCoordinates[0];
-            const startR = startCoordinates[1];
-            const targetQ = targetCoordinates[0];
-            const targetR = targetCoordinates[1];
-
-            const midQ = (startQ + targetQ) / 2;
-            const midR = (startR + targetR) / 2;
-            const controlQ = midQ + controlPointOffset[0];
-            const controlR = midR + controlPointOffset[1];
-
-            // Quadratic Bezier interpolation
-            const q = Math.pow(1 - t, 2) * startQ + 2 * (1 - t) * t * controlQ + Math.pow(t, 2) * targetQ;
-            const r = Math.pow(1 - t, 2) * startR + 2 * (1 - t) * t * controlR + Math.pow(t, 2) * targetR;
-
-            return { q, r };
+            const { startCoordinates, targetCoordinates, travelType } = travelAnimation;
+            const res = getAxialWiggle(
+                startCoordinates[0], startCoordinates[1],
+                targetCoordinates[0], targetCoordinates[1],
+                t,
+                travelType as any
+            );
+            return { q: res.q, r: res.r };
         }
 
         // Fallback: Use current hex, or the last targeted coordinates during transition
@@ -177,7 +255,16 @@ const HexMapView: React.FC<HexMapViewProps> = ({
     const handleMouseUp = () => setIsDragging(false);
 
     const getMovingPlayerPos = () => {
-        // Dot is ALWAYS at 0,0 relative to centered camera
+        if (travelAnimation) {
+            const { startCoordinates, targetCoordinates, travelType } = travelAnimation;
+            const res = getAxialWiggle(
+                startCoordinates[0], startCoordinates[1],
+                targetCoordinates[0], targetCoordinates[1],
+                t,
+                travelType as any
+            );
+            return { x: getX(res.q, res.r), y: getY(res.q, res.r) };
+        }
         return { x: getX(cameraAxial.q, cameraAxial.r), y: getY(cameraAxial.q, cameraAxial.r) };
     };
 
@@ -219,40 +306,31 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                     case 5: nQ--; nR++; break; // NW
                 }
 
-                // Deterministic Bezier (Matches GameLoop.ts logic)
-                const seed = (Math.min(hex.q, nQ) * 131 + Math.min(hex.r, nR) * 7 + Math.max(hex.q, nQ) * 31 + Math.max(hex.r, nR) * 3) % 1000;
-                const pseudoRand = (s: number) => ((s * 9301 + 49297) % 233280) / 233280;
+                // To ensure seamless paths, generate the entire path from a canonical "start" hex to "end" hex 
+                // and only draw the first half depending on which hex we are processing.
+                // Since getAxialWiggle internalizes canonical directions, we simply ask for t=0.0 to 0.5
+                // which represents the segment from the center of THIS hex to the boundary of the neighbor.
+                const STEPS = 8; // 8 segments per hex 'half', resulting in 16 total per connection
+                const pathParts: string[] = [];
 
-                const midQ = (hex.q + nQ) / 2;
-                const midR = (hex.r + nR) / 2;
-                const cX = pseudoRand(seed) * 0.8 - 0.4;
-                const cY = pseudoRand(seed + 1) * 0.8 - 0.4;
+                for (let i = 0; i <= STEPS; i++) {
+                    const stepT = 0.5 * (i / STEPS);
+                    const res = getAxialWiggle(hex.q, hex.r, nQ, nR, stepT, type === 'Ancient' ? 'Ancient' : (type === 'Road' ? 'Road' : 'Path'));
 
-                // Original Quadratic Bezier Points: P0 (hex), P1 (cp), P2 (neighbor)
-                // cp = [midQ + cX, midR + cY]
-                const p0: [number, number] = [hex.q, hex.r];
-                const p1: [number, number] = [midQ + cX, midR + cY];
-                const p2: [number, number] = [nQ, nR];
+                    // getAxialWiggle pX/pY gives raw screen space from hex 0,0. 
+                    // We need to add panOffset for the SVG to render correctly relative to the viewport.
+                    const pX = getX(res.q, res.r);
+                    const pY = getY(res.q, res.r);
 
-                // For split rendering, we draw the segment from t=0 to t=0.5 (the hex's half)
-                // New points for the half-segment Bezier:
-                // New P0 = p0
-                // New P1 = (p0 + p1) / 2
-                // New P2 = B(0.5) = (p0 + 2*p1 + p2) / 4
-
-                const hp0 = p0;
-                const hp1: [number, number] = [(p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2];
-                const hp2: [number, number] = [(p0[0] + 2 * p1[0] + p2[0]) / 4, (p0[1] + 2 * p1[1] + p2[1]) / 4];
-
-                const sX = getX(hp0[0], hp0[1]);
-                const sY = getY(hp0[0], hp0[1]);
-                const ctX = getX(hp1[0], hp1[1]);
-                const ctY = getY(hp1[0], hp1[1]);
-                const eX = getX(hp2[0], hp2[1]);
-                const eY = getY(hp2[0], hp2[1]);
+                    if (i === 0) {
+                        pathParts.push(`M ${pX} ${pY}`);
+                    } else {
+                        pathParts.push(`L ${pX} ${pY}`);
+                    }
+                }
 
                 infrastructure.push({
-                    d: `M ${sX} ${sY} Q ${ctX} ${ctY} ${eX} ${eY}`,
+                    d: pathParts.join(' '),
                     type: type
                 });
             });
@@ -261,68 +339,101 @@ const HexMapView: React.FC<HexMapViewProps> = ({
         return infrastructure;
     };
 
-    // Calculate Trail Segments (Curved) using Axial Math
+    // Calculate Trail Segments matching the wiggles
     const getTrailPaths = () => {
         const paths: string[] = [];
 
-        // Helper to get Axial path data for a sub-segment of a Quadratic Bezier curve using Blossoming
-        const getAxialBezierSubcurve = (p0: [number, number], p1: [number, number], p2: [number, number], t0: number, t1: number) => {
-            if (Math.abs(t1 - t0) < 0.001) return "";
-
-            // Blossom formula for Quadratic Bezier: P(u, v) = (1-u)(1-v)P0 + [u(1-v) + v(1-u)]P1 + uvP2
-            const blossom = (u: number, v: number): [number, number] => [
-                (1 - u) * (1 - v) * p0[0] + (u * (1 - v) + v * (1 - u)) * p1[0] + u * v * p2[0],
-                (1 - u) * (1 - v) * p0[1] + (u * (1 - v) + v * (1 - u)) * p1[1] + u * v * p2[1]
-            ];
-
-            // A sub-segment [t0, t1] of a quadratic Bezier has control points:
-            // Q0 = P(t0, t0), Q1 = P(t0, t1), Q2 = P(t1, t1)
-            const q0 = blossom(t0, t0);
-            const q1 = blossom(t0, t1);
-            const q2 = blossom(t1, t1);
-
-            const sX = getX(q0[0], q0[1]);
-            const sY = getY(q0[0], q0[1]);
-            const cX = getX(q1[0], q1[1]);
-            const cY = getY(q1[0], q1[1]);
-            const eX = getX(q2[0], q2[1]);
-            const eY = getY(q2[0], q2[1]);
-
-            return `M ${sX} ${sY} Q ${cX} ${cY} ${eX} ${eY}`;
+        const getConnectionType = (hex: any, targetQ: number, targetR: number): 'Road' | 'Path' | 'Ancient' | 'Wilderness' => {
+            if (!hex || !hex.connections) return 'Wilderness';
+            const parts = hex.connections.split(',');
+            for (const part of parts) {
+                const [sideStr, typeCode, disco] = part.split(':');
+                if (disco !== '1') continue;
+                const side = parseInt(sideStr, 10);
+                let nQ = hex.q; let nR = hex.r;
+                switch (side) {
+                    case 0: nR++; break;
+                    case 1: nQ++; break;
+                    case 2: nQ++; nR--; break;
+                    case 3: nR--; break;
+                    case 4: nQ--; break;
+                    case 5: nQ--; nR++; break;
+                }
+                if (nQ === targetQ && nR === targetR) {
+                    if (typeCode === 'R') return 'Road';
+                    if (typeCode === 'A') return 'Ancient';
+                    return 'Path';
+                }
+            }
+            return 'Wilderness';
         };
 
         if (travelAnimation) {
-            const { startCoordinates, targetCoordinates, controlPointOffset } = travelAnimation;
-
-            const midQ = (startCoordinates[0] + targetCoordinates[0]) / 2;
-            const midR = (startCoordinates[1] + targetCoordinates[1]) / 2;
-            const cp: [number, number] = [midQ + controlPointOffset[0], midR + controlPointOffset[1]];
+            const { startCoordinates, targetCoordinates, travelType } = travelAnimation;
 
             // 1. Head Segment (Growing): Anchor (Start) -> Player (Center)
-            const dHead = getAxialBezierSubcurve(startCoordinates, cp, targetCoordinates, 0, t);
-            if (dHead) paths.push(dHead);
+            const STEPS = Math.max(2, Math.floor(t * 16));
+            if (t > 0.01) {
+                const headPath: string[] = [];
+                for (let i = 0; i <= STEPS; i++) {
+                    const stepT = i / STEPS * t;
+                    const res = getAxialWiggle(
+                        startCoordinates[0], startCoordinates[1],
+                        targetCoordinates[0], targetCoordinates[1],
+                        stepT, travelType as any
+                    );
+                    const pX = getX(res.q, res.r);
+                    const pY = getY(res.q, res.r);
+                    if (i === 0) headPath.push(`M ${pX} ${pY}`);
+                    else headPath.push(`L ${pX} ${pY}`);
+                }
+                paths.push(headPath.join(' '));
+            }
 
             if (previousCoordinates) {
                 // 2. Tail Segment (Shrinking): Previous -> Anchor (Start)
-                const pMidQ = (previousCoordinates[0] + startCoordinates[0]) / 2;
-                const pMidR = (previousCoordinates[1] + startCoordinates[1]) / 2;
-                const pCp: [number, number] = previousControlPointOffset ?
-                    [pMidQ + previousControlPointOffset[0], pMidR + previousControlPointOffset[1]] : [pMidQ, pMidR];
+                const tailSteps = Math.max(2, Math.floor((1 - t) * 16));
+                if (t < 0.99) {
+                    const startHex = hexes.find(h => h.q === startCoordinates[0] && h.r === startCoordinates[1]);
+                    const tailTravelType = startHex ? getConnectionType(startHex, previousCoordinates[0], previousCoordinates[1]) : 'Wilderness';
 
-                const dTail = getAxialBezierSubcurve(previousCoordinates, pCp, startCoordinates, t, 1);
-                if (dTail) paths.push(dTail);
+                    const tailPath: string[] = [];
+                    for (let i = 0; i <= tailSteps; i++) {
+                        const stepT = t + (1 - t) * (i / tailSteps);
+                        const res = getAxialWiggle(
+                            previousCoordinates[0], previousCoordinates[1],
+                            startCoordinates[0], startCoordinates[1],
+                            stepT, tailTravelType
+                        );
+                        const pX = getX(res.q, res.r);
+                        const pY = getY(res.q, res.r);
+                        if (i === 0) tailPath.push(`M ${pX} ${pY}`);
+                        else tailPath.push(`L ${pX} ${pY}`);
+                    }
+                    paths.push(tailPath.join(' '));
+                }
             }
         } else if (previousCoordinates) {
             const currentHex = hexes.find(h => h.isCurrent);
             if (currentHex) {
+                const idlePath: string[] = [];
                 const currentCoords: [number, number] = [currentHex.q, currentHex.r];
-                const pMidQ = (previousCoordinates[0] + currentCoords[0]) / 2;
-                const pMidR = (previousCoordinates[1] + currentCoords[1]) / 2;
-                const pCp: [number, number] = previousControlPointOffset ?
-                    [pMidQ + previousControlPointOffset[0], pMidR + previousControlPointOffset[1]] : [pMidQ, pMidR];
+                const idleTravelType = getConnectionType(currentHex, previousCoordinates[0], previousCoordinates[1]);
 
-                const dIdle = getAxialBezierSubcurve(previousCoordinates, pCp, currentCoords, 0, 1);
-                if (dIdle) paths.push(dIdle);
+                const STEPS = 16;
+                for (let i = 0; i <= STEPS; i++) {
+                    const stepT = i / STEPS;
+                    const res = getAxialWiggle(
+                        previousCoordinates[0], previousCoordinates[1],
+                        currentCoords[0], currentCoords[1],
+                        stepT, idleTravelType
+                    );
+                    const pX = getX(res.q, res.r);
+                    const pY = getY(res.q, res.r);
+                    if (i === 0) idlePath.push(`M ${pX} ${pY}`);
+                    else idlePath.push(`L ${pX} ${pY}`);
+                }
+                paths.push(idlePath.join(' '));
             }
         }
 
