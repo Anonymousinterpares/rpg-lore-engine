@@ -1,0 +1,157 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background: linear-gradient(180deg, rgba(42, 31, 20, 0.85) 0%, rgba(26, 18, 8, 0.9) 100%);
+    border: 2px solid #5d4037;
+    border-radius: 6px;
+    min-width: 280px;
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title {
+    font-family: var(--font-narrative, 'EB Garamond', serif);
+    font-size: 18px;
+    color: #e8d5b5;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.goldDisplay {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-family: var(--font-ui, 'Inter', sans-serif);
+}
+
+.goldDisplay svg {
+    color: #d4a017;
+}
+
+.goldAmount {
+    color: #d4a017;
+    font-weight: 600;
+}
+
+.goldAmount::after {
+    content: 'g';
+    font-size: 9px;
+    opacity: 0.6;
+    margin-right: 4px;
+}
+
+.silverAmount {
+    color: #c0c0c0;
+    font-weight: 600;
+}
+
+.silverAmount::after {
+    content: 's';
+    font-size: 9px;
+    opacity: 0.6;
+    margin-right: 4px;
+}
+
+.copperAmount {
+    color: #b87333;
+    font-weight: 600;
+}
+
+.copperAmount::after {
+    content: 'c';
+    font-size: 9px;
+    opacity: 0.6;
+}
+
+.slotCount {
+    font-size: 10px;
+    color: #a89478;
+    font-family: var(--font-ui, 'Inter', sans-serif);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 4px;
+}
+
+.itemSlot {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(50, 38, 24, 0.8);
+    border: 2px solid #5d4037;
+    border-radius: 3px;
+    cursor: grab;
+    position: relative;
+    transition: all 0.15s ease;
+}
+
+.itemSlot:hover {
+    border-color: #c9a227;
+    background: rgba(60, 44, 28, 0.95);
+    transform: translateY(-1px);
+}
+
+.itemSlot:active {
+    cursor: grabbing;
+}
+
+.equipped {
+    background: rgba(201, 162, 39, 0.1);
+}
+
+.itemIcon {
+    color: #e8d5b5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quantity {
+    position: absolute;
+    bottom: 1px;
+    right: 2px;
+    font-size: 9px;
+    color: #e8d5b5;
+    font-weight: 700;
+    font-family: var(--font-ui, 'Inter', sans-serif);
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.9);
+}
+
+.equippedBadge {
+    position: absolute;
+    top: 1px;
+    left: 2px;
+    font-size: 8px;
+    color: #d4a017;
+    font-weight: 700;
+    font-family: var(--font-ui, 'Inter', sans-serif);
+}
+
+.emptySlot {
+    aspect-ratio: 1;
+    background: rgba(30, 22, 14, 0.4);
+    border: 1px dashed rgba(93, 64, 55, 0.3);
+    border-radius: 3px;
+}
+
+.hint {
+    font-size: 10px;
+    color: #5d4037;
+    font-style: italic;
+    text-align: center;
+    font-family: var(--font-ui, 'Inter', sans-serif);
+    margin-top: 4px;
+}

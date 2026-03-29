@@ -14,6 +14,14 @@ export default defineConfig({
             'path': 'path-browserify'
         },
     },
+    build: {
+        rollupOptions: {
+            input: {
+                main: path.resolve(__dirname, 'index.html'),
+                paperdoll: path.resolve(__dirname, 'paperdoll.html'),
+            },
+        },
+    },
     server: {
         port: 5173,
         open: true,
