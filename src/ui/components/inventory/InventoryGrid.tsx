@@ -138,7 +138,7 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                         >
                             <ChevronDown size={18} />
                         </button>
-                        <h3 className={parchmentStyles.heading} style={{ margin: 0 }}>Inventory</h3>
+                        <h3 className={parchmentStyles.heading} style={{ margin: 0 }}>Quick Inventory</h3>
                     </div>
                     <div className={styles.gold}>
                         <Coins size={14} className={styles.goldIcon} />

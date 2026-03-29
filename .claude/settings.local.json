@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep -r \"sex\\\\|gender\\\\|male\\\\|female\" /d/coding/rpg_NEW/src/ruleset/schemas/ --include=*.ts)"
+      "Bash(grep -r \"sex\\\\|gender\\\\|male\\\\|female\" /d/coding/rpg_NEW/src/ruleset/schemas/ --include=*.ts)",
+      "Bash(grep -E \"\\\\.css$\")"
     ]
   }
 }
