@@ -91,6 +91,7 @@ const PaperdollScreen: React.FC = () => {
             <div className={styles.content}>
                 <PaperdollFigure
                     equippedSlots={equippedSlots}
+                    sex="male"
                     onDrop={equipItem}
                     onUnequip={unequipItem}
                 />
