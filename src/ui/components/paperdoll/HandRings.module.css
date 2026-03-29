@@ -1,0 +1,60 @@
+.handContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px;
+    background: rgba(42, 31, 20, 0.4);
+    border: 1px solid rgba(93, 64, 55, 0.4);
+    border-radius: 6px;
+}
+
+.handLabel {
+    font-family: var(--font-narrative, 'EB Garamond', serif);
+    font-size: 11px;
+    color: #a89478;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+}
+
+.handSvg {
+    width: 70px;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.handOutline {
+    width: 100%;
+    height: 100%;
+}
+
+.ringSlots {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+}
+
+.ringSlotWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.fingerLabel {
+    font-size: 8px;
+    color: #5d4037;
+    font-family: var(--font-ui, 'Inter', sans-serif);
+    opacity: 0.6;
+}
+
+.left {
+    /* Mirror for anatomical correctness when facing you */
+}
+
+.right {
+    /* Right hand */
+}

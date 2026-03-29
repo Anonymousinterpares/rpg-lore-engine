@@ -1,0 +1,88 @@
+.slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(42, 31, 20, 0.7);
+    border: 2px solid #5d4037;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    user-select: none;
+}
+
+.slot:hover {
+    border-color: #c9a227;
+    background: rgba(60, 44, 28, 0.85);
+}
+
+/* Sizes */
+.normal {
+    width: 52px;
+    height: 52px;
+}
+
+.small {
+    width: 34px;
+    height: 34px;
+}
+
+.large {
+    width: 60px;
+    height: 68px;
+}
+
+/* States */
+.dragOver {
+    border-color: #c9a227;
+    background: rgba(201, 162, 39, 0.15);
+    box-shadow: 0 0 12px rgba(201, 162, 39, 0.4), inset 0 0 8px rgba(201, 162, 39, 0.15);
+    animation: slotPulse 1s ease-in-out infinite;
+}
+
+@keyframes slotPulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(201, 162, 39, 0.3); }
+    50% { box-shadow: 0 0 16px rgba(201, 162, 39, 0.6), inset 0 0 10px rgba(201, 162, 39, 0.2); }
+}
+
+.filled {
+    border-color: #8b7355;
+    background: rgba(50, 38, 24, 0.9);
+}
+
+.filled:hover {
+    border-color: #d4a017;
+}
+
+/* Content */
+.itemIcon {
+    color: #e8d5b5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.placeholder {
+    color: #5d4037;
+    opacity: 0.5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slotLabel {
+    font-size: 7px;
+    color: #5d4037;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+    opacity: 0.6;
+    font-family: var(--font-ui, 'Inter', sans-serif);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    text-align: center;
+    padding: 0 2px;
+}
