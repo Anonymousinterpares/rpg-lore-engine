@@ -120,6 +120,34 @@
     outline: none;
 }
 
+.sexToggle {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.sexButton {
+    flex: 1;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--parchment-border);
+    color: var(--parchment-text);
+    font-family: var(--font-narrative);
+    font-size: 1rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sexButton:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.sexSelected {
+    background: rgba(139, 115, 85, 0.3);
+    border-color: #c9a227;
+    color: #c9a227;
+}
+
 .selectionLayout {
     display: flex;
     gap: var(--spacing-xl);

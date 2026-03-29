@@ -30,7 +30,7 @@ export class InventoryManager {
         // Fix: Strict Backup Parity (Exclusion based + ID matching)
         const typeLower = item.type.toLowerCase();
         // Original logic: items are stackable if NOT weapon/armor/shield
-        const isStackable = !['weapon', 'armor', 'shield'].some(t => typeLower.includes(t));
+        const isStackable = !['weapon', 'armor', 'shield', 'ring', 'amulet', 'cloak', 'belt', 'boots', 'gloves', 'bracers', 'helmet'].some(t => typeLower.includes(t));
 
         // Use name as ID for stackables if not already set (parity with addItem)
         // But for pickup, we trust item.id might already be correct from world generation?
@@ -85,6 +85,47 @@ export class InventoryManager {
         return `Dropped ${item.name}.`;
     }
 
+    /** Map item type to its default equipment slot. */
+    private static readonly TYPE_TO_SLOT: Record<string, string> = {
+        'weapon': 'mainHand',
+        'armor': 'armor',
+        'shield': 'offHand',
+        'helmet': 'head',
+        'amulet': 'neck',
+        'cloak': 'cloak',
+        'belt': 'belt',
+        'bracers': 'bracers',
+        'gloves': 'gloves',
+        'boots': 'feet',
+        'ammunition': 'ammunition',
+    };
+
+    private static readonly RING_SLOTS = [
+        'leftRing1', 'leftRing2', 'leftRing3', 'leftRing4', 'leftRing5',
+        'rightRing1', 'rightRing2', 'rightRing3', 'rightRing4', 'rightRing5',
+    ];
+
+    private findSlotForType(type: string): string {
+        const typeLower = type.toLowerCase();
+
+        // Ring: find first empty ring slot
+        if (typeLower === 'ring') {
+            const slots = this.state.character.equipmentSlots as Record<string, string | undefined>;
+            const empty = InventoryManager.RING_SLOTS.find(s => !slots[s]);
+            return empty || 'leftRing1';
+        }
+
+        // Weapon: prefer mainHand, fall back to offHand
+        if (typeLower === 'weapon') {
+            const slots = this.state.character.equipmentSlots as Record<string, string | undefined>;
+            if (!slots.mainHand) return 'mainHand';
+            if (!slots.offHand) return 'offHand';
+            return 'mainHand';
+        }
+
+        return InventoryManager.TYPE_TO_SLOT[typeLower] || '';
+    }
+
     public async equipItem(instanceId: string): Promise<string> {
         const char = this.state.character;
         const item = char.inventory.items.find(i => i.instanceId === instanceId);
@@ -99,23 +140,17 @@ export class InventoryManager {
                     slots[slot] = undefined;
                 }
             });
+            EquipmentEngine.recalculateAC(char);
             await this.emitStateUpdate();
             return `Unequipped ${item.name}.`;
         } else {
-            const type = (item.type || '').toLowerCase();
-            let slot = '';
-
-            if (type.includes('weapon')) slot = 'mainHand';
-            else if (type.includes('armor')) slot = 'armor';
-            else if (type.includes('shield')) slot = 'offHand';
-
+            const slot = this.findSlotForType(item.type || '');
             if (!slot) return `${item.name} cannot be equipped.`;
 
-            // NEW: Hardware validation (STR requirements, etc.)
             const validation = EquipmentEngine.validateEquip(char, item as any);
             if (!validation.valid) {
                 const errorMsg = `${item.name} cannot be equipped: ${validation.reason}`;
-                this.addCombatLog(errorMsg); // Ensure it shows in combat log if triggered
+                this.addCombatLog(errorMsg);
                 return errorMsg;
             }
 
@@ -129,13 +164,73 @@ export class InventoryManager {
             slots[slot] = instanceId;
             item.equipped = true;
 
-            if (slot === 'armor' || slot === 'offHand') {
-                await this.recalculateAC();
-            }
-
+            EquipmentEngine.recalculateAC(char);
             await this.emitStateUpdate();
             return `Equipped ${item.name}.`;
         }
+    }
+
+    /**
+     * Equip item to a specific slot (for drag-drop targeting).
+     */
+    public async equipItemToSlot(instanceId: string, slotId: string): Promise<string> {
+        const char = this.state.character;
+        const item = char.inventory.items.find(i => i.instanceId === instanceId);
+
+        if (!item) return "Item not found.";
+
+        if (!EquipmentEngine.isSlotCompatible(slotId, item.type || '')) {
+            return `${item.name} cannot be equipped in ${slotId}.`;
+        }
+
+        const validation = EquipmentEngine.validateEquip(char, item as any);
+        if (!validation.valid) {
+            const errorMsg = `${item.name} cannot be equipped: ${validation.reason}`;
+            this.addCombatLog(errorMsg);
+            return errorMsg;
+        }
+
+        // If item is already equipped elsewhere, remove from old slot
+        if (item.equipped) {
+            const slots = char.equipmentSlots as Record<string, string | undefined>;
+            Object.keys(slots).forEach(slot => {
+                if (slots[slot] === instanceId) slots[slot] = undefined;
+            });
+        }
+
+        // Swap out existing item in target slot
+        const slots = char.equipmentSlots as Record<string, string | undefined>;
+        const currentInSlotId = slots[slotId];
+        if (currentInSlotId) {
+            const currentItem = char.inventory.items.find(i => i.instanceId === currentInSlotId);
+            if (currentItem) currentItem.equipped = false;
+        }
+
+        slots[slotId] = instanceId;
+        item.equipped = true;
+
+        EquipmentEngine.recalculateAC(char);
+        await this.emitStateUpdate();
+        return `Equipped ${item.name} to ${slotId}.`;
+    }
+
+    /**
+     * Unequip item from a specific slot.
+     */
+    public async unequipFromSlot(slotId: string): Promise<string> {
+        const char = this.state.character;
+        const slots = char.equipmentSlots as Record<string, string | undefined>;
+        const instanceId = slots[slotId];
+
+        if (!instanceId) return "Slot is empty.";
+
+        const item = char.inventory.items.find(i => i.instanceId === instanceId);
+        if (item) item.equipped = false;
+
+        slots[slotId] = undefined;
+        EquipmentEngine.recalculateAC(char);
+        await this.emitStateUpdate();
+        return `Unequipped ${item?.name || 'item'}.`;
     }
 
     public async pickupCombatLoot(instanceId: string) {
@@ -158,7 +253,7 @@ export class InventoryManager {
         const typeLower = item.type.toLowerCase();
 
         // Original logic: items are stackable if NOT weapon/armor/shield
-        const isStackable = !['weapon', 'armor', 'shield'].some(t => typeLower.includes(t));
+        const isStackable = !['weapon', 'armor', 'shield', 'ring', 'amulet', 'cloak', 'belt', 'boots', 'gloves', 'bracers', 'helmet'].some(t => typeLower.includes(t));
 
         // Use name as ID for stackables if not already set (parity with addItem)
         // CRITICAL FIX: ALL items must use name as ID for DataManager lookups (Legacy Architecture)
@@ -201,7 +296,7 @@ export class InventoryManager {
 
         const typeLower = item.type.toLowerCase();
         // Fix: Strict Backup Parity
-        const isStackable = !['weapon', 'armor', 'shield'].some(t => typeLower.includes(t));
+        const isStackable = !['weapon', 'armor', 'shield', 'ring', 'amulet', 'cloak', 'belt', 'boots', 'gloves', 'bracers', 'helmet'].some(t => typeLower.includes(t));
 
         // CRITICAL FIX: Check by name-as-id for strict parity.
         // Even non-stackables use ID=Name in this legacy architecture.
@@ -248,10 +343,7 @@ export class InventoryManager {
     }
 
     public async recalculateAC() {
-        const char = this.state.character;
-        let baseAC = 10 + Math.floor(((char.stats.DEX || 10) - 10) / 2);
-        // Future: add armor bonuses here
-        this.state.character.ac = baseAC;
+        EquipmentEngine.recalculateAC(this.state.character);
         await this.emitStateUpdate();
     }
 

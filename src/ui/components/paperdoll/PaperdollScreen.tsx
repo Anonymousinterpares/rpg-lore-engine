@@ -1,89 +1,122 @@
-import React, { useState, useCallback } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import styles from './PaperdollScreen.module.css';
 import PaperdollFigure from './PaperdollFigure';
 import InventoryBag from './InventoryBag';
-import { PaperdollItem, EquippedSlots, SlotId } from './types';
-import { MOCK_ITEMS, MOCK_EQUIPPED, MOCK_GOLD } from './mockData';
+import { PaperdollItem, EquippedSlots, SlotId, ItemType } from './types';
+import { useGameState } from '../../hooks/useGameState';
+import { DataManager } from '../../../ruleset/data/DataManager';
 
-// Map item types to their default equipment slot
-const TYPE_TO_SLOT: Partial<Record<string, SlotId>> = {
-    Helmet: 'head',
-    Amulet: 'neck',
-    Armor: 'armor',
-    Cloak: 'cloak',
-    Belt: 'belt',
-    Bracers: 'bracers',
-    Gloves: 'gloves',
-    Boots: 'feet',
-    Shield: 'offHand',
-    Ammunition: 'ammunition',
-};
+/**
+ * Convert a flat inventory item from game state into a PaperdollItem.
+ * Enriches with data from DataManager where available.
+ */
+function mapToPaperdollItem(item: any): PaperdollItem {
+    const enriched = DataManager.getItem(item.name || item.id);
 
-function findSlotForItem(item: PaperdollItem, equipped: EquippedSlots): SlotId | null {
-    // Weapons go to mainHand first, then offHand
-    if (item.type === 'Weapon') {
-        if (!equipped.mainHand) return 'mainHand';
-        if (!equipped.offHand) return 'offHand';
-        return 'mainHand'; // replace
-    }
-
-    // Rings go to first empty ring slot
-    if (item.type === 'Ring') {
-        const ringSlots: SlotId[] = [
-            'leftRing1', 'leftRing2', 'leftRing3', 'leftRing4', 'leftRing5',
-            'rightRing1', 'rightRing2', 'rightRing3', 'rightRing4', 'rightRing5',
-        ];
-        const empty = ringSlots.find(s => !equipped[s]);
-        return empty || 'leftRing1';
-    }
-
-    const defaultSlot = TYPE_TO_SLOT[item.type];
-    return defaultSlot || null;
+    return {
+        id: item.id || item.name,
+        instanceId: item.instanceId || '',
+        name: item.name,
+        type: (item.type || enriched?.type || 'Misc') as ItemType,
+        weight: item.weight ?? enriched?.weight ?? 0,
+        quantity: item.quantity ?? 1,
+        equipped: item.equipped ?? false,
+        description: enriched?.description,
+        isMagic: (enriched as any)?.isMagic,
+        charges: item.charges ?? (enriched as any)?.charges,
+        // Weapon fields
+        damage: (enriched as any)?.damage ? {
+            dice: typeof (enriched as any).damage.dice === 'string'
+                ? (enriched as any).damage.dice
+                : `${(enriched as any).damage.dice.count}d${(enriched as any).damage.dice.sides}`,
+            type: (enriched as any).damage.type,
+        } : undefined,
+        properties: (enriched as any)?.properties,
+        range: (enriched as any)?.range,
+        // Armor fields
+        acBonus: (enriched as any)?.acBonus,
+        acCalculated: (enriched as any)?.acCalculated,
+        strengthReq: (enriched as any)?.strengthReq,
+        stealthDisadvantage: (enriched as any)?.stealthDisadvantage,
+    };
 }
 
 const PaperdollScreen: React.FC = () => {
-    const [inventoryItems, setInventoryItems] = useState<PaperdollItem[]>([...MOCK_ITEMS]);
-    const [equippedSlots, setEquippedSlots] = useState<EquippedSlots>({ ...MOCK_EQUIPPED });
+    const { state, engine } = useGameState();
 
-    const equipItem = useCallback((slotId: string, item: PaperdollItem) => {
-        setEquippedSlots(prev => {
-            const updated = { ...prev };
-            // If slot already has an item, return it to inventory
-            const existing = updated[slotId];
-            if (existing) {
-                setInventoryItems(inv => [...inv, { ...existing, equipped: false }]);
+    const sex = (state?.character as any)?.sex || 'male';
+
+    // Map inventory items to PaperdollItems (unequipped only for the bag)
+    const inventoryItems = useMemo(() => {
+        if (!state?.character?.inventory?.items) return [];
+        return state.character.inventory.items
+            .filter(item => !item.equipped)
+            .map(mapToPaperdollItem);
+    }, [state?.character?.inventory?.items]);
+
+    // Build equipped slots from character's equipmentSlots
+    const equippedSlots = useMemo<EquippedSlots>(() => {
+        if (!state?.character) return {};
+        const slots = state.character.equipmentSlots as Record<string, string | undefined>;
+        const items = state.character.inventory.items;
+        const result: EquippedSlots = {};
+
+        for (const [slotId, instanceId] of Object.entries(slots)) {
+            if (!instanceId) {
+                result[slotId] = null;
+                continue;
             }
-            updated[slotId] = { ...item, equipped: true };
-            return updated;
-        });
-        // Remove from inventory
-        setInventoryItems(prev => prev.filter(i => i.instanceId !== item.instanceId));
-    }, []);
-
-    const unequipItem = useCallback((slotId: string) => {
-        setEquippedSlots(prev => {
-            const item = prev[slotId];
-            if (!item) return prev;
-            setInventoryItems(inv => [...inv, { ...item, equipped: false }]);
-            return { ...prev, [slotId]: null };
-        });
-    }, []);
-
-    const handleInventoryEquip = useCallback((item: PaperdollItem) => {
-        const slot = findSlotForItem(item, equippedSlots);
-        if (slot) {
-            equipItem(slot, item);
+            const item = items.find(i => i.instanceId === instanceId);
+            if (item) {
+                result[slotId] = mapToPaperdollItem(item);
+            } else {
+                result[slotId] = null;
+            }
         }
-    }, [equippedSlots, equipItem]);
 
-    const handleReceiveFromSlot = useCallback((item: PaperdollItem) => {
-        // Item dragged from equipment slot back to inventory
-        // The unequip is handled by the slot's drag end; here we just add to inventory
-        setInventoryItems(prev => {
-            if (prev.some(i => i.instanceId === item.instanceId)) return prev;
-            return [...prev, { ...item, equipped: false }];
-        });
-    }, []);
+        return result;
+    }, [state?.character?.equipmentSlots, state?.character?.inventory?.items]);
+
+    const gold = useMemo(() => {
+        if (!state?.character?.inventory?.gold) return { gp: 0, sp: 0, cp: 0 };
+        const g = state.character.inventory.gold;
+        return { gp: (g as any).gp ?? 0, sp: (g as any).sp ?? 0, cp: (g as any).cp ?? 0 };
+    }, [state?.character?.inventory?.gold]);
+
+    // Drag-drop equip to specific slot
+    const handleEquipToSlot = useCallback(async (slotId: string, item: PaperdollItem) => {
+        if (!engine) return;
+        await engine.equipItemToSlot(item.instanceId, slotId);
+    }, [engine]);
+
+    // Right-click unequip from specific slot
+    const handleUnequip = useCallback(async (slotId: string) => {
+        if (!engine) return;
+        await engine.unequipFromSlot(slotId);
+    }, [engine]);
+
+    // Double-click inventory item → auto-equip
+    const handleInventoryEquip = useCallback(async (item: PaperdollItem) => {
+        if (!engine) return;
+        await engine.equipItem(item.instanceId);
+    }, [engine]);
+
+    // Item dragged from equipped slot back to inventory (unequip)
+    const handleReceiveFromSlot = useCallback(async (item: PaperdollItem) => {
+        if (!engine) return;
+        // Find which slot this item is in and unequip
+        const slots = state?.character?.equipmentSlots as Record<string, string | undefined>;
+        if (slots) {
+            const slotEntry = Object.entries(slots).find(([_, id]) => id === item.instanceId);
+            if (slotEntry) {
+                await engine.unequipFromSlot(slotEntry[0]);
+            }
+        }
+    }, [engine, state?.character?.equipmentSlots]);
+
+    if (!state?.character) {
+        return <div className={styles.screen}>Loading...</div>;
+    }
 
     return (
         <div className={styles.screen}>
@@ -91,13 +124,13 @@ const PaperdollScreen: React.FC = () => {
             <div className={styles.content}>
                 <PaperdollFigure
                     equippedSlots={equippedSlots}
-                    sex="male"
-                    onDrop={equipItem}
-                    onUnequip={unequipItem}
+                    sex={sex}
+                    onDrop={handleEquipToSlot}
+                    onUnequip={handleUnequip}
                 />
                 <InventoryBag
                     items={inventoryItems}
-                    gold={MOCK_GOLD}
+                    gold={gold}
                     onItemEquipped={handleInventoryEquip}
                     onReceiveItem={handleReceiveFromSlot}
                 />

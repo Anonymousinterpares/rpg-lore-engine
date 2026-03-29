@@ -106,14 +106,34 @@ export class EquipmentEngine {
     }
 
     /**
+     * Slot-to-accepted-types lookup table.
+     */
+    private static readonly SLOT_ACCEPTS: Record<string, string[]> = {
+        head:       ['Helmet', 'Armor'],
+        neck:       ['Amulet', 'Magic Item'],
+        shoulders:  ['Armor', 'Magic Item'],
+        cloak:      ['Cloak', 'Magic Item'],
+        armor:      ['Armor'],
+        bracers:    ['Bracers', 'Magic Item'],
+        gloves:     ['Gloves', 'Magic Item'],
+        belt:       ['Belt', 'Magic Item'],
+        mainHand:   ['Weapon'],
+        offHand:    ['Weapon', 'Shield'],
+        legs:       ['Armor', 'Magic Item'],
+        feet:       ['Boots', 'Magic Item'],
+        ammunition: ['Ammunition', 'Adventuring Gear'],
+    };
+
+    /**
      * Checks if an item type is compatible with a slot.
      */
     public static isSlotCompatible(slot: string, type: string): boolean {
-        const typeLower = type.toLowerCase();
-        if (slot === 'armor') return typeLower.includes('armor');
-        if (slot === 'mainHand') return typeLower.includes('weapon');
-        if (slot === 'offHand') return typeLower.includes('shield') || typeLower.includes('weapon');
-        return false;
+        // Ring slots
+        if (slot.includes('Ring')) return type === 'Ring';
+
+        const accepts = this.SLOT_ACCEPTS[slot];
+        if (!accepts) return false;
+        return accepts.includes(type);
     }
 
     /**

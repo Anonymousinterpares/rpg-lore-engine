@@ -12,6 +12,7 @@ import { SettingsManager } from '../combat/SettingsManager';
 
 export interface CharacterCreationOptions {
     name: string;
+    sex?: 'male' | 'female';
     race: Race;
     characterClass: CharacterClass;
     background: Background;
@@ -142,6 +143,7 @@ export class CharacterFactory {
             debugLog: [],
             character: {
                 name: name,
+                sex: options.sex || 'male',
                 level: 1,
                 race: race.name,
                 class: characterClass.name,

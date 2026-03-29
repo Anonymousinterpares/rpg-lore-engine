@@ -3,15 +3,28 @@ import { AbilityScoreSchema, SkillNameSchema, CurrencySchema } from './BaseSchem
 
 export const EquipmentSlotsSchema = z.object({
     head: z.string().optional(),
+    neck: z.string().optional(),
+    shoulders: z.string().optional(),
     armor: z.string().optional(),
     cloak: z.string().optional(),
-    hands: z.string().optional(),
-    ring1: z.string().optional(),
-    ring2: z.string().optional(),
+    belt: z.string().optional(),
+    bracers: z.string().optional(),
+    gloves: z.string().optional(),
+    legs: z.string().optional(),
     feet: z.string().optional(),
     mainHand: z.string().optional(),
     offHand: z.string().optional(),
-    ammunition: z.string().optional()
+    ammunition: z.string().optional(),
+    leftRing1: z.string().optional(),
+    leftRing2: z.string().optional(),
+    leftRing3: z.string().optional(),
+    leftRing4: z.string().optional(),
+    leftRing5: z.string().optional(),
+    rightRing1: z.string().optional(),
+    rightRing2: z.string().optional(),
+    rightRing3: z.string().optional(),
+    rightRing4: z.string().optional(),
+    rightRing5: z.string().optional(),
 }).default({});
 
 export const DeathSavesSchema = z.object({
@@ -21,6 +34,7 @@ export const DeathSavesSchema = z.object({
 
 export const PlayerCharacterSchema = z.object({
     name: z.string(),
+    sex: z.enum(['male', 'female']).default('male'),
     level: z.number().min(1).max(20),
     race: z.string(),
     class: z.string(),

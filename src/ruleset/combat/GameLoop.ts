@@ -161,9 +161,32 @@ export class GameLoop {
     }
 
     public async initialize() {
+        // Migrate old save equipment slot names
+        this.migrateEquipmentSlots();
+
         // Initial map expansion if needed
         await this.exploration.expandHorizon(this.state.location.coordinates as [number, number]);
         await this.emitStateUpdate();
+    }
+
+    /** Migrate old save files with legacy equipment slot names. */
+    private migrateEquipmentSlots() {
+        const slots = this.state.character.equipmentSlots as Record<string, string | undefined>;
+        // hands → gloves
+        if ((slots as any).hands) {
+            slots.gloves = (slots as any).hands;
+            delete (slots as any).hands;
+        }
+        // ring1 → leftRing1
+        if ((slots as any).ring1) {
+            slots.leftRing1 = (slots as any).ring1;
+            delete (slots as any).ring1;
+        }
+        // ring2 → rightRing1
+        if ((slots as any).ring2) {
+            slots.rightRing1 = (slots as any).ring2;
+            delete (slots as any).ring2;
+        }
     }
 
     /**
@@ -915,6 +938,14 @@ export class GameLoop {
 
     public async equipItem(instanceId: string) {
         return await this.inventory.equipItem(instanceId);
+    }
+
+    public async equipItemToSlot(instanceId: string, slotId: string) {
+        return await this.inventory.equipItemToSlot(instanceId, slotId);
+    }
+
+    public async unequipFromSlot(slotId: string) {
+        return await this.inventory.unequipFromSlot(slotId);
     }
 
     public async markQuestAsRead(questId: string) {

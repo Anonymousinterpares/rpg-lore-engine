@@ -24,6 +24,7 @@ import DevOverlay from './components/exploration/DevOverlay';
 import NavigationModal from './components/exploration/NavigationModal';
 import TradeModal from './components/exploration/TradeModal';
 import { SettingsManager } from '../ruleset/combat/SettingsManager';
+import EquipmentOverlay from './components/paperdoll/EquipmentOverlay';
 
 const App: React.FC = () => {
     const [showSaveModal, setShowSaveModal] = useState(false);
@@ -39,6 +40,7 @@ const App: React.FC = () => {
     const [activeBookPageId, setActiveBookPageId] = useState<string>('character');
     const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
     const [isNavigationModalOpen, setIsNavigationModalOpen] = useState(false);
+    const [equipmentOpen, setEquipmentOpen] = useState(false);
     const [codexDeepLink, setCodexDeepLink] = useState<{ category: string; entryId?: string } | undefined>(undefined);
 
     const [appSettings, setAppSettings] = useState(SettingsManager.getGlobalSettings());
@@ -204,9 +206,8 @@ const App: React.FC = () => {
             label: 'Equipment',
             content: (
                 <div style={{ padding: '60px', textAlign: 'center' }}>
-                    <h2 style={{ fontFamily: 'Cinzel, serif', color: '#5d4037' }}>Equipment & Paperdoll</h2>
-                    <p style={{ fontStyle: 'italic', opacity: 0.6 }}>The Great Forge is still preparing your armory...</p>
-                    <Book size={80} style={{ marginTop: '40px', opacity: 0.2 }} />
+                    <h2 style={{ fontFamily: 'Cinzel, serif', color: '#5d4037' }}>Equipment</h2>
+                    <p style={{ fontStyle: 'italic', opacity: 0.6 }}>Use the backpack icon in the header to open your equipment.</p>
                 </div>
             ),
             permanent: true
@@ -257,8 +258,7 @@ const App: React.FC = () => {
     };
 
     const openEquipment = () => {
-        setActiveBookPageId('equipment');
-        setBookOpen(true);
+        setEquipmentOpen(prev => !prev);
     };
 
     const openSettings = () => {
@@ -382,6 +382,10 @@ const App: React.FC = () => {
                         )}
                     </>
                 )}
+                <EquipmentOverlay
+                    isOpen={equipmentOpen}
+                    onClose={() => setEquipmentOpen(false)}
+                />
                 {bookOpen && (
                     <BookModal
                         isOpen={bookOpen}

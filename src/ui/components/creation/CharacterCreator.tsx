@@ -34,6 +34,7 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
 
     // Form State
     const [name, setName] = useState('');
+    const [sex, setSex] = useState<'male' | 'female'>('male');
     const [selectedRace, setSelectedRace] = useState<Race | null>(null);
     const [selectedClass, setSelectedClass] = useState<CharacterClass | null>(null);
     const [selectedBackground, setSelectedBackground] = useState<Background | null>(null);
@@ -109,6 +110,7 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
 
         const newState = CharacterFactory.createNewGameState({
             name: name || 'Traveler',
+            sex,
             race: selectedRace,
             characterClass: selectedClass,
             background: selectedBackground,
@@ -247,6 +249,19 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                                 className={styles.input}
                                 autoFocus
                             />
+                        </div>
+                        <div className={styles.inputGroup}>
+                            <label>Sex</label>
+                            <div className={styles.sexToggle}>
+                                <button
+                                    className={`${styles.sexButton} ${sex === 'male' ? styles.sexSelected : ''}`}
+                                    onClick={() => setSex('male')}
+                                >Male</button>
+                                <button
+                                    className={`${styles.sexButton} ${sex === 'female' ? styles.sexSelected : ''}`}
+                                    onClick={() => setSex('female')}
+                                >Female</button>
+                            </div>
                         </div>
                     </div>
                 );
