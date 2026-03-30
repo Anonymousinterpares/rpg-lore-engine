@@ -38,3 +38,61 @@
     border-color: var(--parchment-accent);
     box-shadow: 0 0 15px rgba(201, 162, 39, 0.5);
 }
+
+/* Death Save Button — pulsing red, replaces entire action bar when downed */
+.deathSaveButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 48px;
+    background: linear-gradient(135deg, #4a0000, #8b0000);
+    border: 2px solid #ff3333;
+    border-radius: 8px;
+    color: #ff6666;
+    font-family: var(--font-narrative, serif);
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    animation: deathPulse 1.5s ease-in-out infinite;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.deathSaveButton:hover {
+    background: linear-gradient(135deg, #5a0000, #aa0000);
+    border-color: #ff5555;
+    box-shadow: 0 0 25px rgba(255, 0, 0, 0.6);
+    transform: scale(1.02);
+}
+
+.deathSaveButton:active {
+    transform: scale(0.98);
+}
+
+@keyframes deathPulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
+    50% { box-shadow: 0 0 25px rgba(255, 0, 0, 0.6); }
+}
+
+.deathSaveLabel {
+    font-size: 1rem;
+}
+
+.deathSaveTracker {
+    font-size: 1.2rem;
+    letter-spacing: 4px;
+}
+
+.saveSuccess {
+    color: #44ff44;
+}
+
+.saveFail {
+    color: #ff4444;
+}
+
+.saveDot {
+    color: #444;
+}

@@ -27,7 +27,7 @@ export class IntentRouter {
 
         // 2. Check for Combat Actions (if in combat)
         // Simple heuristic: if input matches common actions like "attack", "dodge"
-        const combatKeywords = ['attack', 'dodge', 'dash', 'disengage', 'hide', 'end turn', 'use', 'target'];
+        const combatKeywords = ['attack', 'dodge', 'dash', 'disengage', 'flee', 'hide', 'end turn', 'use', 'target', 'death_save', 'death save'];
         if (inCombat && combatKeywords.some(k => trimmed.toLowerCase().includes(k))) {
             const cmd = combatKeywords.find(k => trimmed.toLowerCase().includes(k));
 

@@ -46,9 +46,10 @@ export class CombatAI {
         const intScore = actor.stats['INT'] || 10;
         const tier = this.getTier(intScore);
 
-        // 2. Identify Potential Targets
+        // 2. Identify Potential Targets (skip unconscious/dying players — they are not threats)
         const targets = state.combatants.filter(c => {
             if (c.hp.current <= 0) return false;
+            if (c.conditions?.some?.((cond: any) => (cond.id || cond) === 'Unconscious')) return false;
             return actor.type === 'enemy' ? c.type !== 'enemy' : c.type === 'enemy';
         });
 

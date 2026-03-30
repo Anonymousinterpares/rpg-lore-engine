@@ -2446,7 +2446,25 @@ Respond in character, using first-person perspective.
 
 **Test coverage:** `cli/test_phase4_5.ts` — 142 assertions (condition utils, death save accumulation across 100 trials, stabilize, revive, combat integration).
 
-### D. Outstanding Issues (Not Yet Fixed)
+### D. Death Save UX + Flee Action (2026-03-30)
+
+**Manual death save rolls, flee mechanic, and untargetable downed players.**
+
+| Feature | Description |
+|---------|-------------|
+| **Manual death save** | Player must click "Roll Death Save" button (replaces action bar with pulsing red button when downed). No auto-rolling. |
+| **Death save tracker** | UI shows green/red dots for successes/failures (3 each) on the button |
+| **Stabilization = 1 HP** | After 3 successful saves, player gets 1 HP and can act (attack or flee) |
+| **Flee action** | New permanent button in action bar (after Disengage). Contested Athletics/Acrobatics check vs best enemy. On success: enemies get opportunity attacks, then combat ends. On failure: opportunity attacks + turn wasted. |
+| **Party flee** | In single player with allies, successful flee = whole party escapes |
+| **Untargetable when downed** | CombatAI skips unconscious players as targets — only allies are valid |
+| **LLM narrative** | Flee success triggers NarratorService summary mentioning near-death escape |
+| **Combat log auto-scroll** | Fixed dependency to ensure new logs always scroll into view |
+| **CLI support** | `death_save` and `flee` commands added to IntentRouter and CLI help |
+
+**Files modified:** `CombatOrchestrator.ts`, `CombatManager.ts`, `CombatAI.ts`, `CombatActionBar.tsx`, `CombatActionBar.module.css`, `IntentRouter.ts`, `CombatLog.tsx`, `cli/repl.ts`
+
+### E. Outstanding Issues (Not Yet Fixed)
 
 | ID | Severity | Description |
 |----|----------|-------------|

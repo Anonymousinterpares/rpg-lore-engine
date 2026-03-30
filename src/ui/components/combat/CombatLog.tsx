@@ -21,7 +21,7 @@ const CombatLog: React.FC<CombatLogProps> = ({ logs, className = '' }) => {
 
     useEffect(() => {
         scrollToBottom();
-    }, [logs]);
+    }, [logs, logs.length]);
 
     const getTypeClass = (type: string) => {
         switch (type) {

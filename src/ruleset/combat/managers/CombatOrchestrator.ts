@@ -18,7 +18,7 @@ import { ParsedIntent } from '../IntentRouter';
 import { AbilityParser } from '../AbilityParser';
 import { EventBusManager } from './EventBusManager';
 import { z } from 'zod';
-import { hasCondition, addCondition, tickConditions, conditionNames } from '../ConditionUtils';
+import { hasCondition, addCondition, removeCondition, tickConditions, conditionNames } from '../ConditionUtils';
 import { DeathEngine } from '../DeathEngine';
 
 
@@ -65,17 +65,8 @@ export class CombatOrchestrator {
                     visible: true
                 };
 
-                const skipTurn = await this.processStartOfTurn(actor);
+                await this.processStartOfTurn(actor);
                 await this.emitStateUpdate();
-
-                if (skipTurn) {
-                    // Actor's turn is auto-handled (e.g., death saves) — advance to next
-                    if (!this.state.combat) break;
-                    const nextMsg = this.combatManager.advanceTurn();
-                    this.addCombatLog(nextMsg);
-                    this.state.combat.turnActions = [];
-                    continue;
-                }
 
                 if (actor.isPlayer) {
                     this.turnProcessing = false;
@@ -111,9 +102,9 @@ export class CombatOrchestrator {
     }
 
     /**
-     * Returns true if the actor's turn should be auto-skipped (death saves, dead, etc.)
+     * Processes start-of-turn effects. Does NOT auto-roll death saves — player must click the button.
      */
-    private async processStartOfTurn(actor: Combatant): Promise<boolean> {
+    private async processStartOfTurn(actor: Combatant): Promise<void> {
         // Tick status effects (buffs/debuffs with duration)
         if (actor.statusEffects) {
             actor.statusEffects = actor.statusEffects.filter(effect => {
@@ -131,24 +122,14 @@ export class CombatOrchestrator {
             this.addCombatLog(`${actor.name}: ${expired.join(', ')} expired.`);
         }
 
-        // Death saves: if player is at 0 HP and unconscious, roll death save and skip their action turn
+        // If player is downed, prompt them to roll death save (they must click the button)
         if (actor.isPlayer && actor.hp.current <= 0 && hasCondition(actor.conditions, 'Unconscious')) {
-            const result = DeathEngine.rollDeathSave(actor);
-            this.addCombatLog(result.message);
-            this.state.lastNarrative = result.message;
-
-            if (result.isDead) {
-                this.addCombatLog(`${actor.name} has died.`);
-            } else if (result.isRevived) {
-                this.addCombatLog(`${actor.name} miraculously regains consciousness!`);
-            }
-
-            await this.emitStateUpdate();
-            return true; // Skip this actor's turn (they can't take actions while unconscious)
+            const saves = actor.deathSaves || { successes: 0, failures: 0 };
+            this.addCombatLog(`${actor.name} is dying! Roll a Death Save. (${saves.successes} successes, ${saves.failures} failures)`);
+            this.state.lastNarrative = `You are unconscious and dying. Roll a Death Save!`;
         }
 
         await this.emitStateUpdate();
-        return false;
     }
 
     public async applyCombatDamage(target: Combatant, damage: number) {
@@ -175,6 +156,13 @@ export class CombatOrchestrator {
                 this.addCombatLog(`${target.name} maintains concentration (rolled ${total} vs DC ${dc}).`);
             }
         }
+
+        // Sync player HP to global character state so UI updates in real-time
+        if (target.isPlayer) {
+            this.state.character.hp.current = target.hp.current;
+            this.state.character.hp.temp = target.hp.temp;
+        }
+
         await this.emitStateUpdate();
     }
 
@@ -206,6 +194,162 @@ export class CombatOrchestrator {
             }
 
             let resultMsg = '';
+
+            // --- DEATH SAVE (player clicks button while downed) ---
+            if (intent.command === 'death_save' || intent.command === 'death save') {
+                if (currentCombatant.hp.current > 0 || !hasCondition(currentCombatant.conditions, 'Unconscious')) {
+                    return "You are not dying.";
+                }
+                const result = DeathEngine.rollDeathSave(currentCombatant);
+                this.addCombatLog(result.message);
+                this.state.lastNarrative = result.message;
+
+                const restored = result.isRevived || result.totalSuccesses >= 3;
+
+                if (result.isDead) {
+                    this.addCombatLog(`${currentCombatant.name} has died.`);
+                    // Sync death to global character state
+                    this.state.character.hp.current = 0;
+                } else if (result.isRevived) {
+                    // Nat 20: DeathEngine already sets combatant hp to 1
+                    this.addCombatLog(`${currentCombatant.name} miraculously regains consciousness at 1 HP!`);
+                } else if (result.totalSuccesses >= 3) {
+                    // Stabilized: grant 1 HP so player can act (attack or flee)
+                    currentCombatant.hp.current = 1;
+                    removeCondition(currentCombatant.conditions, 'Unconscious');
+                    removeCondition(currentCombatant.conditions, 'Stable');
+                    this.addCombatLog(`${currentCombatant.name} stabilizes and musters the strength to act! (1 HP)`);
+                }
+
+                // CRITICAL: Sync combatant HP back to global character state so UI updates
+                if (currentCombatant.isPlayer) {
+                    this.state.character.hp.current = currentCombatant.hp.current;
+                    this.state.character.hp.temp = currentCombatant.hp.temp;
+                    // Also sync conditions back
+                    this.state.character.conditions = [...currentCombatant.conditions];
+                }
+
+                await this.emitStateUpdate();
+
+                if (restored) {
+                    // Player is back on their feet — do NOT auto-advance turn.
+                    // Let them take a normal action (attack or flee) this turn.
+                    currentCombatant.resources.actionSpent = false;
+                    currentCombatant.resources.bonusActionSpent = false;
+                    currentCombatant.movementRemaining = currentCombatant.movementSpeed;
+                    this.addCombatLog(`${currentCombatant.name} is back on their feet! Choose an action.`);
+                    await this.emitStateUpdate();
+                    return result.message;
+                } else {
+                    // Still dying or dead — auto-advance turn
+                    await this.advanceTurn();
+                    return result.message;
+                }
+            }
+
+            // --- FLEE ACTION ---
+            if (intent.command === 'flee') {
+                if (!currentCombatant.isPlayer) return "Only the player can flee.";
+
+                const combatState = this.state.combat!;
+                const pc = this.state.character;
+
+                // Contested check: player Athletics or Acrobatics (whichever is higher) vs best enemy
+                const strMod = MechanicsEngine.getModifier(pc.stats.STR || 10);
+                const dexMod = MechanicsEngine.getModifier(pc.stats.DEX || 10);
+                const prof = MechanicsEngine.getProficiencyBonus(pc.level);
+                const hasAthletics = pc.skillProficiencies?.includes('Athletics');
+                const hasAcrobatics = pc.skillProficiencies?.includes('Acrobatics');
+
+                const athleticsBonus = strMod + (hasAthletics ? prof : 0);
+                const acrobaticsBonus = dexMod + (hasAcrobatics ? prof : 0);
+                const playerBonus = Math.max(athleticsBonus, acrobaticsBonus);
+                const usedSkill = athleticsBonus >= acrobaticsBonus ? 'Athletics' : 'Acrobatics';
+
+                const playerRoll = Dice.d20() + playerBonus;
+
+                // Enemy contested roll: highest Athletics/Acrobatics among living enemies
+                const enemies = combatState.combatants.filter(c => c.type === 'enemy' && c.hp.current > 0);
+                let bestEnemyRoll = 0;
+                let bestEnemyName = 'enemy';
+                for (const enemy of enemies) {
+                    const eDex = MechanicsEngine.getModifier(enemy.stats?.DEX ?? 10);
+                    const eStr = MechanicsEngine.getModifier(enemy.stats?.STR ?? 10);
+                    const eBonus = Math.max(eDex, eStr);
+                    const eRoll = Dice.d20() + eBonus;
+                    if (eRoll > bestEnemyRoll) {
+                        bestEnemyRoll = eRoll;
+                        bestEnemyName = enemy.name;
+                    }
+                }
+
+                this.addCombatLog(`${currentCombatant.name} attempts to flee! ${usedSkill} check: ${playerRoll} vs ${bestEnemyName}'s ${bestEnemyRoll}`);
+
+                if (playerRoll >= bestEnemyRoll) {
+                    // SUCCESS — but enemies get opportunity attacks first
+                    let oaMessages: string[] = [];
+                    const gridManager = combatState.grid ? new CombatGridManager(combatState.grid) : null;
+                    for (const enemy of enemies) {
+                        if (enemy.resources.reactionSpent) continue;
+                        const adjacent = gridManager ? gridManager.getDistance(currentCombatant.position, enemy.position) <= 1.5 : true;
+                        if (!adjacent) continue;
+
+                        // Opportunity attack
+                        const eStr = MechanicsEngine.getModifier(enemy.stats?.STR ?? 10);
+                        const attackRoll = Dice.d20() + eStr;
+                        if (attackRoll >= currentCombatant.ac) {
+                            const damage = Math.max(1, Dice.roll('1d6') + eStr);
+                            await this.applyCombatDamage(currentCombatant, damage);
+                            oaMessages.push(`${enemy.name} strikes as you flee! (${damage} damage)`);
+                        } else {
+                            oaMessages.push(`${enemy.name} swings but misses!`);
+                        }
+                        enemy.resources.reactionSpent = true;
+                    }
+
+                    for (const msg of oaMessages) this.addCombatLog(msg);
+
+                    // Check if opportunity attacks killed the player
+                    if (currentCombatant.hp.current <= 0 && currentCombatant.isPlayer) {
+                        this.addCombatLog(`${currentCombatant.name} was cut down while fleeing!`);
+                        await this.emitStateUpdate();
+                        currentCombatant.resources.actionSpent = true;
+                        await this.advanceTurn();
+                        return `Flee failed — you were struck down while escaping!`;
+                    }
+
+                    // Successful flee — end combat as escape
+                    this.addCombatLog(`${currentCombatant.name} successfully flees the battle!`);
+                    await this.endCombatAsFlee();
+                    return `You escape! ${oaMessages.join(' ')}`;
+
+                } else {
+                    // FAILURE — opportunity attacks + turn wasted
+                    let oaMessages: string[] = [];
+                    const gridManager = combatState.grid ? new CombatGridManager(combatState.grid) : null;
+                    for (const enemy of enemies) {
+                        if (enemy.resources.reactionSpent) continue;
+                        const adjacent = gridManager ? gridManager.getDistance(currentCombatant.position, enemy.position) <= 1.5 : true;
+                        if (!adjacent) continue;
+
+                        const eStr = MechanicsEngine.getModifier(enemy.stats?.STR ?? 10);
+                        const attackRoll = Dice.d20() + eStr;
+                        if (attackRoll >= currentCombatant.ac) {
+                            const damage = Math.max(1, Dice.roll('1d6') + eStr);
+                            await this.applyCombatDamage(currentCombatant, damage);
+                            oaMessages.push(`${enemy.name} strikes you! (${damage} damage)`);
+                        }
+                        enemy.resources.reactionSpent = true;
+                    }
+
+                    for (const msg of oaMessages) this.addCombatLog(msg);
+                    this.addCombatLog(`Flee failed! (${playerRoll} vs ${bestEnemyRoll})`);
+                    currentCombatant.resources.actionSpent = true;
+                    this.state.combat.turnActions.push(`Failed flee attempt.`);
+                    await this.emitStateUpdate();
+                    return `Flee failed! The enemies block your escape. ${oaMessages.join(' ')}`;
+                }
+            }
 
             const nonActionCommands = ['target', 'end turn', 'move'];
             if (currentCombatant.resources.actionSpent && !nonActionCommands.includes(intent.command || '')) {
@@ -650,6 +794,56 @@ export class CombatOrchestrator {
             this.state.mode = 'GAME_OVER';
             await this.emitStateUpdate();
         }
+    }
+
+    private async endCombatAsFlee() {
+        const combatState = this.state.combat;
+        if (!combatState) return;
+
+        this.addCombatLog("You flee the battle!");
+
+        // Sync HP/spell slots back to character (same as victory sync)
+        const pcCombatant = combatState.combatants.find(c => c.isPlayer);
+        if (pcCombatant) {
+            const char = this.state.character;
+            char.hp.current = pcCombatant.hp.current;
+            char.hp.temp = pcCombatant.hp.temp;
+            if (pcCombatant.spellSlots) {
+                Object.entries(pcCombatant.spellSlots).forEach(([lv, data]) => {
+                    if (char.spellSlots[lv]) char.spellSlots[lv].current = data.current;
+                });
+            }
+        }
+
+        // Sync companions
+        this.state.companions.forEach((companion, index) => {
+            const compId = `companion_${index}`;
+            const compCombatant = combatState.combatants.find(c => c.id === compId);
+            if (compCombatant) {
+                companion.hp.current = compCombatant.hp.current;
+                companion.hp.temp = compCombatant.hp.temp;
+            }
+        });
+
+        // No XP, no loot — you ran away
+        this.state.mode = 'EXPLORATION';
+        const totalMinutes = Math.ceil((combatState.round || 0) * 6 / 60) + 2;
+        this.state.worldTime = WorldClockEngine.advanceTime(this.state.worldTime, totalMinutes);
+        this.state.combat = undefined;
+        await this.emitStateUpdate();
+
+        // LLM narrative for the flee
+        try {
+            const fleeContext = `The party narrowly escaped a deadly battle with ${combatState.combatants.filter(c => c.type === 'enemy').map(c => c.name).join(', ')}. The player was near death (${pcCombatant?.hp.current ?? 1} HP remaining). Describe the desperate flee in 2-3 sentences. Mention the close brush with death.`;
+            const summary = await NarratorService.summarizeCombat(this.state, [
+                ...combatState.logs || [],
+                { id: 'flee', type: 'info', message: fleeContext }
+            ]);
+            this.state.lastNarrative = summary;
+            this.state.conversationHistory.push({ role: 'narrator', content: summary, turnNumber: this.state.worldTime.totalTurns });
+            this.contextManager.addEvent('narrator', summary);
+            await this.emitStateUpdate();
+        } catch (e) { console.error('[Flee Narrative]', e); }
     }
 
     private async performAITurn(actor: Combatant) {

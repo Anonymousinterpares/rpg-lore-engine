@@ -59,6 +59,76 @@
       "lastSaved": "2026-03-30T20:16:10.895Z",
       "playTimeSeconds": 0,
       "locationSummary": "0,1"
+    },
+    {
+      "id": "f39617e6-0a89-4a20-8e94-bcc71285cb3b",
+      "slotName": "integration_test",
+      "characterName": "TestHero",
+      "characterLevel": 1,
+      "characterClass": "Fighter",
+      "lastSaved": "2026-03-30T21:11:18.691Z",
+      "playTimeSeconds": 0,
+      "locationSummary": "0,1"
+    },
+    {
+      "id": "ef00fffc-5a73-4236-b4e5-ba8297002c56",
+      "slotName": "integration_test",
+      "characterName": "TestHero",
+      "characterLevel": 1,
+      "characterClass": "Fighter",
+      "lastSaved": "2026-03-30T21:22:27.586Z",
+      "playTimeSeconds": 0,
+      "locationSummary": "0,1"
+    },
+    {
+      "id": "4eb862af-803a-4447-9c96-d7183ea491d3",
+      "slotName": "integration_test",
+      "characterName": "TestHero",
+      "characterLevel": 1,
+      "characterClass": "Fighter",
+      "lastSaved": "2026-03-30T21:34:35.875Z",
+      "playTimeSeconds": 0,
+      "locationSummary": "0,1"
+    },
+    {
+      "id": "8fc2130e-457d-4fec-a812-2682946f9c15",
+      "slotName": "integration_test",
+      "characterName": "TestHero",
+      "characterLevel": 1,
+      "characterClass": "Fighter",
+      "lastSaved": "2026-03-30T21:45:51.943Z",
+      "playTimeSeconds": 0,
+      "locationSummary": "0,1"
+    },
+    {
+      "id": "36e20864-e5a1-4255-a03d-9dca21b438a6",
+      "slotName": "integration_test",
+      "characterName": "TestHero",
+      "characterLevel": 1,
+      "characterClass": "Fighter",
+      "lastSaved": "2026-03-30T21:47:18.224Z",
+      "playTimeSeconds": 0,
+      "locationSummary": "0,1"
+    },
+    {
+      "id": "6e717878-fd27-48a3-895a-3574f81d2d21",
+      "slotName": "integration_test",
+      "characterName": "TestHero",
+      "characterLevel": 1,
+      "characterClass": "Fighter",
+      "lastSaved": "2026-03-30T21:53:02.126Z",
+      "playTimeSeconds": 0,
+      "locationSummary": "0,1"
+    },
+    {
+      "id": "6a48b1bd-4805-488e-bef2-2ac5a4d3a52c",
+      "slotName": "integration_test",
+      "characterName": "TestHero",
+      "characterLevel": 1,
+      "characterClass": "Fighter",
+      "lastSaved": "2026-03-30T21:53:47.275Z",
+      "playTimeSeconds": 0,
+      "locationSummary": "0,1"
     }
   ]
 }

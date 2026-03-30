@@ -75,6 +75,8 @@ function showHelp() {
 ║                                               ║
 ║ COMBAT                                        ║
 ║  attack / dodge / dash / hide / end turn      ║
+║  flee             — Attempt to escape combat  ║
+║  death_save       — Roll death save (when 0HP)║
 ║  /cast <spell> [target]                       ║
 ║  /move <x> <y> [pace]                         ║
 ║  /combat <enemy> <count> — Start combat (dev) ║

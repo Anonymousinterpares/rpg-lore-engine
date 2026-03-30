@@ -1,0 +1,4584 @@
+{
+  "saveId": "6e717878-fd27-48a3-895a-3574f81d2d21",
+  "saveVersion": 1,
+  "worldSeed": 66023,
+  "createdAt": "2026-03-30T21:47:26.240Z",
+  "lastSavedAt": "2026-03-30T21:47:26.240Z",
+  "playTimeSeconds": 0,
+  "explorationBlindnessUntil": 0,
+  "findThePathActiveUntil": 0,
+  "debugLog": [],
+  "character": {
+    "name": "TestHero",
+    "sex": "male",
+    "level": 1,
+    "race": "Human",
+    "class": "Fighter",
+    "conditions": [],
+    "stats": {
+      "STR": 16,
+      "DEX": 14,
+      "CON": 15,
+      "INT": 11,
+      "WIS": 13,
+      "CHA": 9
+    },
+    "savingThrowProficiencies": [
+      "STR",
+      "CON"
+    ],
+    "skillProficiencies": [
+      "Athletics",
+      "Intimidation",
+      "Acrobatics",
+      "Animal Handling"
+    ],
+    "weaponProficiencies": [],
+    "hp": {
+      "current": 0,
+      "max": 12,
+      "temp": 0
+    },
+    "deathSaves": {
+      "successes": 0,
+      "failures": 0
+    },
+    "hitDice": {
+      "current": 1,
+      "max": 1,
+      "dieType": "1d10"
+    },
+    "spellSlots": {},
+    "featureUsages": {
+      "Second Wind": {
+        "current": 1,
+        "max": 1,
+        "usageType": "SHORT_REST"
+      }
+    },
+    "cantripsKnown": [],
+    "knownSpells": [],
+    "preparedSpells": [],
+    "spellbook": [],
+    "unseenSpells": [],
+    "ac": 12,
+    "inventory": {
+      "gold": {
+        "cp": 0,
+        "sp": 0,
+        "ep": 0,
+        "gp": 10,
+        "pp": 0
+      },
+      "items": [
+        {
+          "name": "Insignia of rank",
+          "id": "Insignia of rank",
+          "type": "Misc",
+          "weight": 0,
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "7c85c6ea-dd2c-4b9a-8cc9-ab9e2306d5e1"
+        },
+        {
+          "name": "Dice set",
+          "type": "Adventuring Gear",
+          "cost": {
+            "cp": 0,
+            "sp": 1,
+            "ep": 0,
+            "gp": 0,
+            "pp": 0
+          },
+          "weight": 0,
+          "description": "This item encompasses a wide range of game pieces, including dice and decks of cards (for games such as Three-Dragon Ante). A few common examples appear on the Tools table, but other kinds of gaming sets exist. If you are proficient with a gaming set, you can add your proficiency bonus to ability checks you make to play a game with that set. Each type of gaming set requires a separate proficiency.",
+          "id": "Dice set",
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "854eb76d-cf40-4cb2-a749-c8ec4d6388e6"
+        },
+        {
+          "name": "Clothes, common",
+          "type": "Adventuring Gear",
+          "cost": {
+            "cp": 0,
+            "sp": 5,
+            "ep": 0,
+            "gp": 0,
+            "pp": 0
+          },
+          "weight": 3,
+          "id": "Clothes, common",
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "5a287139-b391-4067-8d2b-598f436761b2"
+        },
+        {
+          "name": "Pouch",
+          "type": "Adventuring Gear",
+          "cost": {
+            "cp": 0,
+            "sp": 5,
+            "ep": 0,
+            "gp": 0,
+            "pp": 0
+          },
+          "weight": 1,
+          "description": "A cloth or leather pouch can hold up to 20 sling bullets or 50 blowgun needles, among other things. A compartmentalized pouch for holding spell components is called a component pouch (described earlier in this section).",
+          "id": "Pouch",
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "85d92407-0392-41cb-9866-67718074ab73"
+        }
+      ]
+    },
+    "equipmentSlots": {},
+    "attunedItems": [],
+    "xp": 0,
+    "inspiration": false,
+    "knownEntities": {
+      "monsters": [
+        "Boar",
+        "NonExistentMonster",
+        "Goblin"
+      ],
+      "items": []
+    },
+    "biography": {
+      "background": "Soldier",
+      "traits": [
+        "I'm always polite and respectful.",
+        "I'm full of inspiring and cautionary tales from my military experience relevant to almost every combat situation.",
+        "I'm haunted by memories of war. I can't get the images of violence out of my mind.",
+        "I've lost too many friends, and I'm slow to make new ones.",
+        "I can stare down a hell hound without flinching.",
+        "I enjoy being strong and like breaking things.",
+        "I have a crude sense of humor.",
+        "I face problems head-on. A simple, direct solution is the best path to success."
+      ],
+      "ideals": [
+        "Greater Good. Our lot is to lay down our lives in defense of others. (Good)",
+        "Responsibility. I do what must be done and follow orders, even if I don't like them. (Lawful)",
+        "Independence. When people follow orders blindly, they embrace a kind of tyranny. (Chaotic)",
+        "Might. In life as in war, the stronger force prevails. (Evil)",
+        "Live and Let Live. Ideals aren't worth killing over or going to war for. (Neutral)",
+        "Nation. My city, nation, or people are all that matter. (Any)"
+      ],
+      "bonds": [
+        "I would still lay down my life for the people I served with.",
+        "Someone saved my life on the battlefield. To this day, I will never leave a friend behind.",
+        "My honor is my life.",
+        "I'll never forget the crushing defeat my company suffered or the enemies who dealt it.",
+        "Those who fight beside me are those worth dying for.",
+        "I fight for those who cannot fight for themselves."
+      ],
+      "flaws": [
+        "The monstrous enemy we faced in battle still leaves me quivering with fear.",
+        "I have little respect for anyone who is not a proven warrior.",
+        "I made a terrible mistake in battle that cost many lives, and I would do anything to keep that mistake secret.",
+        "My hatred of my enemies is blind and unreasoning.",
+        "I obey the law, even if the law causes misery.",
+        "I'd rather eat my armor than admit when I'm wrong."
+      ],
+      "chronicles": [
+        {
+          "turn": 0,
+          "event": "The adventure begins."
+        }
+      ]
+    }
+  },
+  "companions": [],
+  "mode": "COMBAT",
+  "location": {
+    "hexId": "0,1",
+    "coordinates": [
+      0,
+      1
+    ],
+    "droppedItems": [],
+    "combatLoot": [],
+    "previousCoordinates": [
+      0,
+      0
+    ],
+    "previousControlPointOffset": [
+      0.07363264249728257,
+      0.3020975958557672
+    ]
+  },
+  "worldTime": {
+    "hour": 23,
+    "minute": 0,
+    "day": 1,
+    "month": 1,
+    "year": 1489,
+    "totalTurns": 8400
+  },
+  "worldMap": {
+    "grid_id": "6e717878-fd27-48a3-895a-3574f81d2d21",
+    "hexes": {
+      "0,0": {
+        "coordinates": [
+          0,
+          0
+        ],
+        "name": "Initial Landing Site",
+        "generated": true,
+        "biome": "Plains",
+        "description": "A vast expanse of plains.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_adv1zmoqh",
+            "resourceType": "Hide",
+            "itemId": "Raw_Hide",
+            "quantityRemaining": 3,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "visited": true,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 1,
+        "npcs": [
+          "4a94a47e-bc36-44d9-8c40-033745cb19fb"
+        ]
+      },
+      "0,1": {
+        "coordinates": [
+          0,
+          1
+        ],
+        "name": "Plains (Discovered)",
+        "generated": true,
+        "biome": "Plains",
+        "description": "A vast expanse of plains.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": true,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [],
+        "connections": "0:R:1,1:R:1,5:R:1"
+      },
+      "0,-1": {
+        "coordinates": [
+          0,
+          -1
+        ],
+        "name": "Jungle (Uncharted Territory)",
+        "generated": true,
+        "biome": "Jungle",
+        "description": "A vast expanse of jungle.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": [],
+        "connections": "4:P:0"
+      },
+      "1,0": {
+        "coordinates": [
+          1,
+          0
+        ],
+        "name": "Plains (Uncharted Territory)",
+        "generated": true,
+        "biome": "Plains",
+        "description": "A vast expanse of plains.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": [
+          "04a729ac-b8d4-4fbd-a7ca-011cd6a73e2b"
+        ],
+        "connections": "0:R:1,1:R:1,2:R:1"
+      },
+      "-1,1": {
+        "coordinates": [
+          -1,
+          1
+        ],
+        "name": "Hills (Uncharted Territory)",
+        "generated": true,
+        "biome": "Hills",
+        "description": "A vast expanse of hills.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": [],
+        "connections": "5:P:0"
+      },
+      "1,-1": {
+        "coordinates": [
+          1,
+          -1
+        ],
+        "name": "Jungle (Uncharted Territory)",
+        "generated": true,
+        "biome": "Jungle",
+        "description": "A vast expanse of jungle.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_nhbexaubp",
+            "resourceType": "Herb",
+            "itemId": "Silverleaf",
+            "quantityRemaining": 1,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [],
+        "connections": "1:P:0"
+      },
+      "-1,0": {
+        "coordinates": [
+          -1,
+          0
+        ],
+        "name": "Plains (Uncharted Territory)",
+        "generated": true,
+        "biome": "Plains",
+        "description": "A vast expanse of plains.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 2,
+        "npcs": [],
+        "connections": "3:R:1,5:R:1,4:R:1"
+      },
+      "0,2": {
+        "coordinates": [
+          0,
+          2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Jungle (Uncharted Territory)",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": true,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_u57kjz9s2",
+            "resourceType": "Wood",
+            "itemId": "Ironwood",
+            "quantityRemaining": 1,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "3:P:1,2:P:0,0:P:1,1:P:1"
+      },
+      "1,1": {
+        "coordinates": [
+          1,
+          1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Jungle (Uncharted Territory)",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": true,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_8kb13r9oj",
+            "resourceType": "Hide",
+            "itemId": "Thick_Hide",
+            "quantityRemaining": 1,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "3:P:1,5:P:0,4:P:1,2:P:1,0:P:1"
+      },
+      "-1,2": {
+        "coordinates": [
+          -1,
+          2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Jungle (Uncharted Territory)",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": true,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": [
+          "b3f08285-6d46-43fd-90e2-8cb6eaab1212"
+        ],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "2:P:1,5:P:0"
+      },
+      "0,-2": {
+        "coordinates": [
+          0,
+          -2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Mountains",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "1,-2": {
+        "coordinates": [
+          1,
+          -2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Mountains",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_x6d8qh562",
+            "resourceType": "Ore",
+            "itemId": "Iron_Ore",
+            "quantityRemaining": 3,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": [
+          "d88a7c8d-bfd4-4fb0-87bf-9d61ee6a971d"
+        ],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "-1,-1": {
+        "coordinates": [
+          -1,
+          -1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Hills",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": [
+          "bda5f9e7-361a-472e-ac5b-d8c57fd115f4"
+        ],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "0:P:1,1:P:0,5:P:1"
+      },
+      "2,0": {
+        "coordinates": [
+          2,
+          0
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_4qekl7o4z",
+            "resourceType": "Hide",
+            "itemId": "Raw_Hide",
+            "quantityRemaining": 1,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [
+          "617405c0-aaff-4cd1-9a15-c1f2545fde4b"
+        ],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "5:R:1,4:R:1,3:R:1,0:R:1"
+      },
+      "2,-1": {
+        "coordinates": [
+          2,
+          -1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Hills",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "0:P:1,5:P:1,4:P:0"
+      },
+      "-2,2": {
+        "coordinates": [
+          -2,
+          2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_cfpkgkgdp",
+            "resourceType": "Hide",
+            "itemId": "Thick_Hide",
+            "quantityRemaining": 1,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 2,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "2:P:0"
+      },
+      "-2,1": {
+        "coordinates": [
+          -2,
+          1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 1,
+        "npcs": [
+          "1337a617-b1d8-413c-9165-107a039ea8b1"
+        ],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "2:P:1,3:P:1"
+      },
+      "2,-2": {
+        "coordinates": [
+          2,
+          -2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Mountains",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "-2,0": {
+        "coordinates": [
+          -2,
+          0
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_yi07mobmf",
+            "resourceType": "Herb",
+            "itemId": "Kingsbloom",
+            "quantityRemaining": 3,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "0:R:1,1:R:1,2:R:1"
+      },
+      "0,3": {
+        "coordinates": [
+          0,
+          3
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_8btpg5i0j",
+            "resourceType": "Hide",
+            "itemId": "Raw_Hide",
+            "quantityRemaining": 1,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 2,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "3:R:1,4:R:1"
+      },
+      "1,2": {
+        "coordinates": [
+          1,
+          2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_gk1ibz5vj",
+            "resourceType": "Herb",
+            "itemId": "Kingsbloom",
+            "quantityRemaining": 2,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 1,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "3:R:1,4:R:1,2:R:1"
+      },
+      "-1,3": {
+        "coordinates": [
+          -1,
+          3
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_zuo1rx4k2",
+            "resourceType": "Herb",
+            "itemId": "Silverleaf",
+            "quantityRemaining": 1,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "1:P:1,4:P:0"
+      },
+      "2,1": {
+        "coordinates": [
+          2,
+          1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "3:P:1,5:P:1"
+      },
+      "-2,3": {
+        "coordinates": [
+          -2,
+          3
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_ct3ljpj88",
+            "resourceType": "Herb",
+            "itemId": "Silverleaf",
+            "quantityRemaining": 2,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 1,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "1:P:0,2:P:0"
+      }
+    },
+    "discoveredHexIds": [
+      "0,0"
+    ],
+    "lastGeneratedTurn": 0,
+    "coastlines": []
+  },
+  "subLocations": [],
+  "worldNpcs": [
+    {
+      "id": "b3f08285-6d46-43fd-90e2-8cb6eaab1212",
+      "name": "Alaric Ironfoot",
+      "traits": [
+        "Mysterious",
+        "Duty (Honor)"
+      ],
+      "isMerchant": false,
+      "relationship": {
+        "standing": 0,
+        "interactionLog": []
+      },
+      "dialogue_triggers": [],
+      "inventory": [],
+      "availableQuests": [],
+      "conversationHistory": [],
+      "role": "Scout",
+      "stats": {
+        "STR": 10,
+        "DEX": 10,
+        "CON": 10,
+        "INT": 10,
+        "WIS": 10,
+        "CHA": 10
+      }
+    },
+    {
+      "id": "d88a7c8d-bfd4-4fb0-87bf-9d61ee6a971d",
+      "name": "Alaric Brightwood",
+      "traits": [
+        "Zhentarim Mercenary",
+        "Evil",
+        "Noble Scion"
+      ],
+      "isMerchant": false,
+      "relationship": {
+        "standing": 0,
+        "interactionLog": []
+      },
+      "dialogue_triggers": [],
+      "inventory": [],
+      "availableQuests": [],
+      "conversationHistory": [],
+      "factionId": "zhentarim",
+      "role": "Prospector",
+      "stats": {
+        "STR": 10,
+        "DEX": 10,
+        "CON": 10,
+        "INT": 10,
+        "WIS": 10,
+        "CHA": 10
+      }
+    },
+    {
+      "id": "bda5f9e7-361a-472e-ac5b-d8c57fd115f4",
+      "name": "Janna Thornbusk",
+      "traits": [
+        "Zhentarim Mercenary",
+        "Nervous",
+        "Chaos (Freedom)",
+        "Always Eating"
+      ],
+      "isMerchant": false,
+      "relationship": {
+        "standing": 0,
+        "interactionLog": []
+      },
+      "dialogue_triggers": [],
+      "inventory": [],
+      "availableQuests": [],
+      "conversationHistory": [],
+      "factionId": "zhentarim",
+      "role": "Goatherd",
+      "stats": {
+        "STR": 10,
+        "DEX": 10,
+        "CON": 10,
+        "INT": 10,
+        "WIS": 10,
+        "CHA": 10
+      }
+    },
+    {
+      "id": "617405c0-aaff-4cd1-9a15-c1f2545fde4b",
+      "name": "Elowen Ironfoot",
+      "traits": [
+        "Alliance Loyalist",
+        "Nervous",
+        "Suspicious"
+      ],
+      "isMerchant": true,
+      "relationship": {
+        "standing": 0,
+        "interactionLog": []
+      },
+      "dialogue_triggers": [],
+      "inventory": [],
+      "availableQuests": [],
+      "conversationHistory": [],
+      "factionId": "lords_alliance",
+      "role": "Merchant",
+      "stats": {
+        "STR": 10,
+        "DEX": 10,
+        "CON": 10,
+        "INT": 10,
+        "WIS": 10,
+        "CHA": 10
+      }
+    },
+    {
+      "id": "1337a617-b1d8-413c-9165-107a039ea8b1",
+      "name": "Dara Stormborn",
+      "traits": [
+        "Nature Guardian",
+        "Avoids Eye Contact",
+        "Loner"
+      ],
+      "isMerchant": false,
+      "relationship": {
+        "standing": 0,
+        "interactionLog": []
+      },
+      "dialogue_triggers": [],
+      "inventory": [],
+      "availableQuests": [],
+      "conversationHistory": [],
+      "factionId": "emerald_enclave",
+      "role": "Hunter",
+      "stats": {
+        "STR": 10,
+        "DEX": 10,
+        "CON": 10,
+        "INT": 10,
+        "WIS": 10,
+        "CHA": 10
+      }
+    }
+  ],
+  "activeQuests": [
+    {
+      "id": "tutorial_01",
+      "title": "The First Step",
+      "description": "You awake in a strange clearing. The air is fresh, but the silence is heavy. You must get your bearings.",
+      "status": "ACTIVE",
+      "turnAccepted": 0,
+      "isNew": true,
+      "objectives": [
+        {
+          "id": "obj_master_booklet",
+          "type": "EXPLORE",
+          "targetId": "tutorial",
+          "isHidden": false,
+          "description": "Master the Booklet: View all pages (Character, Map, Quests, Equipment, Codex)",
+          "isCompleted": false,
+          "currentProgress": 0,
+          "maxProgress": 5
+        },
+        {
+          "id": "obj_study_gear",
+          "type": "EXPLORE",
+          "targetId": "tutorial",
+          "isHidden": false,
+          "description": "Study Your Gear: Examine an item in your inventory",
+          "isCompleted": false,
+          "currentProgress": 0,
+          "maxProgress": 1
+        },
+        {
+          "id": "obj_begin_journey",
+          "type": "EXPLORE",
+          "targetId": "tutorial",
+          "isHidden": false,
+          "description": "Begin the Journey: Move to a neighboring hex",
+          "isCompleted": true,
+          "currentProgress": 1,
+          "maxProgress": 1
+        }
+      ],
+      "rewards": {
+        "xp": 50,
+        "gold": {
+          "gp": 10,
+          "sp": 0,
+          "cp": 0,
+          "ep": 0,
+          "pp": 0
+        },
+        "items": []
+      }
+    }
+  ],
+  "factions": [],
+  "storySummary": "started their journey as a Human Fighter with the Soldier background.",
+  "lastNarrative": "You are unconscious and dying. Roll a Death Save!",
+  "conversationHistory": [
+    {
+      "role": "player",
+      "content": "/look",
+      "turnNumber": 0
+    },
+    {
+      "role": "narrator",
+      "content": "The first thing that greets you is the harsh bite of cold morning air, crisp against your skin as the pale sun climbs over the horizon, casting long, wavering shadows across the endless plains. The grass underfoot is a sea of silver-green, each blade glittering with a thin veil of frost that crackles when you shift your weight. To the south, the plain stretches toward a distant line of dense jungle, its dark canopy a stark contrast against the open sky. To the north, low hills rise like silent sentinels, their slopes fading into misty uncertainty. The wind carries faint scents of pine and damp earth from the looming jungle, while a distant, mournful howl—low and resonant—echoes from somewhere beyond the trees, stirring an uneasy prickle down your spine.\n\nYou are alone, save for a solitary figure standing a short distance away, half‑concealed by a clump of tall grass. Their silhouette is vague, and they do not move, as if waiting—or perhaps watching. Your mind is a blank slate; you cannot recall how you came to this place, only that your name is TestHero and the weight of your armor feels familiar.\n\nThe world feels both wondrous and foreboding: the untouched plains invite exploration, yet the distant howl hints at unseen dangers lurking beyond the jungle’s edge.\n\nWhat will you do?\n1. Approach the unknown figure to see who—or what—it might be.\n2. Survey the surrounding terrain, perhaps climbing a nearby hill for a better view.\n3. Follow the direction of the howl, venturing toward the jungle’s dark line.",
+      "turnNumber": 0
+    },
+    {
+      "role": "player",
+      "content": "/move N",
+      "turnNumber": 2400
+    },
+    {
+      "role": "narrator",
+      "content": "You stride northward, the tall grasses of the plain rustling beneath your boots as the high sun beats down. After a short walk, the terrain subtly changes—where the open grass once lay, a faintly cleared area emerges, the remnants of a modest camp that looks to have been abandoned long ago. Scattered among the weeds you spot a broken wooden crate, a dented metal lantern, and a weather‑worn banner half‑torn by the wind, its faded emblem hinting at an expedition that once passed through here. The air carries a distant, humid scent drifting from the jungle beyond the horizon to the north, but for now the plain stretches out in all directions, its expanse unmarred by any visible life. No sounds of movement reach your ears, and the sky remains a clear, brilliant blue.\n\nTo your east, the jungle looms nearer; to the west, more open plain; to the south lies the spot where you first arrived; the distant horizon mirrors the same mix of plains, jungle, and hills as before.",
+      "turnNumber": 2400
+    },
+    {
+      "role": "player",
+      "content": "/pace Stealth",
+      "turnNumber": 2400
+    },
+    {
+      "role": "narrator",
+      "content": "You lower your shoulders, soften your steps, and begin moving across the open plains with a practiced, stealthy gait. The tall grasses sway gently in the high sun, but you keep your movements deliberate, pressing the tips of your boots into the soft earth to muffle each footfall. Even the occasional rustle of a distant jungle breeze seems muted as you glide forward, intent on remaining unseen and unheard. The horizon stretches in every direction—jungle to the south and southwest, more plains to the north and northeast, and low hills looming faintly to the northwest—yet no eyes or ears are visible in the immediate vicinity. Your cautious pace grants you a measure of concealment as you explore the uncharted terrain.",
+      "turnNumber": 2400
+    },
+    {
+      "role": "player",
+      "content": "/pace Normal",
+      "turnNumber": 2400
+    },
+    {
+      "role": "narrator",
+      "content": "You adjust your stride to a steady, normal pace, feeling the warm midday sun beat down on the open expanse. The gentle grasses sway in the breeze, and the distant horizon offers a mix of plains, jungle edges, and rolling hills. With each step, the soft earth yields beneath your boots, and the faint scent of wildflowers mingles with the distant, earthy aroma of the jungle to the south. Your eyes scan the surroundings, noting the jungle's dark fringe to the south and southeast, the hills looming to the northwest, and the endless plains stretching in all other directions. You continue onward, alert but at ease, ready for whatever the land may reveal.",
+      "turnNumber": 2400
+    },
+    {
+      "role": "player",
+      "content": "/rest short",
+      "turnNumber": 3000
+    },
+    {
+      "role": "narrator",
+      "content": "You find a modest rise of gently rolling grass a short distance to the east, its taller blades offering a natural windbreak against the evening chill. The plains stretch out in every direction, the distant jungle to the south a dark, whispering line of trees, the hills to the northwest rising in muted silhouettes. The sky hangs low, the waning light of evenfall casting long shadows across the open ground.\n\nYou settle down, unfastening your armor enough to sit and tend to the wounds that still ache from earlier skirmishes. Using the supplies you carry—a strip of clean cloth and a small vial of herbal salve—you clean the cuts and bandage them tightly. The short rest gives you a chance to catch your breath and focus your mind.\n\nAfter an hour of quiet, you feel the sting of pain lessen. Drawing upon your fighter’s resilience, you spend a hit die, rolling a fresh d10. The roll yields a solid 7, and with your constitution modifier of +2 you recover 9 hit points. The fresh vigor courses through your limbs, easing the lingering soreness. Though still wary of the unknown terrain that surrounds you, you feel ready to continue your journey.\n\nThe plains remain quiet, the jungle to the south rustles faintly as nocturnal creatures stir, and the hills to the northwest hold their shadowed promise. The night is approaching, but you have regained enough strength to press onward or set a more secure camp should you choose.",
+      "turnNumber": 3000
+    }
+  ],
+  "triggeredEvents": [
+    "moved_hex"
+  ],
+  "weather": {
+    "type": "Snow",
+    "durationMinutes": 150,
+    "intensity": 1
+  },
+  "travelPace": "Normal",
+  "clearedHexes": {},
+  "settings": {
+    "permadeath": false,
+    "variantEncumbrance": false,
+    "milestoneLeveling": false,
+    "criticalFumbleEffects": false,
+    "difficultyModifier": 1,
+    "inspirationEnabled": true,
+    "multiclassingAllowed": true,
+    "maxConversationHistoryTurns": 50,
+    "video": {
+      "fullscreen": false,
+      "vsync": true,
+      "resolutionScale": 1
+    },
+    "audio": {
+      "master": 0.8,
+      "music": 0.5
+    },
+    "gameplay": {
+      "difficulty": "normal",
+      "tutorials": true,
+      "autosave": false,
+      "developerMode": false
+    },
+    "ai": {}
+  },
+  "codexEntries": [
+    {
+      "id": "0fe94c36-2c5e-4dab-8ada-03108d583281",
+      "category": "bestiary",
+      "entityId": "NonExistentMonster",
+      "title": "The Whispering Maw of the Void",
+      "content": "**Physical Description:**\nThe NonExistentMonster, known among scholars as the Whispering Maw, defies conventional taxonomy. Its form appears as a shifting silhouette of obsidian‑gray tendrils that coalesce into a vaguely humanoid outline only when the creature is poised to strike. At a resting state the entity is little more than a rippling vortex of darkness, approximately three feet in diameter, suspended a few inches above the ground. When agitated, dozens of translucent, feather‑light appendages erupt, each ending in a lamella‑like mouth that emits a faint, otherworldly hum. The creature’s “skin” is not flesh but a lattice of ectoplasmic filaments that refract ambient light, giving it a spectral sheen.\n\n**Biological Speculation:**\nArcane biologists postulate that the NonExistentMonster is a conduit between the Material Plane and the Plane of Shadow. Its tendrils act as siphons, drawing ambient entropy to sustain a parasitic life‑force. The lamellar mouths are not used for ingestion of food but for the absorption of ambient magical resonance; the hum they produce is a by‑product of this process, resonating at a frequency that can destabilize spellcraft within a twenty‑foot radius. Its core is believed to be a pocket of pure void, a singularity that pulses with a rhythm akin to a heartbeat, though no true heart beats within.\n\n**Ecology & Habitat:**\nLegends place the Whispering Maw in the deepest chasms of the Underdark, forgotten ruins of ancient necropolises, and the mist‑shrouded borders of the Feywild where the veil between worlds thins. It is a solitary predator, rarely seen in groups, and appears to be attracted to sites of great magical upheaval—battlefields scarred by high‑level sorcery, ley‑line intersections, and sites of recent planar breach. Its presence is often heralded by a sudden drop in temperature and an inexplicable echo of whispered syllables that seem to come from nowhere and everywhere at once.\n\n**Behavior & Tactics:**\nThe NonExistentMonster prefers ambush. It cloaks itself within shadows, allowing its tendrils to drift like harmless wisps. When prey—be it a wandering adventurer or a stray magical artifact—ventures too close, the creature erupts, its lamellar mouths snapping shut around the target’s essence, draining magic and life in a matter of seconds. Survivors report a disorienting sensation of being pulled into a black void before being spat back into the material world, often stripped of their spellcasting abilities for a period of days.\n\n**Myths & Legends:**\nFolklore among the mountain clans speaks of the \"Silent Hunger,\" a deity that devours the very notion of hope. Bards recount verses warning travelers: \"When the night sings without a voice, the Maw of Void draws near; speak not, lest you be swallowed whole.\" Some seers claim that the creature is a guardian of forgotten knowledge, consuming only those who would misuse arcane secrets, while others deem it a cursed remnant of a failed experiment by a long‑lost empire of sorcerers.\n\n**Adventure Hook:**\nA remote village has reported a series of inexplicable magical failures—warding circles flicker out, lanterns dim without flame, and a child’s lullaby has turned to static whispers. The villagers fear the Whispering Maw has taken residence in the old stone well at the edge of town. They seek brave souls to investigate, seal the breach, and recover any lost relics before the creature can fully anchor itself to the Material Plane.\n\n**Survivor’s Tale:**\n\"I thought the darkness was just a trick of the wind. Then the air grew cold, and a low humming filled my ears—like a choir of dead souls. Before I could raise my sword, a tendril brushed my cheek, and I felt my magic slip from my fingertips like sand through a sieve. I blacked out, only to awaken hours later beside the well, my spellbook empty and my mind echoing with a single word: *Silence.* I swear, if you ever hear that hum, run. The Maw does not merely eat flesh; it devours the very spark that makes a mage.",
+      "isNew": true,
+      "discoveredAt": 8400
+    },
+    {
+      "id": "0d9a41fd-a23d-4054-9aab-515f4aeb7e25",
+      "category": "bestiary",
+      "entityId": "Boar",
+      "title": "The Wild Boar of the Verdant Wilds",
+      "content": "**Physical Description:**\nThe common boar of the realms is a stout, quadrupedal mammal cloaked in bristly, coarse hair ranging from iron‑gray to russet brown. Adults stand three to four feet at the shoulder and can weigh between 250 and 400 pounds. Their most striking features are the massive, curved tusks—enlarged canine teeth that protrude from a powerful snout and can reach up to a foot in length on the oldest males. Muscular forequarters and a barrel‑shaped torso grant them surprising speed, allowing a sprint of up to 30 miles per hour over short distances. Their hooves are split, providing traction in mud and dense underbrush.\n\n**Biology & Physiology:**\nBoars are omnivorous, with a digestive system capable of processing roots, tubers, bark, insects, and carrion. Their stomachs contain a highly acidic gastric juice that neutralizes plant toxins and aids in breaking down bone fragments. A pair of elongated, scent‑sensitive snouts houses a keen olfactory system; boars can detect the scent of a ripe acorn or a wounded animal from several hundred yards away. Their tusks are not merely weapons but also serve as tools for digging up roots and stripping bark. Seasonal hormone cycles trigger a surge of aggression during the autumnal rut, when males battle for dominance.\n\n**Ecology & Habitat:**\nBoars favor temperate forests, moorlands, and the edges of cultivated fields. They create shallow wallows—muddy depressions that serve as cooling baths and social gathering spots. In the wild, boars travel in loose sounders, typically a matriarchal group of sows and their young, while mature boars roam as solitary wanderers except during the breeding season. Their foraging behavior can reshape the undergrowth, turning dense thickets into open clearings, inadvertently aiding seed dispersal for hardy scrub species. Predators such as wolves, bears, and large drakes keep boar numbers in check, though their ferocity makes them formidable opponents even for seasoned hunters.\n\n**Myths & Legends:**\nAcross the kingdoms, boars have been woven into folklore as symbols of stubborn resilience and raw, untamed power. In the northern highlands, the \"Blood‑Tusk\" legend tells of a colossal boar whose tusks were said to drink the lifeblood of any warrior who dared challenge it, granting the beast near‑immortality. Some druids claim that boars are the earthly avatars of the forest spirit **Verdant Maw**, a deity that consumes excess growth to maintain balance. Tales of the \"Moonlit Boar\"—a spectral creature that appears only under a full moon, its hide shimmering like silver—are whispered among traveling minstrels, warning travelers to keep their firelight low lest they attract its gaze.\n\n**Combat Tactics:**\nWhen threatened, a boar will first attempt to charge, using its massive head and tusks as a battering ram. Its low center of gravity makes it difficult to topple, and its thick hide offers resistance to slashing weapons. If the charge fails, it may retreat to a wallow to regroup, using the mud to obscure its movements and to cool its blood. A seasoned hunter knows to avoid the boar's line of sight; a direct stare can trigger a frenzy that makes the beast charge with reckless abandon.\n\n**Survivor’s Tale:**\n\"I was tracking a band of goblin raiders through the mist‑shrouded pine woods when the ground trembled beneath a thunderous snort. Before I could ready my blade, a massive boar burst from the underbrush, its tusks glinting like moon‑forged steel. I ducked behind a fallen oak, heart pounding, as the beast slammed its snout into a tree, shaking the very sap from the bark. It turned, eyes blazing with a feral hunger, and charged. I threw a rope of hemp around a sturdy trunk and, with a prayer to the gods of the hunt, I pulled the rope taut, yanking the beast off its path. The boar roared, a sound that rattled my teeth, but it stumbled, its momentum lost. I fled on trembling legs, vowing never again to underestimate the wild’s silent guardians. — Torin Ironhand, Survivor of the Verdant Wilds\"",
+      "isNew": true,
+      "discoveredAt": 8400
+    },
+    {
+      "id": "322493ce-1c08-465b-8cab-50fca447b1dc",
+      "category": "bestiary",
+      "entityId": "Goblin",
+      "title": "The Cunning Greenfoot",
+      "content": "The goblin—often dismissed as a mere footnote to the grander monsters of the realms—holds a stubborn place in the annals of adventuring lore. Small, wiry, and perpetually smirking, these creatures have survived countless wars, plagues, and the rise and fall of empires by clinging to the margins of civilization.\n\n**Physical Description**\nGoblins stand between three and four feet tall, their sinewy frames wrapped in coarse, mottled skin that ranges from dusky olive to a sickly jade. Their heads are disproportionately large, bearing pointed ears that fan outward like the sails of a wind‑torn ship, and eyes that glint amber or coal‑black, capable of seeing in dim light. A set of sharp, uneven teeth protrudes from a snarling mouth, while their hands end in claw‑like nails, perfect for both delicate tinkering and vicious stabbing.\n\n**Biology**\nThe goblin’s physiology is a marvel of efficiency. Their metabolism burns a mixture of scavenged meat, wild tubers, and fermented fungi, allowing them to thrive on meager rations. A rapid reproductive cycle—females can bear litters of up to six offspring after a mere six weeks—ensures that even heavy losses are quickly replenished. Their hemoglobin contains a copper‑based pigment, giving their blood a faint green hue that has inspired the moniker “greenfoot.”\n\n**Habitat & Ecology**\nGoblin tribes are opportunistic, carving homes into cavernous tunnels, abandoned ruins, and the shadow‑laden edges of forests. They favor regions where natural resources intersect: a river that feeds a dense thicket, a cliffside that overlooks a trade road, or a ruined keep that offers shelter from the elements. Within their societies, a crude hierarchy emerges—chiefs, shamans, and the ever‑present “sneak‑lords” who specialize in ambush and theft. Though often portrayed as solitary marauders, goblins are adept at forming loose coalitions when a greater prize—be it treasure, a captured prisoner, or a strategic stronghold—tempts them.\n\n**Myths & Folklore**\nLegends speak of the “Goblin King of the Hollow,” a colossal goblin said to command the very earth to swallow intruders. Songs sung in taverns warn of “the green‑eyed whisper,” a belief that goblins can speak directly into a victim’s mind to sow panic. While such tales are likely embellishments, they reflect the genuine fear that goblins inspire: a creature that can appear from nowhere, strike with a blade forged from scrap metal, and vanish into the darkness before the alarm is raised.\n\n**Adventure Quote**\n> *“I thought I’d seen every nightmare the wild could conjure, until the night the goblins ambushed our camp. Their leader—no taller than a sack of flour—cackled as he flung a jagged spear that sang through the air. We survived, but the echo of their laughter still haunts my dreams. Beware the rustle in the underbrush; a goblin’s eyes are always watching.”* — Thalia Windrider, Ranger of the Northward Reaches",
+      "isNew": true,
+      "discoveredAt": 8400
+    }
+  ],
+  "notifications": [
+    {
+      "id": "b21fa639-291d-43bc-ad7e-632deb16f56d",
+      "type": "CODEX_ENTRY",
+      "message": "New codex entry created: The Whispering Maw of the Void",
+      "data": {
+        "category": "bestiary",
+        "entityId": "0fe94c36-2c5e-4dab-8ada-03108d583281"
+      },
+      "isRead": false,
+      "createdAt": 1774907529273
+    },
+    {
+      "id": "ca85d0c3-bcb5-41f4-ac63-105175a6c2eb",
+      "type": "CODEX_ENTRY",
+      "message": "New codex entry created: The Wild Boar of the Verdant Wilds",
+      "data": {
+        "category": "bestiary",
+        "entityId": "0d9a41fd-a23d-4054-9aab-515f4aeb7e25"
+      },
+      "isRead": false,
+      "createdAt": 1774907538226
+    },
+    {
+      "id": "463b570d-54bf-4766-803c-0a29bc1b7715",
+      "type": "CODEX_ENTRY",
+      "message": "New codex entry created: The Cunning Greenfoot",
+      "data": {
+        "category": "bestiary",
+        "entityId": "322493ce-1c08-465b-8cab-50fca447b1dc"
+      },
+      "isRead": false,
+      "createdAt": 1774907545572
+    }
+  ],
+  "combat": {
+    "round": 22,
+    "currentTurnIndex": 1,
+    "combatants": [
+      {
+        "id": "enemy_0",
+        "name": "Goblin",
+        "hp": {
+          "current": 7,
+          "max": 7,
+          "temp": 0
+        },
+        "ac": 15,
+        "initiative": 19,
+        "dexterityScore": 14,
+        "type": "enemy",
+        "stats": {
+          "STR": 8,
+          "DEX": 14,
+          "CON": 10,
+          "INT": 10,
+          "WIS": 8,
+          "CHA": 8
+        },
+        "conditions": [],
+        "statusEffects": [],
+        "isPlayer": false,
+        "resources": {
+          "actionSpent": false,
+          "bonusActionSpent": false,
+          "reactionSpent": false
+        },
+        "tactical": {
+          "cover": "None",
+          "reach": 5,
+          "isRanged": true,
+          "range": {
+            "normal": 80,
+            "long": 320
+          },
+          "virtualAmmo": 20,
+          "thrownActionUsed": false
+        },
+        "preparedSpells": [],
+        "position": {
+          "x": 62,
+          "y": 28
+        },
+        "size": "Small",
+        "movementSpeed": 6,
+        "movementRemaining": 6,
+        "virtualAmmo": 14
+      },
+      {
+        "id": "player",
+        "name": "TestHero",
+        "hp": {
+          "current": 0,
+          "max": 12,
+          "temp": 0
+        },
+        "ac": 12,
+        "initiative": 5,
+        "dexterityScore": 14,
+        "type": "player",
+        "stats": {
+          "STR": 16,
+          "DEX": 14,
+          "CON": 15,
+          "INT": 11,
+          "WIS": 13,
+          "CHA": 9
+        },
+        "conditions": [
+          {
+            "id": "Unconscious",
+            "name": "Unconscious",
+            "description": ""
+          }
+        ],
+        "statusEffects": [],
+        "isPlayer": true,
+        "resources": {
+          "actionSpent": false,
+          "bonusActionSpent": false,
+          "reactionSpent": false
+        },
+        "tactical": {
+          "cover": "None",
+          "reach": 5,
+          "isRanged": false
+        },
+        "spellSlots": {},
+        "preparedSpells": [],
+        "position": {
+          "x": 2,
+          "y": 38
+        },
+        "size": "Medium",
+        "movementSpeed": 6,
+        "movementRemaining": 6,
+        "deathSaves": {
+          "successes": 0,
+          "failures": 0
+        }
+      }
+    ],
+    "grid": {
+      "width": 80,
+      "height": 80,
+      "features": [
+        {
+          "id": "feat_TREE_0_41_59",
+          "type": "TREE",
+          "position": {
+            "x": 41,
+            "y": 59
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_1_36_49",
+          "type": "TREE",
+          "position": {
+            "x": 36,
+            "y": 49
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_2_24_57",
+          "type": "TREE",
+          "position": {
+            "x": 24,
+            "y": 57
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_3_39_32",
+          "type": "TREE",
+          "position": {
+            "x": 39,
+            "y": 32
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_3_n_40_32",
+          "type": "TREE",
+          "position": {
+            "x": 40,
+            "y": 32
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_4_26_59",
+          "type": "TREE",
+          "position": {
+            "x": 26,
+            "y": 59
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_5_17_0",
+          "type": "TREE",
+          "position": {
+            "x": 17,
+            "y": 0
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_5_n_18_0",
+          "type": "TREE",
+          "position": {
+            "x": 18,
+            "y": 0
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_6_78_37",
+          "type": "TREE",
+          "position": {
+            "x": 78,
+            "y": 37
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_7_38_13",
+          "type": "TREE",
+          "position": {
+            "x": 38,
+            "y": 13
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_8_9_66",
+          "type": "TREE",
+          "position": {
+            "x": 9,
+            "y": 66
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_8_n_10_66",
+          "type": "TREE",
+          "position": {
+            "x": 10,
+            "y": 66
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_9_10_54",
+          "type": "TREE",
+          "position": {
+            "x": 10,
+            "y": 54
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_9_n_11_54",
+          "type": "TREE",
+          "position": {
+            "x": 11,
+            "y": 54
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_10_39_7",
+          "type": "TREE",
+          "position": {
+            "x": 39,
+            "y": 7
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_11_73_9",
+          "type": "TREE",
+          "position": {
+            "x": 73,
+            "y": 9
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_12_25_45",
+          "type": "TREE",
+          "position": {
+            "x": 25,
+            "y": 45
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_12_n_26_45",
+          "type": "TREE",
+          "position": {
+            "x": 26,
+            "y": 45
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_13_33_35",
+          "type": "TREE",
+          "position": {
+            "x": 33,
+            "y": 35
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_13_n_34_35",
+          "type": "TREE",
+          "position": {
+            "x": 34,
+            "y": 35
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_14_32_14",
+          "type": "TREE",
+          "position": {
+            "x": 32,
+            "y": 14
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_15_42_1",
+          "type": "TREE",
+          "position": {
+            "x": 42,
+            "y": 1
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_15_n_43_1",
+          "type": "TREE",
+          "position": {
+            "x": 43,
+            "y": 1
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_16_39_28",
+          "type": "TREE",
+          "position": {
+            "x": 39,
+            "y": 28
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_17_64_12",
+          "type": "TREE",
+          "position": {
+            "x": 64,
+            "y": 12
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_18_13_39",
+          "type": "TREE",
+          "position": {
+            "x": 13,
+            "y": 39
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_18_n_14_39",
+          "type": "TREE",
+          "position": {
+            "x": 14,
+            "y": 39
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_19_18_73",
+          "type": "TREE",
+          "position": {
+            "x": 18,
+            "y": 73
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_20_10_52",
+          "type": "TREE",
+          "position": {
+            "x": 10,
+            "y": 52
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_21_45_55",
+          "type": "TREE",
+          "position": {
+            "x": 45,
+            "y": 55
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_22_26_27",
+          "type": "TREE",
+          "position": {
+            "x": 26,
+            "y": 27
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_23_69_42",
+          "type": "TREE",
+          "position": {
+            "x": 69,
+            "y": 42
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_23_n_70_42",
+          "type": "TREE",
+          "position": {
+            "x": 70,
+            "y": 42
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_24_42_43",
+          "type": "TREE",
+          "position": {
+            "x": 42,
+            "y": 43
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_25_16_55",
+          "type": "TREE",
+          "position": {
+            "x": 16,
+            "y": 55
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_26_62_42",
+          "type": "TREE",
+          "position": {
+            "x": 62,
+            "y": 42
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_26_n_63_42",
+          "type": "TREE",
+          "position": {
+            "x": 63,
+            "y": 42
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_27_8_74",
+          "type": "TREE",
+          "position": {
+            "x": 8,
+            "y": 74
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_28_13_41",
+          "type": "TREE",
+          "position": {
+            "x": 13,
+            "y": 41
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_29_24_4",
+          "type": "TREE",
+          "position": {
+            "x": 24,
+            "y": 4
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_30_0_57",
+          "type": "TREE",
+          "position": {
+            "x": 0,
+            "y": 57
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_31_47_7",
+          "type": "TREE",
+          "position": {
+            "x": 47,
+            "y": 7
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_31_n_48_7",
+          "type": "TREE",
+          "position": {
+            "x": 48,
+            "y": 7
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_32_59_42",
+          "type": "TREE",
+          "position": {
+            "x": 59,
+            "y": 42
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_32_n_60_42",
+          "type": "TREE",
+          "position": {
+            "x": 60,
+            "y": 42
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_33_2_48",
+          "type": "TREE",
+          "position": {
+            "x": 2,
+            "y": 48
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_34_0_61",
+          "type": "TREE",
+          "position": {
+            "x": 0,
+            "y": 61
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_34_n_1_61",
+          "type": "TREE",
+          "position": {
+            "x": 1,
+            "y": 61
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_35_41_24",
+          "type": "TREE",
+          "position": {
+            "x": 41,
+            "y": 24
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_36_18_31",
+          "type": "TREE",
+          "position": {
+            "x": 18,
+            "y": 31
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_37_40_65",
+          "type": "TREE",
+          "position": {
+            "x": 40,
+            "y": 65
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_38_75_17",
+          "type": "TREE",
+          "position": {
+            "x": 75,
+            "y": 17
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_TREE_39_57_70",
+          "type": "TREE",
+          "position": {
+            "x": 57,
+            "y": 70
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_0_62_23",
+          "type": "WALL",
+          "position": {
+            "x": 62,
+            "y": 23
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_1_56_60",
+          "type": "WALL",
+          "position": {
+            "x": 56,
+            "y": 60
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_2_48_56",
+          "type": "WALL",
+          "position": {
+            "x": 48,
+            "y": 56
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_3_46_46",
+          "type": "WALL",
+          "position": {
+            "x": 46,
+            "y": 46
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_3_n_47_46",
+          "type": "WALL",
+          "position": {
+            "x": 47,
+            "y": 46
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_4_36_52",
+          "type": "WALL",
+          "position": {
+            "x": 36,
+            "y": 52
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_4_n_37_52",
+          "type": "WALL",
+          "position": {
+            "x": 37,
+            "y": 52
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_5_29_44",
+          "type": "WALL",
+          "position": {
+            "x": 29,
+            "y": 44
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_6_33_51",
+          "type": "WALL",
+          "position": {
+            "x": 33,
+            "y": 51
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_6_n_34_51",
+          "type": "WALL",
+          "position": {
+            "x": 34,
+            "y": 51
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_7_25_51",
+          "type": "WALL",
+          "position": {
+            "x": 25,
+            "y": 51
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_8_50_41",
+          "type": "WALL",
+          "position": {
+            "x": 50,
+            "y": 41
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_9_42_64",
+          "type": "WALL",
+          "position": {
+            "x": 42,
+            "y": 64
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_9_n_43_64",
+          "type": "WALL",
+          "position": {
+            "x": 43,
+            "y": 64
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_10_4_37",
+          "type": "WALL",
+          "position": {
+            "x": 4,
+            "y": 37
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_11_65_26",
+          "type": "WALL",
+          "position": {
+            "x": 65,
+            "y": 26
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_12_57_24",
+          "type": "WALL",
+          "position": {
+            "x": 57,
+            "y": 24
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_12_n_58_24",
+          "type": "WALL",
+          "position": {
+            "x": 58,
+            "y": 24
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_13_52_79",
+          "type": "WALL",
+          "position": {
+            "x": 52,
+            "y": 79
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_14_45_66",
+          "type": "WALL",
+          "position": {
+            "x": 45,
+            "y": 66
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_14_n_46_66",
+          "type": "WALL",
+          "position": {
+            "x": 46,
+            "y": 66
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_15_38_51",
+          "type": "WALL",
+          "position": {
+            "x": 38,
+            "y": 51
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_16_74_9",
+          "type": "WALL",
+          "position": {
+            "x": 74,
+            "y": 9
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_16_n_75_9",
+          "type": "WALL",
+          "position": {
+            "x": 75,
+            "y": 9
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_17_38_65",
+          "type": "WALL",
+          "position": {
+            "x": 38,
+            "y": 65
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_18_22_56",
+          "type": "WALL",
+          "position": {
+            "x": 22,
+            "y": 56
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_19_28_62",
+          "type": "WALL",
+          "position": {
+            "x": 28,
+            "y": 62
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_19_n_29_62",
+          "type": "WALL",
+          "position": {
+            "x": 29,
+            "y": 62
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_20_73_19",
+          "type": "WALL",
+          "position": {
+            "x": 73,
+            "y": 19
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_21_52_34",
+          "type": "WALL",
+          "position": {
+            "x": 52,
+            "y": 34
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_22_27_34",
+          "type": "WALL",
+          "position": {
+            "x": 27,
+            "y": 34
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_23_53_18",
+          "type": "WALL",
+          "position": {
+            "x": 53,
+            "y": 18
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_23_n_54_18",
+          "type": "WALL",
+          "position": {
+            "x": 54,
+            "y": 18
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "QUARTER",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WALL_24_22_11",
+          "type": "WALL",
+          "position": {
+            "x": 22,
+            "y": 11
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_0_15_76",
+          "type": "RUBBLE",
+          "position": {
+            "x": 15,
+            "y": 76
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_1_49_46",
+          "type": "RUBBLE",
+          "position": {
+            "x": 49,
+            "y": 46
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_1_n_50_46",
+          "type": "RUBBLE",
+          "position": {
+            "x": 50,
+            "y": 46
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_2_79_37",
+          "type": "RUBBLE",
+          "position": {
+            "x": 79,
+            "y": 37
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_3_75_21",
+          "type": "RUBBLE",
+          "position": {
+            "x": 75,
+            "y": 21
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_3_n_76_21",
+          "type": "RUBBLE",
+          "position": {
+            "x": 76,
+            "y": 21
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_4_3_20",
+          "type": "RUBBLE",
+          "position": {
+            "x": 3,
+            "y": 20
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_5_74_36",
+          "type": "RUBBLE",
+          "position": {
+            "x": 74,
+            "y": 36
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_6_58_11",
+          "type": "RUBBLE",
+          "position": {
+            "x": 58,
+            "y": 11
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_6_n_59_11",
+          "type": "RUBBLE",
+          "position": {
+            "x": 59,
+            "y": 11
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_7_44_36",
+          "type": "RUBBLE",
+          "position": {
+            "x": 44,
+            "y": 36
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_7_n_45_36",
+          "type": "RUBBLE",
+          "position": {
+            "x": 45,
+            "y": 36
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_8_49_45",
+          "type": "RUBBLE",
+          "position": {
+            "x": 49,
+            "y": 45
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_9_35_2",
+          "type": "RUBBLE",
+          "position": {
+            "x": 35,
+            "y": 2
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_9_n_36_2",
+          "type": "RUBBLE",
+          "position": {
+            "x": 36,
+            "y": 2
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_10_54_24",
+          "type": "RUBBLE",
+          "position": {
+            "x": 54,
+            "y": 24
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_11_9_64",
+          "type": "RUBBLE",
+          "position": {
+            "x": 9,
+            "y": 64
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_12_14_66",
+          "type": "RUBBLE",
+          "position": {
+            "x": 14,
+            "y": 66
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_12_n_15_66",
+          "type": "RUBBLE",
+          "position": {
+            "x": 15,
+            "y": 66
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_13_41_33",
+          "type": "RUBBLE",
+          "position": {
+            "x": 41,
+            "y": 33
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_13_n_42_33",
+          "type": "RUBBLE",
+          "position": {
+            "x": 42,
+            "y": 33
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_14_28_47",
+          "type": "RUBBLE",
+          "position": {
+            "x": 28,
+            "y": 47
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_15_52_8",
+          "type": "RUBBLE",
+          "position": {
+            "x": 52,
+            "y": 8
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_16_45_53",
+          "type": "RUBBLE",
+          "position": {
+            "x": 45,
+            "y": 53
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_16_n_46_53",
+          "type": "RUBBLE",
+          "position": {
+            "x": 46,
+            "y": 53
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_17_28_46",
+          "type": "RUBBLE",
+          "position": {
+            "x": 28,
+            "y": 46
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_18_59_50",
+          "type": "RUBBLE",
+          "position": {
+            "x": 59,
+            "y": 50
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_19_41_35",
+          "type": "RUBBLE",
+          "position": {
+            "x": 41,
+            "y": 35
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_20_21_43",
+          "type": "RUBBLE",
+          "position": {
+            "x": 21,
+            "y": 43
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_21_7_20",
+          "type": "RUBBLE",
+          "position": {
+            "x": 7,
+            "y": 20
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_21_n_8_20",
+          "type": "RUBBLE",
+          "position": {
+            "x": 8,
+            "y": 20
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_22_56_20",
+          "type": "RUBBLE",
+          "position": {
+            "x": 56,
+            "y": 20
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_23_72_30",
+          "type": "RUBBLE",
+          "position": {
+            "x": 72,
+            "y": 30
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_24_35_61",
+          "type": "RUBBLE",
+          "position": {
+            "x": 35,
+            "y": 61
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_25_31_71",
+          "type": "RUBBLE",
+          "position": {
+            "x": 31,
+            "y": 71
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_26_48_42",
+          "type": "RUBBLE",
+          "position": {
+            "x": 48,
+            "y": 42
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_27_3_37",
+          "type": "RUBBLE",
+          "position": {
+            "x": 3,
+            "y": 37
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_27_n_4_37",
+          "type": "RUBBLE",
+          "position": {
+            "x": 4,
+            "y": 37
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_28_40_21",
+          "type": "RUBBLE",
+          "position": {
+            "x": 40,
+            "y": 21
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_RUBBLE_29_69_71",
+          "type": "RUBBLE",
+          "position": {
+            "x": 69,
+            "y": 71
+          },
+          "blocksMovement": false,
+          "blocksVision": true,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_0_39_68",
+          "type": "WATER",
+          "position": {
+            "x": 39,
+            "y": 68
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_1_12_32",
+          "type": "WATER",
+          "position": {
+            "x": 12,
+            "y": 32
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_2_18_9",
+          "type": "WATER",
+          "position": {
+            "x": 18,
+            "y": 9
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_3_39_40",
+          "type": "WATER",
+          "position": {
+            "x": 39,
+            "y": 40
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_3_n_40_40",
+          "type": "WATER",
+          "position": {
+            "x": 40,
+            "y": 40
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_4_44_49",
+          "type": "WATER",
+          "position": {
+            "x": 44,
+            "y": 49
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_4_n_45_49",
+          "type": "WATER",
+          "position": {
+            "x": 45,
+            "y": 49
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_5_14_67",
+          "type": "WATER",
+          "position": {
+            "x": 14,
+            "y": 67
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_5_n_15_67",
+          "type": "WATER",
+          "position": {
+            "x": 15,
+            "y": 67
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_6_30_3",
+          "type": "WATER",
+          "position": {
+            "x": 30,
+            "y": 3
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_7_77_8",
+          "type": "WATER",
+          "position": {
+            "x": 77,
+            "y": 8
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_8_34_58",
+          "type": "WATER",
+          "position": {
+            "x": 34,
+            "y": 58
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_9_58_22",
+          "type": "WATER",
+          "position": {
+            "x": 58,
+            "y": 22
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_9_n_59_22",
+          "type": "WATER",
+          "position": {
+            "x": 59,
+            "y": 22
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_10_35_24",
+          "type": "WATER",
+          "position": {
+            "x": 35,
+            "y": 24
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_11_32_17",
+          "type": "WATER",
+          "position": {
+            "x": 32,
+            "y": 17
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_11_n_33_17",
+          "type": "WATER",
+          "position": {
+            "x": 33,
+            "y": 17
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_12_59_68",
+          "type": "WATER",
+          "position": {
+            "x": 59,
+            "y": 68
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_12_n_60_68",
+          "type": "WATER",
+          "position": {
+            "x": 60,
+            "y": 68
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_13_35_48",
+          "type": "WATER",
+          "position": {
+            "x": 35,
+            "y": 48
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_13_n_36_48",
+          "type": "WATER",
+          "position": {
+            "x": 36,
+            "y": 48
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_14_57_32",
+          "type": "WATER",
+          "position": {
+            "x": 57,
+            "y": 32
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_14_n_58_32",
+          "type": "WATER",
+          "position": {
+            "x": 58,
+            "y": 32
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_15_17_15",
+          "type": "WATER",
+          "position": {
+            "x": 17,
+            "y": 15
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_16_67_32",
+          "type": "WATER",
+          "position": {
+            "x": 67,
+            "y": 32
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_17_53_16",
+          "type": "WATER",
+          "position": {
+            "x": 53,
+            "y": 16
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_18_63_75",
+          "type": "WATER",
+          "position": {
+            "x": 63,
+            "y": 75
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_19_29_45",
+          "type": "WATER",
+          "position": {
+            "x": 29,
+            "y": 45
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_19_n_30_45",
+          "type": "WATER",
+          "position": {
+            "x": 30,
+            "y": 45
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_20_63_45",
+          "type": "WATER",
+          "position": {
+            "x": 63,
+            "y": 45
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_21_2_59",
+          "type": "WATER",
+          "position": {
+            "x": 2,
+            "y": 59
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_22_55_27",
+          "type": "WATER",
+          "position": {
+            "x": 55,
+            "y": 27
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_23_1_54",
+          "type": "WATER",
+          "position": {
+            "x": 1,
+            "y": 54
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_23_n_2_54",
+          "type": "WATER",
+          "position": {
+            "x": 2,
+            "y": 54
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_24_55_79",
+          "type": "WATER",
+          "position": {
+            "x": 55,
+            "y": 79
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_24_n_56_79",
+          "type": "WATER",
+          "position": {
+            "x": 56,
+            "y": 79
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_25_7_58",
+          "type": "WATER",
+          "position": {
+            "x": 7,
+            "y": 58
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_25_n_8_58",
+          "type": "WATER",
+          "position": {
+            "x": 8,
+            "y": 58
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_26_6_10",
+          "type": "WATER",
+          "position": {
+            "x": 6,
+            "y": 10
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_26_n_7_10",
+          "type": "WATER",
+          "position": {
+            "x": 7,
+            "y": 10
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_27_39_58",
+          "type": "WATER",
+          "position": {
+            "x": 39,
+            "y": 58
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_28_66_62",
+          "type": "WATER",
+          "position": {
+            "x": 66,
+            "y": 62
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_28_n_67_62",
+          "type": "WATER",
+          "position": {
+            "x": 67,
+            "y": 62
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_29_38_45",
+          "type": "WATER",
+          "position": {
+            "x": 38,
+            "y": 45
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_30_22_60",
+          "type": "WATER",
+          "position": {
+            "x": 22,
+            "y": 60
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_30_n_23_60",
+          "type": "WATER",
+          "position": {
+            "x": 23,
+            "y": 60
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_31_68_10",
+          "type": "WATER",
+          "position": {
+            "x": 68,
+            "y": 10
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_31_n_69_10",
+          "type": "WATER",
+          "position": {
+            "x": 69,
+            "y": 10
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_32_63_28",
+          "type": "WATER",
+          "position": {
+            "x": 63,
+            "y": 28
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_32_n_64_28",
+          "type": "WATER",
+          "position": {
+            "x": 64,
+            "y": 28
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_33_44_22",
+          "type": "WATER",
+          "position": {
+            "x": 44,
+            "y": 22
+          },
+          "blocksMovement": false,
+          "blocksVision": false,
+          "coverBonus": "NONE",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_34_47_37",
+          "type": "WATER",
+          "position": {
+            "x": 47,
+            "y": 37
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        },
+        {
+          "id": "feat_WATER_34_n_48_37",
+          "type": "WATER",
+          "position": {
+            "x": 48,
+            "y": 37
+          },
+          "blocksMovement": true,
+          "blocksVision": false,
+          "coverBonus": "HALF",
+          "isDestructible": false
+        }
+      ],
+      "playerStartZone": [
+        {
+          "x": 2,
+          "y": 38
+        },
+        {
+          "x": 2,
+          "y": 39
+        },
+        {
+          "x": 2,
+          "y": 40
+        },
+        {
+          "x": 2,
+          "y": 41
+        },
+        {
+          "x": 3,
+          "y": 38
+        },
+        {
+          "x": 3,
+          "y": 39
+        },
+        {
+          "x": 3,
+          "y": 40
+        },
+        {
+          "x": 3,
+          "y": 41
+        },
+        {
+          "x": 4,
+          "y": 38
+        },
+        {
+          "x": 4,
+          "y": 39
+        },
+        {
+          "x": 4,
+          "y": 40
+        },
+        {
+          "x": 4,
+          "y": 41
+        },
+        {
+          "x": 5,
+          "y": 38
+        },
+        {
+          "x": 5,
+          "y": 39
+        },
+        {
+          "x": 5,
+          "y": 40
+        },
+        {
+          "x": 5,
+          "y": 41
+        }
+      ],
+      "enemyStartZone": [
+        {
+          "x": 74,
+          "y": 38
+        },
+        {
+          "x": 74,
+          "y": 39
+        },
+        {
+          "x": 74,
+          "y": 40
+        },
+        {
+          "x": 74,
+          "y": 41
+        },
+        {
+          "x": 75,
+          "y": 38
+        },
+        {
+          "x": 75,
+          "y": 39
+        },
+        {
+          "x": 75,
+          "y": 40
+        },
+        {
+          "x": 75,
+          "y": 41
+        },
+        {
+          "x": 76,
+          "y": 38
+        },
+        {
+          "x": 76,
+          "y": 39
+        },
+        {
+          "x": 76,
+          "y": 40
+        },
+        {
+          "x": 76,
+          "y": 41
+        },
+        {
+          "x": 77,
+          "y": 38
+        },
+        {
+          "x": 77,
+          "y": 39
+        },
+        {
+          "x": 77,
+          "y": 40
+        },
+        {
+          "x": 77,
+          "y": 41
+        }
+      ]
+    },
+    "isAmbush": false,
+    "logs": [
+      {
+        "id": "log_start_1774907515775",
+        "type": "info",
+        "message": "Combat started in the Plains!",
+        "turn": 1
+      },
+      {
+        "id": "log-1774907517806-a3rio",
+        "type": "info",
+        "message": "Goblin moves 30ft North-West at a normal pace (330ft from TestHero).",
+        "turn": 1
+      },
+      {
+        "id": "log-1774907517818-cc7yh",
+        "type": "info",
+        "message": "Goblin moves 30ft North-West at a normal pace (330ft from TestHero).",
+        "turn": 1
+      },
+      {
+        "id": "log-1774907518823-cpph3",
+        "type": "info",
+        "message": "Round 1: TestHero's turn.",
+        "turn": 1
+      },
+      {
+        "id": "log-1774907518824-7lpu5",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 1
+      },
+      {
+        "id": "log-1774907518824-vt6xg",
+        "type": "info",
+        "message": "Round 2: Goblin's turn.",
+        "turn": 2
+      },
+      {
+        "id": "log-1774907520849-te462",
+        "type": "info",
+        "message": "Goblin moves 30ft North-West at a normal pace (300ft from TestHero).",
+        "turn": 2
+      },
+      {
+        "id": "log-1774907520849-gsboq",
+        "type": "info",
+        "message": "Goblin looses a shot but TestHero avoids it easily.",
+        "turn": 2
+      },
+      {
+        "id": "log-1774907520849-p9z9d",
+        "type": "info",
+        "message": "Goblin moves 30ft North-West at a normal pace (300ft from TestHero).. Goblin looses a shot but TestHero avoids it easily.",
+        "turn": 2
+      },
+      {
+        "id": "log-1774907521857-ovxli",
+        "type": "info",
+        "message": "Round 2: TestHero's turn.",
+        "turn": 2
+      },
+      {
+        "id": "log-1774907521857-44uzm",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 2
+      },
+      {
+        "id": "log-1774907521857-99vuu",
+        "type": "info",
+        "message": "Round 3: Goblin's turn.",
+        "turn": 3
+      },
+      {
+        "id": "log-1774907523867-k0gm7",
+        "type": "info",
+        "message": "Goblin fires at TestHero and the arrow finds its mark! (5 damage)",
+        "turn": 3
+      },
+      {
+        "id": "log-1774907523867-1f8c6",
+        "type": "info",
+        "message": "Goblin fires at TestHero and the arrow finds its mark! (5 damage)",
+        "turn": 3
+      },
+      {
+        "id": "log-1774907524880-4rdvu",
+        "type": "info",
+        "message": "Round 3: TestHero's turn.",
+        "turn": 3
+      },
+      {
+        "id": "log-1774907524881-1vecc",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 3
+      },
+      {
+        "id": "log-1774907524881-1vx0w",
+        "type": "info",
+        "message": "Round 4: Goblin's turn.",
+        "turn": 4
+      },
+      {
+        "id": "log-1774907526890-duuze",
+        "type": "info",
+        "message": "TestHero ducks as Goblin's shot whisks overhead.",
+        "turn": 4
+      },
+      {
+        "id": "log-1774907526890-9u02j",
+        "type": "info",
+        "message": "TestHero ducks as Goblin's shot whisks overhead.",
+        "turn": 4
+      },
+      {
+        "id": "log-1774907527895-1g18h",
+        "type": "info",
+        "message": "Round 4: TestHero's turn.",
+        "turn": 4
+      },
+      {
+        "id": "log-1774907527895-jz6hl",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 4
+      },
+      {
+        "id": "log-1774907527895-pm8n3",
+        "type": "info",
+        "message": "Round 5: Goblin's turn.",
+        "turn": 5
+      },
+      {
+        "id": "log-1774907529904-qtliz",
+        "type": "info",
+        "message": "Goblin's projectile strikes TestHero cleanly. (4 damage)",
+        "turn": 5
+      },
+      {
+        "id": "log-1774907529905-5fn1j",
+        "type": "info",
+        "message": "Goblin's projectile strikes TestHero cleanly. (4 damage)",
+        "turn": 5
+      },
+      {
+        "id": "log-1774907530911-aifgi",
+        "type": "info",
+        "message": "Round 5: TestHero's turn.",
+        "turn": 5
+      },
+      {
+        "id": "log-1774907530911-gikv4",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 5
+      },
+      {
+        "id": "log-1774907530911-x9no7",
+        "type": "info",
+        "message": "Round 6: Goblin's turn.",
+        "turn": 6
+      },
+      {
+        "id": "log-1774907532927-e8lpd",
+        "type": "info",
+        "message": "Goblin fires at TestHero but the arrow sails past.",
+        "turn": 6
+      },
+      {
+        "id": "log-1774907532927-60t5t",
+        "type": "info",
+        "message": "Goblin fires at TestHero but the arrow sails past.",
+        "turn": 6
+      },
+      {
+        "id": "log-1774907533942-yfo90",
+        "type": "info",
+        "message": "Round 6: TestHero's turn.",
+        "turn": 6
+      },
+      {
+        "id": "log-1774907533943-mxd5k",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 6
+      },
+      {
+        "id": "log-1774907533943-3yz81",
+        "type": "info",
+        "message": "Round 7: Goblin's turn.",
+        "turn": 7
+      },
+      {
+        "id": "log-1774907535945-pp6fs",
+        "type": "info",
+        "message": "TestHero has fallen and is making death saving throws!",
+        "turn": 7
+      },
+      {
+        "id": "log-1774907535945-lwsen",
+        "type": "info",
+        "message": "Goblin's projectile strikes TestHero cleanly. (5 damage)",
+        "turn": 7
+      },
+      {
+        "id": "log-1774907535945-1ihg0",
+        "type": "info",
+        "message": "Goblin's projectile strikes TestHero cleanly. (5 damage)",
+        "turn": 7
+      },
+      {
+        "id": "log-1774907536949-u3igg",
+        "type": "info",
+        "message": "Round 7: TestHero's turn.",
+        "turn": 7
+      },
+      {
+        "id": "log-1774907536949-cfwc0",
+        "type": "info",
+        "message": "TestHero is dying! Roll a Death Save. (0 successes, 0 failures)",
+        "turn": 7
+      },
+      {
+        "id": "log-1774907536949-x7hv6",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 7
+      },
+      {
+        "id": "log-1774907536949-qqldu",
+        "type": "info",
+        "message": "Round 8: Goblin's turn.",
+        "turn": 8
+      },
+      {
+        "id": "log-1774907538953-cs69n",
+        "type": "info",
+        "message": "Goblin waits for an opening.",
+        "turn": 8
+      },
+      {
+        "id": "log-1774907539960-8x3wc",
+        "type": "info",
+        "message": "Round 8: TestHero's turn.",
+        "turn": 8
+      },
+      {
+        "id": "log-1774907539960-1m9gu",
+        "type": "info",
+        "message": "TestHero is dying! Roll a Death Save. (0 successes, 0 failures)",
+        "turn": 8
+      },
+      {
+        "id": "log-1774907539961-j01am",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 8
+      },
+      {
+        "id": "log-1774907539961-6wbfi",
+        "type": "info",
+        "message": "Round 9: Goblin's turn.",
+        "turn": 9
+      },
+      {
+        "id": "log-1774907541963-858vc",
+        "type": "info",
+        "message": "Goblin waits for an opening.",
+        "turn": 9
+      },
+      {
+        "id": "log-1774907542972-pu7zh",
+        "type": "info",
+        "message": "Round 9: TestHero's turn.",
+        "turn": 9
+      },
+      {
+        "id": "log-1774907542972-y9dic",
+        "type": "info",
+        "message": "TestHero is dying! Roll a Death Save. (0 successes, 0 failures)",
+        "turn": 9
+      },
+      {
+        "id": "log-1774907542972-4d5zl",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 9
+      },
+      {
+        "id": "log-1774907542972-f4cq0",
+        "type": "info",
+        "message": "Round 10: Goblin's turn.",
+        "turn": 10
+      },
+      {
+        "id": "log-1774907544976-z86in",
+        "type": "info",
+        "message": "Goblin waits for an opening.",
+        "turn": 10
+      },
+      {
+        "id": "log-1774907545987-816i6",
+        "type": "info",
+        "message": "Round 10: TestHero's turn.",
+        "turn": 10
+      },
+      {
+        "id": "log-1774907545987-vgo55",
+        "type": "info",
+        "message": "TestHero is dying! Roll a Death Save. (0 successes, 0 failures)",
+        "turn": 10
+      },
+      {
+        "id": "log-1774907545987-xgk5y",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 10
+      },
+      {
+        "id": "log-1774907545987-cgujd",
+        "type": "info",
+        "message": "Round 11: Goblin's turn.",
+        "turn": 11
+      },
+      {
+        "id": "log-1774907547988-iuywp",
+        "type": "info",
+        "message": "Goblin waits for an opening.",
+        "turn": 11
+      },
+      {
+        "id": "log-1774907548995-nxc5q",
+        "type": "info",
+        "message": "Round 11: TestHero's turn.",
+        "turn": 11
+      },
+      {
+        "id": "log-1774907548995-9tr3r",
+        "type": "info",
+        "message": "TestHero is dying! Roll a Death Save. (0 successes, 0 failures)",
+        "turn": 11
+      },
+      {
+        "id": "log-1774907548995-70bn7",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 11
+      },
+      {
+        "id": "log-1774907548995-qhtps",
+        "type": "info",
+        "message": "Round 12: Goblin's turn.",
+        "turn": 12
+      },
+      {
+        "id": "log-1774907551001-3euup",
+        "type": "info",
+        "message": "Goblin waits for an opening.",
+        "turn": 12
+      },
+      {
+        "id": "log-1774907552005-w4j6d",
+        "type": "info",
+        "message": "Round 12: TestHero's turn.",
+        "turn": 12
+      },
+      {
+        "id": "log-1774907552005-1rz2w",
+        "type": "info",
+        "message": "TestHero is dying! Roll a Death Save. (0 successes, 0 failures)",
+        "turn": 12
+      },
+      {
+        "id": "log-1774907552005-rnixf",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 12
+      },
+      {
+        "id": "log-1774907552005-inixu",
+        "type": "info",
+        "message": "Round 13: Goblin's turn.",
+        "turn": 13
+      },
+      {
+        "id": "log-1774907554010-o5inl",
+        "type": "info",
+        "message": "Goblin waits for an opening.",
+        "turn": 13
+      },
+      {
+        "id": "log-1774907555016-sy2ae",
+        "type": "info",
+        "message": "Round 13: TestHero's turn.",
+        "turn": 13
+      },
+      {
+        "id": "log-1774907555017-udphg",
+        "type": "info",
+        "message": "TestHero is dying! Roll a Death Save. (0 successes, 0 failures)",
+        "turn": 13
+      },
+      {
+        "id": "log-1774907555017-m08bx",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 13
+      },
+      {
+        "id": "log-1774907555017-6qoim",
+        "type": "info",
+        "message": "Round 14: Goblin's turn.",
+        "turn": 14
+      },
+      {
+        "id": "log-1774907557017-enbqs",
+        "type": "info",
+        "message": "Goblin waits for an opening.",
+        "turn": 14
+      },
+      {
+        "id": "log-1774907558018-tcevp",
+        "type": "info",
+        "message": "Round 14: TestHero's turn.",
+        "turn": 14
+      },
+      {
+        "id": "log-1774907558019-mhes6",
+        "type": "info",
+        "message": "TestHero is dying! Roll a Death Save. (0 successes, 0 failures)",
+        "turn": 14
+      },
+      {
+        "id": "log-1774907558019-ilpyi",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 14
+      },
+      {
+        "id": "log-1774907558019-dmkad",
+        "type": "info",
+        "message": "Round 15: Goblin's turn.",
+        "turn": 15
+      },
+      {
+        "id": "log-1774907560019-74tld",
+        "type": "info",
+        "message": "Goblin waits for an opening.",
+        "turn": 15
+      },
+      {
+        "id": "log-1774907561033-h77d5",
+        "type": "info",
+        "message": "Round 15: TestHero's turn.",
+        "turn": 15
+      },
+      {
+        "id": "log-1774907561033-txuhn",
+        "type": "info",
+        "message": "TestHero is dying! Roll a Death Save. (0 successes, 0 failures)",
+        "turn": 15
+      },
+      {
+        "id": "log-1774907561033-ef5b7",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 15
+      },
+      {
+        "id": "log-1774907561033-og93p",
+        "type": "info",
+        "message": "Round 16: Goblin's turn.",
+        "turn": 16
+      },
+      {
+        "id": "log-1774907563037-5ub4s",
+        "type": "info",
+        "message": "Goblin waits for an opening.",
+        "turn": 16
+      },
+      {
+        "id": "log-1774907564052-ntmeu",
+        "type": "info",
+        "message": "Round 16: TestHero's turn.",
+        "turn": 16
+      },
+      {
+        "id": "log-1774907564052-1e1c1",
+        "type": "info",
+        "message": "TestHero is dying! Roll a Death Save. (0 successes, 0 failures)",
+        "turn": 16
+      },
+      {
+        "id": "log-1774907564052-8sxhl",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 16
+      },
+      {
+        "id": "log-1774907564052-sg8vy",
+        "type": "info",
+        "message": "Round 17: Goblin's turn.",
+        "turn": 17
+      },
+      {
+        "id": "log-1774907566055-phj88",
+        "type": "info",
+        "message": "Goblin waits for an opening.",
+        "turn": 17
+      },
+      {
+        "id": "log-1774907567057-8l0yy",
+        "type": "info",
+        "message": "Round 17: TestHero's turn.",
+        "turn": 17
+      },
+      {
+        "id": "log-1774907567057-afnmn",
+        "type": "info",
+        "message": "TestHero is dying! Roll a Death Save. (0 successes, 0 failures)",
+        "turn": 17
+      },
+      {
+        "id": "log-1774907567057-31aqn",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 17
+      },
+      {
+        "id": "log-1774907567057-mg4ee",
+        "type": "info",
+        "message": "Round 18: Goblin's turn.",
+        "turn": 18
+      },
+      {
+        "id": "log-1774907569066-jsmk9",
+        "type": "info",
+        "message": "Goblin waits for an opening.",
+        "turn": 18
+      },
+      {
+        "id": "log-1774907570075-j3cwu",
+        "type": "info",
+        "message": "Round 18: TestHero's turn.",
+        "turn": 18
+      },
+      {
+        "id": "log-1774907570075-ygd3h",
+        "type": "info",
+        "message": "TestHero is dying! Roll a Death Save. (0 successes, 0 failures)",
+        "turn": 18
+      },
+      {
+        "id": "log-1774907570075-mi4aj",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 18
+      },
+      {
+        "id": "log-1774907570075-iwblm",
+        "type": "info",
+        "message": "Round 19: Goblin's turn.",
+        "turn": 19
+      },
+      {
+        "id": "log-1774907572077-gh0ja",
+        "type": "info",
+        "message": "Goblin waits for an opening.",
+        "turn": 19
+      },
+      {
+        "id": "log-1774907573082-6or0o",
+        "type": "info",
+        "message": "Round 19: TestHero's turn.",
+        "turn": 19
+      },
+      {
+        "id": "log-1774907573082-m8xzx",
+        "type": "info",
+        "message": "TestHero is dying! Roll a Death Save. (0 successes, 0 failures)",
+        "turn": 19
+      },
+      {
+        "id": "log-1774907573082-wrgu4",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 19
+      },
+      {
+        "id": "log-1774907573082-7qg19",
+        "type": "info",
+        "message": "Round 20: Goblin's turn.",
+        "turn": 20
+      },
+      {
+        "id": "log-1774907575089-6zluk",
+        "type": "info",
+        "message": "Goblin waits for an opening.",
+        "turn": 20
+      },
+      {
+        "id": "log-1774907576094-lvrtt",
+        "type": "info",
+        "message": "Round 20: TestHero's turn.",
+        "turn": 20
+      },
+      {
+        "id": "log-1774907576094-c9xv7",
+        "type": "info",
+        "message": "TestHero is dying! Roll a Death Save. (0 successes, 0 failures)",
+        "turn": 20
+      },
+      {
+        "id": "log-1774907576095-jqnim",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 20
+      },
+      {
+        "id": "log-1774907576095-jz7ty",
+        "type": "info",
+        "message": "Round 21: Goblin's turn.",
+        "turn": 21
+      },
+      {
+        "id": "log-1774907578096-lm6y1",
+        "type": "info",
+        "message": "Goblin waits for an opening.",
+        "turn": 21
+      },
+      {
+        "id": "log-1774907579111-daevy",
+        "type": "info",
+        "message": "Round 21: TestHero's turn.",
+        "turn": 21
+      },
+      {
+        "id": "log-1774907579111-g5fcm",
+        "type": "info",
+        "message": "TestHero is dying! Roll a Death Save. (0 successes, 0 failures)",
+        "turn": 21
+      },
+      {
+        "id": "log-1774907579111-3opyu",
+        "type": "info",
+        "message": "TestHero ends their turn.",
+        "turn": 21
+      },
+      {
+        "id": "log-1774907579111-haud8",
+        "type": "info",
+        "message": "Round 22: Goblin's turn.",
+        "turn": 22
+      },
+      {
+        "id": "log-1774907581118-jowb0",
+        "type": "info",
+        "message": "Goblin waits for an opening.",
+        "turn": 22
+      },
+      {
+        "id": "log-1774907582119-4hih2",
+        "type": "info",
+        "message": "Round 22: TestHero's turn.",
+        "turn": 22
+      },
+      {
+        "id": "log-1774907582119-p22d7",
+        "type": "info",
+        "message": "TestHero is dying! Roll a Death Save. (0 successes, 0 failures)",
+        "turn": 22
+      }
+    ],
+    "events": [
+      {
+        "id": "event-1774907520849-bqrst",
+        "type": "MISS",
+        "targetId": "player",
+        "value": 0,
+        "timestamp": 1774907520849
+      },
+      {
+        "id": "event-1774907523867-xa9vw",
+        "type": "HIT",
+        "targetId": "player",
+        "value": 5,
+        "timestamp": 1774907523867
+      },
+      {
+        "id": "event-1774907526890-8afrb",
+        "type": "MISS",
+        "targetId": "player",
+        "value": 0,
+        "timestamp": 1774907526890
+      },
+      {
+        "id": "event-1774907529904-0p6st",
+        "type": "HIT",
+        "targetId": "player",
+        "value": 4,
+        "timestamp": 1774907529904
+      },
+      {
+        "id": "event-1774907532927-69at2",
+        "type": "MISS",
+        "targetId": "player",
+        "value": 0,
+        "timestamp": 1774907532927
+      },
+      {
+        "id": "event-1774907535944-5oo5u",
+        "type": "HIT",
+        "targetId": "player",
+        "value": 5,
+        "timestamp": 1774907535945
+      }
+    ],
+    "turnActions": [],
+    "lastRoll": {
+      "value": 17,
+      "modifier": 0,
+      "total": 17,
+      "label": "Attack",
+      "breakdown": [
+        {
+          "label": "DEX",
+          "value": 2,
+          "source": "Stat"
+        },
+        {
+          "label": "Proficiency",
+          "value": 2,
+          "source": "Rules"
+        },
+        {
+          "label": "Range",
+          "value": -4,
+          "source": "Rule"
+        }
+      ]
+    },
+    "activeBanner": {
+      "type": "PLAYER",
+      "visible": true
+    }
+  }
+}

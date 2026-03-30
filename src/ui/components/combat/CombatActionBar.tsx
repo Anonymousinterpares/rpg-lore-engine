@@ -4,7 +4,7 @@ import styles from './CombatActionBar.module.css';
 import { ActionButton } from './ActionButton';
 import { SpellbookFlyout } from './SpellbookFlyout';
 import { AbilitiesFlyout } from './AbilitiesFlyout';
-import { Sword, Sparkles, Shield, Zap, Move, ChevronRight, FastForward, Star, Target } from 'lucide-react';
+import { Sword, Sparkles, Shield, Zap, Move, ChevronRight, FastForward, Star, Target, Dices, DoorOpen } from 'lucide-react';
 import { useGameState } from '../../hooks/useGameState';
 import { TacticalOption, TacticalSubOption } from '../../../ruleset/combat/grid/CombatAnalysisEngine';
 import { TacticalFlyout } from './TacticalFlyout';
@@ -59,6 +59,10 @@ export const CombatActionBar: React.FC = () => {
     const isAdjacentToEnemy = player && gridManager ? state.combat.combatants.some(c =>
         c.type === 'enemy' && c.hp.current > 0 && gridManager.getDistance(player.position, c.position) === 1
     ) : false;
+
+    // Death save state
+    const isPlayerDowned = player && player.hp.current <= 0 && player.conditions?.some?.((c: any) => (c.id || c) === 'Unconscious');
+    const deathSaves = player?.deathSaves;
 
     const mainHandId = state.character.equipmentSlots.mainHand;
     const inventoryItem = mainHandId ? state.character.inventory.items.find(i => i.instanceId === mainHandId) : null;
@@ -142,6 +146,35 @@ export const CombatActionBar: React.FC = () => {
         return `Attack with ${item.name} (${(item as any).damage?.dice || '1d8'})`;
     };
 
+    // When player is downed, show ONLY the death save button
+    if (isPlayerDowned && isPlayerTurn) {
+        return (
+            <div className={styles.actionBar}>
+                <div className={styles.group}>
+                    <button
+                        className={styles.deathSaveButton}
+                        onClick={() => handleAction('death_save')}
+                        title={deathSaves ? `Successes: ${deathSaves.successes}/3 | Failures: ${deathSaves.failures}/3` : 'Roll a Death Save'}
+                    >
+                        <Dices size={32} />
+                        <span className={styles.deathSaveLabel}>Roll Death Save</span>
+                        {deathSaves && (
+                            <span className={styles.deathSaveTracker}>
+                                {Array(3).fill(0).map((_, i) => (
+                                    <span key={`s${i}`} className={i < deathSaves.successes ? styles.saveSuccess : styles.saveDot}>&#9679;</span>
+                                ))}
+                                {' / '}
+                                {Array(3).fill(0).map((_, i) => (
+                                    <span key={`f${i}`} className={i < deathSaves.failures ? styles.saveFail : styles.saveDot}>&#9679;</span>
+                                ))}
+                            </span>
+                        )}
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className={styles.actionBar}>
             <div className={styles.group}>
@@ -215,6 +248,15 @@ export const CombatActionBar: React.FC = () => {
                     disabled={!isPlayerTurn || hasUsedAction || !isAdjacentToEnemy}
                     disabledReason={!isPlayerTurn ? "Not your turn" : hasUsedAction ? "Action already used" : !isAdjacentToEnemy ? "Must be next to an enemy" : ""}
                     tooltip="Move without provoking opportunity attacks"
+                />
+                <ActionButton
+                    icon={<DoorOpen size={24} />}
+                    label="Flee"
+                    hotkey="F"
+                    onClick={() => handleAction('flee')}
+                    disabled={!isPlayerTurn || hasUsedAction}
+                    disabledReason={!isPlayerTurn ? "Not your turn" : "Action already used"}
+                    tooltip="Attempt to escape combat (contested Athletics/Acrobatics check, enemies get opportunity attacks)"
                 />
             </div>
 
