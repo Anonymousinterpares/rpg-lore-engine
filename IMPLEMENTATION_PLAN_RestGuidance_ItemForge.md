@@ -1,0 +1,620 @@
+# Implementation Plan: Rest Guidance + ItemForgeEngine
+
+---
+
+# PART A: Rest Guidance via Narrator System Prompt
+
+## Problem
+When a player types "I want to rest for the night" or similar natural language, IntentRouter classifies it as `NARRATIVE` (not a command). The Narrator LLM generates a narrative response but has no instruction to guide the player toward the actual rest mechanic. The player gets a story paragraph but no HP recovery.
+
+## Solution
+Add rest-awareness to the Narrator system prompt. When the LLM detects rest/camp/sleep intent in the player's message, it narrates the scene AND appends a mechanical guidance hint.
+
+## Files to Modify
+
+### `src/ruleset/agents/NarratorService.ts` — constructSystemPrompt()
+After line 206 (after the RESUMING ADVENTURE section), add:
+
+```typescript
+prompt += `
+## PLAYER ACTION GUIDANCE
+When the player expresses intent to rest, camp, sleep, make camp, set up for the night,
+or recover — you MUST do BOTH of the following:
+1. Narrate the scene: describe finding shelter, building a fire, settling in.
+2. End your narrative with this EXACT line on its own paragraph:
+   "[Type 'rest' to open the rest menu, or '/rest 480' for a long rest, '/rest 60' for a short rest]"
+
+Do NOT claim the character has rested, recovered HP, or restored spell slots.
+The rest system handles all mechanical recovery — you only describe the atmosphere.
+
+Similarly, when the player wants to trade, talk to an NPC, or use inventory:
+- Trade: "[Type '/trade <npc_name>' to open the trading interface]"
+- Talk: "[Type '/talk <npc_name>' to start a conversation]"
+- Inventory: "[Use the inventory panel or type '/item_equip <name>' to equip items]"
+`;
+```
+
+### `cli/repl.ts` — Add hint detection for CLI
+In the REPL loop, after printing the response, detect the `[Type 'rest'...]` hint and optionally auto-prompt:
+
+```typescript
+if (response.includes("[Type 'rest'")) {
+    console.log('  (Hint: type /rest 480 for long rest, /rest 60 for short rest)');
+}
+```
+
+## Test Plan
+1. Start game via CLI, type "I want to set up camp for the night"
+2. Without LLM: response falls back to system message (acceptable)
+3. With LLM: response should include the `[Type 'rest'...]` guidance
+4. Verify that typing `/rest 480` after the guidance works correctly
+
+## Deliverables
+- Modified: `src/ruleset/agents/NarratorService.ts` (1 section added to system prompt)
+- Modified: `cli/repl.ts` (hint detection, 3 lines)
+
+---
+
+# PART B: ItemForgeEngine — Dynamic Item Generation
+
+## Overview
+A new engine that generates items with level-scaled, rarity-driven stats and context-aware magical properties. Covers weapons, armor, and jewelry. LLM names/describes; engine decides all mechanics.
+
+## Architecture
+
+```
+Monster defeated (type: "undead", cr: 5, biome: "Ruins")
+        ↓
+LootEngine calls ItemForgeEngine.forgeItem()
+        ↓
+    ┌──────────────────────────────────────┐
+    │ 1. Determine item level (from CR)    │
+    │ 2. Roll rarity (weighted by CR)      │
+    │ 3. Pick base item (from category)    │
+    │ 4. Roll stat bonuses (level×rarity)  │
+    │ 5. Roll magical property (rarity %)  │
+    │ 6. Pick element (monster type pool)  │
+    │ 7. Validate via ItemSchema.parse()   │
+    └──────────────────────────────────────┘
+        ↓
+    Optional: LLM names the item (async, non-blocking)
+        ↓
+    Item added to combatLoot
+```
+
+## Phase 1: Schema Extensions
+
+### `src/ruleset/schemas/ItemSchema.ts`
+Add new fields to BaseItemSchema:
+
+```typescript
+// New fields (all optional, backwards-compatible with existing 255 items)
+rarity: z.enum(['Common', 'Uncommon', 'Rare', 'Very Rare', 'Legendary']).default('Common'),
+itemLevel: z.number().min(1).max(20).default(1),
+isForged: z.boolean().default(false),           // true = generated at runtime
+forgeSource: z.string().optional(),              // e.g., "Skeleton CR 0.25 Ruins"
+magicalProperties: z.array(z.object({
+    type: z.enum([
+        'BonusDamage',        // +Xd4 Fire/Cold/etc.
+        'Resistance',          // Resistance to damage type
+        'StatBonus',           // +X to ability score
+        'SaveBonus',           // +X to saving throws
+        'ConditionImmunity',   // Immune to Frightened, etc.
+        'SpellCharge',         // Cast spell X times per rest
+        'BonusAC',             // +X AC (jewelry/cloaks)
+    ]),
+    element: z.string().optional(),    // "Fire", "Necrotic", etc.
+    value: z.number().optional(),      // Bonus amount or dice average
+    dice: z.string().optional(),       // "1d4", "1d6" for variable bonuses
+    spellName: z.string().optional(),  // For SpellCharge type
+    maxCharges: z.number().optional(), // For SpellCharge type
+    description: z.string().optional() // Flavor text for this property
+})).default([]),
+```
+
+### `src/ruleset/schemas/ItemSchema.ts` — Extend ModifierSchema
+Add new modifier types:
+
+```typescript
+export const ModifierSchema = z.object({
+    type: z.enum([
+        'StatBonus', 'ACBonus', 'DamageAdd', 'AbilitySET', 'RangePenaltyReduction',
+        // New:
+        'HitBonus',           // +X to attack rolls
+        'SaveBonus',          // +X to saving throws
+        'DamageResistance',   // Resistance to a damage type
+    ]),
+    target: z.string(),
+    value: z.number()
+});
+```
+
+## Phase 2: Forge Configuration Data
+
+### New file: `src/ruleset/data/ForgeConfig.ts`
+
+#### Rarity Probability (rolled by engine, NOT LLM)
+
+```typescript
+// CR → weighted rarity probability
+export const RARITY_WEIGHTS: Record<string, Record<string, number>> = {
+    'CR_0-1':   { Common: 70, Uncommon: 25, Rare: 5,  'Very Rare': 0, Legendary: 0 },
+    'CR_2-4':   { Common: 50, Uncommon: 35, Rare: 12, 'Very Rare': 3, Legendary: 0 },
+    'CR_5-8':   { Common: 25, Uncommon: 35, Rare: 25, 'Very Rare': 12, Legendary: 3 },
+    'CR_9-12':  { Common: 10, Uncommon: 25, Rare: 35, 'Very Rare': 25, Legendary: 5 },
+    'CR_13-16': { Common: 5,  Uncommon: 15, Rare: 30, 'Very Rare': 35, Legendary: 15 },
+    'CR_17-20': { Common: 0,  Uncommon: 10, Rare: 25, 'Very Rare': 35, Legendary: 30 },
+};
+```
+
+#### Magical Property Probability (by rarity, NOT LLM)
+
+```typescript
+export const MAGIC_CHANCE: Record<string, number> = {
+    'Common':    0.00,   // NEVER magical
+    'Uncommon':  0.15,   // 15% chance
+    'Rare':      0.75,   // 75% chance
+    'Very Rare': 1.00,   // Always magical
+    'Legendary': 1.00,   // Always magical
+};
+```
+
+#### Item Level → CR Mapping
+
+```typescript
+export function crToItemLevel(cr: number): number {
+    // Item level tracks CR, clamped 1-20
+    return Math.max(1, Math.min(20, Math.ceil(cr) || 1));
+}
+
+export function crToLevelTier(cr: number): string {
+    const level = crToItemLevel(cr);
+    if (level <= 4)  return '1-4';
+    if (level <= 8)  return '5-8';
+    if (level <= 12) return '9-12';
+    if (level <= 16) return '13-16';
+    return '17-20';
+}
+```
+
+#### Stat Bonus Tables (level tier × rarity)
+
+```typescript
+// [min, max] ranges — engine rolls randomly within
+export const WEAPON_BONUSES: Record<string, Record<string, {
+    hitBonus: [number, number],
+    damageBonus: [number, number],     // flat bonus
+    bonusDamageDice: string | null,    // e.g., "1d4" or null
+}>> = {
+    '1-4': {
+        'Common':    { hitBonus: [0, 0],  damageBonus: [0, 0],  bonusDamageDice: null },
+        'Uncommon':  { hitBonus: [1, 1],  damageBonus: [0, 0],  bonusDamageDice: null },
+        'Rare':      { hitBonus: [1, 1],  damageBonus: [0, 1],  bonusDamageDice: '1d4' },
+        'Very Rare': { hitBonus: [2, 2],  damageBonus: [0, 1],  bonusDamageDice: '1d4' },
+        'Legendary': { hitBonus: [3, 3],  damageBonus: [1, 2],  bonusDamageDice: '1d6' },
+    },
+    '5-8': {
+        'Common':    { hitBonus: [0, 0],  damageBonus: [0, 0],  bonusDamageDice: null },
+        'Uncommon':  { hitBonus: [1, 1],  damageBonus: [0, 1],  bonusDamageDice: null },
+        'Rare':      { hitBonus: [2, 2],  damageBonus: [0, 1],  bonusDamageDice: '1d4' },
+        'Very Rare': { hitBonus: [2, 2],  damageBonus: [1, 1],  bonusDamageDice: '1d6' },
+        'Legendary': { hitBonus: [3, 3],  damageBonus: [1, 2],  bonusDamageDice: '1d8' },
+    },
+    '9-12': {
+        'Common':    { hitBonus: [1, 1],  damageBonus: [0, 0],  bonusDamageDice: null },
+        'Uncommon':  { hitBonus: [1, 1],  damageBonus: [0, 1],  bonusDamageDice: null },
+        'Rare':      { hitBonus: [2, 2],  damageBonus: [1, 1],  bonusDamageDice: '1d6' },
+        'Very Rare': { hitBonus: [3, 3],  damageBonus: [1, 1],  bonusDamageDice: '1d6' },
+        'Legendary': { hitBonus: [3, 3],  damageBonus: [1, 2],  bonusDamageDice: '1d10' },
+    },
+    '13-16': {
+        'Common':    { hitBonus: [1, 1],  damageBonus: [0, 0],  bonusDamageDice: null },
+        'Uncommon':  { hitBonus: [2, 2],  damageBonus: [0, 1],  bonusDamageDice: null },
+        'Rare':      { hitBonus: [2, 2],  damageBonus: [1, 1],  bonusDamageDice: '1d8' },
+        'Very Rare': { hitBonus: [3, 3],  damageBonus: [1, 2],  bonusDamageDice: '1d8' },
+        'Legendary': { hitBonus: [3, 3],  damageBonus: [2, 2],  bonusDamageDice: '2d6' },
+    },
+    '17-20': {
+        'Common':    { hitBonus: [1, 1],  damageBonus: [0, 0],  bonusDamageDice: null },
+        'Uncommon':  { hitBonus: [2, 2],  damageBonus: [0, 1],  bonusDamageDice: null },
+        'Rare':      { hitBonus: [3, 3],  damageBonus: [1, 1],  bonusDamageDice: '1d8' },
+        'Very Rare': { hitBonus: [3, 3],  damageBonus: [1, 2],  bonusDamageDice: '1d10' },
+        'Legendary': { hitBonus: [3, 3],  damageBonus: [2, 3],  bonusDamageDice: '2d8' },
+    },
+};
+
+export const ARMOR_BONUSES: Record<string, Record<string, {
+    acBonus: [number, number],
+}>> = {
+    '1-4':   { Common: {acBonus:[0,0]}, Uncommon: {acBonus:[1,1]}, Rare: {acBonus:[1,1]}, 'Very Rare': {acBonus:[2,2]}, Legendary: {acBonus:[3,3]} },
+    '5-8':   { Common: {acBonus:[0,0]}, Uncommon: {acBonus:[1,1]}, Rare: {acBonus:[1,2]}, 'Very Rare': {acBonus:[2,2]}, Legendary: {acBonus:[3,3]} },
+    '9-12':  { Common: {acBonus:[0,1]}, Uncommon: {acBonus:[1,1]}, Rare: {acBonus:[2,2]}, 'Very Rare': {acBonus:[2,3]}, Legendary: {acBonus:[3,3]} },
+    '13-16': { Common: {acBonus:[0,1]}, Uncommon: {acBonus:[1,2]}, Rare: {acBonus:[2,2]}, 'Very Rare': {acBonus:[3,3]}, Legendary: {acBonus:[3,3]} },
+    '17-20': { Common: {acBonus:[0,1]}, Uncommon: {acBonus:[1,2]}, Rare: {acBonus:[2,3]}, 'Very Rare': {acBonus:[3,3]}, Legendary: {acBonus:[3,3]} },
+};
+
+export const JEWELRY_BONUSES: Record<string, Record<string, {
+    statBonus: [number, number],       // To a random ability score
+    saveBonus: [number, number],       // To saving throws
+}>> = {
+    '1-4':   { Common: {statBonus:[0,0],saveBonus:[0,0]}, Uncommon: {statBonus:[1,1],saveBonus:[0,0]}, Rare: {statBonus:[1,1],saveBonus:[1,1]}, 'Very Rare': {statBonus:[2,2],saveBonus:[1,1]}, Legendary: {statBonus:[2,3],saveBonus:[1,2]} },
+    '5-8':   { Common: {statBonus:[0,0],saveBonus:[0,0]}, Uncommon: {statBonus:[1,1],saveBonus:[0,1]}, Rare: {statBonus:[1,2],saveBonus:[1,1]}, 'Very Rare': {statBonus:[2,2],saveBonus:[1,2]}, Legendary: {statBonus:[2,3],saveBonus:[2,2]} },
+    '9-12':  { Common: {statBonus:[0,1],saveBonus:[0,0]}, Uncommon: {statBonus:[1,1],saveBonus:[1,1]}, Rare: {statBonus:[2,2],saveBonus:[1,1]}, 'Very Rare': {statBonus:[2,3],saveBonus:[2,2]}, Legendary: {statBonus:[3,3],saveBonus:[2,3]} },
+    '13-16': { Common: {statBonus:[0,1],saveBonus:[0,0]}, Uncommon: {statBonus:[1,2],saveBonus:[1,1]}, Rare: {statBonus:[2,2],saveBonus:[1,2]}, 'Very Rare': {statBonus:[3,3],saveBonus:[2,2]}, Legendary: {statBonus:[3,3],saveBonus:[2,3]} },
+    '17-20': { Common: {statBonus:[0,1],saveBonus:[0,1]}, Uncommon: {statBonus:[1,2],saveBonus:[1,1]}, Rare: {statBonus:[2,3],saveBonus:[2,2]}, 'Very Rare': {statBonus:[3,3],saveBonus:[2,3]}, Legendary: {statBonus:[3,3],saveBonus:[3,3]} },
+};
+```
+
+#### Context-Aware Element Pools (monster type → valid elements)
+
+```typescript
+export const ELEMENT_POOLS: Record<string, string[]> = {
+    // Monster type → valid magical damage/resistance types
+    'undead':      ['Necrotic', 'Cold', 'Radiant'],
+    'fiend':       ['Fire', 'Necrotic', 'Poison'],
+    'celestial':   ['Radiant', 'Force', 'Thunder'],
+    'dragon':      ['Fire', 'Cold', 'Lightning', 'Acid', 'Poison'],
+    'elemental':   ['Fire', 'Cold', 'Lightning', 'Thunder'],
+    'fey':         ['Psychic', 'Radiant', 'Force'],
+    'aberration':  ['Psychic', 'Force', 'Acid'],
+    'construct':   ['Force', 'Lightning', 'Thunder'],
+    'monstrosity': ['Poison', 'Acid'],
+    'ooze':        ['Acid', 'Poison'],
+    'plant':       ['Poison', 'Radiant'],
+    'beast':       ['Poison'],
+    'giant':       ['Cold', 'Thunder', 'Lightning'],
+    'humanoid':    ['Fire', 'Cold', 'Lightning', 'Radiant', 'Necrotic', 'Poison', 'Acid'],
+};
+
+// Biome fallback (if monster type not matched)
+export const BIOME_ELEMENT_POOLS: Record<string, string[]> = {
+    'Volcanic':  ['Fire'],
+    'Tundra':    ['Cold', 'Thunder'],
+    'Swamp':     ['Poison', 'Acid', 'Necrotic'],
+    'Ruins':     ['Necrotic', 'Force', 'Radiant'],
+    'Forest':    ['Poison', 'Lightning', 'Radiant'],
+    'Desert':    ['Fire', 'Radiant'],
+    'Mountain':  ['Cold', 'Lightning', 'Thunder'],
+    'Ocean':     ['Cold', 'Lightning', 'Thunder'],
+    'Coast':     ['Cold', 'Lightning'],
+    'Jungle':    ['Poison', 'Acid'],
+    'Plains':    ['Lightning', 'Radiant'],
+    'Hills':     ['Thunder', 'Lightning'],
+    'Urban':     ['Fire', 'Radiant', 'Force'],
+    'Farmland':  ['Radiant'],
+};
+
+// Magical trait pool for jewelry (Rare+)
+export const JEWELRY_TRAIT_POOL = [
+    { type: 'Resistance', description: 'Resistance to {element} damage' },
+    { type: 'ConditionImmunity', conditions: ['Frightened', 'Charmed', 'Poisoned'] },
+    { type: 'SpellCharge', spells: ['Shield', 'Misty Step', 'Detect Magic', 'Feather Fall'] },
+];
+
+// Gold value multipliers by rarity
+export const RARITY_VALUE_MULTIPLIER: Record<string, number> = {
+    'Common': 1,
+    'Uncommon': 5,
+    'Rare': 50,
+    'Very Rare': 500,
+    'Legendary': 5000,
+};
+```
+
+## Phase 3: ItemForgeEngine
+
+### New file: `src/ruleset/combat/ItemForgeEngine.ts`
+
+#### Public API
+
+```typescript
+export class ItemForgeEngine {
+    /**
+     * Main entry point. Generates a complete item with stats, rarity, and optional magic.
+     */
+    static forgeItem(params: ForgeParams): ForgedItem
+
+    /**
+     * Roll rarity based on CR-weighted probability table.
+     */
+    static rollRarity(cr: number): Rarity
+
+    /**
+     * Derive item level from monster CR.
+     */
+    static crToItemLevel(cr: number): number
+
+    /**
+     * Forge a weapon from a base template.
+     */
+    static forgeWeapon(base: Item, level: number, rarity: Rarity, context: ForgeContext): ForgedItem
+
+    /**
+     * Forge armor from a base template.
+     */
+    static forgeArmor(base: Item, level: number, rarity: Rarity, context: ForgeContext): ForgedItem
+
+    /**
+     * Forge jewelry (ring, amulet, cloak, belt, etc.) from a base template.
+     */
+    static forgeJewelry(base: Item, level: number, rarity: Rarity, context: ForgeContext): ForgedItem
+
+    /**
+     * Pick a magical element from the context-aware pool.
+     */
+    static rollElement(monsterType: string, biome: string): string | null
+
+    /**
+     * Generate a default name for the item (without LLM).
+     * Example: "Rare Necrotic Longsword +2"
+     */
+    static generateDefaultName(base: Item, rarity: Rarity, magicalProps: MagicalProperty[]): string
+}
+```
+
+#### ForgeParams and ForgeContext types
+
+```typescript
+interface ForgeParams {
+    category: 'weapon' | 'armor' | 'shield' | 'jewelry';
+    baseItemName: string;        // e.g., "Longsword", "Chain Mail", "Ring"
+    cr: number;                  // Monster CR (determines level + rarity weight)
+    monsterType: string;         // e.g., "undead" — for element pool
+    biome: string;               // e.g., "Ruins" — fallback element pool
+}
+
+interface ForgeContext {
+    monsterType: string;
+    biome: string;
+    monsterName: string;         // For forgeSource metadata
+}
+
+type Rarity = 'Common' | 'Uncommon' | 'Rare' | 'Very Rare' | 'Legendary';
+
+interface ForgedItem extends Item {
+    rarity: Rarity;
+    itemLevel: number;
+    isForged: true;
+    forgeSource: string;
+    magicalProperties: MagicalProperty[];
+}
+```
+
+#### Core Logic Flow
+
+```typescript
+static forgeItem(params: ForgeParams): ForgedItem {
+    const base = DataManager.getItem(params.baseItemName);
+    if (!base) throw new Error(`Base item not found: ${params.baseItemName}`);
+
+    const itemLevel = this.crToItemLevel(params.cr);
+    const rarity = this.rollRarity(params.cr);
+    const context = { monsterType: params.monsterType, biome: params.biome, monsterName: '' };
+
+    let forged: ForgedItem;
+    switch (params.category) {
+        case 'weapon':  forged = this.forgeWeapon(base, itemLevel, rarity, context); break;
+        case 'armor':   forged = this.forgeArmor(base, itemLevel, rarity, context); break;
+        case 'shield':  forged = this.forgeArmor(base, itemLevel, rarity, context); break;
+        case 'jewelry': forged = this.forgeJewelry(base, itemLevel, rarity, context); break;
+    }
+
+    // Validate against schema
+    ItemSchema.parse(forged);
+    return forged;
+}
+```
+
+#### Weapon Forging Detail
+
+```typescript
+static forgeWeapon(base, level, rarity, context): ForgedItem {
+    const tier = crToLevelTier(level);
+    const bonuses = WEAPON_BONUSES[tier][rarity];
+
+    // Roll stat bonuses within range
+    const hitBonus = randomInRange(bonuses.hitBonus[0], bonuses.hitBonus[1]);
+    const dmgBonus = randomInRange(bonuses.damageBonus[0], bonuses.damageBonus[1]);
+
+    // Build modifiers array (for MechanicsEngine to consume)
+    const modifiers = [];
+    if (hitBonus > 0) modifiers.push({ type: 'HitBonus', target: 'Attack', value: hitBonus });
+    if (dmgBonus > 0) modifiers.push({ type: 'DamageAdd', target: 'Damage', value: dmgBonus });
+
+    // Roll for magical property
+    const magicalProperties = [];
+    const magicChance = MAGIC_CHANCE[rarity];
+    if (Math.random() < magicChance) {
+        const element = this.rollElement(context.monsterType, context.biome);
+        if (element && bonuses.bonusDamageDice) {
+            magicalProperties.push({
+                type: 'BonusDamage',
+                element: element,
+                dice: bonuses.bonusDamageDice,
+                value: averageDice(bonuses.bonusDamageDice),
+            });
+            modifiers.push({ type: 'DamageAdd', target: element, value: averageDice(bonuses.bonusDamageDice) });
+        }
+    }
+
+    const name = this.generateDefaultName(base, rarity, magicalProperties);
+    const goldValue = base.cost.gp * RARITY_VALUE_MULTIPLIER[rarity];
+
+    return {
+        ...base,
+        name,
+        rarity,
+        itemLevel: level,
+        isMagic: magicalProperties.length > 0,
+        isForged: true,
+        forgeSource: `${context.monsterName} CR ${level} ${context.biome}`,
+        modifiers,
+        magicalProperties,
+        cost: { ...base.cost, gp: goldValue },
+        instanceId: uuid(),
+    };
+}
+```
+
+## Phase 4: LootEngine Integration
+
+### `src/ruleset/combat/LootEngine.ts` — Modify processDefeat()
+
+```typescript
+// BEFORE (current):
+const equipDrops = this.getEquipmentDrops(monster);
+
+// AFTER (with forge):
+const equipDrops = this.getEquipmentDrops(monster);
+const forgedDrops = equipDrops.map(item => {
+    try {
+        const category = this.getForgeCategory(item);
+        if (!category) return item; // Non-forgeable item, return as-is
+        return ItemForgeEngine.forgeItem({
+            category,
+            baseItemName: item.name,
+            cr: Number(monster.cr) || 0,
+            monsterType: monster.type?.toLowerCase() || 'humanoid',
+            biome: currentBiome,  // Passed from combat context
+        });
+    } catch (e) {
+        console.warn(`[LootEngine] Forge failed for ${item.name}, using base:`, e);
+        return item; // Fallback to unmodified item
+    }
+});
+```
+
+The `biome` parameter must flow from `CombatOrchestrator.endCombat()` → `LootEngine.processDefeat()`. Currently `processDefeat` doesn't receive biome. This requires:
+
+### `src/ruleset/combat/LootEngine.ts` — Signature change
+
+```typescript
+// BEFORE:
+static processDefeat(monster: Monster): LootResult
+
+// AFTER:
+static processDefeat(monster: Monster, biome?: string): LootResult
+```
+
+### `src/ruleset/combat/managers/CombatOrchestrator.ts` — Pass biome
+
+The orchestrator already has access to biome via the hex state. At the `endCombat` call site where `processDefeat` is called, add the current biome.
+
+## Phase 5: Equipment System — Apply Forge Bonuses
+
+### `src/ruleset/combat/EquipmentEngine.ts` — recalculateAC()
+Add modifier consumption after base AC calculation:
+
+```typescript
+// After base AC is calculated, apply ACBonus modifiers from equipped items
+for (const item of equippedItems) {
+    if (item.modifiers) {
+        for (const mod of item.modifiers) {
+            if (mod.type === 'ACBonus') {
+                ac += mod.value;
+            }
+        }
+    }
+}
+```
+
+### `src/ruleset/combat/CombatResolutionEngine.ts` or CombatOrchestrator
+Apply HitBonus and DamageAdd modifiers during attack resolution:
+
+```typescript
+// When calculating attack roll, add HitBonus from equipped weapon
+const weapon = getEquippedWeapon(attacker);
+const hitMod = weapon?.modifiers?.find(m => m.type === 'HitBonus')?.value || 0;
+attackRoll += hitMod;
+
+// When calculating damage, add DamageAdd modifiers
+const dmgMods = weapon?.modifiers?.filter(m => m.type === 'DamageAdd') || [];
+for (const mod of dmgMods) {
+    totalDamage += mod.value;
+}
+```
+
+## Phase 6: LLM Item Naming (Optional, Async)
+
+### `src/ruleset/agents/LoreService.ts` — Add item naming
+
+```typescript
+static async nameForgedItem(item: ForgedItem, context: ForgeContext): Promise<{name: string, description: string}> {
+    // Non-blocking: fire and forget. Item uses default name until LLM responds.
+    const prompt = `Generate a name and 1-2 sentence description for this item:
+    - Base: ${item.name}
+    - Rarity: ${item.rarity}
+    - Magical: ${item.isMagic ? 'Yes' : 'No'}
+    ${item.magicalProperties.length > 0 ? `- Magic: ${item.magicalProperties.map(p => `${p.dice || ''} ${p.element || ''} ${p.type}`).join(', ')}` : ''}
+    - Context: Dropped by ${context.monsterName} in ${context.biome}
+
+    Respond with JSON: { "name": "...", "description": "..." }
+    Do NOT alter the stats. You are ONLY naming and describing.`;
+
+    // Returns { name, description } or falls back to defaults
+}
+```
+
+## Phase 7: CLI Test
+
+### `cli/tests/test_itemforge.ts`
+
+1. Test `rollRarity()` distribution over 1000 rolls for each CR tier
+2. Test `forgeWeapon()` for all 5 rarity tiers — verify bonuses within expected ranges
+3. Test `forgeArmor()` — verify acBonus within range, never exceeds +3
+4. Test `forgeJewelry()` — verify statBonus assignment
+5. Test magical property assignment: Common = never, Rare = often, Legendary = always
+6. Test element pool: undead monster → element is in ['Necrotic', 'Cold', 'Radiant']
+7. Test schema validation: every forged item passes `ItemSchema.parse()`
+8. Test LootEngine integration: defeat a Skeleton and verify forged loot appears
+9. Test equipment integration: equip a forged +2 weapon, verify AC/attack calculations change
+
+---
+
+# Summary of Files
+
+## New Files (6)
+| File | Phase | Purpose |
+|------|-------|---------|
+| `src/ruleset/data/ForgeConfig.ts` | B2 | All config tables (rarity weights, stat ranges, element pools, gold multipliers) |
+| `src/ruleset/combat/ItemForgeEngine.ts` | B3 | Core forge engine (forgeItem, rollRarity, forgeWeapon, forgeArmor, forgeJewelry) |
+| `cli/tests/test_itemforge.ts` | B7 | Comprehensive CLI test |
+
+## Modified Files (7)
+| File | Phase | Change |
+|------|-------|--------|
+| `src/ruleset/agents/NarratorService.ts` | A | Add rest/trade/talk guidance to system prompt |
+| `src/ruleset/schemas/ItemSchema.ts` | B1 | Add rarity, itemLevel, isForged, magicalProperties fields + new modifier types |
+| `src/ruleset/combat/LootEngine.ts` | B4 | Route drops through ItemForgeEngine; add biome parameter |
+| `src/ruleset/combat/managers/CombatOrchestrator.ts` | B4 | Pass biome to LootEngine.processDefeat() |
+| `src/ruleset/combat/EquipmentEngine.ts` | B5 | Apply ACBonus modifiers in recalculateAC() |
+| `src/ruleset/combat/CombatResolutionEngine.ts` | B5 | Apply HitBonus/DamageAdd modifiers in attack resolution |
+| `src/ruleset/agents/LoreService.ts` | B6 | Add nameForgedItem() for async LLM naming |
+| `cli/repl.ts` | A | Add rest hint detection for CLI |
+
+## Verification
+| Test | What it verifies |
+|------|-----------------|
+| `npx tsx cli/tests/test_itemforge.ts` | Full forge pipeline: rarity distribution, stat ranges, element pools, schema validation, loot integration |
+| `npx tsx cli/harness/harness.ts` | Existing scenarios still pass (backward compatibility) |
+| Manual: defeat monster via CLI | Forged items appear in combatLoot with rarity/stats |
+
+---
+
+# Monster Type Coverage
+
+All 325 monsters in `data/monster/` have a `type` field. Verified types present:
+
+| Type | Example Monsters | Element Pool |
+|------|-----------------|--------------|
+| `humanoid` | Goblin, Bandit, Cultist | Any (looted from various sources) |
+| `undead` | Skeleton, Zombie, Ghoul, Vampire | Necrotic, Cold, Radiant |
+| `beast` | Wolf, Boar, Giant Spider | Poison |
+| `giant` | Ogre, Hill Giant, Troll | Cold, Thunder, Lightning |
+| `fiend` | (depends on dataset) | Fire, Necrotic, Poison |
+| `dragon` | (depends on dataset) | Fire, Cold, Lightning, Acid, Poison |
+| `monstrosity` | Owlbear, Basilisk | Poison, Acid |
+| `construct` | Animated Armor | Force, Lightning, Thunder |
+| `elemental` | (depends on dataset) | Fire, Cold, Lightning, Thunder |
+
+The `ELEMENT_POOLS` config maps every known monster type. Unknown types fall through to `BIOME_ELEMENT_POOLS` as a biome-based fallback. If neither matches, no magical property is assigned (item stays non-magical even if the probability roll said "yes") — safe degradation.

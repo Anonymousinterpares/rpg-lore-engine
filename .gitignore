@@ -18,3 +18,7 @@ yarn-error.log*
 Thumbs.db
 
 .env
+
+# CLI test artifacts
+saves/cli_test*/
+saves/harness_temp/
