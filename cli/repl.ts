@@ -72,11 +72,25 @@ function showHelp() {
 ║  /npcs          — NPCs in current area        ║
 ║  /codex         — Discovered lore entries     ║
 ║  /history       — Recent conversation log     ║
+║  /factions      — Faction standings           ║
+║  /weather       — Current weather             ║
+║                                               ║
+║ PROGRESSION                                   ║
+║  /levelup       — Level up (if XP sufficient) ║
+║  /prepare <s>   — Prepare spells for the day  ║
+║  /export [type] — Export sheet or chronicle    ║
+║  /multiclass <c>— Check multiclass prereqs    ║
+║                                               ║
+║ WORLD                                         ║
+║  /gather [node] — Gather resources            ║
+║  /craft <recipe>— Craft an item               ║
+║  /check <a> <s> — Skill check (stat skill dc) ║
 ║                                               ║
 ║ COMBAT                                        ║
 ║  attack / dodge / dash / hide / end turn      ║
 ║  flee             — Attempt to escape combat  ║
 ║  death_save       — Roll death save (when 0HP)║
+║  stabilize <name> — Stabilize dying ally      ║
 ║  /cast <spell> [target]                       ║
 ║  /move <x> <y> [pace]                         ║
 ║  /combat <enemy> <count> — Start combat (dev) ║
@@ -85,6 +99,7 @@ function showHelp() {
 ║  /save [name]   — Save game                   ║
 ║  /quit          — Exit game                   ║
 ║  /help          — Show this help              ║
+║  /addxp <n>     — Add XP (dev)                ║
 ╚═══════════════════════════════════════════════╝
 `);
 }

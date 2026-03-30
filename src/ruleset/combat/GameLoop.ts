@@ -35,6 +35,14 @@ import { NPCMovementEngine } from './managers/NPCMovementEngine';
 import { QuestEngine } from './managers/QuestEngine';
 import { QuestGenerator } from './managers/QuestGenerator';
 import { Dice } from './Dice';
+import { LevelingEngine } from './LevelingEngine';
+import { GatheringEngine } from './GatheringEngine';
+import { DowntimeEngine } from './DowntimeEngine';
+import { ExportEngine } from './ExportEngine';
+import { FactionEngine } from './FactionEngine';
+import { MulticlassingEngine } from './MulticlassingEngine';
+import { SpellbookEngine } from './SpellbookEngine';
+import { MechanicsEngine } from './MechanicsEngine';
 import { z } from 'zod';
 
 type Combatant = z.infer<typeof CombatantSchema>;
@@ -902,6 +910,125 @@ export class GameLoop {
                 this.state.activeDialogueNpcId = null;
                 await this.emitStateUpdate();
                 return "You end the conversation.";
+            // ===== LEVELING =====
+            case 'levelup':
+            case 'level': {
+                if (!LevelingEngine.canLevelUp(this.state.character)) {
+                    const nextXP = MechanicsEngine.getNextLevelXP(this.state.character.level);
+                    return `Not enough XP to level up. Current: ${this.state.character.xp}, Need: ${nextXP}.`;
+                }
+                const msg = LevelingEngine.levelUp(this.state.character);
+                await this.emitStateUpdate();
+                return msg;
+            }
+
+            case 'addxp': {
+                const amount = parseInt(args[0] || '0');
+                if (!amount || amount <= 0) return "Usage: /addxp <amount>";
+                const result = LevelingEngine.addXP(this.state.character, amount);
+                await this.emitStateUpdate();
+                return `Gained ${amount} XP (Total: ${result.totalXP}).${result.leveledUp ? ' You can level up! Use /levelup.' : ''}`;
+            }
+
+            // ===== SPELL MANAGEMENT =====
+            case 'preparespells':
+            case 'prepare': {
+                if (!args.length) return "Usage: /prepare <spell1> <spell2> ...";
+                const result = SpellbookEngine.prepareSpells(this.state.character, args);
+                await this.emitStateUpdate();
+                return result.message;
+            }
+
+            // ===== GATHERING =====
+            case 'gather': {
+                const hex = this.hexMapManager.getHex(this.state.location.hexId);
+                if (!hex) return "Error: Current hex not found.";
+                if (!hex.resourceNodes || hex.resourceNodes.length === 0) return "No resources to gather here.";
+                if (!args[0]) {
+                    const nodeList = hex.resourceNodes.map((n: any) => `  ${n.id}: ${n.itemId.replace(/_/g, ' ')} (${n.quantityRemaining} left)`).join('\n');
+                    return `Available resource nodes:\n${nodeList}\nUsage: /gather <nodeId>`;
+                }
+                const result = GatheringEngine.gather(this.state.character, hex, args[0]);
+                await this.emitStateUpdate();
+                return result.message;
+            }
+
+            // ===== CRAFTING =====
+            case 'craft': {
+                if (!args[0]) return "Usage: /craft <recipeId>";
+                const result = DowntimeEngine.craft(this.state.character, args.join(' '));
+                await this.emitStateUpdate();
+                return result.message;
+            }
+
+            // ===== FACTIONS =====
+            case 'factions': {
+                const factions = this.state.factions || [];
+                if (factions.length === 0) return "No factions encountered yet.";
+                const lines = factions.map((f: any) => {
+                    const label = FactionEngine.getStandingLabel(f.standing);
+                    return `  ${f.name}: ${f.standing} (${label})`;
+                });
+                return `=== Factions ===\n${lines.join('\n')}`;
+            }
+
+            // ===== SKILL CHECKS =====
+            case 'check':
+            case 'skillcheck': {
+                if (!args[0] || !args[1]) return "Usage: /check <ability> <skill> [dc]\nExample: /check DEX Stealth 15";
+                const ability = args[0].toUpperCase();
+                const skill = args[1];
+                const dc = parseInt(args[2] || '10');
+                const result = MechanicsEngine.resolveCheck(this.state.character, ability, skill, dc);
+                await this.emitStateUpdate();
+                return result.message;
+            }
+
+            // ===== EXPORT =====
+            case 'export': {
+                const exportType = (args[0] || 'sheet').toLowerCase();
+                if (exportType === 'chronicle') {
+                    return ExportEngine.exportChronicle(this.state);
+                } else {
+                    return ExportEngine.exportCharacterSheet(this.state);
+                }
+            }
+
+            // ===== WEATHER =====
+            case 'weather': {
+                const w = this.state.weather;
+                if (!w) return "No weather data.";
+                return `Weather: ${w.type} (${w.durationMinutes} min remaining). ${w.description || ''}`;
+            }
+
+            // ===== MULTICLASS =====
+            case 'multiclass': {
+                if (!args[0]) return "Usage: /multiclass <ClassName>";
+                const targetClass = args[0].charAt(0).toUpperCase() + args[0].slice(1).toLowerCase();
+                const check = MulticlassingEngine.canMulticlass(this.state.character, targetClass);
+                if (!check.success) return check.message;
+                return `${check.message} Multiclassing is not yet fully wired — prerequisites check passed.`;
+            }
+
+            // ===== STABILIZE (in-combat companion action) =====
+            case 'stabilize': {
+                if (!this.state.combat) return "Not in combat.";
+                const targetName = args[0];
+                if (!targetName) return "Usage: /stabilize <target name>";
+                const { DeathEngine } = await import('./DeathEngine');
+                const combat = this.state.combat;
+                const medic = combat.combatants[combat.currentTurnIndex];
+                const target = combat.combatants.find(c => c.name.toLowerCase().includes(targetName.toLowerCase()));
+                if (!target) return `Target "${targetName}" not found.`;
+                const medicineBonus = MechanicsEngine.getModifier(medic.stats?.WIS ?? 10);
+                const result = DeathEngine.stabilize(medic, target, medicineBonus);
+                if (medic.isPlayer) {
+                    this.state.character.hp.current = medic.hp.current;
+                }
+                await this.emitStateUpdate();
+                return result;
+            }
+
             default:
                 return `Unknown command: ${cmd}`;
         }

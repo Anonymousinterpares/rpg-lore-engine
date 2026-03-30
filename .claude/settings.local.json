@@ -13,7 +13,9 @@
       "Bash(npx tsx --eval \":*)",
       "Bash(cd:*)",
       "Bash(node -e \"const l = require\\(''lucide-react''\\); const icons = Object.keys\\(l\\).filter\\(k => k.match\\(/Dice|Door|Run|Flee|Skull|Heart/i\\)\\); console.log\\(icons.join\\('', ''\\)\\)\")",
-      "Bash(npx vite:*)"
+      "Bash(npx vite:*)",
+      "Bash(npx tsx -e \":*)",
+      "Bash(grep:*)"
     ]
   }
 }

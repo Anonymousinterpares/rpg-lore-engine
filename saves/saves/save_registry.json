@@ -129,6 +129,16 @@
       "lastSaved": "2026-03-30T21:53:47.275Z",
       "playTimeSeconds": 0,
       "locationSummary": "0,1"
+    },
+    {
+      "id": "8d28944e-d3a4-4c51-a0b8-25b0b4e2fb37",
+      "slotName": "integration_test",
+      "characterName": "TestHero",
+      "characterLevel": 1,
+      "characterClass": "Fighter",
+      "lastSaved": "2026-03-30T22:25:35.148Z",
+      "playTimeSeconds": 0,
+      "locationSummary": "0,1"
     }
   ]
 }

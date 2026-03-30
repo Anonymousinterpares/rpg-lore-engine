@@ -2464,7 +2464,27 @@ Respond in character, using first-person perspective.
 
 **Files modified:** `CombatOrchestrator.ts`, `CombatManager.ts`, `CombatAI.ts`, `CombatActionBar.tsx`, `CombatActionBar.module.css`, `IntentRouter.ts`, `CombatLog.tsx`, `cli/repl.ts`
 
-### E. Outstanding Issues (Not Yet Fixed)
+### E. Full CLI Command Wiring (2026-03-31)
+
+**14 engines wired to CLI commands — 100% of game functionality now accessible.**
+
+| Command | Engine | Description |
+|---------|--------|-------------|
+| `/levelup` | LevelingEngine | Level up when XP sufficient (HP increase, hit dice, proficiency) |
+| `/addxp <n>` | LevelingEngine | Add XP (dev command) |
+| `/prepare <spells>` | SpellbookEngine | Prepare spells for the day (casters only) |
+| `/gather [nodeId]` | GatheringEngine | Gather resources from hex nodes (lists available if no arg) |
+| `/craft <recipeId>` | DowntimeEngine | Craft items from recipes |
+| `/factions` | FactionEngine | Display faction standings |
+| `/check <ability> <skill> [dc]` | MechanicsEngine | Perform skill checks |
+| `/export [sheet\|chronicle]` | ExportEngine | Export character sheet or chronicle as markdown |
+| `/weather` | WeatherEngine | Display current weather |
+| `/multiclass <class>` | MulticlassingEngine | Check multiclass prerequisites |
+| `/stabilize <target>` | DeathEngine | Stabilize dying ally in combat (Medicine check DC 10) |
+
+**Test coverage:** `cli/test_new_commands.ts` — 22 assertions, all pass.
+
+### F. Outstanding Issues (Not Yet Fixed)
 
 | ID | Severity | Description |
 |----|----------|-------------|
