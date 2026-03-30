@@ -2430,12 +2430,26 @@ Respond in character, using first-person perspective.
 | Help menu | Expanded to show all new commands grouped by category |
 | Integration test | `cli/test_integration.ts` — 44 assertions covering character creation, renderers, movement, rest, wait, combat, narrative, edge cases, save/load |
 
-### C. Outstanding Issues (Not Yet Fixed)
+### C. Condition System Migration (2026-03-30)
+
+**Full migration from `conditions: string[]` to `conditions: CombatConditionSchema[]`.**
+
+| Action | Files Modified |
+|--------|---------------|
+| Schema: `conditions` field changed to `CombatConditionSchema[]` | `CombatSchema.ts`, `PlayerCharacterSchema.ts` |
+| Schema: Added `deathSaves: { successes, failures }` to `CombatantSchema` | `CombatSchema.ts` |
+| New utility: `ConditionUtils.ts` with `hasCondition`, `addCondition`, `removeCondition`, `tickConditions` | New file |
+| Migrated 25 call sites across 11 files | `StandardActions.ts`, `DeathEngine.ts`, `InitiativeTracker.ts`, `CombatOrchestrator.ts`, `SpellManager.ts`, `EngineDispatcher.ts`, `ContextBuilder.ts`, `ConditionDisplay.tsx`, `CombatRenderer.ts`, `CharacterRenderer.ts`, `repl.ts` |
+| `DeathEngine` rewritten: `rollDeathSave(combatant)` now tracks cumulative saves on the combatant, handles nat 1 (2 failures), nat 20 (revive at 1 HP), 3 successes (stabilize), 3 failures (dead) | `DeathEngine.ts` |
+| `processStartOfTurn` now ticks condition durations and logs expirations | `CombatOrchestrator.ts` |
+| Fixed AgentConfig model IDs (was `openai/gpt-oss-120b`, should be `gpt-oss-120b`) | `AgentConfig.json` |
+
+**Test coverage:** `cli/test_phase4_5.ts` — 142 assertions (condition utils, death save accumulation across 100 trials, stabilize, revive, combat integration).
+
+### D. Outstanding Issues (Not Yet Fixed)
 
 | ID | Severity | Description |
 |----|----------|-------------|
-| GAP-001 | **MEDIUM** | Death save state not tracked on CombatantSchema (`deathSaves: { successes, failures }` missing) |
-| GAP-002 | **MEDIUM** | Condition durations never expire (conditions are `string[]` with no timer) |
 | GAP-003 | **LOW** | No `/levelup` CLI command (LevelingEngine exists but not wired to any command) |
 | GAP-004 | **LOW** | NPC dialogue requires LLM — no fallback if API is down |
 | GAP-005 | **LOW** | `/survey` uses full ability score instead of modifier in check formula |

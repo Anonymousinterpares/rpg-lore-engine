@@ -198,7 +198,7 @@ async function gameREPL(rl: readline.Interface, initialState: GameState) {
             console.log(`  Level ${c.level} ${c.race} ${c.class} (${c.sex})`);
             console.log(`  HP: ${c.hp.current}/${c.hp.max}  AC: ${c.ac}  XP: ${c.xp || 0}`);
             console.log(`  STR:${c.stats.STR}  DEX:${c.stats.DEX}  CON:${c.stats.CON}  INT:${c.stats.INT}  WIS:${c.stats.WIS}  CHA:${c.stats.CHA}`);
-            if (c.conditions.length > 0) console.log(`  Conditions: ${c.conditions.join(', ')}`);
+            if (c.conditions.length > 0) console.log(`  Conditions: ${c.conditions.map((cd: any) => cd.name || cd).join(', ')}`);
             console.log(`  Skills: ${c.skillProficiencies.join(', ')}`);
             if (c.cantripsKnown.length > 0) console.log(`  Cantrips: ${c.cantripsKnown.join(', ')}`);
             if (c.knownSpells.length > 0) console.log(`  Known Spells: ${c.knownSpells.join(', ')}`);

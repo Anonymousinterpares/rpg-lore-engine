@@ -18,7 +18,7 @@ export function renderInitiative(state: GameState): string {
         const marker = i === combat.currentTurnIndex ? '>' : ' ';
         const type = c.type === 'player' ? 'PLY' : c.type === 'companion' ? 'ALY' : 'ENM';
         const hpDisplay = `${c.hp.current}/${c.hp.max}`;
-        const conditions = c.conditions?.length > 0 ? ` [${c.conditions.join(',')}]` : '';
+        const conditions = c.conditions?.length > 0 ? ` [${c.conditions.map((cd: any) => cd.name || cd).join(',')}]` : '';
         lines.push(`  ${marker} ${c.name.padEnd(20)} ${type} HP:${hpDisplay.padEnd(7)} AC:${c.ac} Init:${c.initiative}${conditions}`);
     });
 

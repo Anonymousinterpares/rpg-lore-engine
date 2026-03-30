@@ -778,7 +778,7 @@
       "namingSource": "engine",
       "visualVariant": 5,
       "npcs": [],
-      "connections": "3:P:0,5:P:0",
+      "connections": "3:P:0",
       "isNpcNamed": false,
       "fogOfWarLevel": "HIDDEN"
     },
@@ -922,7 +922,7 @@
       "generated": true,
       "isQuestReserved": false,
       "biome": "Jungle",
-      "name": "Jungle (Uncharted Territory)",
+      "name": "Uncharted Territory",
       "description": "A vast expanse of jungle.",
       "traversable_sides": {
         "N": true,
@@ -936,7 +936,7 @@
       "resourceNodes": [],
       "openedContainers": {},
       "visited": false,
-      "inLineOfSight": true,
+      "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 2,
       "npcs": [],
@@ -952,7 +952,7 @@
       "generated": true,
       "isQuestReserved": false,
       "biome": "Jungle",
-      "name": "Jungle (Discovered)",
+      "name": "Jungle (Uncharted Territory)",
       "description": "A vast expanse of jungle.",
       "traversable_sides": {
         "N": true,
@@ -965,7 +965,7 @@
       "interest_points": [],
       "resourceNodes": [],
       "openedContainers": {},
-      "visited": true,
+      "visited": false,
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 1,
@@ -1225,7 +1225,7 @@
       "generated": true,
       "isQuestReserved": false,
       "biome": "Jungle",
-      "name": "Jungle (Uncharted Territory)",
+      "name": "Uncharted Territory",
       "description": "A vast expanse of jungle.",
       "traversable_sides": {
         "N": true,
@@ -1239,7 +1239,7 @@
       "resourceNodes": [],
       "openedContainers": {},
       "visited": false,
-      "inLineOfSight": true,
+      "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 5,
       "npcs": [],
@@ -1432,7 +1432,7 @@
       "namingSource": "engine",
       "visualVariant": 2,
       "npcs": [],
-      "connections": "1:P:0,3:P:0,0:P:0",
+      "connections": "1:P:0,3:P:0",
       "isNpcNamed": false,
       "fogOfWarLevel": "HIDDEN"
     },
@@ -1509,98 +1509,6 @@
       "connections": "0:P:0,2:P:1",
       "isNpcNamed": false,
       "fogOfWarLevel": "HIDDEN"
-    },
-    "-4,3": {
-      "coordinates": [
-        -4,
-        3
-      ],
-      "generated": true,
-      "visited": false,
-      "biome": "Jungle",
-      "name": "Uncharted Territory",
-      "description": "The mists of the unknown cling to this place.",
-      "inLineOfSight": false,
-      "interest_points": [],
-      "resourceNodes": [],
-      "openedContainers": {},
-      "namingSource": "engine",
-      "visualVariant": 4,
-      "npcs": [],
-      "isQuestReserved": false,
-      "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN",
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      },
-      "connections": "2:P:0"
-    },
-    "-5,3": {
-      "coordinates": [
-        -5,
-        3
-      ],
-      "generated": true,
-      "visited": false,
-      "biome": "Jungle",
-      "name": "Uncharted Territory",
-      "description": "The mists of the unknown cling to this place.",
-      "inLineOfSight": false,
-      "interest_points": [],
-      "resourceNodes": [],
-      "openedContainers": {},
-      "namingSource": "engine",
-      "visualVariant": 3,
-      "npcs": [],
-      "isQuestReserved": false,
-      "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN",
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      },
-      "connections": "4:P:0"
-    },
-    "-6,3": {
-      "coordinates": [
-        -6,
-        3
-      ],
-      "generated": true,
-      "visited": false,
-      "biome": "Jungle",
-      "name": "Uncharted Territory",
-      "description": "The mists of the unknown cling to this place.",
-      "inLineOfSight": false,
-      "interest_points": [],
-      "resourceNodes": [],
-      "openedContainers": {},
-      "namingSource": "engine",
-      "visualVariant": 1,
-      "npcs": [
-        "09f42c8c-caa1-4c51-9c6f-e6ec2d4b2f8e"
-      ],
-      "isQuestReserved": false,
-      "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN",
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      },
-      "connections": "3:P:0,1:P:0"
     }
   },
   "coastlines": []

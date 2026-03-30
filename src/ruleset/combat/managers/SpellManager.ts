@@ -125,7 +125,8 @@ export class SpellManager {
 
             if (result.type !== 'MISS' && result.type !== 'SAVE_SUCCESS') {
                 if (spell.effect?.category === 'CONTROL' && spell.condition) {
-                    target.conditions.push(spell.condition);
+                    const { addCondition } = require('../ConditionUtils');
+                    addCondition(target.conditions, spell.condition, caster.id);
                 }
                 if (spell.effect?.category === 'BUFF' || spell.effect?.category === 'DEBUFF') {
                     target.statusEffects.push({

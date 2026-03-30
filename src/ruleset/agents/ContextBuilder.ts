@@ -85,7 +85,7 @@ export class ContextBuilder {
                 class: char.class,
                 level: char.level,
                 hpStatus: this.getHpStatus(char.hp),
-                conditions: char.conditions
+                conditions: char.conditions.map((c: any) => c.name || c)
             },
             timeOfDay: this.getHybridTime(state.worldTime),
             location: {

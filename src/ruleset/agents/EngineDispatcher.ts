@@ -79,8 +79,11 @@ export class EngineDispatcher {
                         break;
 
                     case 'set_condition':
-                        if (call.args.condition && !state.character.conditions.includes(call.args.condition)) {
-                            state.character.conditions.push(call.args.condition);
+                        if (call.args.condition) {
+                            const { hasCondition, addCondition } = require('../combat/ConditionUtils');
+                            if (!hasCondition(state.character.conditions, call.args.condition)) {
+                                addCondition(state.character.conditions, call.args.condition);
+                            }
                         }
                         break;
 

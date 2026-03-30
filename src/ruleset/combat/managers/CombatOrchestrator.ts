@@ -18,6 +18,8 @@ import { ParsedIntent } from '../IntentRouter';
 import { AbilityParser } from '../AbilityParser';
 import { EventBusManager } from './EventBusManager';
 import { z } from 'zod';
+import { hasCondition, addCondition, tickConditions, conditionNames } from '../ConditionUtils';
+import { DeathEngine } from '../DeathEngine';
 
 
 /**
@@ -63,8 +65,17 @@ export class CombatOrchestrator {
                     visible: true
                 };
 
-                await this.processStartOfTurn(actor);
+                const skipTurn = await this.processStartOfTurn(actor);
                 await this.emitStateUpdate();
+
+                if (skipTurn) {
+                    // Actor's turn is auto-handled (e.g., death saves) — advance to next
+                    if (!this.state.combat) break;
+                    const nextMsg = this.combatManager.advanceTurn();
+                    this.addCombatLog(nextMsg);
+                    this.state.combat.turnActions = [];
+                    continue;
+                }
 
                 if (actor.isPlayer) {
                     this.turnProcessing = false;
@@ -99,7 +110,11 @@ export class CombatOrchestrator {
         }
     }
 
-    private async processStartOfTurn(actor: Combatant) {
+    /**
+     * Returns true if the actor's turn should be auto-skipped (death saves, dead, etc.)
+     */
+    private async processStartOfTurn(actor: Combatant): Promise<boolean> {
+        // Tick status effects (buffs/debuffs with duration)
         if (actor.statusEffects) {
             actor.statusEffects = actor.statusEffects.filter(effect => {
                 if (effect.duration !== undefined) {
@@ -109,12 +124,42 @@ export class CombatOrchestrator {
                 return true;
             });
         }
+
+        // Tick conditions with duration (Blinded 3 rounds, Dodging 1 round, etc.)
+        const expired = tickConditions(actor.conditions);
+        if (expired.length > 0) {
+            this.addCombatLog(`${actor.name}: ${expired.join(', ')} expired.`);
+        }
+
+        // Death saves: if player is at 0 HP and unconscious, roll death save and skip their action turn
+        if (actor.isPlayer && actor.hp.current <= 0 && hasCondition(actor.conditions, 'Unconscious')) {
+            const result = DeathEngine.rollDeathSave(actor);
+            this.addCombatLog(result.message);
+            this.state.lastNarrative = result.message;
+
+            if (result.isDead) {
+                this.addCombatLog(`${actor.name} has died.`);
+            } else if (result.isRevived) {
+                this.addCombatLog(`${actor.name} miraculously regains consciousness!`);
+            }
+
+            await this.emitStateUpdate();
+            return true; // Skip this actor's turn (they can't take actions while unconscious)
+        }
+
         await this.emitStateUpdate();
+        return false;
     }
 
     public async applyCombatDamage(target: Combatant, damage: number) {
         if (damage <= 0) return;
         CombatResolutionEngine.applyDamage(target, damage);
+
+        // Check if target just dropped to 0 HP — trigger death save system for players
+        if (target.hp.current <= 0 && target.isPlayer && !hasCondition(target.conditions, 'Unconscious') && !hasCondition(target.conditions, 'Dead')) {
+            const downedMsg = DeathEngine.handleDowned(target);
+            this.addCombatLog(downedMsg);
+        }
 
         if (target.concentration && target.hp.current > 0) {
             const dc = Math.max(10, Math.floor(damage / 2));
@@ -479,7 +524,10 @@ export class CombatOrchestrator {
     private async checkCombatEnd(): Promise<boolean> {
         if (!this.state.combat) return false;
         const enemiesAlive = this.state.combat.combatants.some(c => c.type === 'enemy' && c.hp.current > 0);
-        const playersAlive = this.state.combat.combatants.some(c => c.type === 'player' && c.hp.current > 0);
+        // Players are "alive" if they have HP > 0 OR are unconscious but not dead (still making death saves)
+        const playersAlive = this.state.combat.combatants.some(c =>
+            c.type === 'player' && (c.hp.current > 0 || (c.hp.current <= 0 && !hasCondition(c.conditions, 'Dead')))
+        );
 
         if (!enemiesAlive || !playersAlive) {
             await this.endCombat(!enemiesAlive);
@@ -509,12 +557,12 @@ export class CombatOrchestrator {
                         if (char.spellSlots[lv]) char.spellSlots[lv].current = data.current;
                     });
                 }
-                // Sync persistent conditions (simplified string mapping)
+                // Sync persistent conditions from combat statusEffects to character conditions
                 const persistentIDs = ['poisoned', 'blinded', 'deafened', 'frightened', 'paralyzed', 'stunned'];
                 pcCombatant.statusEffects.forEach(effect => {
                     const id = effect.id.toLowerCase();
-                    if (persistentIDs.includes(id) && !char.conditions.includes(effect.name)) {
-                        char.conditions.push(effect.name);
+                    if (persistentIDs.includes(id) && !hasCondition(char.conditions, id)) {
+                        addCondition(char.conditions, id, effect.sourceId, effect.duration);
                     }
                 });
             }

@@ -47,7 +47,7 @@ export function renderCharacter(state: GameState): string {
 
     // Conditions
     if (c.conditions.length > 0) {
-        lines.push(`  Conditions: ${c.conditions.join(', ')}`);
+        lines.push(`  Conditions: ${c.conditions.map((cd: any) => cd.name || cd).join(', ')}`);
     }
 
     // Hit Dice

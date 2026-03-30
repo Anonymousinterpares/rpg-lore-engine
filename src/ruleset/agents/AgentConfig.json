@@ -3,7 +3,7 @@
         "id": "NARRATOR",
         "name": "The Narrator",
         "providerId": "openrouter",
-        "modelId": "openai/gpt-oss-120b",
+        "modelId": "gpt-oss-120b",
         "temperature": 0.8,
         "maxTokens": 1500
     },
@@ -11,7 +11,7 @@
         "id": "DIRECTOR",
         "name": "The Director",
         "providerId": "openrouter",
-        "modelId": "openai/gpt-oss-120b",
+        "modelId": "gpt-oss-120b",
         "temperature": 0.7,
         "maxTokens": 500
     },
@@ -19,7 +19,7 @@
         "id": "NPC_CONTROLLER",
         "name": "NPC Controller",
         "providerId": "openrouter",
-        "modelId": "openai/gpt-oss-120b",
+        "modelId": "gpt-oss-120b",
         "temperature": 0.9,
         "maxTokens": 800
     },
@@ -27,7 +27,7 @@
         "id": "LORE_KEEPER",
         "name": "Lore Keeper",
         "providerId": "openrouter",
-        "modelId": "openai/gpt-oss-120b",
+        "modelId": "gpt-oss-120b",
         "temperature": 0.7,
         "maxTokens": 2000
     }

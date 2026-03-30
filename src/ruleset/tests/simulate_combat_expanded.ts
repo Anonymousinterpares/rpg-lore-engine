@@ -81,11 +81,11 @@ function runExpandedCombatSimulation() {
     console.log('\n--- 2. Grappling & Shoving ---');
     hero.resources.actionSpent = false;
     console.log(StandardActions.grapple(hero, orc, 5, 3));
-    console.log(`Orc Grappled: ${orc.conditions.includes('Grappled')}`);
+    console.log(`Orc Grappled: ${orc.conditions.some((c: any) => c.id === 'Grappled')}`);
 
     hero.resources.actionSpent = false;
     console.log(StandardActions.shove(hero, orc, 5, 3, 'prone'));
-    console.log(`Orc Prone: ${orc.conditions.includes('Prone')}`);
+    console.log(`Orc Prone: ${orc.conditions.some((c: any) => c.id === 'Prone')}`);
 
     // 3. Ranged in Melee / Prone Disadvantage
     console.log('\n--- 3. Tactical Disadvantage ---');
@@ -113,7 +113,7 @@ function runExpandedCombatSimulation() {
         traits: [],
         actions: []
     });
-    goblin.conditions.push('Surprised');
+    goblin.conditions.push({ id: 'Surprised', name: 'Surprised', description: 'Caught off guard' });
 
     // Set initiative for order
     hero.initiative = 20;
@@ -130,7 +130,7 @@ function runExpandedCombatSimulation() {
     const gTurn = nextResult.combatant;
 
     console.log(`${gTurn.name} Action Spent: ${gTurn.resources.actionSpent} (Expected: true if surprised)`);
-    console.log(`${gTurn.name} Conditions: ${gTurn.conditions.join(', ')} (Expected: no Surprise)`);
+    console.log(`${gTurn.name} Conditions: ${gTurn.conditions.map((c: any) => c.name || c).join(', ')} (Expected: no Surprise)`);
 
     // 6. Stealth & Passive Perception
     console.log('\n--- 6. Stealth & Passive Perception ---');

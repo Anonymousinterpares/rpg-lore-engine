@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { AbilityScoreSchema, SkillNameSchema, CurrencySchema } from './BaseSchemas';
+import { CombatConditionSchema } from './CombatSchema';
 
 export const EquipmentSlotsSchema = z.object({
     head: z.string().optional(),
@@ -38,7 +39,7 @@ export const PlayerCharacterSchema = z.object({
     level: z.number().min(1).max(20),
     race: z.string(),
     class: z.string(),
-    conditions: z.array(z.string()).default([]),
+    conditions: z.array(CombatConditionSchema).default([]),
     stats: z.record(AbilityScoreSchema, z.number()),
     savingThrowProficiencies: z.array(AbilityScoreSchema).default([]),
     skillProficiencies: z.array(SkillNameSchema).default([]),

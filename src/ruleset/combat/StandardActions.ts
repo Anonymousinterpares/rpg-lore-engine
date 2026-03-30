@@ -1,6 +1,7 @@
 import { CombatEngine } from './CombatEngine';
 import { CombatantState } from './types';
 import { Dice } from './Dice';
+import { hasCondition, addCondition } from './ConditionUtils';
 
 export const StandardActions = {
     /**
@@ -13,19 +14,19 @@ export const StandardActions = {
         let advantage: 'none' | 'advantage' | 'disadvantage' = 'none';
 
         // Ranged in Melee rule
-        if (isRanged && !attacker.conditions.includes('CrossbowExpert')) {
+        if (isRanged && !hasCondition(attacker.conditions, 'CrossbowExpert')) {
             // For now, we assume if we are attacking in combat, enemies are close.
             // A more robust system would need coordinates/distance.
             // Heuristic: If target has reach 5 and we are in combat, we are "in melee".
             advantage = 'disadvantage';
         }
 
-        if (target.conditions.includes('Prone')) {
+        if (hasCondition(target.conditions, 'Prone')) {
             if (isRanged) advantage = 'disadvantage';
             else advantage = 'advantage';
         }
-        if (attacker.conditions.includes('Blinded')) advantage = 'disadvantage';
-        if (target.conditions.includes('Invisible')) advantage = 'disadvantage';
+        if (hasCondition(attacker.conditions, 'Blinded')) advantage = 'disadvantage';
+        if (hasCondition(target.conditions, 'Invisible')) advantage = 'disadvantage';
         if (combatantIsDodging(target)) advantage = 'disadvantage';
 
         const result = CombatEngine.resolveAttack(attacker, target, bonus, damage, dmgBonus, advantage);
@@ -38,7 +39,7 @@ export const StandardActions = {
      */
     dodge: (combatant: CombatantState) => {
         if (combatant.resources.actionSpent) return 'Action already spent.';
-        combatant.conditions.push('Dodging');
+        addCondition(combatant.conditions, 'Dodging', combatant.id, 1);
         combatant.resources.actionSpent = true;
         return `${combatant.name} takes a defensive stance, focusing on dodging incoming attacks.`;
     },
@@ -74,7 +75,7 @@ export const StandardActions = {
         attacker.resources.actionSpent = true;
 
         if (attackRoll >= defenseRoll) {
-            target.conditions.push('Grappled');
+            addCondition(target.conditions, 'Grappled', attacker.id);
             target.tactical.isGrappledBy = attacker.id;
             attacker.tactical.isGrappling = target.id;
             return `${attacker.name} successfully grapples ${target.name}! (${attackRoll} vs ${defenseRoll})`;
@@ -96,7 +97,7 @@ export const StandardActions = {
 
         if (attackRoll >= defenseRoll) {
             if (type === 'prone') {
-                target.conditions.push('Prone');
+                addCondition(target.conditions, 'Prone', attacker.id);
                 return `${attacker.name} shoves ${target.name} prone! (${attackRoll} vs ${defenseRoll})`;
             } else {
                 return `${attacker.name} shoves ${target.name} 5 feet away! (${attackRoll} vs ${defenseRoll})`;
@@ -147,5 +148,5 @@ export const StandardActions = {
 };
 
 function combatantIsDodging(c: CombatantState): boolean {
-    return c.conditions.includes('Dodging');
+    return hasCondition(c.conditions, 'Dodging');
 }

@@ -273,9 +273,9 @@ export class CombatManager {
         // START OF TURN HAZARD CHECK
         const hazardMsg = this.checkHazard(nextCombatant, nextCombatant.position);
 
-        // Handle Unconscious or dead
-        if (nextCombatant.hp.current <= 0) {
-            return (hazardMsg ? `[HAZARD] ${hazardMsg}\n` : '') + this.advanceTurn(); // Skip to next
+        // Handle dead enemies — skip their turn. Players at 0 HP get death saves via processStartOfTurn.
+        if (nextCombatant.hp.current <= 0 && !nextCombatant.isPlayer) {
+            return (hazardMsg ? `[HAZARD] ${hazardMsg}\n` : '') + this.advanceTurn();
         }
 
         return (hazardMsg ? `[HAZARD] ${nextCombatant.name} starts in danger! ${hazardMsg}\n` : '') +

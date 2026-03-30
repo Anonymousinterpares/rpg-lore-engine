@@ -16,6 +16,8 @@ export const CombatConditionSchema = z.object({
     sourceId: z.string().optional()
 });
 
+export type CombatCondition = z.infer<typeof CombatConditionSchema>;
+
 export const StatusEffectSchema = z.object({
     id: z.string(),
     name: z.string(),
@@ -72,8 +74,14 @@ export const CombatantSchema = z.object({
     resources: CombatantResourcesSchema.default({}),
     tactical: CombatantTacticalSchema.default({}),
 
+    // Death Saves (player only, tracks across turns)
+    deathSaves: z.object({
+        successes: z.number().default(0),
+        failures: z.number().default(0)
+    }).optional(),
+
     // Status & Concentration
-    conditions: z.array(z.string()).default([]),
+    conditions: z.array(CombatConditionSchema).default([]),
     statusEffects: z.array(StatusEffectSchema).default([]),
     concentration: z.object({
         spellName: z.string(),

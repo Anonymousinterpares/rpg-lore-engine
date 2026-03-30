@@ -1,4 +1,5 @@
 import { CombatantState } from './types';
+import { hasCondition, removeCondition } from './ConditionUtils';
 
 export class InitiativeTracker {
     private combatants: CombatantState[] = [];
@@ -32,7 +33,7 @@ export class InitiativeTracker {
         const current = this.combatants[this.currentIndex];
 
         // Handle Surprise
-        const isSurprised = current.conditions.includes('Surprised');
+        const isSurprised = hasCondition(current.conditions, 'Surprised');
 
         // Reset resources for the new turn
         current.resources = {
@@ -42,8 +43,7 @@ export class InitiativeTracker {
         };
 
         if (isSurprised) {
-            // Remove surprised condition after the turn "ends" (which is now)
-            current.conditions = current.conditions.filter(c => c !== 'Surprised');
+            removeCondition(current.conditions, 'Surprised');
         }
 
         return {
