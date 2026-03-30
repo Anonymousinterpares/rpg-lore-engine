@@ -20,12 +20,12 @@
   "skillChoices": {
     "count": 2,
     "options": [
-      "Skill: Animal Handling",
-      "Skill: Athletics",
-      "Skill: Intimidation",
-      "Skill: Nature",
-      "Skill: Perception",
-      "Skill: Survival"
+      "Animal Handling",
+      "Athletics",
+      "Intimidation",
+      "Nature",
+      "Perception",
+      "Survival"
     ]
   },
   "allFeatures": [

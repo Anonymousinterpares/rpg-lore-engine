@@ -19,13 +19,13 @@
   "skillChoices": {
     "count": 2,
     "options": [
-      "Skill: Arcana",
-      "Skill: History",
-      "Skill: Insight",
-      "Skill: Investigation",
-      "Skill: Medicine",
-      "Skill: Religion",
-      "Skill: Cartography"
+      "Arcana",
+      "History",
+      "Insight",
+      "Investigation",
+      "Medicine",
+      "Religion",
+      "Cartography"
     ]
   },
   "allFeatures": [

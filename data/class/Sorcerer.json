@@ -19,12 +19,12 @@
   "skillChoices": {
     "count": 2,
     "options": [
-      "Skill: Arcana",
-      "Skill: Deception",
-      "Skill: Insight",
-      "Skill: Intimidation",
-      "Skill: Persuasion",
-      "Skill: Religion"
+      "Arcana",
+      "Deception",
+      "Insight",
+      "Intimidation",
+      "Persuasion",
+      "Religion"
     ]
   },
   "allFeatures": [

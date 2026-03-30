@@ -21,18 +21,18 @@
   "skillChoices": {
     "count": 4,
     "options": [
-      "Skill: Acrobatics",
-      "Skill: Athletics",
-      "Skill: Deception",
-      "Skill: Insight",
-      "Skill: Intimidation",
-      "Skill: Investigation",
-      "Skill: Perception",
-      "Skill: Performance",
-      "Skill: Persuasion",
-      "Skill: Sleight of Hand",
-      "Skill: Stealth",
-      "Skill: Cartography"
+      "Acrobatics",
+      "Athletics",
+      "Deception",
+      "Insight",
+      "Intimidation",
+      "Investigation",
+      "Perception",
+      "Performance",
+      "Persuasion",
+      "Sleight of Hand",
+      "Stealth",
+      "Cartography"
     ]
   },
   "allFeatures": [

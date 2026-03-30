@@ -21,15 +21,15 @@
   "skillChoices": {
     "count": 3,
     "options": [
-      "Skill: Animal Handling",
-      "Skill: Athletics",
-      "Skill: Insight",
-      "Skill: Investigation",
-      "Skill: Nature",
-      "Skill: Perception",
-      "Skill: Stealth",
-      "Skill: Survival",
-      "Skill: Cartography"
+      "Animal Handling",
+      "Athletics",
+      "Insight",
+      "Investigation",
+      "Nature",
+      "Perception",
+      "Stealth",
+      "Survival",
+      "Cartography"
     ]
   },
   "allFeatures": [

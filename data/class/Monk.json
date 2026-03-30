@@ -17,12 +17,12 @@
   "skillChoices": {
     "count": 2,
     "options": [
-      "Skill: Acrobatics",
-      "Skill: Athletics",
-      "Skill: History",
-      "Skill: Insight",
-      "Skill: Religion",
-      "Skill: Stealth"
+      "Acrobatics",
+      "Athletics",
+      "History",
+      "Insight",
+      "Religion",
+      "Stealth"
     ]
   },
   "allFeatures": [

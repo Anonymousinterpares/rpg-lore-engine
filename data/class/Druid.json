@@ -28,14 +28,14 @@
   "skillChoices": {
     "count": 2,
     "options": [
-      "Skill: Animal Handling",
-      "Skill: Arcana",
-      "Skill: Insight",
-      "Skill: Medicine",
-      "Skill: Nature",
-      "Skill: Perception",
-      "Skill: Religion",
-      "Skill: Survival"
+      "Animal Handling",
+      "Arcana",
+      "Insight",
+      "Medicine",
+      "Nature",
+      "Perception",
+      "Religion",
+      "Survival"
     ]
   },
   "allFeatures": [
