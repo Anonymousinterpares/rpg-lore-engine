@@ -2397,3 +2397,47 @@ Respond in character, using first-person perspective.
 
 ### C. Logic Separation
 *   Ensure the engine does not perform Disk I/O during initialization if a storage provider is not ready.
+
+---
+
+## 24. Amendments Log (CLI Audit — 2026-03-30)
+
+> Discovered and fixed during comprehensive CLI-based integration testing.
+
+### A. Bugs Found & Fixed
+
+| ID | Severity | Description | File | Fix |
+|----|----------|-------------|------|-----|
+| BUG-001 | **HIGH** | `/rest short` and `/rest long` produce NaN (parseInt('short') = NaN), silently failing with zero recovery | `GameLoop.ts:698` | Map 'short'→60, 'long'→480 before parseInt |
+| BUG-002 | **HIGH** | Concentration check ignores CON modifier (`Dice.d20() + 0` hardcoded) | `SpellcastingEngine.ts:63` | Added `MechanicsEngine.getModifier(caster.stats.CON)` |
+| BUG-003 | **MEDIUM** | `/cast` without arguments crashes (undefined spellName passed to SpellManager) | `GameLoop.ts:717` | Added guard: return usage string if `!args[0]` |
+| BUG-004 | **LOW** | Travel animation `await setTimeout()` blocks CLI REPL for seconds | `GameLoop.ts:469,636` | Skip delay when `typeof window === 'undefined'` |
+
+### B. CLI Infrastructure Added
+
+| Item | Description |
+|------|-------------|
+| `.env` loading | `cli/bootstrap.ts` now reads `.env` from project root and sets `process.env` — enables LLM API keys without dotenv dependency |
+| `/inventory` command | Wired to `InventoryRenderer.renderInventory()` |
+| `/quests` command | Wired to `QuestRenderer.renderQuests()` |
+| `/map [radius]` command | Wired to `MapRenderer.renderMap()` (default radius 3) |
+| `/spells` command | Wired to `SpellHandler.renderSpells()` |
+| `/equipment` command | Wired to `EquipmentHandler.renderPaperdoll()` |
+| `/npcs` command | Lists NPCs in current hex from `state.worldNpcs` |
+| `/codex` command | Displays discovered lore entries |
+| `/history` command | Shows last 10 conversation turns |
+| `/unequip <slot>` command | Wired to `InventoryManager.unequipFromSlot()` via GameLoop |
+| Help menu | Expanded to show all new commands grouped by category |
+| Integration test | `cli/test_integration.ts` — 44 assertions covering character creation, renderers, movement, rest, wait, combat, narrative, edge cases, save/load |
+
+### C. Outstanding Issues (Not Yet Fixed)
+
+| ID | Severity | Description |
+|----|----------|-------------|
+| GAP-001 | **MEDIUM** | Death save state not tracked on CombatantSchema (`deathSaves: { successes, failures }` missing) |
+| GAP-002 | **MEDIUM** | Condition durations never expire (conditions are `string[]` with no timer) |
+| GAP-003 | **LOW** | No `/levelup` CLI command (LevelingEngine exists but not wired to any command) |
+| GAP-004 | **LOW** | NPC dialogue requires LLM — no fallback if API is down |
+| GAP-005 | **LOW** | `/survey` uses full ability score instead of modifier in check formula |
+| GAP-006 | **LOW** | No reaction economy (Shield, Counterspell) beyond opportunity attacks |
+| GAP-007 | **LOW** | No cover system, flanking, or ranged-in-melee disadvantage (Phase 13 items) |

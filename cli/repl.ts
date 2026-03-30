@@ -14,6 +14,11 @@ import { FileStorageProvider } from '../src/ruleset/combat/FileStorageProvider';
 import { GameState } from '../src/ruleset/schemas/FullSaveStateSchema';
 import { runCreationWizard, createQuickCharacter } from './creation';
 import { CLI_CONFIG } from './CLIConfig';
+import { renderInventory } from './renderer/InventoryRenderer';
+import { renderQuests } from './renderer/QuestRenderer';
+import { renderMap } from './renderer/MapRenderer';
+import { renderSpells } from './systems/SpellHandler';
+import { renderPaperdoll } from './systems/EquipmentHandler';
 
 let projectRoot: string;
 let gameLoop: GameLoop | null = null;
@@ -52,10 +57,21 @@ function showHelp() {
 ║  /talk <npc>    — Talk to NPC                 ║
 ║  /trade <npc>   — Trade with NPC              ║
 ║                                               ║
-║ INVENTORY                                     ║
+║ INVENTORY & EQUIPMENT                         ║
+║  /inventory     — Full inventory list         ║
+║  /equipment     — Show equipped gear          ║
 ║  /item_pickup <id> — Pick up item             ║
 ║  /item_drop <id>   — Drop item                ║
 ║  /item_equip <id>  — Equip item               ║
+║                                               ║
+║ INFO                                          ║
+║  /status        — Full character stats        ║
+║  /spells        — Spell slots & known spells  ║
+║  /quests        — Active & completed quests   ║
+║  /map [radius]  — ASCII hex map               ║
+║  /npcs          — NPCs in current area        ║
+║  /codex         — Discovered lore entries     ║
+║  /history       — Recent conversation log     ║
 ║                                               ║
 ║ COMBAT                                        ║
 ║  attack / dodge / dash / hide / end turn      ║
@@ -63,8 +79,7 @@ function showHelp() {
 ║  /move <x> <y> [pace]                         ║
 ║  /combat <enemy> <count> — Start combat (dev) ║
 ║                                               ║
-║ CLI                                           ║
-║  /status        — Full character status        ║
+║ SYSTEM                                        ║
 ║  /save [name]   — Save game                   ║
 ║  /quit          — Exit game                   ║
 ║  /help          — Show this help              ║
@@ -196,6 +211,80 @@ async function gameREPL(rl: readline.Interface, initialState: GameState) {
         if (trimmed.startsWith('/save')) {
             const name = trimmed.slice(5).trim() || undefined;
             await saveGame(name);
+            continue;
+        }
+
+        if (trimmed === '/inventory' || trimmed === '/inv') {
+            console.log(renderInventory(gameLoop.getState()));
+            continue;
+        }
+
+        if (trimmed === '/quests' || trimmed === '/quest') {
+            console.log(renderQuests(gameLoop.getState()));
+            continue;
+        }
+
+        if (trimmed.startsWith('/map')) {
+            const radiusArg = trimmed.slice(4).trim();
+            const radius = radiusArg ? parseInt(radiusArg) || 3 : 3;
+            console.log(renderMap(gameLoop.getState(), radius));
+            continue;
+        }
+
+        if (trimmed === '/spells') {
+            console.log(renderSpells(gameLoop.getState()));
+            continue;
+        }
+
+        if (trimmed === '/equipment' || trimmed === '/paperdoll' || trimmed === '/equip') {
+            console.log(renderPaperdoll(gameLoop.getState()));
+            continue;
+        }
+
+        if (trimmed === '/npcs') {
+            const s = gameLoop.getState();
+            const hexId = s.location.hexId;
+            const hex = s.worldMap?.hexes?.[hexId];
+            const npcIds: string[] = hex?.npcs || [];
+            const npcs = (s.worldNpcs || []).filter((n: any) => npcIds.includes(n.id));
+            if (npcs.length === 0) {
+                console.log('  No NPCs in this area.');
+            } else {
+                console.log('\n  === NPCs Here ===');
+                for (const npc of npcs) {
+                    const role = npc.isMerchant ? '[Merchant]' : '[NPC]';
+                    console.log(`  ${role} ${npc.name} (${npc.id})`);
+                }
+            }
+            continue;
+        }
+
+        if (trimmed === '/codex' || trimmed === '/lore') {
+            const entries = gameLoop.getState().codexEntries || [];
+            if (entries.length === 0) {
+                console.log('  No lore entries discovered yet.');
+            } else {
+                console.log('\n  === Codex ===');
+                for (const entry of entries) {
+                    console.log(`  [${entry.category}] ${entry.title}`);
+                }
+            }
+            continue;
+        }
+
+        if (trimmed === '/history') {
+            const history = gameLoop.getState().conversationHistory || [];
+            const recent = history.slice(-10);
+            if (recent.length === 0) {
+                console.log('  No conversation history.');
+            } else {
+                console.log('\n  === Recent History ===');
+                for (const turn of recent) {
+                    const tag = turn.role === 'user' ? 'YOU' : turn.role.toUpperCase();
+                    const text = turn.content.length > 120 ? turn.content.slice(0, 120) + '...' : turn.content;
+                    console.log(`  [${tag}] ${text}`);
+                }
+            }
             continue;
         }
 

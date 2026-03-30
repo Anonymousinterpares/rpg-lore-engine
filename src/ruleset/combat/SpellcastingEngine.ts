@@ -1,6 +1,7 @@
 import { CombatantState } from './types';
 import { Spell } from '../schemas/SpellSchema';
 import { Dice } from './Dice';
+import { MechanicsEngine } from './MechanicsEngine';
 
 export class SpellcastingEngine {
     /**
@@ -60,7 +61,8 @@ export class SpellcastingEngine {
         if (!caster.concentration) return true;
 
         const dc = Math.max(10, Math.floor(damage / 2));
-        const roll = Dice.d20() + 0; // Should add CON mod
+        const conMod = MechanicsEngine.getModifier(caster.stats?.CON ?? 10);
+        const roll = Dice.d20() + conMod;
 
         if (roll < dc) {
             caster.concentration = undefined;

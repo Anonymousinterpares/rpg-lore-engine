@@ -1,0 +1,24 @@
+{
+  "slots": [
+    {
+      "id": "66cf9381-2bc2-4dc4-abd0-6a70cbb38aa0",
+      "slotName": "integration_test",
+      "characterName": "TestHero",
+      "characterLevel": 1,
+      "characterClass": "Fighter",
+      "lastSaved": "2026-03-30T19:30:34.599Z",
+      "playTimeSeconds": 0,
+      "locationSummary": "0,1"
+    },
+    {
+      "id": "e6f22a6a-3f90-426d-a53d-0f29b2c7378e",
+      "slotName": "integration_test",
+      "characterName": "TestHero",
+      "characterLevel": 1,
+      "characterClass": "Fighter",
+      "lastSaved": "2026-03-30T19:31:41.947Z",
+      "playTimeSeconds": 0,
+      "locationSummary": "0,1"
+    }
+  ]
+}

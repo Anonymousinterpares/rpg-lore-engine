@@ -465,8 +465,10 @@ export class GameLoop {
                 // Notify UI of start
                 await this.emitStateUpdate();
 
-                // Wait for animation
-                await new Promise(resolve => setTimeout(resolve, durationMs));
+                // Wait for animation (skip in CLI/Node mode)
+                if (typeof window !== 'undefined') {
+                    await new Promise(resolve => setTimeout(resolve, durationMs));
+                }
 
                 // Arrived
                 this.state.location.previousPreviousCoordinates = this.state.location.previousCoordinates;
@@ -632,8 +634,10 @@ export class GameLoop {
                 };
                 await this.emitStateUpdate();
 
-                // 2. Wait for animation
-                await new Promise(resolve => setTimeout(resolve, durationMsMT));
+                // 2. Wait for animation (skip in CLI/Node mode)
+                if (typeof window !== 'undefined') {
+                    await new Promise(resolve => setTimeout(resolve, durationMsMT));
+                }
 
                 // 3. Finalize Movement
                 this.state.location.previousPreviousCoordinates = this.state.location.previousCoordinates;
@@ -685,6 +689,10 @@ export class GameLoop {
             case 'item_equip':
                 return await this.inventory.equipItem(args[0]);
 
+            case 'unequip':
+                if (!args[0]) return "Usage: /unequip <slot> (e.g., mainHand, armor, head)";
+                return await this.inventory.unequipFromSlot(args[0]);
+
             case 'wait': {
                 const minutes = parseInt(args[0] || '60');
                 const waitEnc = await this.time.advanceTimeAndProcess(minutes);
@@ -695,16 +703,19 @@ export class GameLoop {
                 return `You wait for ${minutes} minutes.`;
             }
 
-            case 'rest':
-                const duration = parseInt(args[0] || '480');
+            case 'rest': {
+                const restArg = (args[0] || '480').toLowerCase();
+                const duration = restArg === 'short' ? 60 : restArg === 'long' ? 480 : parseInt(restArg) || 480;
                 const restEnc = await this.time.advanceTimeAndProcess(duration, true);
                 if (restEnc) {
                     await this.initializeCombat(restEnc);
                     return "Your rest is interrupted by an attack!";
                 }
                 return this.time.completeRest(duration);
+            }
 
             case 'cast':
+                if (!args[0]) return "Usage: /cast <spell name> [target]";
                 return await this.spells.castSpell(args[0], args[1]);
 
             case 'pace':

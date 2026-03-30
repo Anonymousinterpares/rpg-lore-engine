@@ -2,7 +2,16 @@
   "permissions": {
     "allow": [
       "Bash(grep -r \"sex\\\\|gender\\\\|male\\\\|female\" /d/coding/rpg_NEW/src/ruleset/schemas/ --include=*.ts)",
-      "Bash(grep -E \"\\\\.css$\")"
+      "Bash(grep -E \"\\\\.css$\")",
+      "Bash(npx tsx:*)",
+      "Bash(grep -rn \"parseInt.*args\\\\|parseFloat.*args\\\\|Number\\(.*args\" \"E:\\\\AI\\\\AI\\\\projects\\\\RPG New\\\\rpg-lore-engine\\\\src\\\\ruleset\\\\combat\"\" --include=\"*.ts \")",
+      "Bash(done)",
+      "Bash(find 'E:/AI/AI/projects/RPG New/rpg-lore-engine' -maxdepth 3 -type f \\\\\\(-name main.ts -o -name index.ts -o -name cli.ts -o -name terminal.ts -o -name *.tsx -o -name package.json \\\\\\))",
+      "Bash(grep -E \"\\\\.ts$|\\\\.js$|\\\\.tsx$|\\\\.jsx$\")",
+      "Bash(/tmp/engine_summary.txt:*)",
+      "Read(//tmp/**)",
+      "Bash(npx tsx --eval \":*)",
+      "Bash(cd:*)"
     ]
   }
 }
