@@ -103,6 +103,7 @@ export class CharacterCreationEngine {
         // 5. Build the character object
         const pc: PlayerCharacter = {
             name: request.name,
+            sex: (request as any).sex || 'male',
             level: 1,
             race: request.race.name,
             class: request.className,

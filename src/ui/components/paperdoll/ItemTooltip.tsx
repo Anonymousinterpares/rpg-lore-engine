@@ -115,11 +115,52 @@ const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, anchorRect, visible }) 
                 )}
             </div>
 
+            {/* Forge Modifiers */}
+            {item.modifiers && item.modifiers.length > 0 && (
+                <>
+                    <div className={styles.divider} />
+                    <div className={styles.stats}>
+                        {item.modifiers.map((mod, i) => (
+                            <div key={i} className={styles.statRow}>
+                                <span className={styles.statLabel} style={{ color: '#7dd3fc' }}>
+                                    {mod.type === 'HitBonus' ? 'Hit Bonus:' :
+                                     mod.type === 'ACBonus' ? 'AC Bonus:' :
+                                     mod.type === 'DamageAdd' ? `${mod.target} Damage:` :
+                                     mod.type === 'StatBonus' ? `${mod.target}:` :
+                                     mod.type === 'SaveBonus' ? `${mod.target} Save:` :
+                                     mod.type === 'DamageResistance' ? `${mod.target} Resistance:` :
+                                     `${mod.type}:`}
+                                </span>
+                                <span className={styles.statValue} style={{ color: '#7dd3fc' }}>+{mod.value}</span>
+                            </div>
+                        ))}
+                    </div>
+                </>
+            )}
+
+            {/* Magical Properties */}
+            {item.magicalProperties && item.magicalProperties.length > 0 && (
+                <>
+                    <div className={styles.divider} />
+                    {item.magicalProperties.map((mp, i) => (
+                        <p key={i} className={styles.description} style={{ color: '#c4b5fd' }}>
+                            {mp.description || `${mp.dice || ''} ${mp.element || ''} ${mp.type}`.trim()}
+                        </p>
+                    ))}
+                </>
+            )}
+
             {item.description && (
                 <>
                     <div className={styles.divider} />
                     <p className={styles.description}>{item.description}</p>
                 </>
+            )}
+
+            {item.forgeSource && (
+                <p className={styles.description} style={{ color: '#888', fontSize: '0.75rem' }}>
+                    Source: {item.forgeSource}
+                </p>
             )}
         </div>
     );

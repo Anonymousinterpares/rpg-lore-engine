@@ -94,6 +94,17 @@ export class ItemForgeEngine {
     /**
      * Generate a default name for the item (without LLM).
      */
+    /**
+     * Returns a display-friendly base name (e.g., "Padded" → "Padded Armor").
+     */
+    static normalizeBaseName(name: string, type: string): string {
+        if (type !== 'Armor' && type !== 'Shield') return name;
+        // Already descriptive names — don't append
+        const descriptive = ['mail', 'plate', 'shirt', 'splint', 'shield', 'breastplate'];
+        if (descriptive.some(d => name.toLowerCase().includes(d))) return name;
+        return `${name} Armor`;
+    }
+
     static generateDefaultName(baseName: string, rarity: Rarity, hitBonus: number, magicalProps: MagicalProperty[]): string {
         const parts: string[] = [];
 
@@ -182,7 +193,8 @@ export class ItemForgeEngine {
             }
         }
 
-        const name = this.generateDefaultName(base.name, rarity, acBonus, magicalProperties);
+        const displayBase = this.normalizeBaseName(base.name, base.type);
+        const name = this.generateDefaultName(displayBase, rarity, acBonus, magicalProperties);
         const goldValue = (base.cost?.gp || 0) * RARITY_VALUE_MULTIPLIER[rarity];
 
         return {

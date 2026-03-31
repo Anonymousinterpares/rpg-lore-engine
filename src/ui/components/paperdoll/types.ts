@@ -24,6 +24,12 @@ export interface PaperdollItem {
     isMagic?: boolean;
     attunement?: boolean;
     charges?: number;
+    // Forge fields
+    modifiers?: { type: string; target: string; value: number }[];
+    magicalProperties?: { type: string; element?: string; value?: number; dice?: string; spellName?: string; maxCharges?: number; description?: string }[];
+    isForged?: boolean;
+    forgeSource?: string;
+    itemLevel?: number;
 }
 
 export type SlotId =

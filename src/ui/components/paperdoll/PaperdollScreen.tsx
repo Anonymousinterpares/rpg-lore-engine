@@ -10,34 +10,53 @@ import { DataManager } from '../../../ruleset/data/DataManager';
  * Convert a flat inventory item from game state into a PaperdollItem.
  * Enriches with data from DataManager where available.
  */
+/**
+ * Normalizes rarity from schema format to CSS format.
+ * "Very Rare" → "very-rare", "Common" → "common"
+ */
+function normalizeRarity(rarity?: string): PaperdollItem['rarity'] {
+    if (!rarity) return undefined;
+    return rarity.toLowerCase().replace(' ', '-') as PaperdollItem['rarity'];
+}
+
 function mapToPaperdollItem(item: any): PaperdollItem {
     const enriched = DataManager.getItem(item.name || item.id);
+    // For forged items, inventory data takes priority over DataManager template
+    const src = item.isForged ? { ...enriched, ...item } : { ...item };
+    const base = enriched || {};
 
     return {
         id: item.id || item.name,
         instanceId: item.instanceId || '',
         name: item.name,
-        type: (item.type || enriched?.type || 'Misc') as ItemType,
-        weight: item.weight ?? enriched?.weight ?? 0,
+        type: (item.type || (base as any)?.type || 'Misc') as ItemType,
+        weight: item.weight ?? (base as any)?.weight ?? 0,
         quantity: item.quantity ?? 1,
         equipped: item.equipped ?? false,
-        description: enriched?.description,
-        isMagic: (enriched as any)?.isMagic,
-        charges: item.charges ?? (enriched as any)?.charges,
-        // Weapon fields
-        damage: (enriched as any)?.damage ? {
-            dice: typeof (enriched as any).damage.dice === 'string'
-                ? (enriched as any).damage.dice
-                : `${(enriched as any).damage.dice.count}d${(enriched as any).damage.dice.sides}`,
-            type: (enriched as any).damage.type,
+        description: item.description || (base as any)?.description,
+        isMagic: src.isMagic ?? (base as any)?.isMagic ?? false,
+        charges: item.charges ?? (base as any)?.charges,
+        rarity: normalizeRarity(item.rarity || (base as any)?.rarity),
+        // Weapon fields (forged items carry these directly)
+        damage: src.damage ? {
+            dice: typeof src.damage.dice === 'string'
+                ? src.damage.dice
+                : `${src.damage.dice.count}d${src.damage.dice.sides}`,
+            type: src.damage.type,
         } : undefined,
-        properties: (enriched as any)?.properties,
-        range: (enriched as any)?.range,
+        properties: src.properties || (base as any)?.properties,
+        range: src.range || (base as any)?.range,
         // Armor fields
-        acBonus: (enriched as any)?.acBonus,
-        acCalculated: (enriched as any)?.acCalculated,
-        strengthReq: (enriched as any)?.strengthReq,
-        stealthDisadvantage: (enriched as any)?.stealthDisadvantage,
+        acBonus: src.acBonus ?? (base as any)?.acBonus,
+        acCalculated: src.acCalculated ?? (base as any)?.acCalculated,
+        strengthReq: src.strengthReq ?? (base as any)?.strengthReq,
+        stealthDisadvantage: src.stealthDisadvantage ?? (base as any)?.stealthDisadvantage,
+        // Forge fields
+        modifiers: item.modifiers || (base as any)?.modifiers || [],
+        magicalProperties: item.magicalProperties || (base as any)?.magicalProperties || [],
+        isForged: item.isForged || false,
+        forgeSource: item.forgeSource,
+        itemLevel: item.itemLevel,
     };
 }
 
@@ -46,13 +65,17 @@ const PaperdollScreen: React.FC = () => {
 
     const sex = (state?.character as any)?.sex || 'male';
 
+    // Derive a change key so useMemo invalidates on equip/unequip
+    const equipKey = JSON.stringify(state?.character?.equipmentSlots);
+    const invKey = state?.character?.inventory?.items?.map(i => `${i.instanceId}:${i.equipped}`).join(',');
+
     // Map inventory items to PaperdollItems (unequipped only for the bag)
     const inventoryItems = useMemo(() => {
         if (!state?.character?.inventory?.items) return [];
         return state.character.inventory.items
             .filter(item => !item.equipped)
             .map(mapToPaperdollItem);
-    }, [state?.character?.inventory?.items]);
+    }, [invKey]);
 
     // Build equipped slots from character's equipmentSlots
     const equippedSlots = useMemo<EquippedSlots>(() => {
@@ -75,7 +98,7 @@ const PaperdollScreen: React.FC = () => {
         }
 
         return result;
-    }, [state?.character?.equipmentSlots, state?.character?.inventory?.items]);
+    }, [equipKey, invKey]);
 
     const gold = useMemo(() => {
         if (!state?.character?.inventory?.gold) return { gp: 0, sp: 0, cp: 0 };

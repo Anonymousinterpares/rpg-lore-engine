@@ -131,10 +131,27 @@ const DroppedItemsPanel: React.FC<DroppedItemsPanelProps> = ({
             >
                 {items.map((item) => {
                     const id = item.instanceId || item.id;
+                    const rarity = ((item as any).rarity || '').toLowerCase().replace(' ', '-');
+                    const rarityBg: Record<string, string> = {
+                        uncommon: 'rgba(30, 255, 0, 0.12)',
+                        rare: 'rgba(0, 112, 221, 0.15)',
+                        'very-rare': 'rgba(163, 53, 238, 0.15)',
+                        legendary: 'rgba(255, 128, 0, 0.18)',
+                    };
+                    const rarityBorder: Record<string, string> = {
+                        uncommon: '#1eff00',
+                        rare: '#0070dd',
+                        'very-rare': '#a335ee',
+                        legendary: '#ff8000',
+                    };
                     return (
                         <div
                             key={id}
                             className={`${styles.itemSlot} ${selectedIds.has(id) ? styles.selected : ''}`}
+                            style={{
+                                ...(rarityBg[rarity] ? { background: rarityBg[rarity] } : {}),
+                                ...(rarityBorder[rarity] ? { borderColor: rarityBorder[rarity] } : {}),
+                            }}
                             onClick={(e) => handleItemClick(e, item)}
                             onContextMenu={(e) => handleContextMenu(e, item)}
                             title={`${item.name} (${item.weight} lb)`}

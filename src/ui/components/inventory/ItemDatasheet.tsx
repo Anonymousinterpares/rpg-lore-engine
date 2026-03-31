@@ -16,6 +16,13 @@ interface Item {
     ac?: number;
     properties?: string[];
     range?: { normal: number, long?: number };
+    // Forge fields
+    rarity?: string;
+    modifiers?: { type: string; target: string; value: number }[];
+    magicalProperties?: { type: string; element?: string; value?: number; dice?: string; spellName?: string; maxCharges?: number; description?: string }[];
+    isForged?: boolean;
+    forgeSource?: string;
+    isMagic?: boolean;
 }
 
 interface ItemDatasheetProps {
@@ -45,8 +52,22 @@ const ItemDatasheet: React.FC<ItemDatasheetProps> = ({ item, onClose }) => {
                 </button>
 
                 <div className={styles.header}>
-                    <h2 className={styles.name}>{item.name}</h2>
-                    <div className={styles.type}>{item.type}</div>
+                    <h2 className={styles.name} style={item.rarity ? { color: ({
+                        'Common': '#c8c8c8', 'Uncommon': '#1eff00', 'Rare': '#0070dd',
+                        'Very Rare': '#a335ee', 'Legendary': '#ff8000',
+                    } as any)[item.rarity] || '#c8c8c8' } : undefined}>{item.name}</h2>
+                    <div className={styles.type}>
+                        {item.type}
+                        {item.rarity && item.rarity !== 'Common' && (
+                            <span style={{ marginLeft: 8, color: ({
+                                'Uncommon': '#1eff00', 'Rare': '#0070dd',
+                                'Very Rare': '#a335ee', 'Legendary': '#ff8000',
+                            } as any)[item.rarity], fontWeight: 600 }}>
+                                {item.rarity}
+                            </span>
+                        )}
+                        {item.isMagic && <span style={{ marginLeft: 8, color: '#c4b5fd' }}>Magic</span>}
+                    </div>
                 </div>
 
                 <div className={styles.infoGrid}>
@@ -98,11 +119,47 @@ const ItemDatasheet: React.FC<ItemDatasheetProps> = ({ item, onClose }) => {
                         </div>
                     )}
 
+                    {/* Forge Modifiers */}
+                    {item.modifiers && item.modifiers.length > 0 && (
+                        <div className={styles.statsSection}>
+                            {item.modifiers.map((mod, i) => (
+                                <div key={i} className={styles.statLine} style={{ color: '#7dd3fc' }}>
+                                    <strong>
+                                        {mod.type === 'HitBonus' ? 'Hit Bonus' :
+                                         mod.type === 'ACBonus' ? 'AC Bonus' :
+                                         mod.type === 'DamageAdd' ? `${mod.target} Damage` :
+                                         mod.type === 'StatBonus' ? mod.target :
+                                         mod.type === 'SaveBonus' ? `${mod.target} Save` :
+                                         mod.type === 'DamageResistance' ? `${mod.target} Resistance` :
+                                         mod.type}:
+                                    </strong> +{mod.value}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Magical Properties */}
+                    {item.magicalProperties && item.magicalProperties.length > 0 && (
+                        <div className={styles.statsSection}>
+                            {item.magicalProperties.map((mp, i) => (
+                                <div key={i} className={styles.statLine} style={{ color: '#c4b5fd' }}>
+                                    {mp.description || `${mp.dice || ''} ${mp.element || ''} ${mp.type}`.trim()}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
                     <div className={styles.divider} />
 
                     <div className={styles.description}>
                         {item.description || "No description available."}
                     </div>
+
+                    {item.forgeSource && (
+                        <div style={{ color: '#888', fontSize: '0.75rem', marginTop: 8, fontStyle: 'italic' }}>
+                            Source: {item.forgeSource}
+                        </div>
+                    )}
                 </div>
 
                 <div className={styles.footer}>

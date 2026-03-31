@@ -979,9 +979,11 @@ export class GameLoop {
             case 'skillcheck': {
                 if (!args[0] || !args[1]) return "Usage: /check <ability> <skill> [dc]\nExample: /check DEX Stealth 15";
                 const ability = args[0].toUpperCase();
+                const validAbilities = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
+                if (!validAbilities.includes(ability)) return "Invalid ability. Use: STR, DEX, CON, INT, WIS, CHA";
                 const skill = args[1];
                 const dc = parseInt(args[2] || '10');
-                const result = MechanicsEngine.resolveCheck(this.state.character, ability, skill, dc);
+                const result = MechanicsEngine.resolveCheck(this.state.character, ability as any, skill as any, dc);
                 await this.emitStateUpdate();
                 return result.message;
             }
@@ -1000,7 +1002,7 @@ export class GameLoop {
             case 'weather': {
                 const w = this.state.weather;
                 if (!w) return "No weather data.";
-                return `Weather: ${w.type} (${w.durationMinutes} min remaining). ${w.description || ''}`;
+                return `Weather: ${w.type} (${w.durationMinutes} min remaining). Intensity: ${w.intensity}`;
             }
 
             // ===== MULTICLASS =====

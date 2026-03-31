@@ -109,6 +109,7 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
 
         if (action === 'info') {
             const fullData = DataManager.getItem(item.id);
+            // Inventory item fields take priority over DataManager template (for forged items)
             setDatasheetItem({ ...fullData, ...item });
         } else if (onItemAction) {
             onItemAction(action, item);
@@ -168,10 +169,27 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                     }
                 }}
             >
-                {items.map((item) => (
-                    <div
+                {items.map((item) => {
+                    const rarity = ((item as any).rarity || '').toLowerCase().replace(' ', '-');
+                    const rarityBg: Record<string, string> = {
+                        uncommon: 'rgba(30, 255, 0, 0.12)',
+                        rare: 'rgba(0, 112, 221, 0.15)',
+                        'very-rare': 'rgba(163, 53, 238, 0.15)',
+                        legendary: 'rgba(255, 128, 0, 0.18)',
+                    };
+                    const rarityBorder: Record<string, string> = {
+                        uncommon: '#1eff00',
+                        rare: '#0070dd',
+                        'very-rare': '#a335ee',
+                        legendary: '#ff8000',
+                    };
+                    return <div
                         key={item.instanceId || item.id}
                         className={`${styles.itemSlot} ${item.equipped ? styles.equipped : ''}`}
+                        style={{
+                            ...(rarityBg[rarity] ? { background: rarityBg[rarity] } : {}),
+                            ...(rarityBorder[rarity] ? { borderColor: rarityBorder[rarity] } : {}),
+                        }}
                         onClick={() => onItemClick?.(item)}
                         onContextMenu={(e) => handleContextMenu(e, item)}
                         title={`${item.name} (${item.type})`}
@@ -186,8 +204,8 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                         </div>
                         {item.quantity > 1 && <span className={styles.quantity}>{item.quantity}</span>}
                         {item.equipped && <div className={styles.equippedBadge}>E</div>}
-                    </div>
-                ))}
+                    </div>;
+                })}
                 {/* Fill empty slots */}
                 {[...Array(Math.max(0, maxSlots - items.length))].map((_, i) => (
                     <div key={`empty-${i}`} className={styles.emptySlot} />
