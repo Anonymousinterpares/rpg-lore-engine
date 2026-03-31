@@ -81,7 +81,7 @@ export const PlayerCharacterSchema = z.object({
             quantity: z.number().default(1),
             charges: z.number().optional(),
             equipped: z.boolean().default(false)
-        })).default([])
+        }).passthrough()).default([])
     }).default({}),
     equipmentSlots: EquipmentSlotsSchema,
     attunedItems: z.array(z.string()).default([]),

@@ -63,7 +63,7 @@ export const FullSaveStateSchema = z.object({
             weight: z.number(),
             charges: z.number().optional(),
             instanceId: z.string()
-        })).optional().default([]),
+        }).passthrough()).optional().default([]),
         combatLoot: z.array(z.object({
             id: z.string(),
             name: z.string(),
@@ -72,7 +72,7 @@ export const FullSaveStateSchema = z.object({
             weight: z.number(),
             charges: z.number().optional(),
             instanceId: z.string()
-        })).optional().default([]),
+        }).passthrough()).optional().default([]),
         travelAnimation: z.object({
             startCoordinates: z.tuple([z.number(), z.number()]),
             targetCoordinates: z.tuple([z.number(), z.number()]),
