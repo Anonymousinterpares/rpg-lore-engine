@@ -145,9 +145,12 @@ export class EquipmentEngine {
         let shieldBonus = 0;
 
         // 1. Check Armor Slot
-        const armorItemName = (pc.equipmentSlots as any).armor;
-        if (armorItemName) {
-            const normalizedName = armorItemName.toLowerCase().replace(/_/g, ' ');
+        const armorSlotValue = (pc.equipmentSlots as any).armor;
+        if (armorSlotValue) {
+            // Resolve: slot may contain instanceId or item name
+            const armorInInventory = pc.inventory.items.find(i => i.instanceId === armorSlotValue);
+            const armorName = armorInInventory?.id || armorInInventory?.name || armorSlotValue;
+            const normalizedName = armorName.toLowerCase().replace(/_/g, ' ');
             const armorData = this.ARMOR_TABLE[normalizedName];
 
             if (armorData) {
@@ -159,15 +162,33 @@ export class EquipmentEngine {
         }
 
         // 2. Check for Shield in either hand
-        const mainHandItem = (pc.equipmentSlots as any).mainHand;
-        const offHandItem = (pc.equipmentSlots as any).offHand;
+        const mainHandSlot = (pc.equipmentSlots as any).mainHand;
+        const offHandSlot = (pc.equipmentSlots as any).offHand;
+
+        const resolveSlotName = (slotValue?: string) => {
+            if (!slotValue) return undefined;
+            const inv = pc.inventory.items.find(i => i.instanceId === slotValue);
+            return inv?.name || inv?.id || slotValue;
+        };
 
         const hasShield = (name?: string) => name && name.toLowerCase().includes('shield');
 
-        if (hasShield(mainHandItem) || hasShield(offHandItem)) {
+        if (hasShield(resolveSlotName(mainHandSlot)) || hasShield(resolveSlotName(offHandSlot))) {
             shieldBonus = 2;
         }
 
-        pc.ac = baseAC + shieldBonus;
+        // 3. Apply ACBonus modifiers from ALL equipped items (forge bonuses)
+        let itemACBonus = 0;
+        for (const item of pc.inventory.items) {
+            if (item.equipped && (item as any).modifiers) {
+                for (const mod of (item as any).modifiers) {
+                    if (mod.type === 'ACBonus') {
+                        itemACBonus += mod.value;
+                    }
+                }
+            }
+        }
+
+        pc.ac = baseAC + shieldBonus + itemACBonus;
     }
 }

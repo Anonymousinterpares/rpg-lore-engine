@@ -369,7 +369,12 @@ export class CombatOrchestrator {
                 const pc = this.state.character;
                 const mainHandId = pc.equipmentSlots.mainHand;
                 const inventoryEntry = mainHandId ? pc.inventory.items.find(i => i.instanceId === mainHandId) : null;
-                const mainHandItem = inventoryEntry ? DataManager.getItem(inventoryEntry.id) : null;
+                // For forged items, use inventory entry directly (has forge bonuses);
+                // for base items, fall back to DataManager template (has weapon fields)
+                const baseItem = inventoryEntry ? DataManager.getItem(inventoryEntry.id) : null;
+                const mainHandItem: any = (inventoryEntry as any)?.isForged
+                    ? { ...baseItem, ...inventoryEntry }
+                    : (baseItem || inventoryEntry);
 
                 if (isRanged && !CombatUtils.isRangedWeapon(mainHandItem)) {
                     return "You do not have a ranged weapon equipped!";
@@ -395,10 +400,10 @@ export class CombatOrchestrator {
                 modifiers.push({ label: isRanged ? 'DEX' : 'STR', value: statMod, source: 'Stat' });
                 modifiers.push({ label: 'Proficiency', value: prof, source: 'Level' });
 
-                // Parse Weapon Modifiers
+                // Parse Weapon Modifiers (legacy AttackBonus + forge HitBonus)
                 if (mainHandItem && mainHandItem.modifiers) {
                     mainHandItem.modifiers.forEach((mod: any) => {
-                        if (mod.type === 'AttackBonus') {
+                        if (mod.type === 'AttackBonus' || mod.type === 'HitBonus') {
                             modifiers.push({ label: mainHandItem.name, value: mod.value, source: 'Item' });
                         }
                     });
@@ -408,7 +413,7 @@ export class CombatOrchestrator {
                 let dmgBonus = statMod;
                 if (mainHandItem && mainHandItem.modifiers) {
                     mainHandItem.modifiers.forEach((mod: any) => {
-                        if (mod.type === 'DamageBonus') {
+                        if (mod.type === 'DamageBonus' || mod.type === 'DamageAdd') {
                             dmgBonus += mod.value;
                         }
                     });
