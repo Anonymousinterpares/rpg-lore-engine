@@ -18,7 +18,10 @@
       "Bash(grep:*)",
       "Bash(npm run:*)",
       "Bash(npx tsc:*)",
-      "Bash(find . -path */data/* -name *.json -path *item*)"
+      "Bash(find . -path */data/* -name *.json -path *item*)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Read(//e/AI/AI/projects/RPG New/rpg-lore-engine/**)"
     ]
   }
 }
