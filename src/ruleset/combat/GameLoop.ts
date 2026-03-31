@@ -1083,6 +1083,17 @@ export class GameLoop {
     }
 
     /**
+     * Dev tool: instantly kills all enemies and triggers normal victory flow.
+     */
+    public async devWinCombat(): Promise<void> {
+        if (this.state.mode !== 'COMBAT' || !this.state.combat) return;
+        for (const c of this.state.combat.combatants) {
+            if (c.type === 'enemy') c.hp.current = 0;
+        }
+        await this.combatOrchestrator.processCombatQueue();
+    }
+
+    /**
      * Sets the narrative text and triggers a state update to the UI.
      * Used for pre-combat narration (ambush) where combat hasn't started yet.
      */

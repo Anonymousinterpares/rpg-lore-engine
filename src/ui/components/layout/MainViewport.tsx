@@ -51,6 +51,18 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
 
     const isCombat = state?.mode === 'COMBAT';
 
+    // Dev shortcut: Ctrl+Shift+F12 — instant combat win
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'F12' && engine && state?.mode === 'COMBAT') {
+                e.preventDefault();
+                engine.devWinCombat();
+            }
+        };
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
+    }, [engine, state?.mode]);
+
     // Fail-safe: Ensure Rest modal closes if combat starts
     useEffect(() => {
         if (isCombat && showRestModal) {
