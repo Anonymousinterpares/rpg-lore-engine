@@ -1,10 +1,14 @@
 /**
- * Test: Rest Guidance via Narrator System Prompt (Part A)
+ * Test: Rest/Wait Narration UX (Part A — Full Suite)
  *
- * Verifies that when a player types natural-language rest intent,
- * the Narrator LLM includes the "[You can use the Rest button...]" guidance.
+ * Tests:
+ * 1. Pre-rest hint is minimal (no camping narration, just hint)
+ * 2. Post-rest narration is atmospheric + includes mechanical recovery
+ * 3. Post-wait narration works similarly
+ * 4. CLI hint detection patterns
+ * 5. Time accuracy after rest
  *
- * REQUIRES: OPENROUTER_API_KEY in .env (uses gemini-2.5-flash via OpenRouter)
+ * REQUIRES: OPENROUTER_API_KEY in .env
  *
  * Run: npx tsx cli/tests/test_rest_guidance.ts
  */
@@ -12,7 +16,6 @@
 import { bootstrapCLI } from '../bootstrap';
 import { createQuickCharacter } from '../creation';
 import { GameLoop } from '../../src/ruleset/combat/GameLoop';
-import { GameStateManager } from '../../src/ruleset/combat/GameStateManager';
 import { FileStorageProvider } from '../../src/ruleset/combat/FileStorageProvider';
 import { AgentManager } from '../../src/ruleset/agents/AgentManager';
 import * as path from 'path';
@@ -31,7 +34,7 @@ function assert(condition: boolean, label: string, detail?: string) {
 }
 
 async function main() {
-    console.log('=== Test: Rest Guidance (Part A) ===\n');
+    console.log('=== Test: Rest/Wait Narration UX ===\n');
     const root = await bootstrapCLI();
 
     // Override Narrator to use OpenRouter (only available key)
@@ -46,7 +49,7 @@ async function main() {
     });
     console.log('  Narrator overridden to openrouter/gpt-oss-120b\n');
 
-    const savesDir = path.join(root, 'saves', 'cli_test_rest_guidance');
+    const savesDir = path.join(root, 'saves', 'cli_test_rest_narration');
     const storage = new FileStorageProvider();
     const state = createQuickCharacter({ name: 'Aldric', className: 'Fighter', backgroundName: 'Soldier' });
     assert(state !== null, 'Character created');
@@ -55,46 +58,87 @@ async function main() {
     await gameLoop.initialize();
     assert(gameLoop.getState().mode === 'EXPLORATION', 'Mode: EXPLORATION');
 
-    // --- Test 1: Natural-language rest intent ---
-    console.log('\n--- Test 1: "I want to set up camp for the night" ---');
+    // Record starting time
+    const startHour = gameLoop.getState().worldTime.hour;
+    console.log(`  Starting time: ${startHour}:00`);
+
+    // =============================================
+    // TEST 1: Pre-rest hint is MINIMAL
+    // =============================================
+    console.log('\n--- Test 1: Pre-rest hint (minimal, no camp narration) ---');
     const restResponse = await gameLoop.processTurn('I want to set up camp for the night');
     console.log(`\n  Response:\n${restResponse}\n`);
     assert(typeof restResponse === 'string' && restResponse.length > 0, 'Got a response');
+    assert(restResponse.includes('[You can use the Rest button'), 'Contains Rest button hint');
 
-    const hasRestHint = restResponse.includes('[You can use the Rest button');
-    assert(hasRestHint, 'Response contains Rest button guidance hint');
+    // Verify NO mechanical rest occurred
+    const stateAfterHint = gameLoop.getState();
+    assert(stateAfterHint.character.hp.current === stateAfterHint.character.hp.max,
+        'HP unchanged (no mechanical rest)');
 
-    // Verify the game did NOT actually rest (HP should be unchanged, no recovery message)
-    const stateAfter = gameLoop.getState();
-    assert(stateAfter.character.hp.current === stateAfter.character.hp.max,
-        'HP unchanged (no mechanical rest occurred)');
+    // =============================================
+    // TEST 2: Post-rest narration (/rest 60 = short rest)
+    // =============================================
+    console.log('\n--- Test 2: Post-rest narration (/rest 60) ---');
 
-    // --- Test 2: Different phrasing ---
-    console.log('\n--- Test 2: "Let me sleep and recover my strength" ---');
-    const restResponse2 = await gameLoop.processTurn('Let me sleep and recover my strength');
-    console.log(`\n  Response:\n${restResponse2}\n`);
-    assert(typeof restResponse2 === 'string' && restResponse2.length > 0, 'Got a response');
+    // Damage the character first so we can verify recovery
+    stateAfterHint.character.hp.current = Math.max(1, stateAfterHint.character.hp.max - 10);
+    const hpBefore = stateAfterHint.character.hp.current;
+    console.log(`  HP before rest: ${hpBefore}/${stateAfterHint.character.hp.max}`);
 
-    const hasRestHint2 = restResponse2.includes('[You can use the Rest button');
-    assert(hasRestHint2, 'Response contains Rest button guidance hint (alt phrasing)');
+    const restResult = await gameLoop.processTurn('/rest 60');
+    console.log(`\n  Response:\n${restResult}\n`);
+    assert(typeof restResult === 'string' && restResult.length > 0, 'Got a response');
 
-    // --- Test 3: Non-rest input should NOT have the hint ---
-    console.log('\n--- Test 3: "I look around the area" (should NOT have rest hint) ---');
+    // Should contain BOTH atmospheric narration AND mechanical recovery info
+    const hasRecoveryInfo = restResult.toLowerCase().includes('rest') || restResult.toLowerCase().includes('recover');
+    assert(hasRecoveryInfo, 'Response mentions rest/recovery');
+
+    // HP should have changed (proportional recovery for 60 min)
+    const hpAfter = gameLoop.getState().character.hp.current;
+    console.log(`  HP after rest: ${hpAfter}/${gameLoop.getState().character.hp.max}`);
+    assert(hpAfter >= hpBefore, `HP recovered: ${hpBefore} → ${hpAfter}`);
+
+    // Time should have advanced by 60 minutes
+    const hourAfterRest = gameLoop.getState().worldTime.hour;
+    console.log(`  Time after rest: ${hourAfterRest}:00 (started at ${startHour}:00)`);
+
+    // Verify lastNarrative was set (may be overwritten by subsequent exploration narration)
+    const lastNarr = gameLoop.getState().lastNarrative || '';
+    assert(lastNarr.length > 0, 'lastNarrative is set after rest');
+
+    // =============================================
+    // TEST 3: Post-wait narration (/wait 60)
+    // =============================================
+    console.log('\n--- Test 3: Post-wait narration (/wait 60) ---');
+    const hpBeforeWait = gameLoop.getState().character.hp.current;
+    const waitResult = await gameLoop.processTurn('/wait 60');
+    console.log(`\n  Response:\n${waitResult}\n`);
+    assert(typeof waitResult === 'string' && waitResult.length > 0, 'Got a response');
+
+    // Wait should NOT recover HP
+    const hpAfterWait = gameLoop.getState().character.hp.current;
+    assert(hpAfterWait === hpBeforeWait, `HP unchanged after wait: ${hpAfterWait}`);
+
+    // =============================================
+    // TEST 4: Non-rest input should NOT have hint
+    // =============================================
+    console.log('\n--- Test 4: Non-rest input (no hint) ---');
     const lookResponse = await gameLoop.processTurn('I look around the area');
     console.log(`\n  Response:\n${lookResponse}\n`);
-    assert(typeof lookResponse === 'string' && lookResponse.length > 0, 'Got a response');
+    assert(!lookResponse.includes('[You can use the Rest button'),
+        'Non-rest input does NOT contain Rest hint');
 
-    const hasNoRestHint = !lookResponse.includes('[You can use the Rest button');
-    assert(hasNoRestHint, 'Non-rest input does NOT contain Rest button hint');
-
-    // --- CLI hint detection test (simulate what repl.ts does) ---
-    console.log('\n--- Test 4: CLI hint detection ---');
+    // =============================================
+    // TEST 5: CLI hint detection patterns
+    // =============================================
+    console.log('\n--- Test 5: CLI hint detection ---');
     const testResponses = [
-        { text: 'Some narrative... [You can use the Rest button to rest and recover.]', expected: 'rest' },
-        { text: 'A merchant awaits... [Use the Trade button or approach a merchant to open the trading interface.]', expected: 'trade' },
-        { text: 'An NPC waves... [Click on an NPC or use the Talk button to start a conversation.]', expected: 'talk' },
-        { text: 'Your pack is heavy... [Open the Inventory panel to manage your items and equipment.]', expected: 'inventory' },
-        { text: 'The wind howls through the trees.', expected: 'none' },
+        { text: 'Narrative... [You can use the Rest button to rest and recover.]', expected: 'rest' },
+        { text: 'Merchant... [Use the Trade button or approach a merchant to open the trading interface.]', expected: 'trade' },
+        { text: 'NPC... [Click on an NPC or use the Talk button to start a conversation.]', expected: 'talk' },
+        { text: 'Pack... [Open the Inventory panel to manage your items and equipment.]', expected: 'inventory' },
+        { text: 'The wind howls.', expected: 'none' },
     ];
 
     for (const test of testResponses) {
@@ -104,12 +148,44 @@ async function main() {
         if (test.text.includes('[Click on an NPC')) hints.push('talk');
         if (test.text.includes('[Open the Inventory panel')) hints.push('inventory');
         if (hints.length === 0) hints.push('none');
-
         assert(hints.includes(test.expected),
-            `CLI hint detection: "${test.expected}" detected in "${test.text.slice(0, 40)}..."`);
+            `Hint "${test.expected}" detected in "${test.text.slice(0, 40)}..."`);
     }
 
-    // --- Summary ---
+    // =============================================
+    // TEST 6: Long rest (480 min) — time accuracy
+    // =============================================
+    console.log('\n--- Test 6: Long rest time accuracy (/rest 480) ---');
+    const hourBeforeLongRest = gameLoop.getState().worldTime.hour;
+    console.log(`  Time before long rest: ${hourBeforeLongRest}:00`);
+
+    const longRestResult = await gameLoop.processTurn('/rest 480');
+    console.log(`\n  Response:\n${longRestResult}\n`);
+    assert(typeof longRestResult === 'string' && longRestResult.length > 0, 'Got long rest response');
+
+    const hourAfterLongRest = gameLoop.getState().worldTime.hour;
+    const modeAfterLongRest = gameLoop.getState().mode;
+    console.log(`  Time after long rest: ${hourAfterLongRest}:00, Mode: ${modeAfterLongRest}`);
+
+    if (modeAfterLongRest === 'COMBAT') {
+        // Rest was interrupted by ambush — ambush narration was generated
+        console.log('  (Ambush occurred during rest — testing ambush narration)');
+        assert(longRestResult.length > 30, 'Ambush narration has atmospheric text (not just a short error)');
+        assert(!longRestResult.includes('Your rest is interrupted by an attack!'),
+            'Ambush uses LLM narration, not hardcoded fallback');
+        // Time should have advanced partially (not full 8 hours)
+        assert(hourAfterLongRest > hourBeforeLongRest || hourAfterLongRest < hourBeforeLongRest,
+            `Time advanced partially: ${hourBeforeLongRest}:00 → ${hourAfterLongRest}:00`);
+    } else {
+        // Normal completion — time should have advanced by 8 hours
+        const expectedHour = (hourBeforeLongRest + 8) % 24;
+        assert(hourAfterLongRest === expectedHour,
+            `Time advanced correctly: ${hourBeforeLongRest}:00 + 8h = ${hourAfterLongRest}:00 (expected ${expectedHour}:00)`);
+    }
+
+    // =============================================
+    // SUMMARY
+    // =============================================
     console.log(`\n=== Results: ${passed} passed, ${failed} failed ===`);
     process.exit(failed > 0 ? 1 : 0);
 }

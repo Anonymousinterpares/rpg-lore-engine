@@ -6,12 +6,15 @@ interface NarrativeBoxProps {
     text: string;
     speed?: number; // ms per character
     title?: string;
+    onTypingComplete?: () => void;
 }
 
-const NarrativeBox: React.FC<NarrativeBoxProps> = ({ text, speed = 20, title }) => {
+const NarrativeBox: React.FC<NarrativeBoxProps> = ({ text, speed = 20, title, onTypingComplete }) => {
     const [displayedText, setDisplayedText] = useState('');
     const [isComplete, setIsComplete] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const onTypingCompleteRef = useRef(onTypingComplete);
+    onTypingCompleteRef.current = onTypingComplete;
 
     useEffect(() => {
         console.log('[NarrativeBox] Text received, first 50 chars:', JSON.stringify(text.substring(0, 50)));
@@ -35,6 +38,7 @@ const NarrativeBox: React.FC<NarrativeBoxProps> = ({ text, speed = 20, title }) 
             } else {
                 setIsComplete(true);
                 clearInterval(timer);
+                onTypingCompleteRef.current?.();
             }
         }, speed);
 

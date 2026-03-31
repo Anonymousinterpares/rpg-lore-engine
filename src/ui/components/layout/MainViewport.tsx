@@ -27,6 +27,7 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
     const [showRestModal, setShowRestModal] = useState(false);
     const [inspectedCombatantId, setInspectedCombatantId] = useState<string | null>(null);
     const [saveSlots, setSaveSlots] = useState<any[]>([]);
+    const [pendingCombat, setPendingCombat] = useState<any>(null); // Holds encounter data while ambush narration plays
 
     // Refresh registry when modal opens
     useEffect(() => {
@@ -60,6 +61,22 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
     const handleRestCancel = useCallback(() => {
         setShowRestModal(false);
     }, []);
+
+    const handleAmbush = useCallback(async (encounter: any, narration: string) => {
+        // Store the encounter; set narration so NarrativeBox types it out
+        // Combat will start AFTER typing completes (via onTypingComplete)
+        setPendingCombat(encounter);
+        if (engine) {
+            await engine.setNarrative(narration);
+        }
+    }, [engine]);
+
+    const handleTypingComplete = useCallback(async () => {
+        if (pendingCombat && engine) {
+            await engine.initializeCombat(pendingCombat);
+            setPendingCombat(null);
+        }
+    }, [pendingCombat, engine]);
 
     const handleInspect = (id: string) => {
         setInspectedCombatantId(prev => prev === id ? null : id);
@@ -141,6 +158,7 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
                 <RestWaitModal
                     engine={engine}
                     onCancel={handleRestCancel}
+                    onAmbush={handleAmbush}
                 />
             )}
 
@@ -177,6 +195,7 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
                     <NarrativeBox
                         title={locationTitle}
                         text={narrativeText}
+                        onTypingComplete={pendingCombat ? handleTypingComplete : undefined}
                     />
                 </div>
 
@@ -198,7 +217,11 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
             </div>
 
             <div className={styles.actionBar}>
-                {isCombat ? (
+                {pendingCombat ? (
+                    <div style={{ textAlign: 'center', padding: '12px', opacity: 0.7, fontStyle: 'italic' }}>
+                        Ambush...
+                    </div>
+                ) : isCombat ? (
                     <CombatActionBar />
                 ) : (
                     <PlayerInputField

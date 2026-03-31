@@ -4,9 +4,10 @@ import styles from './RestWaitModal.module.css';
 interface RestWaitModalProps {
     engine: any;
     onCancel: () => void;
+    onAmbush?: (encounter: any, narration: string) => void;
 }
 
-const RestWaitModal: React.FC<RestWaitModalProps> = ({ engine, onCancel }) => {
+const RestWaitModal: React.FC<RestWaitModalProps> = ({ engine, onCancel, onAmbush }) => {
     const [activeTab, setActiveTab] = useState<'rest' | 'wait'>('wait');
     const [durationValues, setDurationValues] = useState<number>(60); // Selection value
     const [remainingMinutes, setRemainingMinutes] = useState<number>(0);
@@ -37,13 +38,13 @@ const RestWaitModal: React.FC<RestWaitModalProps> = ({ engine, onCancel }) => {
         setIsCountingDown(true);
     };
 
-    const handleCancel = () => {
+    const handleCancel = async () => {
         cancelledRef.current = true;
 
         // Apply proportional rewards for time already spent
         const passedMins = totalMinutesToPass - remainingMinutes;
         if (passedMins > 0) {
-            engine.completeRest(passedMins, activeTab);
+            await engine.completeRest(passedMins, activeTab);
         }
 
         onCancel();
@@ -55,9 +56,9 @@ const RestWaitModal: React.FC<RestWaitModalProps> = ({ engine, onCancel }) => {
 
             if (!isCountingDown || remainingMinutes <= 0) {
                 if (isCountingDown && remainingMinutes <= 0 && !cancelledRef.current) {
-                    // Done!
-                    await engine.completeRest(totalMinutesToPass, activeTab);
+                    // Done! Close modal immediately, let narration arrive via state update
                     onCancel();
+                    engine.completeRest(totalMinutesToPass, activeTab); // Fire-and-forget: narration arrives via state subscription
                 }
                 return;
             }
@@ -68,7 +69,12 @@ const RestWaitModal: React.FC<RestWaitModalProps> = ({ engine, onCancel }) => {
             if (cancelledRef.current) return;
 
             if (encounter) {
-                await engine.initializeCombat(encounter);
+                const ambushNarration = await engine.generateAmbushNarration(encounter, activeTab);
+                if (onAmbush) {
+                    onAmbush(encounter, ambushNarration);
+                } else {
+                    await engine.initializeCombat(encounter, ambushNarration);
+                }
                 onCancel();
                 return;
             }

@@ -56,9 +56,9 @@ export class TimeManager {
     /**
      * Applies the mechanical benefits of resting after time has passed.
      */
-    public completeRest(durationMinutes: number, type: 'rest' | 'wait' = 'rest'): string {
+    public async completeRest(durationMinutes: number, type: 'rest' | 'wait' = 'rest'): Promise<string> {
         const restResult = RestingEngine.applyProportionalRest(this.state.character, durationMinutes, type);
-        this.emitStateUpdate();
+        await this.emitStateUpdate();
         return restResult.message;
     }
 

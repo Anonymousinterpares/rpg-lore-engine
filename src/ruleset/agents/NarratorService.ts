@@ -6,6 +6,8 @@ import { AgentManager } from './AgentManager';
 import { NarratorOutputSchema, NarratorOutput } from './ICPSchemas';
 import { AgentProfile } from '../schemas/AgentConfigSchema';
 import { LLM_PROVIDERS } from '../data/StaticData';
+import { WorldClockEngine } from '../combat/WorldClockEngine';
+import { Encounter } from '../combat/EncounterDirector';
 
 export class NarratorService {
     private static isFirstTurnAfterLoad = false;
@@ -147,6 +149,134 @@ ${logSummary}`;
         }
     }
 
+    /**
+     * Generates atmospheric narration for a completed rest or wait period.
+     */
+    public static async narrateRestCompletion(
+        state: GameState,
+        durationMinutes: number,
+        type: 'rest' | 'wait',
+        mechanicalMessage: string
+    ): Promise<string> {
+        const profile = AgentManager.getAgentProfile('NARRATOR');
+        const providerConfig = LLM_PROVIDERS.find(p => p.id === profile.providerId);
+        const modelConfig = providerConfig?.models.find(m => m.id === profile.modelId);
+
+        if (!providerConfig || !modelConfig) return mechanicalMessage;
+
+        const timePhase = WorldClockEngine.getTimePhase(state.worldTime);
+        const hour = state.worldTime.hour;
+        const weather = state.weather?.type || 'Clear';
+        const currentHex = state.worldMap?.hexes?.[state.location.hexId];
+        const biome = currentHex?.biome || 'Unknown';
+        const durationHours = Math.floor(durationMinutes / 60);
+        const durationMins = durationMinutes % 60;
+        const durationStr = durationHours > 0
+            ? `${durationHours} hour${durationHours > 1 ? 's' : ''}${durationMins > 0 ? ` and ${durationMins} minutes` : ''}`
+            : `${durationMins} minutes`;
+
+        const systemPrompt = `You are a legendary bard and chronicler for a D&D 5e adventure.
+Write a short atmospheric narration (2-4 sentences) describing how time passed during a ${type === 'rest' ? 'rest' : 'waiting period'}.
+
+## CONTEXT
+- Duration: ${durationStr}
+- Current time AFTER ${type}: ${timePhase} (${hour}:00)
+- Weather: ${weather}
+- Biome: ${biome}
+- Type: ${type === 'rest' ? 'The character rested and recovered' : 'The character waited, staying alert'}
+
+## RULES
+- Describe the passage of time atmospherically (dawn breaking, stars wheeling, fire dying to embers, etc.)
+- Match the time of day AFTER the ${type} — if it is now morning, describe dawn arriving
+- Match the weather and biome
+- Keep it under 60 words
+- Do NOT mention specific HP, spell slots, or mechanical values
+- End with a sense of readiness to continue`;
+
+        try {
+            const rawResponse = await LLMClient.generateCompletion(
+                providerConfig,
+                modelConfig,
+                {
+                    systemPrompt,
+                    userMessage: `Describe how the ${type} of ${durationStr} passed.`,
+                    temperature: 0.7,
+                    maxTokens: 800,
+                    responseFormat: 'text'
+                }
+            );
+
+            const narrative = rawResponse.trim();
+            return `${narrative}\n\n${mechanicalMessage}`;
+        } catch (e) {
+            console.error('[NarratorService] Rest narration failed:', e);
+            return mechanicalMessage;
+        }
+    }
+
+    /**
+     * Generates a narrative describing an ambush interrupting rest.
+     */
+    public static async narrateAmbush(
+        state: GameState,
+        encounter: Encounter,
+        restType: 'rest' | 'wait'
+    ): Promise<string> {
+        const profile = AgentManager.getAgentProfile('NARRATOR');
+        const providerConfig = LLM_PROVIDERS.find(p => p.id === profile.providerId);
+        const modelConfig = providerConfig?.models.find(m => m.id === profile.modelId);
+
+        if (!providerConfig || !modelConfig) {
+            return `Your ${restType} is interrupted! ${encounter.monsters.join(', ')} attack!`;
+        }
+
+        const timePhase = WorldClockEngine.getTimePhase(state.worldTime);
+        const weather = state.weather?.type || 'Clear';
+        const currentHex = state.worldMap?.hexes?.[state.location.hexId];
+        const biome = currentHex?.biome || 'Unknown';
+        const playerName = state.character?.name || 'the adventurer';
+        const companions = (state.companions || []).map((m: any) => m.name);
+        const partyDesc = companions.length > 0
+            ? `${playerName} and ${companions.length === 1 ? companions[0] : 'their companions'}`
+            : playerName;
+
+        const systemPrompt = `You are a legendary bard and chronicler for a D&D 5e adventure.
+Write a tense, dramatic narration (3-5 sentences) describing an ambush that interrupts ${partyDesc}'s ${restType}.
+
+## CONTEXT
+- Time: ${timePhase}
+- Weather: ${weather}
+- Biome: ${biome}
+- ${restType === 'rest' ? 'The party was resting (sleeping/recovering)' : 'The party was waiting (alert but stationary)'}
+- Attackers: ${encounter.monsters.join(', ')}
+
+## RULES
+- Build tension: subtle warning signs, then sudden danger
+- Name the EXACT creatures listed above — do not invent others
+- If resting, describe being jolted awake; if waiting, describe noticing the threat
+- End on a cliffhanger — combat is about to begin
+- Keep it under 80 words
+- Do NOT describe combat actions or outcomes`;
+
+        try {
+            const rawResponse = await LLMClient.generateCompletion(
+                providerConfig,
+                modelConfig,
+                {
+                    systemPrompt,
+                    userMessage: `Describe the ambush by ${encounter.monsters.join(' and ')}.`,
+                    temperature: 0.8,
+                    maxTokens: 800,
+                    responseFormat: 'text'
+                }
+            );
+            return rawResponse.trim();
+        } catch (e) {
+            console.error('[NarratorService] Ambush narration failed:', e);
+            return `Your ${restType} is interrupted! ${encounter.monsters.join(', ')} attack!`;
+        }
+    }
+
     private static constructSystemPrompt(context: any, state: GameState, profile: AgentProfile, directorDirective?: any, encounter?: any): string {
         const isNewGame = state.conversationHistory.length === 0 && !this.isFirstTurnAfterLoad;
 
@@ -211,11 +341,12 @@ ONLY add a guidance hint when the player EXPLICITLY expresses one of the intents
 Do NOT add hints proactively or when the intent is ambiguous. When in doubt, omit the hint.
 
 When the player EXPLICITLY wants to rest, camp, sleep, make camp, set up for the night, or recover:
-1. Narrate the scene: describe finding shelter, building a fire, settling in.
-2. End your narrative with this EXACT line on its own paragraph:
+1. Respond with ONLY a brief acknowledgment (one short sentence, e.g. "You look for a suitable place to settle down.").
+2. Then add this EXACT line on its own paragraph:
    "[You can use the Rest button to rest and recover.]"
-3. Do NOT claim the character has rested, recovered HP, or restored spell slots.
-   The rest system handles all mechanical recovery — you only describe the atmosphere.
+3. Do NOT narrate camp scenes, building fires, night falling, or any atmospheric rest description.
+4. Do NOT claim the character has rested, recovered HP, or restored spell slots.
+   The rest narration will be generated AFTER the player actually rests.
 
 When the player EXPLICITLY asks to trade, shop, buy, or sell items:
 - End with: "[Use the Trade button or approach a merchant to open the trading interface.]"

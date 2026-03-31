@@ -705,10 +705,11 @@ export class GameLoop {
                 const minutes = parseInt(args[0] || '60');
                 const waitEnc = await this.time.advanceTimeAndProcess(minutes);
                 if (waitEnc) {
-                    await this.initializeCombat(waitEnc);
-                    return "Your wait is interrupted by an encounter!";
+                    const ambushNarration = await this.generateAmbushNarration(waitEnc, 'wait');
+                    await this.initializeCombat(waitEnc, ambushNarration);
+                    return ambushNarration;
                 }
-                return `You wait for ${minutes} minutes.`;
+                return await this.completeRest(minutes, 'wait');
             }
 
             case 'rest': {
@@ -716,10 +717,11 @@ export class GameLoop {
                 const duration = restArg === 'short' ? 60 : restArg === 'long' ? 480 : parseInt(restArg) || 480;
                 const restEnc = await this.time.advanceTimeAndProcess(duration, true);
                 if (restEnc) {
-                    await this.initializeCombat(restEnc);
-                    return "Your rest is interrupted by an attack!";
+                    const ambushNarration = await this.generateAmbushNarration(restEnc, 'rest');
+                    await this.initializeCombat(restEnc, ambushNarration);
+                    return ambushNarration;
                 }
-                return this.time.completeRest(duration);
+                return await this.completeRest(duration);
             }
 
             case 'cast':
@@ -1034,9 +1036,31 @@ export class GameLoop {
         }
     }
 
-    public async initializeCombat(encounter: Encounter) {
+    public async initializeCombat(encounter: Encounter, preNarration?: string) {
         const biome = this.hexMapManager.getHex(this.state.location.hexId)?.biome || 'Plains';
+
+        // Use preNarration if provided, or check if lastNarrative was set as ambush text
+        const ambushText = preNarration || undefined;
+
         await this.combatManager.initializeCombat(encounter, biome);
+
+        // Inject ambush narration into combat log and state
+        if (ambushText && this.state.combat) {
+            this.state.lastNarrative = ambushText;
+            this.state.combat.logs[0] = {
+                id: `log_ambush_${Date.now()}`,
+                type: 'info',
+                message: ambushText,
+                turn: 0
+            };
+            this.state.conversationHistory.push({
+                role: 'narrator',
+                content: ambushText,
+                turnNumber: this.state.worldTime.totalTurns
+            });
+            this.contextManager.addEvent('narrator', ambushText);
+        }
+
         await this.emitStateUpdate();
         await this.combatOrchestrator.processCombatQueue();
     }
@@ -1056,6 +1080,21 @@ export class GameLoop {
         return () => {
             this.listeners = this.listeners.filter(l => l !== listener);
         };
+    }
+
+    /**
+     * Sets the narrative text and triggers a state update to the UI.
+     * Used for pre-combat narration (ambush) where combat hasn't started yet.
+     */
+    public async setNarrative(text: string): Promise<void> {
+        this.state.lastNarrative = text;
+        this.state.conversationHistory.push({
+            role: 'narrator',
+            content: text,
+            turnNumber: this.state.worldTime.totalTurns
+        });
+        this.contextManager.addEvent('narrator', text);
+        await this.emitStateUpdate();
     }
 
     public async castSpell(spellName: string, targetId?: string) {
@@ -1239,8 +1278,36 @@ export class GameLoop {
         return result;
     }
 
-    public completeRest(durationMinutes: number, type: 'rest' | 'wait' = 'rest'): string {
-        return this.time.completeRest(durationMinutes, type);
+    public async completeRest(durationMinutes: number, type: 'rest' | 'wait' = 'rest'): Promise<string> {
+        const mechanicalMessage = await this.time.completeRest(durationMinutes, type);
+
+        try {
+            const narration = await NarratorService.narrateRestCompletion(
+                this.state,
+                durationMinutes,
+                type,
+                mechanicalMessage
+            );
+
+            this.state.lastNarrative = narration;
+            const turn = this.state.worldTime.totalTurns;
+            this.state.conversationHistory.push({
+                role: 'narrator',
+                content: narration,
+                turnNumber: turn
+            });
+            this.contextManager.addEvent('narrator', narration);
+            await this.emitStateUpdate();
+
+            return narration;
+        } catch (e) {
+            console.error('[GameLoop] Post-rest narration failed:', e);
+            return mechanicalMessage;
+        }
+    }
+
+    public async generateAmbushNarration(encounter: Encounter, restType: 'rest' | 'wait'): Promise<string> {
+        return NarratorService.narrateAmbush(this.state, encounter, restType);
     }
 
     private applyNarratorEffects(output: NarratorOutput) {
