@@ -1,16 +1,15 @@
 {
-  "grid_id": "fac90688-db31-4a13-8c6e-f177b6da15b7",
+  "grid_id": "88698a3d-645d-472f-a116-5ccb82399038",
   "hexes": {
     "0,0": {
       "coordinates": [
         0,
         0
       ],
-      "generated": true,
-      "isQuestReserved": false,
-      "biome": "Plains",
       "name": "Initial Landing Site",
-      "description": "A vast expanse of forest.",
+      "generated": true,
+      "biome": "Plains",
+      "description": "A vast expanse of plains.",
       "traversable_sides": {
         "N": true,
         "S": true,
@@ -26,22 +25,44 @@
       "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 1,
-      "npcs": [
-        "af17807a-d2ad-4d5f-b723-2a9ddf8136f1"
-      ],
-      "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN"
+      "npcs": []
     },
     "0,1": {
       "coordinates": [
         0,
         1
       ],
+      "name": "Plains (Uncharted Territory)",
       "generated": true,
-      "isQuestReserved": false,
-      "biome": "Tundra",
-      "name": "Tundra (Uncharted Territory)",
-      "description": "A vast expanse of tundra.",
+      "biome": "Plains",
+      "description": "A vast expanse of plains.",
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      },
+      "interest_points": [],
+      "resourceNodes": [],
+      "openedContainers": {},
+      "visited": false,
+      "inLineOfSight": true,
+      "namingSource": "engine",
+      "visualVariant": 4,
+      "npcs": [],
+      "connections": "0:R:1,1:R:1,5:R:1"
+    },
+    "0,-1": {
+      "coordinates": [
+        0,
+        -1
+      ],
+      "name": "Plains (Uncharted Territory)",
+      "generated": true,
+      "biome": "Plains",
+      "description": "A vast expanse of plains.",
       "traversable_sides": {
         "N": true,
         "S": true,
@@ -53,9 +74,9 @@
       "interest_points": [],
       "resourceNodes": [
         {
-          "id": "node_9jvym0l6i",
-          "resourceType": "Ore",
-          "itemId": "Iron_Ore",
+          "id": "node_mt3dqrjvd",
+          "resourceType": "Hide",
+          "itemId": "Raw_Hide",
           "quantityRemaining": 3,
           "respawnDays": 7,
           "skillCheck": {
@@ -68,21 +89,60 @@
       "visited": false,
       "inLineOfSight": true,
       "namingSource": "engine",
-      "visualVariant": 5,
-      "npcs": [],
-      "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN"
-    },
-    "0,-1": {
-      "coordinates": [
-        0,
-        -1
+      "visualVariant": 3,
+      "npcs": [
+        "626ade4a-556d-43e7-8aea-68ddc8630590"
       ],
+      "connections": "4:R:1"
+    },
+    "1,0": {
+      "coordinates": [
+        1,
+        0
+      ],
+      "name": "Plains (Uncharted Territory)",
       "generated": true,
-      "isQuestReserved": false,
-      "biome": "Farmland",
-      "name": "Farmland (Uncharted Territory)",
-      "description": "A vast expanse of farmland.",
+      "biome": "Plains",
+      "description": "A vast expanse of plains.",
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      },
+      "interest_points": [],
+      "resourceNodes": [
+        {
+          "id": "node_002q7335a",
+          "resourceType": "Wood",
+          "itemId": "Oak_Logs",
+          "quantityRemaining": 2,
+          "respawnDays": 7,
+          "skillCheck": {
+            "skill": "Nature",
+            "dc": 10
+          }
+        }
+      ],
+      "openedContainers": {},
+      "visited": false,
+      "inLineOfSight": true,
+      "namingSource": "engine",
+      "visualVariant": 2,
+      "npcs": [],
+      "connections": "0:R:1,2:R:1"
+    },
+    "-1,1": {
+      "coordinates": [
+        -1,
+        1
+      ],
+      "name": "Mountains (Uncharted Territory)",
+      "generated": true,
+      "biome": "Mountains",
+      "description": "A vast expanse of mountains.",
       "traversable_sides": {
         "N": true,
         "S": true,
@@ -98,20 +158,17 @@
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 5,
-      "npcs": [],
-      "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN"
+      "npcs": []
     },
-    "1,0": {
+    "1,-1": {
       "coordinates": [
         1,
-        0
+        -1
       ],
+      "name": "Plains (Uncharted Territory)",
       "generated": true,
-      "isQuestReserved": false,
-      "biome": "Forest",
-      "name": "Forest (Uncharted Territory)",
-      "description": "A vast expanse of forest.",
+      "biome": "Plains",
+      "description": "A vast expanse of plains.",
       "traversable_sides": {
         "N": true,
         "S": true,
@@ -121,37 +178,23 @@
         "SW": true
       },
       "interest_points": [],
-      "resourceNodes": [
-        {
-          "id": "node_39ma9uty2",
-          "resourceType": "Wood",
-          "itemId": "Pine_Logs",
-          "quantityRemaining": 3,
-          "respawnDays": 7,
-          "skillCheck": {
-            "skill": "Nature",
-            "dc": 10
-          }
-        }
-      ],
+      "resourceNodes": [],
       "openedContainers": {},
       "visited": false,
       "inLineOfSight": true,
       "namingSource": "engine",
-      "visualVariant": 7,
+      "visualVariant": 4,
       "npcs": [],
-      "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN"
+      "connections": "1:R:1"
     },
-    "-1,1": {
+    "-1,0": {
       "coordinates": [
         -1,
-        1
+        0
       ],
-      "generated": true,
-      "isQuestReserved": false,
-      "biome": "Hills",
       "name": "Hills (Uncharted Territory)",
+      "generated": true,
+      "biome": "Hills",
       "description": "A vast expanse of hills.",
       "traversable_sides": {
         "N": true,
@@ -168,79 +211,10 @@
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 5,
-      "npcs": [],
-      "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN"
-    },
-    "1,-1": {
-      "coordinates": [
-        1,
-        -1
+      "npcs": [
+        "074041db-2140-493a-b594-8b14f1a36849"
       ],
-      "generated": true,
-      "isQuestReserved": false,
-      "biome": "Urban",
-      "name": "Urban (Uncharted Territory)",
-      "description": "A vast expanse of urban.",
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      },
-      "interest_points": [],
-      "resourceNodes": [],
-      "openedContainers": {},
-      "visited": false,
-      "inLineOfSight": true,
-      "namingSource": "engine",
-      "visualVariant": 13,
-      "npcs": [],
-      "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN"
-    },
-    "-1,0": {
-      "coordinates": [
-        -1,
-        0
-      ],
-      "generated": true,
-      "isQuestReserved": false,
-      "biome": "Farmland",
-      "name": "Farmland (Uncharted Territory)",
-      "description": "A vast expanse of farmland.",
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      },
-      "interest_points": [],
-      "resourceNodes": [
-        {
-          "id": "node_b7ye6ut0w",
-          "resourceType": "Arcane",
-          "itemId": "Hay",
-          "quantityRemaining": 2,
-          "respawnDays": 7,
-          "skillCheck": {
-            "skill": "Nature",
-            "dc": 10
-          }
-        }
-      ],
-      "openedContainers": {},
-      "visited": false,
-      "inLineOfSight": true,
-      "namingSource": "engine",
-      "visualVariant": 4,
-      "npcs": [],
-      "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN"
+      "connections": "5:P:0,4:P:1"
     },
     "0,2": {
       "coordinates": [
@@ -248,10 +222,20 @@
         2
       ],
       "generated": true,
-      "isQuestReserved": false,
-      "biome": "Tundra",
+      "visited": false,
+      "biome": "Jungle",
       "name": "Uncharted Territory",
-      "description": "A vast expanse of tundra.",
+      "description": "The mists of the unknown cling to this place.",
+      "inLineOfSight": false,
+      "interest_points": [],
+      "resourceNodes": [],
+      "openedContainers": {},
+      "namingSource": "engine",
+      "visualVariant": 5,
+      "npcs": [],
+      "isQuestReserved": false,
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN",
       "traversable_sides": {
         "N": true,
         "S": true,
@@ -260,28 +244,7 @@
         "SE": true,
         "SW": true
       },
-      "interest_points": [],
-      "resourceNodes": [
-        {
-          "id": "node_x2j3n60ja",
-          "resourceType": "Wood",
-          "itemId": "Pine_Logs",
-          "quantityRemaining": 2,
-          "respawnDays": 7,
-          "skillCheck": {
-            "skill": "Nature",
-            "dc": 10
-          }
-        }
-      ],
-      "openedContainers": {},
-      "visited": false,
-      "inLineOfSight": false,
-      "namingSource": "engine",
-      "visualVariant": 4,
-      "npcs": [],
-      "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN"
+      "connections": "3:P:1,2:P:0"
     },
     "1,1": {
       "coordinates": [
@@ -289,25 +252,18 @@
         1
       ],
       "generated": true,
-      "isQuestReserved": false,
-      "biome": "Tundra",
+      "visited": false,
+      "biome": "Jungle",
       "name": "Uncharted Territory",
-      "description": "A vast expanse of tundra.",
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      },
+      "description": "The mists of the unknown cling to this place.",
+      "inLineOfSight": false,
       "interest_points": [],
       "resourceNodes": [
         {
-          "id": "node_3jgesmujc",
-          "resourceType": "Wood",
-          "itemId": "Pine_Logs",
-          "quantityRemaining": 2,
+          "id": "node_yqm9apng3",
+          "resourceType": "Herb",
+          "itemId": "Silverleaf",
+          "quantityRemaining": 1,
           "respawnDays": 7,
           "skillCheck": {
             "skill": "Nature",
@@ -316,13 +272,21 @@
         }
       ],
       "openedContainers": {},
-      "visited": false,
-      "inLineOfSight": false,
       "namingSource": "engine",
-      "visualVariant": 3,
+      "visualVariant": 4,
       "npcs": [],
+      "isQuestReserved": false,
       "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN"
+      "fogOfWarLevel": "HIDDEN",
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      },
+      "connections": "3:P:1,5:P:0,4:P:1,2:P:1"
     },
     "-1,2": {
       "coordinates": [
@@ -330,25 +294,18 @@
         2
       ],
       "generated": true,
-      "isQuestReserved": false,
-      "biome": "Swamp",
+      "visited": false,
+      "biome": "Jungle",
       "name": "Uncharted Territory",
-      "description": "A vast expanse of swamp.",
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      },
+      "description": "The mists of the unknown cling to this place.",
+      "inLineOfSight": false,
       "interest_points": [],
       "resourceNodes": [
         {
-          "id": "node_ekql3qj9n",
+          "id": "node_e44v2szzq",
           "resourceType": "Wood",
-          "itemId": "Oak_Logs",
-          "quantityRemaining": 1,
+          "itemId": "Ironwood",
+          "quantityRemaining": 3,
           "respawnDays": 7,
           "skillCheck": {
             "skill": "Nature",
@@ -357,13 +314,21 @@
         }
       ],
       "openedContainers": {},
-      "visited": false,
-      "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 3,
       "npcs": [],
+      "isQuestReserved": false,
       "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN"
+      "fogOfWarLevel": "HIDDEN",
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      },
+      "connections": "2:P:1"
     },
     "0,-2": {
       "coordinates": [
@@ -371,24 +336,17 @@
         -2
       ],
       "generated": true,
-      "isQuestReserved": false,
-      "biome": "Farmland",
+      "visited": false,
+      "biome": "Mountains",
       "name": "Uncharted Territory",
-      "description": "A vast expanse of farmland.",
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      },
+      "description": "The mists of the unknown cling to this place.",
+      "inLineOfSight": false,
       "interest_points": [],
       "resourceNodes": [
         {
-          "id": "node_emf0dh7hk",
-          "resourceType": "Arcane",
-          "itemId": "Hay",
+          "id": "node_e2bjsqkzd",
+          "resourceType": "Ore",
+          "itemId": "Iron_Ore",
           "quantityRemaining": 1,
           "respawnDays": 7,
           "skillCheck": {
@@ -398,15 +356,20 @@
         }
       ],
       "openedContainers": {},
-      "visited": false,
-      "inLineOfSight": false,
       "namingSource": "engine",
-      "visualVariant": 4,
-      "npcs": [
-        "705ed8b3-31bc-444d-a5ec-ed8c8235e568"
-      ],
+      "visualVariant": 5,
+      "npcs": [],
+      "isQuestReserved": false,
       "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN"
+      "fogOfWarLevel": "HIDDEN",
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      }
     },
     "1,-2": {
       "coordinates": [
@@ -414,25 +377,18 @@
         -2
       ],
       "generated": true,
-      "isQuestReserved": false,
-      "biome": "Urban",
+      "visited": false,
+      "biome": "Mountains",
       "name": "Uncharted Territory",
-      "description": "A vast expanse of urban.",
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      },
+      "description": "The mists of the unknown cling to this place.",
+      "inLineOfSight": false,
       "interest_points": [],
       "resourceNodes": [
         {
-          "id": "node_ybbvigm98",
-          "resourceType": "Arcane",
-          "itemId": "Glass_Vial",
-          "quantityRemaining": 1,
+          "id": "node_lfkta3l4f",
+          "resourceType": "Ore",
+          "itemId": "Iron_Ore",
+          "quantityRemaining": 3,
           "respawnDays": 7,
           "skillCheck": {
             "skill": "Nature",
@@ -441,13 +397,20 @@
         }
       ],
       "openedContainers": {},
-      "visited": false,
-      "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 3,
       "npcs": [],
+      "isQuestReserved": false,
       "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN"
+      "fogOfWarLevel": "HIDDEN",
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      }
     },
     "-1,-1": {
       "coordinates": [
@@ -455,10 +418,20 @@
         -1
       ],
       "generated": true,
-      "isQuestReserved": false,
-      "biome": "Plains",
+      "visited": false,
+      "biome": "Hills",
       "name": "Uncharted Territory",
-      "description": "A vast expanse of plains.",
+      "description": "The mists of the unknown cling to this place.",
+      "inLineOfSight": false,
+      "interest_points": [],
+      "resourceNodes": [],
+      "openedContainers": {},
+      "namingSource": "engine",
+      "visualVariant": 4,
+      "npcs": [],
+      "isQuestReserved": false,
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN",
       "traversable_sides": {
         "N": true,
         "S": true,
@@ -467,16 +440,7 @@
         "SE": true,
         "SW": true
       },
-      "interest_points": [],
-      "resourceNodes": [],
-      "openedContainers": {},
-      "visited": false,
-      "inLineOfSight": false,
-      "namingSource": "engine",
-      "visualVariant": 4,
-      "npcs": [],
-      "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN"
+      "connections": "1:P:1,5:P:1"
     },
     "2,0": {
       "coordinates": [
@@ -484,24 +448,17 @@
         0
       ],
       "generated": true,
-      "isQuestReserved": false,
-      "biome": "Forest",
+      "visited": false,
+      "biome": "Plains",
       "name": "Uncharted Territory",
-      "description": "A vast expanse of forest.",
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      },
+      "description": "The mists of the unknown cling to this place.",
+      "inLineOfSight": false,
       "interest_points": [],
       "resourceNodes": [
         {
-          "id": "node_74s5or1oc",
-          "resourceType": "Herb",
-          "itemId": "Bogbean",
+          "id": "node_2w9rpg6r1",
+          "resourceType": "Ore",
+          "itemId": "Iron_Ore",
           "quantityRemaining": 2,
           "respawnDays": 7,
           "skillCheck": {
@@ -511,13 +468,21 @@
         }
       ],
       "openedContainers": {},
-      "visited": false,
-      "inLineOfSight": false,
       "namingSource": "engine",
-      "visualVariant": 6,
+      "visualVariant": 4,
       "npcs": [],
+      "isQuestReserved": false,
       "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN"
+      "fogOfWarLevel": "HIDDEN",
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      },
+      "connections": "5:R:1,3:R:1"
     },
     "2,-1": {
       "coordinates": [
@@ -525,10 +490,20 @@
         -1
       ],
       "generated": true,
-      "isQuestReserved": false,
-      "biome": "Swamp",
+      "visited": false,
+      "biome": "Hills",
       "name": "Uncharted Territory",
-      "description": "A vast expanse of swamp.",
+      "description": "The mists of the unknown cling to this place.",
+      "inLineOfSight": false,
+      "interest_points": [],
+      "resourceNodes": [],
+      "openedContainers": {},
+      "namingSource": "engine",
+      "visualVariant": 5,
+      "npcs": [],
+      "isQuestReserved": false,
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN",
       "traversable_sides": {
         "N": true,
         "S": true,
@@ -537,16 +512,7 @@
         "SE": true,
         "SW": true
       },
-      "interest_points": [],
-      "resourceNodes": [],
-      "openedContainers": {},
-      "visited": false,
-      "inLineOfSight": false,
-      "namingSource": "engine",
-      "visualVariant": 5,
-      "npcs": [],
-      "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN"
+      "connections": "0:P:1,5:P:1,4:P:1"
     },
     "-2,2": {
       "coordinates": [
@@ -554,25 +520,18 @@
         2
       ],
       "generated": true,
-      "isQuestReserved": false,
-      "biome": "Farmland",
+      "visited": false,
+      "biome": "Jungle",
       "name": "Uncharted Territory",
-      "description": "A vast expanse of farmland.",
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      },
+      "description": "The mists of the unknown cling to this place.",
+      "inLineOfSight": false,
       "interest_points": [],
       "resourceNodes": [
         {
-          "id": "node_ekr29zfel",
-          "resourceType": "Arcane",
-          "itemId": "Hay",
-          "quantityRemaining": 2,
+          "id": "node_bzrcoueuq",
+          "resourceType": "Wood",
+          "itemId": "Ironwood",
+          "quantityRemaining": 3,
           "respawnDays": 7,
           "skillCheck": {
             "skill": "Nature",
@@ -581,13 +540,21 @@
         }
       ],
       "openedContainers": {},
-      "visited": false,
-      "inLineOfSight": false,
       "namingSource": "engine",
-      "visualVariant": 5,
+      "visualVariant": 2,
       "npcs": [],
+      "isQuestReserved": false,
       "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN"
+      "fogOfWarLevel": "HIDDEN",
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      },
+      "connections": "3:P:0"
     },
     "-2,1": {
       "coordinates": [
@@ -595,25 +562,18 @@
         1
       ],
       "generated": true,
-      "isQuestReserved": false,
-      "biome": "Urban",
+      "visited": false,
+      "biome": "Jungle",
       "name": "Uncharted Territory",
-      "description": "A vast expanse of urban.",
-      "traversable_sides": {
-        "N": true,
-        "S": true,
-        "NE": true,
-        "NW": true,
-        "SE": true,
-        "SW": true
-      },
+      "description": "The mists of the unknown cling to this place.",
+      "inLineOfSight": false,
       "interest_points": [],
       "resourceNodes": [
         {
-          "id": "node_9r0i3k2nq",
-          "resourceType": "Arcane",
-          "itemId": "Glass_Vial",
-          "quantityRemaining": 2,
+          "id": "node_q30fvrldv",
+          "resourceType": "Herb",
+          "itemId": "Silverleaf",
+          "quantityRemaining": 3,
           "respawnDays": 7,
           "skillCheck": {
             "skill": "Nature",
@@ -622,26 +582,12 @@
         }
       ],
       "openedContainers": {},
-      "visited": false,
-      "inLineOfSight": false,
       "namingSource": "engine",
-      "visualVariant": 13,
-      "npcs": [
-        "e11f6222-9739-44bd-8387-0f0caa710369"
-      ],
-      "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN"
-    },
-    "2,-2": {
-      "coordinates": [
-        2,
-        -2
-      ],
-      "generated": true,
+      "visualVariant": 1,
+      "npcs": [],
       "isQuestReserved": false,
-      "biome": "Farmland",
-      "name": "Uncharted Territory",
-      "description": "A vast expanse of farmland.",
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN",
       "traversable_sides": {
         "N": true,
         "S": true,
@@ -650,12 +596,56 @@
         "SE": true,
         "SW": true
       },
+      "connections": "0:P:0,2:P:0,3:P:1"
+    },
+    "2,-2": {
+      "coordinates": [
+        2,
+        -2
+      ],
+      "generated": true,
+      "visited": false,
+      "biome": "Mountains",
+      "name": "Uncharted Territory",
+      "description": "The mists of the unknown cling to this place.",
+      "inLineOfSight": false,
+      "interest_points": [],
+      "resourceNodes": [],
+      "openedContainers": {},
+      "namingSource": "engine",
+      "visualVariant": 4,
+      "npcs": [
+        "92866841-d9af-4041-8502-cabd2455bf1e"
+      ],
+      "isQuestReserved": false,
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN",
+      "traversable_sides": {
+        "N": true,
+        "S": true,
+        "NE": true,
+        "NW": true,
+        "SE": true,
+        "SW": true
+      }
+    },
+    "-2,0": {
+      "coordinates": [
+        -2,
+        0
+      ],
+      "generated": true,
+      "visited": false,
+      "biome": "Plains",
+      "name": "Uncharted Territory",
+      "description": "The mists of the unknown cling to this place.",
+      "inLineOfSight": false,
       "interest_points": [],
       "resourceNodes": [
         {
-          "id": "node_zho9k8nj1",
-          "resourceType": "Arcane",
-          "itemId": "Hay",
+          "id": "node_v2psu93i7",
+          "resourceType": "Herb",
+          "itemId": "Kingsbloom",
           "quantityRemaining": 1,
           "respawnDays": 7,
           "skillCheck": {
@@ -665,24 +655,12 @@
         }
       ],
       "openedContainers": {},
-      "visited": false,
-      "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 3,
       "npcs": [],
-      "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN"
-    },
-    "-2,0": {
-      "coordinates": [
-        -2,
-        0
-      ],
-      "generated": true,
       "isQuestReserved": false,
-      "biome": "Tundra",
-      "name": "Uncharted Territory",
-      "description": "A vast expanse of tundra.",
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN",
       "traversable_sides": {
         "N": true,
         "S": true,
@@ -691,17 +669,12 @@
         "SE": true,
         "SW": true
       },
-      "interest_points": [],
-      "resourceNodes": [],
-      "openedContainers": {},
-      "visited": false,
-      "inLineOfSight": false,
-      "namingSource": "engine",
-      "visualVariant": 5,
-      "npcs": [],
-      "isNpcNamed": false,
-      "fogOfWarLevel": "HIDDEN"
+      "connections": "0:R:1,1:R:1,2:R:1"
     }
   },
+  "discoveredHexIds": [
+    "0,0"
+  ],
+  "lastGeneratedTurn": 0,
   "coastlines": []
 }

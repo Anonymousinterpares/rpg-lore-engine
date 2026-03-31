@@ -312,6 +312,22 @@ async function gameREPL(rl: readline.Interface, initialState: GameState) {
                 console.log(`\n${response}`);
             }
 
+            // Detect UI-oriented hints and translate for CLI
+            if (response) {
+                if (response.includes('[You can use the Rest button')) {
+                    console.log('  (CLI: type "rest" to open the rest menu)');
+                }
+                if (response.includes('[Use the Trade button')) {
+                    console.log('  (CLI: type "/trade <npc_name>" to trade)');
+                }
+                if (response.includes('[Click on an NPC')) {
+                    console.log('  (CLI: type "/talk <npc_name>" to talk)');
+                }
+                if (response.includes('[Open the Inventory panel')) {
+                    console.log('  (CLI: type "/inventory" or "/equipment" to manage items)');
+                }
+            }
+
             // Show compact status after each turn
             if (CLI_CONFIG.showCompactStatus) {
                 console.log(`\n  ${compactStatus(gameLoop.getState())}`);

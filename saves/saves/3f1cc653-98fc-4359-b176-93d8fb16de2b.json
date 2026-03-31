@@ -1,0 +1,1222 @@
+{
+  "saveId": "3f1cc653-98fc-4359-b176-93d8fb16de2b",
+  "saveVersion": 1,
+  "worldSeed": 65609,
+  "createdAt": "2026-03-30T23:35:13.658Z",
+  "lastSavedAt": "2026-03-30T23:35:13.658Z",
+  "playTimeSeconds": 0,
+  "explorationBlindnessUntil": 0,
+  "findThePathActiveUntil": 0,
+  "debugLog": [],
+  "character": {
+    "name": "Saver",
+    "sex": "male",
+    "level": 1,
+    "race": "Human",
+    "class": "Fighter",
+    "conditions": [],
+    "stats": {
+      "STR": 16,
+      "DEX": 14,
+      "CON": 15,
+      "INT": 11,
+      "WIS": 13,
+      "CHA": 9
+    },
+    "savingThrowProficiencies": [
+      "STR",
+      "CON"
+    ],
+    "skillProficiencies": [
+      "Athletics",
+      "Intimidation",
+      "Acrobatics",
+      "Animal Handling"
+    ],
+    "weaponProficiencies": [],
+    "hp": {
+      "current": 7,
+      "max": 12,
+      "temp": 0
+    },
+    "deathSaves": {
+      "successes": 0,
+      "failures": 0
+    },
+    "hitDice": {
+      "current": 1,
+      "max": 1,
+      "dieType": "1d10"
+    },
+    "spellSlots": {},
+    "featureUsages": {
+      "Second Wind": {
+        "current": 1,
+        "max": 1,
+        "usageType": "SHORT_REST"
+      }
+    },
+    "cantripsKnown": [],
+    "knownSpells": [],
+    "preparedSpells": [],
+    "spellbook": [],
+    "unseenSpells": [],
+    "ac": 12,
+    "inventory": {
+      "gold": {
+        "cp": 0,
+        "sp": 0,
+        "ep": 0,
+        "gp": 10,
+        "pp": 0
+      },
+      "items": [
+        {
+          "name": "Insignia of rank",
+          "id": "Insignia of rank",
+          "type": "Misc",
+          "weight": 0,
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "a5a1ba8d-6ea8-4ae8-8c61-fe0d68e49414"
+        },
+        {
+          "name": "Dice set",
+          "type": "Adventuring Gear",
+          "cost": {
+            "cp": 0,
+            "sp": 1,
+            "ep": 0,
+            "gp": 0,
+            "pp": 0
+          },
+          "weight": 0,
+          "description": "This item encompasses a wide range of game pieces, including dice and decks of cards (for games such as Three-Dragon Ante). A few common examples appear on the Tools table, but other kinds of gaming sets exist. If you are proficient with a gaming set, you can add your proficiency bonus to ability checks you make to play a game with that set. Each type of gaming set requires a separate proficiency.",
+          "id": "Dice set",
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "8b330f22-3d90-4b37-a1da-5bc36cc5f149"
+        },
+        {
+          "name": "Clothes, common",
+          "type": "Adventuring Gear",
+          "cost": {
+            "cp": 0,
+            "sp": 5,
+            "ep": 0,
+            "gp": 0,
+            "pp": 0
+          },
+          "weight": 3,
+          "id": "Clothes, common",
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "0171a7c2-9b60-4490-9bf3-06da41873cdc"
+        },
+        {
+          "name": "Pouch",
+          "type": "Adventuring Gear",
+          "cost": {
+            "cp": 0,
+            "sp": 5,
+            "ep": 0,
+            "gp": 0,
+            "pp": 0
+          },
+          "weight": 1,
+          "description": "A cloth or leather pouch can hold up to 20 sling bullets or 50 blowgun needles, among other things. A compartmentalized pouch for holding spell components is called a component pouch (described earlier in this section).",
+          "id": "Pouch",
+          "quantity": 1,
+          "equipped": false,
+          "instanceId": "a3757f16-12c9-466f-94d0-00b89e1d777d"
+        }
+      ]
+    },
+    "equipmentSlots": {},
+    "attunedItems": [],
+    "xp": 100,
+    "inspiration": false,
+    "knownEntities": {
+      "monsters": [],
+      "items": []
+    },
+    "biography": {
+      "background": "Soldier",
+      "traits": [
+        "I'm always polite and respectful.",
+        "I'm full of inspiring and cautionary tales from my military experience relevant to almost every combat situation.",
+        "I'm haunted by memories of war. I can't get the images of violence out of my mind.",
+        "I've lost too many friends, and I'm slow to make new ones.",
+        "I can stare down a hell hound without flinching.",
+        "I enjoy being strong and like breaking things.",
+        "I have a crude sense of humor.",
+        "I face problems head-on. A simple, direct solution is the best path to success."
+      ],
+      "ideals": [
+        "Greater Good. Our lot is to lay down our lives in defense of others. (Good)",
+        "Responsibility. I do what must be done and follow orders, even if I don't like them. (Lawful)",
+        "Independence. When people follow orders blindly, they embrace a kind of tyranny. (Chaotic)",
+        "Might. In life as in war, the stronger force prevails. (Evil)",
+        "Live and Let Live. Ideals aren't worth killing over or going to war for. (Neutral)",
+        "Nation. My city, nation, or people are all that matter. (Any)"
+      ],
+      "bonds": [
+        "I would still lay down my life for the people I served with.",
+        "Someone saved my life on the battlefield. To this day, I will never leave a friend behind.",
+        "My honor is my life.",
+        "I'll never forget the crushing defeat my company suffered or the enemies who dealt it.",
+        "Those who fight beside me are those worth dying for.",
+        "I fight for those who cannot fight for themselves."
+      ],
+      "flaws": [
+        "The monstrous enemy we faced in battle still leaves me quivering with fear.",
+        "I have little respect for anyone who is not a proven warrior.",
+        "I made a terrible mistake in battle that cost many lives, and I would do anything to keep that mistake secret.",
+        "My hatred of my enemies is blind and unreasoning.",
+        "I obey the law, even if the law causes misery.",
+        "I'd rather eat my armor than admit when I'm wrong."
+      ],
+      "chronicles": [
+        {
+          "turn": 0,
+          "event": "The adventure begins."
+        }
+      ]
+    }
+  },
+  "companions": [],
+  "mode": "EXPLORATION",
+  "location": {
+    "hexId": "0,1",
+    "coordinates": [
+      0,
+      1
+    ],
+    "droppedItems": [],
+    "combatLoot": [],
+    "previousCoordinates": [
+      0,
+      0
+    ],
+    "previousControlPointOffset": [
+      -0.1052380855619077,
+      -0.5655136914688244
+    ]
+  },
+  "worldTime": {
+    "hour": 13,
+    "minute": 0,
+    "day": 1,
+    "month": 1,
+    "year": 1489,
+    "totalTurns": 2400
+  },
+  "worldMap": {
+    "grid_id": "3f1cc653-98fc-4359-b176-93d8fb16de2b",
+    "hexes": {
+      "0,0": {
+        "coordinates": [
+          0,
+          0
+        ],
+        "name": "Initial Landing Site",
+        "generated": true,
+        "biome": "Plains",
+        "description": "A vast expanse of plains.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_g4maqu1mq",
+            "resourceType": "Wood",
+            "itemId": "Oak_Logs",
+            "quantityRemaining": 2,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "visited": true,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 1,
+        "npcs": []
+      },
+      "0,1": {
+        "coordinates": [
+          0,
+          1
+        ],
+        "name": "Plains (Discovered)",
+        "generated": true,
+        "biome": "Plains",
+        "description": "A vast expanse of plains.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_ae1jgprlv",
+            "resourceType": "Hide",
+            "itemId": "Raw_Hide",
+            "quantityRemaining": 3,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "visited": true,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [],
+        "connections": "0:R:1,1:R:1,5:R:1"
+      },
+      "0,-1": {
+        "coordinates": [
+          0,
+          -1
+        ],
+        "name": "Hills (Uncharted Territory)",
+        "generated": true,
+        "biome": "Hills",
+        "description": "A vast expanse of hills.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": [
+          "f47ff6b3-3ddf-4419-a147-27afe78b32cf"
+        ]
+      },
+      "1,0": {
+        "coordinates": [
+          1,
+          0
+        ],
+        "name": "Plains (Uncharted Territory)",
+        "generated": true,
+        "biome": "Plains",
+        "description": "A vast expanse of plains.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_2u8kkhbbg",
+            "resourceType": "Hide",
+            "itemId": "Raw_Hide",
+            "quantityRemaining": 2,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": [],
+        "connections": "0:R:1,1:R:1,2:R:1"
+      },
+      "-1,1": {
+        "coordinates": [
+          -1,
+          1
+        ],
+        "name": "Plains (Uncharted Territory)",
+        "generated": true,
+        "biome": "Plains",
+        "description": "A vast expanse of plains.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 2,
+        "npcs": [
+          "3b445b16-5feb-4d21-b840-6be3a57b8d91"
+        ],
+        "connections": "0:R:1,5:R:1,4:R:1"
+      },
+      "1,-1": {
+        "coordinates": [
+          1,
+          -1
+        ],
+        "name": "Mountains (Uncharted Territory)",
+        "generated": true,
+        "biome": "Mountains",
+        "description": "A vast expanse of mountains.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": []
+      },
+      "-1,0": {
+        "coordinates": [
+          -1,
+          0
+        ],
+        "name": "Jungle (Uncharted Territory)",
+        "generated": true,
+        "biome": "Jungle",
+        "description": "A vast expanse of jungle.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": true,
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": [],
+        "connections": "3:P:0,4:P:1"
+      },
+      "0,2": {
+        "coordinates": [
+          0,
+          2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Jungle (Uncharted Territory)",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": true,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "3:P:1,4:P:0,0:P:1,1:P:1,5:P:0"
+      },
+      "1,1": {
+        "coordinates": [
+          1,
+          1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Jungle (Uncharted Territory)",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": true,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "3:P:1,4:P:1,2:P:1,0:P:1"
+      },
+      "-1,2": {
+        "coordinates": [
+          -1,
+          2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Jungle (Uncharted Territory)",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": true,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_kgqumzykh",
+            "resourceType": "Herb",
+            "itemId": "Kingsbloom",
+            "quantityRemaining": 3,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "3:P:1,1:P:0,2:P:1,4:P:0,0:P:0"
+      },
+      "0,-2": {
+        "coordinates": [
+          0,
+          -2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Mountains",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": [
+          "c66cd3a7-3413-4d34-9c81-8375b3911d87"
+        ],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "1,-2": {
+        "coordinates": [
+          1,
+          -2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Mountains",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "-1,-1": {
+        "coordinates": [
+          -1,
+          -1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Hills",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "0:P:0,5:P:1"
+      },
+      "2,0": {
+        "coordinates": [
+          2,
+          0
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_3agw4hoc3",
+            "resourceType": "Hide",
+            "itemId": "Raw_Hide",
+            "quantityRemaining": 1,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [
+          "37050e1f-55a4-466f-9671-f131c7c0f422"
+        ],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "5:R:1,4:R:1,3:R:1,0:R:1"
+      },
+      "2,-1": {
+        "coordinates": [
+          2,
+          -1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Hills",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": [
+          "701dcb56-0bf7-4363-a288-78c148def016"
+        ],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "0:P:1,5:P:1"
+      },
+      "-2,2": {
+        "coordinates": [
+          -2,
+          2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 2,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "1:P:0,2:P:1"
+      },
+      "-2,1": {
+        "coordinates": [
+          -2,
+          1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 1,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "1:P:1,3:P:1"
+      },
+      "2,-2": {
+        "coordinates": [
+          2,
+          -2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Mountains",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        }
+      },
+      "-2,0": {
+        "coordinates": [
+          -2,
+          0
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_84a2bqcbk",
+            "resourceType": "Herb",
+            "itemId": "Kingsbloom",
+            "quantityRemaining": 1,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "0:R:1,1:R:1,2:R:1"
+      },
+      "0,3": {
+        "coordinates": [
+          0,
+          3
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 2,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "3:R:1,4:R:1"
+      },
+      "1,2": {
+        "coordinates": [
+          1,
+          2
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Plains",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 1,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "3:R:1,4:R:1,2:R:1"
+      },
+      "-1,3": {
+        "coordinates": [
+          -1,
+          3
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [
+          {
+            "id": "node_fuv8trcui",
+            "resourceType": "Herb",
+            "itemId": "Silverleaf",
+            "quantityRemaining": 2,
+            "respawnDays": 7,
+            "skillCheck": {
+              "skill": "Nature",
+              "dc": 10
+            }
+          }
+        ],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "3:P:0,1:P:1,2:P:0,4:P:0"
+      },
+      "2,1": {
+        "coordinates": [
+          2,
+          1
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "3:P:1,5:P:1"
+      },
+      "-2,3": {
+        "coordinates": [
+          -2,
+          3
+        ],
+        "generated": true,
+        "visited": false,
+        "biome": "Jungle",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "inLineOfSight": false,
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "namingSource": "engine",
+        "visualVariant": 1,
+        "npcs": [],
+        "isQuestReserved": false,
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "connections": "1:P:0"
+      }
+    },
+    "discoveredHexIds": [
+      "0,0"
+    ],
+    "lastGeneratedTurn": 0,
+    "coastlines": []
+  },
+  "subLocations": [],
+  "worldNpcs": [
+    {
+      "id": "c66cd3a7-3413-4d34-9c81-8375b3911d87",
+      "name": "Elowen Stormborn",
+      "traits": [
+        "Charismatic",
+        "Neutral",
+        "Mercenary"
+      ],
+      "isMerchant": false,
+      "relationship": {
+        "standing": 0,
+        "interactionLog": []
+      },
+      "dialogue_triggers": [],
+      "inventory": [],
+      "availableQuests": [],
+      "conversationHistory": [],
+      "role": "Prospector",
+      "stats": {
+        "STR": 10,
+        "DEX": 10,
+        "CON": 10,
+        "INT": 10,
+        "WIS": 10,
+        "CHA": 10
+      }
+    },
+    {
+      "id": "37050e1f-55a4-466f-9671-f131c7c0f422",
+      "name": "Halia Oakheart",
+      "traits": [
+        "Alliance Loyalist",
+        "Boredom (Adventure)",
+        "Optimistic",
+        "Good"
+      ],
+      "isMerchant": false,
+      "relationship": {
+        "standing": 0,
+        "interactionLog": []
+      },
+      "dialogue_triggers": [],
+      "inventory": [],
+      "availableQuests": [],
+      "conversationHistory": [],
+      "factionId": "lords_alliance",
+      "role": "Mercenary",
+      "stats": {
+        "STR": 10,
+        "DEX": 10,
+        "CON": 10,
+        "INT": 10,
+        "WIS": 10,
+        "CHA": 10
+      }
+    },
+    {
+      "id": "701dcb56-0bf7-4363-a288-78c148def016",
+      "name": "Bryn Oakheart",
+      "traits": [
+        "Zhentarim Mercenary",
+        "Redemption (Guilt)",
+        "Diplomat",
+        "Evil"
+      ],
+      "isMerchant": false,
+      "relationship": {
+        "standing": 0,
+        "interactionLog": []
+      },
+      "dialogue_triggers": [],
+      "inventory": [],
+      "availableQuests": [],
+      "conversationHistory": [],
+      "factionId": "zhentarim",
+      "role": "Bandit",
+      "stats": {
+        "STR": 10,
+        "DEX": 10,
+        "CON": 10,
+        "INT": 10,
+        "WIS": 10,
+        "CHA": 10
+      }
+    }
+  ],
+  "activeQuests": [
+    {
+      "id": "tutorial_01",
+      "title": "The First Step",
+      "description": "You awake in a strange clearing. The air is fresh, but the silence is heavy. You must get your bearings.",
+      "status": "ACTIVE",
+      "turnAccepted": 0,
+      "isNew": true,
+      "objectives": [
+        {
+          "id": "obj_master_booklet",
+          "type": "EXPLORE",
+          "targetId": "tutorial",
+          "isHidden": false,
+          "description": "Master the Booklet: View all pages (Character, Map, Quests, Equipment, Codex)",
+          "isCompleted": false,
+          "currentProgress": 0,
+          "maxProgress": 5
+        },
+        {
+          "id": "obj_study_gear",
+          "type": "EXPLORE",
+          "targetId": "tutorial",
+          "isHidden": false,
+          "description": "Study Your Gear: Examine an item in your inventory",
+          "isCompleted": false,
+          "currentProgress": 0,
+          "maxProgress": 1
+        },
+        {
+          "id": "obj_begin_journey",
+          "type": "EXPLORE",
+          "targetId": "tutorial",
+          "isHidden": false,
+          "description": "Begin the Journey: Move to a neighboring hex",
+          "isCompleted": true,
+          "currentProgress": 1,
+          "maxProgress": 1
+        }
+      ],
+      "rewards": {
+        "xp": 50,
+        "gold": {
+          "gp": 10,
+          "sp": 0,
+          "cp": 0,
+          "ep": 0,
+          "pp": 0
+        },
+        "items": []
+      }
+    }
+  ],
+  "factions": [],
+  "storySummary": "started their journey as a Human Fighter with the Soldier background.",
+  "lastNarrative": "",
+  "conversationHistory": [
+    {
+      "role": "system",
+      "content": "[System Error] Narrative generation failed: terminated",
+      "turnNumber": 2400
+    },
+    {
+      "role": "system",
+      "content": "[System Error] Narrative generation failed: fetch failed",
+      "turnNumber": 2400
+    }
+  ],
+  "triggeredEvents": [
+    "moved_hex"
+  ],
+  "weather": {
+    "type": "Blizzard",
+    "durationMinutes": 30,
+    "intensity": 1
+  },
+  "travelPace": "Normal",
+  "clearedHexes": {},
+  "settings": {
+    "permadeath": false,
+    "variantEncumbrance": false,
+    "milestoneLeveling": false,
+    "criticalFumbleEffects": false,
+    "difficultyModifier": 1,
+    "inspirationEnabled": true,
+    "multiclassingAllowed": true,
+    "maxConversationHistoryTurns": 50,
+    "video": {
+      "fullscreen": false,
+      "vsync": true,
+      "resolutionScale": 1
+    },
+    "audio": {
+      "master": 0.8,
+      "music": 0.5
+    },
+    "gameplay": {
+      "difficulty": "normal",
+      "tutorials": true,
+      "autosave": false,
+      "developerMode": false
+    },
+    "ai": {}
+  },
+  "codexEntries": [],
+  "notifications": [
+    {
+      "id": "err_1774913980680",
+      "type": "SYSTEM_ERROR",
+      "message": "terminated",
+      "data": null,
+      "isRead": false,
+      "createdAt": 1774913980680
+    },
+    {
+      "id": "err_1774913980747",
+      "type": "SYSTEM_ERROR",
+      "message": "fetch failed",
+      "data": null,
+      "isRead": false,
+      "createdAt": 1774913980747
+    }
+  ]
+}

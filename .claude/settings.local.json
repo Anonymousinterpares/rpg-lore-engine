@@ -15,7 +15,9 @@
       "Bash(node -e \"const l = require\\(''lucide-react''\\); const icons = Object.keys\\(l\\).filter\\(k => k.match\\(/Dice|Door|Run|Flee|Skull|Heart/i\\)\\); console.log\\(icons.join\\('', ''\\)\\)\")",
       "Bash(npx vite:*)",
       "Bash(npx tsx -e \":*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(npm run:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }

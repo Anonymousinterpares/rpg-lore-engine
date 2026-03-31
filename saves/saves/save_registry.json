@@ -139,6 +139,46 @@
       "lastSaved": "2026-03-30T22:25:35.148Z",
       "playTimeSeconds": 0,
       "locationSummary": "0,1"
+    },
+    {
+      "id": "bedc0615-71ba-4a0a-abb1-bfc00ae9d818",
+      "slotName": "comprehensive_test",
+      "characterName": "Saver",
+      "characterLevel": 1,
+      "characterClass": "Fighter",
+      "lastSaved": "2026-03-30T23:06:21.350Z",
+      "playTimeSeconds": 0,
+      "locationSummary": "0,1"
+    },
+    {
+      "id": "4873e658-aa09-4b0b-891e-f489ad9b081b",
+      "slotName": "comprehensive_test",
+      "characterName": "Saver",
+      "characterLevel": 1,
+      "characterClass": "Fighter",
+      "lastSaved": "2026-03-30T23:13:48.241Z",
+      "playTimeSeconds": 0,
+      "locationSummary": "0,1"
+    },
+    {
+      "id": "14822e2d-3d54-4f5b-a80d-9d1450f89658",
+      "slotName": "comprehensive_test",
+      "characterName": "Saver",
+      "characterLevel": 1,
+      "characterClass": "Fighter",
+      "lastSaved": "2026-03-30T23:23:41.743Z",
+      "playTimeSeconds": 0,
+      "locationSummary": "0,1"
+    },
+    {
+      "id": "3f1cc653-98fc-4359-b176-93d8fb16de2b",
+      "slotName": "comprehensive_test",
+      "characterName": "Saver",
+      "characterLevel": 1,
+      "characterClass": "Fighter",
+      "lastSaved": "2026-03-30T23:39:40.750Z",
+      "playTimeSeconds": 0,
+      "locationSummary": "0,1"
     }
   ]
 }

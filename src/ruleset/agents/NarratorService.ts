@@ -205,6 +205,28 @@ TASK:
 `;
         }
 
+        prompt += `
+## PLAYER ACTION GUIDANCE
+ONLY add a guidance hint when the player EXPLICITLY expresses one of the intents below.
+Do NOT add hints proactively or when the intent is ambiguous. When in doubt, omit the hint.
+
+When the player EXPLICITLY wants to rest, camp, sleep, make camp, set up for the night, or recover:
+1. Narrate the scene: describe finding shelter, building a fire, settling in.
+2. End your narrative with this EXACT line on its own paragraph:
+   "[You can use the Rest button to rest and recover.]"
+3. Do NOT claim the character has rested, recovered HP, or restored spell slots.
+   The rest system handles all mechanical recovery — you only describe the atmosphere.
+
+When the player EXPLICITLY asks to trade, shop, buy, or sell items:
+- End with: "[Use the Trade button or approach a merchant to open the trading interface.]"
+
+When the player EXPLICITLY asks to talk to, speak with, or converse with a specific NPC:
+- End with: "[Click on an NPC or use the Talk button to start a conversation.]"
+
+When the player EXPLICITLY asks to check, open, or manage their inventory or equipment:
+- End with: "[Open the Inventory panel to manage your items and equipment.]"
+`;
+
         if (context.hex && context.hex.neighbors && context.hex.neighbors.length > 0) {
             const visible = context.hex.neighbors.filter((n: any) => n.distance === 1);
             const horizon = context.hex.neighbors.filter((n: any) => n.distance === 2);
