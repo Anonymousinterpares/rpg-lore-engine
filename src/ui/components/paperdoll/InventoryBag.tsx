@@ -127,6 +127,12 @@ const InventoryBag: React.FC<InventoryBagProps> = ({ items, gold, onItemEquipped
                         {item.equipped && (
                             <span className={styles.equippedBadge}>E</span>
                         )}
+                        {item.identified === false && (() => {
+                            const badgeColors: Record<string, string> = {
+                                uncommon: '#1eff00', rare: '#0070dd', 'very-rare': '#a335ee', legendary: '#ff8000',
+                            };
+                            return <span className={styles.equippedBadge} style={{ background: badgeColors[item.rarity || ''] || '#888', right: 'auto', left: 2, color: '#000', fontWeight: 700 }}>?</span>;
+                        })()}
                     </div>
                 ))}
 

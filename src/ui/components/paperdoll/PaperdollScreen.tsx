@@ -59,6 +59,11 @@ function mapToPaperdollItem(item: any): PaperdollItem {
         isForged: item.isForged || false,
         forgeSource: item.forgeSource,
         itemLevel: item.itemLevel,
+        // Identification
+        identified: item.identified !== false, // default true for non-forged items
+        trueRarity: item.trueRarity,
+        trueName: item.trueName,
+        lore: item.lore,
     };
 }
 

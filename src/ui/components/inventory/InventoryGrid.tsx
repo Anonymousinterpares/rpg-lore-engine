@@ -204,6 +204,13 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                         </div>
                         {item.quantity > 1 && <span className={styles.quantity}>{item.quantity}</span>}
                         {item.equipped && <div className={styles.equippedBadge}>E</div>}
+                        {(item as any).identified === false && (() => {
+                            const badgeColors: Record<string, string> = {
+                                uncommon: '#1eff00', rare: '#0070dd', 'very-rare': '#a335ee', legendary: '#ff8000',
+                            };
+                            const perceivedRarity = ((item as any).rarity || '').toLowerCase().replace(' ', '-');
+                            return <div className={styles.equippedBadge} style={{ background: badgeColors[perceivedRarity] || '#888', right: 'auto', left: 2, color: '#000', fontWeight: 700 }}>?</div>;
+                        })()}
                     </div>;
                 })}
                 {/* Fill empty slots */}
@@ -268,6 +275,29 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                 if (!state) return null;
                 const validation = EquipmentEngine.canEquip(state.character, fullItem as any);
                 const equippableTypes = ['weapon', 'armor', 'shield', 'ring', 'amulet', 'cloak', 'belt', 'boots', 'gloves', 'bracers', 'helmet'];
+                const isUnidentified = (contextMenu.item as any).identified === false;
+
+                // Determine examine disabled reason
+                let examineDisabledReason: string | undefined;
+                if (isUnidentified) {
+                    const pc = state.character;
+                    const hasArcana = pc.skillProficiencies?.includes('Arcana' as any);
+                    const hasInvestigation = pc.skillProficiencies?.includes('Investigation' as any);
+                    if (!hasArcana && !hasInvestigation) {
+                        examineDisabledReason = `${pc.name} lacks Arcana or Investigation skill. Visit a merchant for identification.`;
+                    } else {
+                        const cooldownKey = `examine_${(contextMenu.item as any).instanceId}`;
+                        const lastAttempt = (state as any)._examineCooldowns?.[cooldownKey];
+                        const currentTurn = state.worldTime?.totalTurns || 0;
+                        const cooldownTurns = 14400;
+                        if (lastAttempt !== undefined && (currentTurn - lastAttempt) < cooldownTurns) {
+                            const remaining = cooldownTurns - (currentTurn - lastAttempt);
+                            const hoursLeft = Math.ceil(remaining / 600);
+                            examineDisabledReason = `Already attempted. Try again in ~${hoursLeft}h.`;
+                        }
+                    }
+                }
+
                 return (
                     <ItemContextMenu
                         x={contextMenu.x}
@@ -276,6 +306,8 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                         isEquippable={equippableTypes.some(t => (contextMenu.item.type || '').toLowerCase().includes(t))}
                         equipAllowed={validation.valid}
                         equipReason={validation.reason}
+                        isUnidentified={isUnidentified}
+                        examineDisabledReason={examineDisabledReason}
                         onClose={() => setContextMenu(null)}
                         onAction={handleAction}
                     />

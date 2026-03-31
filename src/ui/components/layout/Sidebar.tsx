@@ -37,6 +37,8 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter, onCompass, on
             await engine.pickupItem(item.instanceId);
         } else if (action === 'pickupLoot') {
             await engine.pickupCombatLoot!(item.instanceId);
+        } else if (action === 'examine') {
+            await engine.processTurn('/examine ' + item.instanceId);
         }
     };
 

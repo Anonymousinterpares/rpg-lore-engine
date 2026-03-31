@@ -56,13 +56,17 @@ export class ItemForgeEngine {
             monsterName: params.monsterName || 'Unknown',
         };
 
+        let forged: Item;
         switch (params.category) {
-            case 'weapon':  return this.forgeWeapon(base, itemLevel, rarity, context);
-            case 'armor':   return this.forgeArmor(base, itemLevel, rarity, context);
-            case 'shield':  return this.forgeArmor(base, itemLevel, rarity, context);
-            case 'jewelry': return this.forgeJewelry(base, itemLevel, rarity, context);
+            case 'weapon':  forged = this.forgeWeapon(base, itemLevel, rarity, context); break;
+            case 'armor':   forged = this.forgeArmor(base, itemLevel, rarity, context); break;
+            case 'shield':  forged = this.forgeArmor(base, itemLevel, rarity, context); break;
+            case 'jewelry': forged = this.forgeJewelry(base, itemLevel, rarity, context); break;
             default:        return base;
         }
+
+        // Apply identification masking for Rare+ items
+        return this.applyIdentificationMask(forged);
     }
 
     /**
@@ -92,8 +96,91 @@ export class ItemForgeEngine {
     }
 
     /**
-     * Generate a default name for the item (without LLM).
+     * Reveals an item's true identity: restores true name, rarity, cost, and lore.
+     * Returns a message describing what was discovered.
      */
+    static identifyItem(item: any, method: 'skill' | 'spell' | 'merchant'): string {
+        if (item.identified !== false) return `${item.name} is already identified.`;
+
+        const trueName = item.trueName || item.name;
+        const trueRarity = item.trueRarity || item.rarity;
+
+        item.identified = true;
+        item.name = trueName;
+        item.rarity = trueRarity;
+        item.identifiedBy = method;
+
+        // Restore true cost
+        const baseGp = DataManager.getItem(item.id)?.cost?.gp || 1;
+        item.cost = { ...item.cost, gp: baseGp * RARITY_VALUE_MULTIPLIER[trueRarity as Rarity] };
+
+        // Reveal lore as description if available
+        if (item.lore && !item.description) {
+            item.description = item.lore;
+        }
+
+        return `Identified: ${trueName} (${trueRarity})!`;
+    }
+
+    /**
+     * Returns the Arcana/Investigation DC for identifying an item.
+     */
+    static getIdentifyDC(item: any): number {
+        const trueRarity = item.trueRarity || item.rarity;
+        const dcMap: Record<string, number> = { 'Rare': 12, 'Very Rare': 15, 'Legendary': 18 };
+        return dcMap[trueRarity] || 15;
+    }
+
+    /**
+     * Returns the gold cost for a merchant to identify an item.
+     */
+    static getMerchantIdentifyCost(item: any): number {
+        const trueRarity = item.trueRarity || item.rarity;
+        const costMap: Record<string, number> = { 'Rare': 50, 'Very Rare': 200, 'Legendary': 1000 };
+        return costMap[trueRarity] || 50;
+    }
+
+    // Rarities that require identification
+    private static readonly IDENTIFY_RARITIES: Rarity[] = ['Rare', 'Very Rare', 'Legendary'];
+    private static readonly RARITY_DOWNGRADE: Record<string, Rarity> = {
+        'Rare': 'Uncommon',
+        'Very Rare': 'Rare',
+        'Legendary': 'Very Rare',
+    };
+
+    /**
+     * For Rare+ items: masks true identity. Player sees one rarity lower,
+     * mechanical default name, hidden magical properties (but bonuses still apply).
+     */
+    static applyIdentificationMask(item: Item): Item {
+        const rarity = (item as any).rarity as Rarity;
+        if (!this.IDENTIFY_RARITIES.includes(rarity)) return item;
+
+        const perceived = this.RARITY_DOWNGRADE[rarity] || 'Common';
+        // Build a perceived name using the base item type (strip existing rarity/element from name)
+        const baseName = (item as any).id || item.name; // id holds base item name (e.g., "Longsword")
+        const displayBase = this.normalizeBaseName(baseName, item.type);
+        const hitMod = (item as any).modifiers?.find((m: any) => m.type === 'HitBonus')?.value || 0;
+        const acMod = (item as any).modifiers?.find((m: any) => m.type === 'ACBonus')?.value || 0;
+        const bonusVal = hitMod || acMod;
+        const perceivedName = this.generateDefaultName(displayBase, perceived, bonusVal, []);
+
+        return {
+            ...item,
+            // Store truth
+            trueRarity: rarity,
+            trueName: item.name, // will be overwritten by LLM naming later
+            // Show perceived
+            identified: false,
+            perceivedRarity: perceived,
+            perceivedName: perceivedName,
+            name: perceivedName,
+            rarity: perceived,
+            // Cost reflects perceived rarity (true cost restored on identification)
+            cost: { ...item.cost, gp: (DataManager.getItem((item as any).id)?.cost?.gp || 1) * RARITY_VALUE_MULTIPLIER[perceived] },
+        } as any;
+    }
+
     /**
      * Returns a display-friendly base name (e.g., "Padded" → "Padded Armor").
      */

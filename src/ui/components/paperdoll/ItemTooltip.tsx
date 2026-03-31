@@ -54,7 +54,10 @@ const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, anchorRect, visible }) 
 
             <div className={styles.typeLine}>
                 {item.type}
-                {item.isMagic && <span className={styles.magicBadge}>Magic</span>}
+                {item.identified === false
+                    ? <span className={styles.magicBadge} style={{ background: '#555', color: '#ccc' }}>Unidentified</span>
+                    : item.isMagic && <span className={styles.magicBadge}>Magic</span>
+                }
                 {item.attunement && <span className={styles.attuneBadge}>Attunement</span>}
             </div>
 
@@ -138,8 +141,8 @@ const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, anchorRect, visible }) 
                 </>
             )}
 
-            {/* Magical Properties */}
-            {item.magicalProperties && item.magicalProperties.length > 0 && (
+            {/* Magical Properties (hidden when unidentified) */}
+            {item.identified !== false && item.magicalProperties && item.magicalProperties.length > 0 && (
                 <>
                     <div className={styles.divider} />
                     {item.magicalProperties.map((mp, i) => (
@@ -150,14 +153,23 @@ const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, anchorRect, visible }) 
                 </>
             )}
 
-            {item.description && (
+            {item.identified === false && (
+                <>
+                    <div className={styles.divider} />
+                    <p className={styles.description} style={{ color: '#999', fontStyle: 'italic' }}>
+                        This item's true nature has not been revealed. Use Examine or visit a merchant to identify.
+                    </p>
+                </>
+            )}
+
+            {item.identified !== false && item.description && (
                 <>
                     <div className={styles.divider} />
                     <p className={styles.description}>{item.description}</p>
                 </>
             )}
 
-            {item.forgeSource && (
+            {item.identified !== false && item.forgeSource && (
                 <p className={styles.description} style={{ color: '#888', fontSize: '0.75rem' }}>
                     Source: {item.forgeSource}
                 </p>

@@ -7,6 +7,7 @@
         0
       ],
       "generated": true,
+      "isQuestReserved": false,
       "biome": "Plains",
       "name": "Initial Landing Site",
       "description": "A vast expanse of plains.",
@@ -27,7 +28,9 @@
       "visualVariant": 1,
       "npcs": [
         "518d605b-96bd-4c69-8978-d3a03aaee76e"
-      ]
+      ],
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN"
     },
     "0,1": {
       "coordinates": [
@@ -35,6 +38,7 @@
         1
       ],
       "generated": true,
+      "isQuestReserved": false,
       "biome": "Plains",
       "name": "Plains (Uncharted Territory)",
       "description": "A vast expanse of plains.",
@@ -55,7 +59,9 @@
       "visualVariant": 4,
       "npcs": [
         "93c14aa2-abdf-4c6f-a161-8884ae940996"
-      ]
+      ],
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN"
     },
     "0,-1": {
       "coordinates": [
@@ -63,6 +69,7 @@
         -1
       ],
       "generated": true,
+      "isQuestReserved": false,
       "biome": "Hills",
       "name": "Hills (Uncharted Territory)",
       "description": "A vast expanse of hills.",
@@ -81,7 +88,9 @@
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 5,
-      "npcs": []
+      "npcs": [],
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN"
     },
     "1,0": {
       "coordinates": [
@@ -89,6 +98,7 @@
         0
       ],
       "generated": true,
+      "isQuestReserved": false,
       "biome": "Plains",
       "name": "Plains (Uncharted Territory)",
       "description": "A vast expanse of plains.",
@@ -109,7 +119,9 @@
       "visualVariant": 3,
       "npcs": [
         "94286572-816d-4732-84ca-47c0334a1a01"
-      ]
+      ],
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN"
     },
     "-1,1": {
       "coordinates": [
@@ -117,6 +129,7 @@
         1
       ],
       "generated": true,
+      "isQuestReserved": false,
       "biome": "Jungle",
       "name": "Jungle (Uncharted Territory)",
       "description": "A vast expanse of jungle.",
@@ -135,7 +148,9 @@
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 5,
-      "npcs": []
+      "npcs": [],
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN"
     },
     "1,-1": {
       "coordinates": [
@@ -143,6 +158,7 @@
         -1
       ],
       "generated": true,
+      "isQuestReserved": false,
       "biome": "Hills",
       "name": "Hills (Uncharted Territory)",
       "description": "A vast expanse of hills.",
@@ -161,7 +177,9 @@
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 4,
-      "npcs": []
+      "npcs": [],
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN"
     },
     "-1,0": {
       "coordinates": [
@@ -169,6 +187,7 @@
         0
       ],
       "generated": true,
+      "isQuestReserved": false,
       "biome": "Plains",
       "name": "Plains (Uncharted Territory)",
       "description": "A vast expanse of plains.",
@@ -199,7 +218,9 @@
       "inLineOfSight": true,
       "namingSource": "engine",
       "visualVariant": 2,
-      "npcs": []
+      "npcs": [],
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN"
     },
     "0,2": {
       "coordinates": [
@@ -207,6 +228,7 @@
         2
       ],
       "generated": true,
+      "isQuestReserved": false,
       "biome": "Plains",
       "name": "Uncharted Territory",
       "description": "A vast expanse of plains.",
@@ -237,7 +259,9 @@
       "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 3,
-      "npcs": []
+      "npcs": [],
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN"
     },
     "1,1": {
       "coordinates": [
@@ -245,6 +269,7 @@
         1
       ],
       "generated": true,
+      "isQuestReserved": false,
       "biome": "Plains",
       "name": "Uncharted Territory",
       "description": "A vast expanse of plains.",
@@ -275,7 +300,9 @@
       "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 2,
-      "npcs": []
+      "npcs": [],
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN"
     },
     "-1,2": {
       "coordinates": [
@@ -283,6 +310,7 @@
         2
       ],
       "generated": true,
+      "isQuestReserved": false,
       "biome": "Jungle",
       "name": "Uncharted Territory",
       "description": "A vast expanse of jungle.",
@@ -313,7 +341,9 @@
       "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 3,
-      "npcs": []
+      "npcs": [],
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN"
     },
     "0,-2": {
       "coordinates": [
@@ -321,6 +351,7 @@
         -2
       ],
       "generated": true,
+      "isQuestReserved": false,
       "biome": "Hills",
       "name": "Uncharted Territory",
       "description": "A vast expanse of hills.",
@@ -339,7 +370,9 @@
       "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 4,
-      "npcs": []
+      "npcs": [],
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN"
     },
     "1,-2": {
       "coordinates": [
@@ -347,6 +380,7 @@
         -2
       ],
       "generated": true,
+      "isQuestReserved": false,
       "biome": "Mountains",
       "name": "Uncharted Territory",
       "description": "A vast expanse of mountains.",
@@ -365,7 +399,9 @@
       "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 3,
-      "npcs": []
+      "npcs": [],
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN"
     },
     "-1,-1": {
       "coordinates": [
@@ -373,6 +409,7 @@
         -1
       ],
       "generated": true,
+      "isQuestReserved": false,
       "biome": "Plains",
       "name": "Uncharted Territory",
       "description": "A vast expanse of plains.",
@@ -405,7 +442,9 @@
       "visualVariant": 4,
       "npcs": [
         "263f0bc5-7fac-4783-a548-206925fef0f1"
-      ]
+      ],
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN"
     },
     "2,0": {
       "coordinates": [
@@ -413,6 +452,7 @@
         0
       ],
       "generated": true,
+      "isQuestReserved": false,
       "biome": "Plains",
       "name": "Uncharted Territory",
       "description": "A vast expanse of plains.",
@@ -431,7 +471,9 @@
       "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 1,
-      "npcs": []
+      "npcs": [],
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN"
     },
     "2,-1": {
       "coordinates": [
@@ -439,6 +481,7 @@
         -1
       ],
       "generated": true,
+      "isQuestReserved": false,
       "biome": "Hills",
       "name": "Uncharted Territory",
       "description": "A vast expanse of hills.",
@@ -459,7 +502,9 @@
       "visualVariant": 5,
       "npcs": [
         "0f5169cf-2be2-402f-b53f-4a745ff4ff90"
-      ]
+      ],
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN"
     },
     "-2,2": {
       "coordinates": [
@@ -467,6 +512,7 @@
         2
       ],
       "generated": true,
+      "isQuestReserved": false,
       "biome": "Jungle",
       "name": "Uncharted Territory",
       "description": "A vast expanse of jungle.",
@@ -485,7 +531,9 @@
       "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 4,
-      "npcs": []
+      "npcs": [],
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN"
     },
     "-2,1": {
       "coordinates": [
@@ -493,6 +541,7 @@
         1
       ],
       "generated": true,
+      "isQuestReserved": false,
       "biome": "Jungle",
       "name": "Uncharted Territory",
       "description": "A vast expanse of jungle.",
@@ -511,7 +560,9 @@
       "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 2,
-      "npcs": []
+      "npcs": [],
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN"
     },
     "2,-2": {
       "coordinates": [
@@ -519,6 +570,7 @@
         -2
       ],
       "generated": true,
+      "isQuestReserved": false,
       "biome": "Mountains",
       "name": "Uncharted Territory",
       "description": "A vast expanse of mountains.",
@@ -537,7 +589,9 @@
       "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 5,
-      "npcs": []
+      "npcs": [],
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN"
     },
     "-2,0": {
       "coordinates": [
@@ -545,6 +599,7 @@
         0
       ],
       "generated": true,
+      "isQuestReserved": false,
       "biome": "Plains",
       "name": "Uncharted Territory",
       "description": "A vast expanse of plains.",
@@ -575,7 +630,9 @@
       "inLineOfSight": false,
       "namingSource": "engine",
       "visualVariant": 3,
-      "npcs": []
+      "npcs": [],
+      "isNpcNamed": false,
+      "fogOfWarLevel": "HIDDEN"
     }
   },
   "coastlines": []

@@ -23,6 +23,10 @@ interface Item {
     isForged?: boolean;
     forgeSource?: string;
     isMagic?: boolean;
+    identified?: boolean;
+    trueName?: string;
+    trueRarity?: string;
+    lore?: string;
 }
 
 interface ItemDatasheetProps {
@@ -138,8 +142,8 @@ const ItemDatasheet: React.FC<ItemDatasheetProps> = ({ item, onClose }) => {
                         </div>
                     )}
 
-                    {/* Magical Properties */}
-                    {item.magicalProperties && item.magicalProperties.length > 0 && (
+                    {/* Magical Properties (hidden when unidentified) */}
+                    {item.identified !== false && item.magicalProperties && item.magicalProperties.length > 0 && (
                         <div className={styles.statsSection}>
                             {item.magicalProperties.map((mp, i) => (
                                 <div key={i} className={styles.statLine} style={{ color: '#c4b5fd' }}>
@@ -151,11 +155,17 @@ const ItemDatasheet: React.FC<ItemDatasheetProps> = ({ item, onClose }) => {
 
                     <div className={styles.divider} />
 
-                    <div className={styles.description}>
-                        {item.description || "No description available."}
-                    </div>
+                    {item.identified === false ? (
+                        <div className={styles.description} style={{ color: '#999', fontStyle: 'italic' }}>
+                            This item's true nature has not been revealed. Use Examine or visit a merchant to identify.
+                        </div>
+                    ) : (
+                        <div className={styles.description}>
+                            {item.description || "No description available."}
+                        </div>
+                    )}
 
-                    {item.forgeSource && (
+                    {item.identified !== false && item.forgeSource && (
                         <div style={{ color: '#888', fontSize: '0.75rem', marginTop: 8, fontStyle: 'italic' }}>
                             Source: {item.forgeSource}
                         </div>

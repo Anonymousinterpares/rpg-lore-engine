@@ -30,6 +30,11 @@ export interface PaperdollItem {
     isForged?: boolean;
     forgeSource?: string;
     itemLevel?: number;
+    // Identification
+    identified?: boolean;
+    trueRarity?: string;
+    trueName?: string;
+    lore?: string;
 }
 
 export type SlotId =

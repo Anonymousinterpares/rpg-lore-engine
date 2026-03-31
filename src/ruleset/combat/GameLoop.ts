@@ -35,6 +35,7 @@ import { NPCMovementEngine } from './managers/NPCMovementEngine';
 import { QuestEngine } from './managers/QuestEngine';
 import { QuestGenerator } from './managers/QuestGenerator';
 import { Dice } from './Dice';
+import { ItemForgeEngine } from './ItemForgeEngine';
 import { LevelingEngine } from './LevelingEngine';
 import { GatheringEngine } from './GatheringEngine';
 import { DowntimeEngine } from './DowntimeEngine';
@@ -805,6 +806,10 @@ export class GameLoop {
                 if (!npc) return "No such NPC found.";
                 if (!npc.isMerchant) return `${npc.name} is not interested in trading.`;
 
+                // Validate NPC is in current hex
+                const tradeHex = this.state.worldMap?.hexes?.[this.state.location.hexId];
+                if (!tradeHex?.npcs?.includes(npcId)) return `${npc.name} is not here.`;
+
                 this.state.activeTradeNpcId = npcId;
                 return `Opened trade with ${npc.name}.`;
             }
@@ -872,6 +877,113 @@ export class GameLoop {
             case 'closetrade': {
                 this.state.activeTradeNpcId = null;
                 return "Closed trading.";
+            }
+
+            case 'examine':
+            case 'identify': {
+                const examineTarget = args.join(' ');
+                if (!examineTarget) return "Usage: /examine <item name>";
+
+                const examineItem = this.state.character.inventory.items.find(
+                    (i: any) => i.name.toLowerCase() === examineTarget.toLowerCase()
+                        || i.instanceId === examineTarget
+                );
+                if (!examineItem) return `You don't have "${examineTarget}".`;
+                if ((examineItem as any).identified !== false) return `${examineItem.name} is already fully identified.`;
+
+                // Check if character has any identification capability
+                const hasArcana = this.state.character.skillProficiencies?.includes('Arcana' as any);
+                const hasInvestigation = this.state.character.skillProficiencies?.includes('Investigation' as any);
+                if (!hasArcana && !hasInvestigation) {
+                    return `${this.state.character.name} lacks the Arcana or Investigation skill to examine this item. Visit a merchant for identification.`;
+                }
+
+                // Check 24h cooldown per item
+                const cooldownKey = `examine_${(examineItem as any).instanceId}`;
+                const lastAttempt = (this.state as any)._examineCooldowns?.[cooldownKey];
+                const currentTurn = this.state.worldTime.totalTurns;
+                const cooldownTurns = 14400; // 24h at 6s/turn
+                if (lastAttempt !== undefined && (currentTurn - lastAttempt) < cooldownTurns) {
+                    const remaining = cooldownTurns - (currentTurn - lastAttempt);
+                    const hoursLeft = Math.ceil(remaining / 600);
+                    return `You already attempted to examine this item recently. Try again in approximately ${hoursLeft} hour${hoursLeft > 1 ? 's' : ''}.`;
+                }
+
+                const dc = ItemForgeEngine.getIdentifyDC(examineItem);
+                const intMod = MechanicsEngine.getModifier(this.state.character.stats.INT || 10);
+                const bestSkill = hasArcana ? 'Arcana' : 'Investigation';
+                const prof = (hasArcana || hasInvestigation) ? MechanicsEngine.getProficiencyBonus(this.state.character.level) : 0;
+                const roll = Dice.d20();
+                const total = roll + intMod + prof;
+
+                if (total >= dc) {
+                    const msg = ItemForgeEngine.identifyItem(examineItem, 'skill');
+
+                    // Generate LLM lore for the identified item
+                    try {
+                        const loreResult = await LoreService.nameForgedItem(examineItem, {
+                            monsterName: (examineItem as any).forgeSource?.split(' CR ')?.[0] || 'Unknown',
+                            biome: (examineItem as any).forgeSource?.split(' ')?.pop() || 'Unknown',
+                        });
+                        if (loreResult.description) {
+                            (examineItem as any).lore = loreResult.description;
+                            (examineItem as any).description = loreResult.description;
+                        }
+                    } catch { /* LLM failure is non-critical */ }
+
+                    await this.emitStateUpdate();
+
+                    const magicDesc = ((examineItem as any).magicalProperties || [])
+                        .map((mp: any) => mp.description || `${mp.dice || ''} ${mp.element || ''} ${mp.type}`.trim())
+                        .filter(Boolean).join('; ');
+
+                    const narrative = `${bestSkill} check: ${roll} + ${intMod + prof} = ${total} vs DC ${dc}. Success!\n\n` +
+                        `As you study the item closely, its true nature is revealed: **${examineItem.name}** (${(examineItem as any).rarity}).` +
+                        (magicDesc ? `\n\nMagical properties: ${magicDesc}` : '') +
+                        ((examineItem as any).description ? `\n\n${(examineItem as any).description}` : '');
+
+                    this.state.lastNarrative = narrative;
+                    return narrative;
+                } else {
+                    // Track cooldown
+                    if (!(this.state as any)._examineCooldowns) (this.state as any)._examineCooldowns = {};
+                    (this.state as any)._examineCooldowns[cooldownKey] = currentTurn;
+                    await this.emitStateUpdate();
+
+                    const hoursWait = 24;
+                    return `${bestSkill} check: ${roll} + ${intMod + prof} = ${total} vs DC ${dc}. Failed.\n\nThe item's true nature eludes you. You may attempt again in ${hoursWait} hours.`;
+                }
+            }
+
+            case 'merchantidentify': {
+                if (!this.state.activeTradeNpcId) return "No active trade. Open trade with a merchant first.";
+                const identTarget = args.join(' ');
+                if (!identTarget) return "Usage: /merchantidentify <item name>";
+
+                const npc = this.state.worldNpcs.find(n => n.id === this.state.activeTradeNpcId);
+                if (!npc) return "Merchant not found.";
+
+                const identItem = this.state.character.inventory.items.find(
+                    (i: any) => i.name.toLowerCase() === identTarget.toLowerCase()
+                        || i.instanceId === identTarget
+                );
+                if (!identItem) return `You don't have "${identTarget}".`;
+                if ((identItem as any).identified !== false) return `${identItem.name} is already identified.`;
+
+                const costGp = ItemForgeEngine.getMerchantIdentifyCost(identItem);
+                const standing = npc.relationship?.standing || 0;
+                const standingMod = ShopEngine.getStandingModifier(standing);
+                const finalCost = Math.max(1, Math.round(costGp * standingMod));
+
+                if (this.state.character.inventory.gold.gp < finalCost) {
+                    return `The merchant offers to identify this item for ${finalCost}gp. You can't afford it.`;
+                }
+
+                this.state.character.inventory.gold.gp -= finalCost;
+                npc.shopState!.gold += finalCost;
+                const msg = ItemForgeEngine.identifyItem(identItem, 'merchant');
+                await this.emitStateUpdate();
+                return `Paid ${finalCost}gp. ${msg}`;
             }
 
             case 'talk': {

@@ -773,23 +773,29 @@ export class CombatOrchestrator {
                     }));
                     this.state.location.combatLoot.push(...lootItems);
 
-                    // Fire-and-forget: LLM names Rare+ forged items, then persist to catalog
-                    const rareRarities = ['Rare', 'Very Rare', 'Legendary'];
+                    // Fire-and-forget: LLM names forged items, then persist Rare+ to catalog
                     for (const lootItem of lootItems) {
-                        if ((lootItem as any).isForged && rareRarities.includes((lootItem as any).rarity)) {
-                            LoreService.nameForgedItem(lootItem, {
-                                monsterName: enemy.name,
-                                biome,
-                            }).then(({ name, description }) => {
+                        if (!(lootItem as any).isForged) continue;
+                        const trueRarity = (lootItem as any).trueRarity || (lootItem as any).rarity;
+                        const isRarePlus = ['Rare', 'Very Rare', 'Legendary'].includes(trueRarity);
+
+                        LoreService.nameForgedItem(lootItem, {
+                            monsterName: enemy.name,
+                            biome,
+                        }).then(({ name, description }) => {
+                            if ((lootItem as any).identified === false) {
+                                // Unidentified: store LLM name as trueName, keep perceived name visible
+                                (lootItem as any).trueName = name;
+                                if (description) (lootItem as any).lore = description;
+                            } else {
+                                // Identified (Common/Uncommon): set name directly
                                 lootItem.name = name;
                                 if (description) (lootItem as any).description = description;
-                                // Persist after naming (so file has the LLM name)
-                                tryPersistForgedItem(lootItem).catch(() => {});
-                            }).catch(() => {
-                                // LLM naming failed — persist with default name
-                                tryPersistForgedItem(lootItem).catch(() => {});
-                            });
-                        }
+                            }
+                            if (isRarePlus) tryPersistForgedItem(lootItem).catch(() => {});
+                        }).catch(() => {
+                            if (isRarePlus) tryPersistForgedItem(lootItem).catch(() => {});
+                        });
                     }
                 }
             }

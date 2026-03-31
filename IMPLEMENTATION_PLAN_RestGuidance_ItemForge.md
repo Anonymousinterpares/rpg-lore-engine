@@ -610,21 +610,90 @@ static async nameForgedItem(item: ForgedItem, context: ForgeContext): Promise<{n
 11. Test deduplication: forge same-name item twice → only one file exists
 12. Test DataManager.registerItem(): forged item available via getItem() after registration
 
-## Phase 8: Enshrine System (Final Phase)
+## Phase 8: Enshrine System — DEFERRED (Multiplayer Only)
 
-> **NOTE**: Implement AFTER all other ItemForge phases are complete and tested.
+> **DECISION (2026-03-31):** Dropped for single player — auto-catalog already saves Rare+ items,
+> which will feed into shops via Phase 9. Enshrine adds no meaningful value when forged items are
+> already persisted. Revisit if/when multiplayer is implemented — becomes a "share items between
+> player pools" feature.
 
 ### Concept
 Player can explicitly "Enshrine" any item (regardless of rarity) to permanently add it to the
 game's item database. Like a trophy case — the player curates which items become part of the world.
 
+### UX Design
+
+**How the player encounters it:**
+The player finds a weapon they love — maybe a Common dagger with a perfect name the LLM gave it,
+or a Rare sword they've carried since level 1. They want this item to exist permanently in the
+game world, appearing in future shops or as loot for future characters.
+
+**Trigger: Right-click → "Enshrine" in context menu**
+- Available on ANY item in inventory or equipment (forged or base, any rarity)
+- Positioned after "Information" and before "Drop" in the context menu
+- Icon: a star or flame glyph
+- Grayed out if item is already enshrined
+
+**Confirmation modal (parchment-styled):**
+A small centered modal appears with:
+- Item name (rarity-colored) + icon at the top
+- Flavor text: *"Enshrine this item into the eternal ledger? It will become part of the world itself — appearing in merchant stalls and treasure hoards across all future adventures."*
+- Two buttons: **"Enshrine"** (gold/amber accent) and **"Cancel"**
+- NO mechanical cost — purely a curation choice
+
+**After enshrining:**
+- A subtle golden shimmer animation plays on the item slot (1 second)
+- Toast notification: *"[Item Name] has been enshrined into the eternal ledger."*
+- The item gains a small star icon overlay in inventory/equipment grids
+- The item's tooltip shows "Enshrined" badge (gold text)
+- The JSON file in `data/item/forged/` gets an `enshrined: true` flag
+
+**Visual indicators (permanent):**
+- Inventory grid: tiny gold star in corner of item slot
+- Equipment slot: existing rarity glow + additional gold inner border
+- Tooltip: "Enshrined" badge next to rarity label
+- ItemDatasheet: "Enshrined into the Eternal Ledger" line at the bottom
+
 ### Planned Features
-- UI: Right-click item → "Enshrine" option (or dedicated button in inventory)
+- UI: Right-click item → "Enshrine" in context menu (inventory + equipment)
+- Confirmation modal with flavor text
 - CLI: `/enshrine <instanceId>` command
 - Enshrined items written to `data/item/forged/` with `enshrined: true` flag
+- Items already in forged catalog get their file updated with the flag
 - Enshrined items have higher weight in loot/shop pools than auto-cataloged items
-- Visual indicator in inventory (star icon or border) for enshrined items
+- Visual indicator: gold star overlay in inventory grids
+- Toast notification on enshrine
 - Codex integration: enshrined items appear in a "Hall of Artifacts" codex page
+
+## Phase 9: Shop/Trade Item Pool Integration
+
+> **NOTE**: Implement AFTER Enshrine system. Depends on existing ShopEngine + MerchantInventoryPool.
+
+### Concept
+Shops and merchants draw their inventory from the item database — both the 255 base items in
+`data/item/` AND the growing forged catalog in `data/item/forged/`. Combat loot is always fresh-forged
+at runtime. This creates a clean separation:
+
+| Source | Items | Method |
+|--------|-------|--------|
+| **Combat loot** | Fresh, randomized | `ItemForgeEngine.forgeItem()` — new roll every kill |
+| **Shops/Trade** | From database | `data/item/` + `data/item/forged/` — curated pool |
+| **Character creation** | Base only | `data/item/` — standard starting gear |
+
+### Why This Matters
+- A player who has played 50 sessions has shops with far richer inventory than a fresh game
+- Enshrined items (`enshrined: true`) appear with higher probability in shops
+- Auto-cataloged Rare+ items appear with normal probability
+- Base items (Common gear) remain the bread-and-butter of shop inventory
+- The game world evolves through play — merchants sell artifacts from your past adventures
+
+### Planned Features
+- `MerchantInventoryPool` extended to pull from `data/item/forged/`
+- Enshrined items weighted 3x in shop pools vs auto-cataloged
+- Biome-appropriate filtering: forged items tagged with biome from `forgeSource`
+- ShopEngine price scaling: forged items use `RARITY_VALUE_MULTIPLIER` for base price
+- Standing-based availability: Rare+ forged items only shown to players with good faction standing
+- CLI: `/trade` shows forged items mixed into merchant inventory
 
 ---
 

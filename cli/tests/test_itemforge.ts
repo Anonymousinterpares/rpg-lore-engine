@@ -78,7 +78,8 @@ async function main() {
             monsterType: 'undead', biome: 'Ruins', monsterName: 'Vampire',
         });
 
-        assert(item.rarity === rarity, `${rarity} Longsword: rarity correct`);
+        const effectiveRarity = (item as any).trueRarity || item.rarity;
+        assert(effectiveRarity === rarity, `${rarity} Longsword: rarity correct (true=${effectiveRarity}, visible=${item.rarity})`);
         assert(item.isForged === true, `${rarity} Longsword: isForged`);
         assert(item.type === 'Weapon', `${rarity} Longsword: type preserved`);
         assert((item as any).damage?.dice === '1d8', `${rarity} Longsword: base damage preserved`);
@@ -133,7 +134,8 @@ async function main() {
     });
     ItemForgeEngine.rollRarity = origRoll;
 
-    assert(ring.rarity === 'Legendary', 'Legendary jewelry: rarity');
+    const ringTrueRarity = (ring as any).trueRarity || ring.rarity;
+    assert(ringTrueRarity === 'Legendary', 'Legendary jewelry: rarity');
     assert(ring.isMagic === true, 'Legendary jewelry: isMagic (100% chance)');
     assert(ring.magicalProperties.length >= 2, `Jewelry has ${ring.magicalProperties.length} magical props (stat+save+trait)`);
     const statMod = ring.modifiers.find(m => m.type === 'StatBonus');

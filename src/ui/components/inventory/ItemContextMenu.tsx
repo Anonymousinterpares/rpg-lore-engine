@@ -12,11 +12,13 @@ interface ItemContextMenuProps {
     equipAllowed?: boolean;
     equipReason?: string;
     isConsumable?: boolean;
+    isUnidentified?: boolean;
+    examineDisabledReason?: string; // e.g., "No Arcana/Investigation skill", "Cooldown: 12h remaining"
     customActions?: { id: string, label: string, icon: string }[];
 }
 
 const ItemContextMenu: React.FC<ItemContextMenuProps> = ({
-    x, y, onClose, onAction, itemName, isEquippable, equipAllowed = true, equipReason, isConsumable, customActions
+    x, y, onClose, onAction, itemName, isEquippable, equipAllowed = true, equipReason, isConsumable, isUnidentified, examineDisabledReason, customActions
 }) => {
     const menuRef = useRef<HTMLDivElement>(null);
 
@@ -71,9 +73,21 @@ const ItemContextMenu: React.FC<ItemContextMenuProps> = ({
                         </button>
                     )}
 
-                    <button onClick={() => onAction('examine')} className={styles.disabled} title="Requires further investigation...">
-                        <Search size={14} /> Examine
-                    </button>
+                    {(() => {
+                        const canExamine = isUnidentified && !examineDisabledReason;
+                        const tooltip = !isUnidentified
+                            ? 'This item is already identified.'
+                            : examineDisabledReason || 'Attempt to identify this item (Arcana/Investigation check)';
+                        return (
+                            <button
+                                onClick={() => canExamine ? onAction('examine') : undefined}
+                                className={canExamine ? '' : styles.disabled}
+                                title={tooltip}
+                            >
+                                <Search size={14} /> {isUnidentified ? 'Examine (Identify)' : 'Examine'}
+                            </button>
+                        );
+                    })()}
 
                     <div className={styles.divider} />
 

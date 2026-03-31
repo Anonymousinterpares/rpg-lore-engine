@@ -58,6 +58,14 @@ export const BaseItemSchema = z.object({
     forgeSource: z.string().optional(),              // e.g., "Skeleton CR 0.25 Ruins"
     magicalProperties: z.array(MagicalPropertySchema).default([]),
     instanceId: z.string().optional(),               // Unique per physical item in the world
+    // Identification system
+    identified: z.boolean().default(true),            // false = unidentified (Rare+ forged items)
+    perceivedRarity: RaritySchema.optional(),         // what player sees before identification
+    perceivedName: z.string().optional(),             // mechanical name shown before ID
+    trueName: z.string().optional(),                  // LLM name, revealed on identification
+    trueRarity: RaritySchema.optional(),              // actual rarity (stored when downgraded)
+    identifiedBy: z.string().optional(),              // 'skill', 'spell', 'merchant'
+    lore: z.string().optional(),                      // LLM-generated history, revealed on ID
 });
 
 export const WeaponSchema = BaseItemSchema.extend({

@@ -140,7 +140,7 @@ export class ShopEngine {
         } else {
             this.updateRelationship(npc, "Caught in a lie", -20);
             npc.shopState.isOpen = false;
-            npc.traits.push('Suspicious');
+            if (!npc.traits.includes('Suspicious')) npc.traits.push('Suspicious');
             return { success: false, message: `The merchant catches your lie! "Trying to swindle me? We're done here!" (${result.total} vs ${dc})` };
         }
     }
@@ -252,8 +252,8 @@ export class ShopEngine {
             const idx = npc.shopState.inventory.indexOf(item.name);
             if (idx !== -1) npc.shopState.inventory.splice(idx, 1);
 
-            // Merchant gains gold (in GP for reserves)
-            npc.shopState.gold += (CurrencyEngine.toCopper(price) / 100);
+            // Merchant gains gold (in GP for reserves, clamped to 0 minimum)
+            npc.shopState.gold = Math.max(0, npc.shopState.gold + (CurrencyEngine.toCopper(price) / 100));
 
             this.updateRelationship(npc, `Purchased ${item.name}`, 1);
             return `Purchased ${item.name} for ${CurrencyEngine.format(price)}.`;
@@ -359,8 +359,8 @@ export class ShopEngine {
             buybackEligible: true
         });
 
-        // Deduct merchant gold
-        npc.shopState.gold -= (priceCopper / 100);
+        // Deduct merchant gold (clamped to 0)
+        npc.shopState.gold = Math.max(0, npc.shopState.gold - (priceCopper / 100));
 
         this.updateRelationship(npc, `Sold ${item.name}`, 1);
         return `Sold ${item.name} for ${CurrencyEngine.format(price)}.`;
@@ -376,7 +376,7 @@ export class ShopEngine {
         npc.relationship.lastInteraction = new Date().toISOString();
     }
 
-    private static getStandingModifier(standing: number): number {
+    public static getStandingModifier(standing: number): number {
         if (standing >= 75) return 0.8;  // Exalted
         if (standing >= 25) return 0.9;  // Friendly
         if (standing <= -75) return 2.0; // Hostile
