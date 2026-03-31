@@ -112,6 +112,62 @@ export class LoreService {
         }
     }
 
+    /**
+     * Generates an evocative name and description for a forged item via LLM.
+     * Non-blocking: returns default values if LLM fails or is unavailable.
+     */
+    public static async nameForgedItem(item: any, context: { monsterName: string; biome: string }): Promise<{ name: string; description: string }> {
+        const defaultName = item.name;
+        const defaultDesc = item.description || '';
+
+        const agentProfile = AgentManager.getAgentProfile('LORE_KEEPER');
+        if (!agentProfile) return { name: defaultName, description: defaultDesc };
+
+        const provider = AgentManager.getProviderForAgent(agentProfile);
+        const model = AgentManager.getModelForAgent(agentProfile);
+        if (!provider || !model) return { name: defaultName, description: defaultDesc };
+
+        const magicDesc = (item.magicalProperties || [])
+            .map((p: any) => `${p.dice || ''} ${p.element || ''} ${p.type}`.trim())
+            .filter(Boolean)
+            .join(', ');
+
+        const prompt = `Generate a name and 1-2 sentence description for this D&D 5e item:
+- Base item: ${item.id || item.name}
+- Rarity: ${item.rarity}
+- Magical: ${item.isMagic ? 'Yes' : 'No'}
+${magicDesc ? `- Magical properties: ${magicDesc}` : ''}
+- Dropped by: ${context.monsterName} in ${context.biome}
+
+Respond with ONLY valid JSON: { "name": "...", "description": "..." }
+The name should be evocative and fitting for the rarity (${item.rarity}).
+Do NOT alter stats. You are ONLY naming and describing.`;
+
+        try {
+            console.log(`[LoreService] Naming forged item: ${defaultName}...`);
+            const response = await LLMClient.generateCompletion(
+                provider,
+                model,
+                {
+                    systemPrompt: 'You are a legendary artificer and namer of enchanted weapons and armor.',
+                    userMessage: prompt,
+                    temperature: 0.9,
+                    maxTokens: 300,
+                    responseFormat: 'json'
+                }
+            );
+
+            const result = JSON.parse(response);
+            const name = result.name || defaultName;
+            const description = result.description || defaultDesc;
+            console.log(`[LoreService] Named: "${defaultName}" → "${name}"`);
+            return { name, description };
+        } catch (e) {
+            console.warn(`[LoreService] Item naming failed for ${defaultName}:`, e);
+            return { name: defaultName, description: defaultDesc };
+        }
+    }
+
     private static buildPrompt(category: string, name: string, data: any): string {
         const base = `You are the Lore Keeper, a weathered scholar and chronicler of the realms.
 Your task is to write a rich, immersive Codex entry for the following ${category === 'bestiary' ? 'creature' : 'item'}: "${name}".

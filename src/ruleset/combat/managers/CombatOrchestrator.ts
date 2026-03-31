@@ -20,6 +20,7 @@ import { EventBusManager } from './EventBusManager';
 import { z } from 'zod';
 import { hasCondition, addCondition, removeCondition, tickConditions, conditionNames } from '../ConditionUtils';
 import { DeathEngine } from '../DeathEngine';
+import { LoreService } from '../../agents/LoreService';
 
 
 /**
@@ -764,11 +765,26 @@ export class CombatOrchestrator {
                     char.inventory.gold.gp += loot.gold.gp;
                     char.inventory.gold.pp += loot.gold.pp;
                     if (!this.state.location.combatLoot) this.state.location.combatLoot = [];
-                    this.state.location.combatLoot.push(...loot.items.map(i => ({
+                    const lootItems = loot.items.map(i => ({
                         ...i,
                         instanceId: i.instanceId || `loot_${Date.now()}_${Math.random()}`,
                         equipped: false
-                    })));
+                    }));
+                    this.state.location.combatLoot.push(...lootItems);
+
+                    // Fire-and-forget: LLM names Rare+ forged items asynchronously
+                    const rareRarities = ['Rare', 'Very Rare', 'Legendary'];
+                    for (const lootItem of lootItems) {
+                        if ((lootItem as any).isForged && rareRarities.includes((lootItem as any).rarity)) {
+                            LoreService.nameForgedItem(lootItem, {
+                                monsterName: enemy.name,
+                                biome,
+                            }).then(({ name, description }) => {
+                                lootItem.name = name;
+                                if (description) (lootItem as any).description = description;
+                            }).catch(() => { /* fallback: keep default name */ });
+                        }
+                    }
                 }
             }
 
