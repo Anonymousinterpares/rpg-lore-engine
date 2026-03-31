@@ -751,7 +751,9 @@ export class CombatOrchestrator {
 
                 const monsterData = DataManager.getMonster(enemy.name);
                 if (monsterData) {
-                    const loot = LootEngine.processDefeat(monsterData);
+                    const currentHex = this.state.worldMap?.hexes?.[this.state.location.hexId];
+                    const biome = currentHex?.biome || 'Plains';
+                    const loot = LootEngine.processDefeat(monsterData, biome);
                     char.inventory.gold.cp += loot.gold.cp;
                     char.inventory.gold.sp += loot.gold.sp;
                     char.inventory.gold.gp += loot.gold.gp;
@@ -759,7 +761,7 @@ export class CombatOrchestrator {
                     if (!this.state.location.combatLoot) this.state.location.combatLoot = [];
                     this.state.location.combatLoot.push(...loot.items.map(i => ({
                         ...i,
-                        instanceId: `loot_${Date.now()}_${Math.random()}`,
+                        instanceId: i.instanceId || `loot_${Date.now()}_${Math.random()}`,
                         equipped: false
                     })));
                 }

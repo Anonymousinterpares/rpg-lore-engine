@@ -2,6 +2,7 @@ import { Monster } from '../schemas/MonsterSchema';
 import { Currency, CurrencyEngine } from './CurrencyEngine';
 import { Dice } from './Dice';
 import { DataManager } from '../data/DataManager';
+import { ItemForgeEngine } from './ItemForgeEngine';
 
 // Static Imports for browser compatibility (Vite handles this)
 import weaponMappingData from '../../../data/mappings/weapon_action_mapping.json';
@@ -76,12 +77,50 @@ export class LootEngine {
     }
 
     /**
-     * Comprehensive loot generation for a defeated monster.
+     * Determines the forge category for an item, or null if not forgeable.
      */
-    public static processDefeat(monster: Monster): LootResult {
+    private static getForgeCategory(item: any): 'weapon' | 'armor' | 'shield' | 'jewelry' | null {
+        const type = item.type;
+        if (type === 'Weapon') return 'weapon';
+        if (type === 'Armor') return 'armor';
+        if (type === 'Shield') return 'shield';
+        if (['Ring', 'Amulet', 'Cloak', 'Belt', 'Boots', 'Gloves', 'Bracers', 'Helmet'].includes(type)) return 'jewelry';
+        return null;
+    }
+
+    /**
+     * Comprehensive loot generation for a defeated monster.
+     * @param monster The defeated monster data
+     * @param biome Current biome (for element pool fallback)
+     */
+    public static processDefeat(monster: Monster, biome?: string): LootResult {
         const equipDrops = this.getEquipmentDrops(monster);
-        const treasure = this.getTreasureDrops(Number(monster.cr) || 0);
-        const items = [...equipDrops, ...treasure.items];
+        const cr = Number(monster.cr) || 0;
+        const monsterType = monster.type?.toLowerCase() || 'humanoid';
+        const monsterName = monster.name || 'Unknown';
+        const currentBiome = biome || 'Plains';
+
+        // Route equipment drops through ItemForge
+        const forgedDrops = equipDrops.map(item => {
+            try {
+                const category = this.getForgeCategory(item);
+                if (!category) return item;
+                return ItemForgeEngine.forgeItem({
+                    category,
+                    baseItemName: item.name,
+                    cr,
+                    monsterType,
+                    biome: currentBiome,
+                    monsterName,
+                });
+            } catch (e) {
+                console.warn(`[LootEngine] Forge failed for ${item.name}, using base:`, e);
+                return item;
+            }
+        });
+
+        const treasure = this.getTreasureDrops(cr);
+        const items = [...forgedDrops, ...treasure.items];
 
         // Spellcaster drops
         if ((monster as any).spellcasting) {
