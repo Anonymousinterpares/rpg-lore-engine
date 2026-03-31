@@ -10,6 +10,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { fileURLToPath } from 'url';
 import { patchDataManagerForNode } from './DataManagerCLI';
+import { setProjectRoot } from '../src/ruleset/data/ForgedItemCatalog';
 
 // --- localStorage shim ---
 const storage = new Map<string, string>();
@@ -62,5 +63,6 @@ export async function bootstrapCLI(projectRoot?: string): Promise<string> {
     const root = projectRoot || getProjectRoot();
     loadEnvFile(root);
     await patchDataManagerForNode(root);
+    setProjectRoot(root);
     return root;
 }

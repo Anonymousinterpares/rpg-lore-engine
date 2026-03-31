@@ -21,7 +21,8 @@
       "Bash(find . -path */data/* -name *.json -path *item*)",
       "Bash(for f:*)",
       "Bash(do echo:*)",
-      "Read(//e/AI/AI/projects/RPG New/rpg-lore-engine/**)"
+      "Read(//e/AI/AI/projects/RPG New/rpg-lore-engine/**)",
+      "Bash(ls:*)"
     ]
   }
 }

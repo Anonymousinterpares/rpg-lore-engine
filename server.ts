@@ -97,6 +97,42 @@ app.post('/api/mkdir', async (req, res) => {
     }
 });
 
+// --- Forged Item Catalog ---
+const forgedDir = path.join(rootDir, 'data', 'item', 'forged');
+
+app.post('/api/forged/persist', async (req, res) => {
+    const { item } = req.body;
+    if (!item || !item.name) {
+        return res.status(400).json({ error: 'Missing item or item.name' });
+    }
+
+    try {
+        // Ensure forged directory exists
+        const fs = await import('fs');
+        if (!fs.existsSync(forgedDir)) {
+            fs.mkdirSync(forgedDir, { recursive: true });
+        }
+
+        // Sanitize filename
+        const filename = item.name
+            .replace(/[<>:"/\\|?*]/g, '')
+            .replace(/\s+/g, '_')
+            .slice(0, 100) + '.json';
+        const filePath = path.join(forgedDir, filename);
+
+        // Dedup: skip if already exists
+        if (fs.existsSync(filePath)) {
+            return res.json({ persisted: false, reason: 'duplicate' });
+        }
+
+        fs.writeFileSync(filePath, JSON.stringify(item, null, 2), 'utf-8');
+        console.log(`[Server] Forged item persisted: ${filename}`);
+        res.json({ persisted: true, filename });
+    } catch (e) {
+        res.status(500).json({ error: (e as Error).message });
+    }
+});
+
 app.listen(port, () => {
     console.log(`[RPG Backend] Server running at http://localhost:${port}`);
     console.log(`[RPG Backend] Saves directory: ${rootSavesDir}`);

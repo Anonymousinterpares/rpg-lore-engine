@@ -9,6 +9,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { DataManager } from '../src/ruleset/data/DataManager';
+import { loadForgedItems } from '../src/ruleset/data/ForgedItemCatalog';
 
 function loadJsonDir(dir: string): any[] {
     if (!fs.existsSync(dir)) {
@@ -97,6 +98,9 @@ export async function patchDataManagerForNode(projectRoot: string): Promise<{
         }
     }
     dm.items = items;
+
+    // --- Load Forged Items from catalog ---
+    const forgedCount = await loadForgedItems(projectRoot);
 
     // --- Load Spells (with dual-key indexing) ---
     const spells: Record<string, any> = {};

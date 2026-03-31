@@ -91,6 +91,24 @@ export class DataManager {
             }
         }
 
+        // Load Forged Items (from catalog)
+        const forgedModules = import.meta.glob('../../../data/item/forged/*.json');
+        for (const path in forgedModules) {
+            try {
+                const mod: any = await forgedModules[path]();
+                const item = mod.default || mod;
+                if (item.name) {
+                    if (!item.id) item.id = item.name.toLowerCase().replace(/\s+/g, '_');
+                    if (item.quantity === undefined) item.quantity = 1;
+                    this.items[item.name] = item;
+                    this.items[item.name.toLowerCase()] = item;
+                    this.items[item.name.toLowerCase().replace(/ /g, '_')] = item;
+                }
+            } catch (e) {
+                // Forged directory may not exist yet — that's fine
+            }
+        }
+
         // Load Biome-Monster Mapping
         const mappingModule = await import('../../../data/mappings/biome_monster_mapping.json');
         this.monsterMapping = mappingModule.default || mappingModule;
@@ -121,6 +139,17 @@ export class DataManager {
 
     public static getBackground(name: string): Background | undefined {
         return this.backgrounds[name];
+    }
+
+    /**
+     * Registers an item at runtime (e.g., forged items persisted to catalog).
+     * Triple-indexed like the original loading to ensure flexible lookup.
+     */
+    public static registerItem(item: Item): void {
+        if (!item.name) return;
+        this.items[item.name] = item;
+        this.items[item.name.toLowerCase()] = item;
+        this.items[item.name.toLowerCase().replace(/ /g, '_')] = item;
     }
 
     public static getItem(idOrName: string): Item | undefined {

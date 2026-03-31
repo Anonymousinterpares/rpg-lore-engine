@@ -1,0 +1,42 @@
+{
+  "name": "Rare Longsword +2",
+  "type": "Weapon",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 750,
+    "pp": 0
+  },
+  "weight": 3,
+  "isMagic": false,
+  "modifiers": [
+    {
+      "type": "HitBonus",
+      "target": "Attack",
+      "value": 2
+    },
+    {
+      "type": "DamageAdd",
+      "target": "Damage",
+      "value": 1
+    }
+  ],
+  "tags": [],
+  "quantity": 1,
+  "rarity": "Rare",
+  "itemLevel": 8,
+  "isForged": true,
+  "forgeSource": "Vampire CR 8 Ruins",
+  "magicalProperties": [],
+  "damage": {
+    "dice": "1d8",
+    "type": "Slashing"
+  },
+  "properties": [
+    "Versatile"
+  ],
+  "range": {
+    "normal": 5
+  }
+}

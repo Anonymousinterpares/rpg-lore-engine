@@ -1,0 +1,40 @@
+{
+  "name": "Legendary Cold Chain Mail +3",
+  "type": "Armor",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 375000,
+    "pp": 0
+  },
+  "weight": 55,
+  "isMagic": true,
+  "modifiers": [
+    {
+      "type": "ACBonus",
+      "target": "AC",
+      "value": 3
+    },
+    {
+      "type": "DamageResistance",
+      "target": "Cold",
+      "value": 1
+    }
+  ],
+  "tags": [],
+  "quantity": 1,
+  "rarity": "Legendary",
+  "itemLevel": 18,
+  "isForged": true,
+  "forgeSource": "Red Dragon CR 18 Volcanic",
+  "magicalProperties": [
+    {
+      "type": "Resistance",
+      "element": "Cold",
+      "description": "Resistance to Cold damage"
+    }
+  ],
+  "acCalculated": "16",
+  "stealthDisadvantage": true
+}

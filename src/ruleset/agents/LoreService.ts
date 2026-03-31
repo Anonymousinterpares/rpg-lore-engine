@@ -157,7 +157,12 @@ Do NOT alter stats. You are ONLY naming and describing.`;
                 }
             );
 
-            const result = JSON.parse(response);
+            // Clean response: strip markdown wrappers, extract JSON
+            let cleaned = response.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+            const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+            if (jsonMatch) cleaned = jsonMatch[0];
+
+            const result = JSON.parse(cleaned);
             const name = result.name || defaultName;
             const description = result.description || defaultDesc;
             console.log(`[LoreService] Named: "${defaultName}" → "${name}"`);

@@ -1,0 +1,47 @@
+{
+  "name": "Sunset Veil Dagger",
+  "type": "Weapon",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 100,
+    "pp": 0
+  },
+  "weight": 1,
+  "description": "A finely balanced steel dagger with a hilt of polished ivory etched with a single sunburst, its weight and edge are the result of masterful craftsmanship rather than enchantment.",
+  "isMagic": false,
+  "modifiers": [
+    {
+      "type": "HitBonus",
+      "target": "Attack",
+      "value": 2
+    },
+    {
+      "type": "DamageAdd",
+      "target": "Damage",
+      "value": 1
+    }
+  ],
+  "tags": [],
+  "quantity": 1,
+  "rarity": "Rare",
+  "itemLevel": 12,
+  "isForged": true,
+  "forgeSource": "Archmage CR 12 Plains",
+  "magicalProperties": [],
+  "damage": {
+    "dice": "1d4",
+    "type": "Piercing"
+  },
+  "properties": [
+    "Finesse",
+    "Light",
+    "Thrown",
+    "Monk"
+  ],
+  "range": {
+    "normal": 20,
+    "long": 60
+  }
+}

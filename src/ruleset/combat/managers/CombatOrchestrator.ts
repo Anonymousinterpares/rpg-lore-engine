@@ -21,6 +21,7 @@ import { z } from 'zod';
 import { hasCondition, addCondition, removeCondition, tickConditions, conditionNames } from '../ConditionUtils';
 import { DeathEngine } from '../DeathEngine';
 import { LoreService } from '../../agents/LoreService';
+import { tryPersistForgedItem } from '../../data/ForgedItemCatalog';
 
 
 /**
@@ -772,7 +773,7 @@ export class CombatOrchestrator {
                     }));
                     this.state.location.combatLoot.push(...lootItems);
 
-                    // Fire-and-forget: LLM names Rare+ forged items asynchronously
+                    // Fire-and-forget: LLM names Rare+ forged items, then persist to catalog
                     const rareRarities = ['Rare', 'Very Rare', 'Legendary'];
                     for (const lootItem of lootItems) {
                         if ((lootItem as any).isForged && rareRarities.includes((lootItem as any).rarity)) {
@@ -782,7 +783,12 @@ export class CombatOrchestrator {
                             }).then(({ name, description }) => {
                                 lootItem.name = name;
                                 if (description) (lootItem as any).description = description;
-                            }).catch(() => { /* fallback: keep default name */ });
+                                // Persist after naming (so file has the LLM name)
+                                tryPersistForgedItem(lootItem).catch(() => {});
+                            }).catch(() => {
+                                // LLM naming failed — persist with default name
+                                tryPersistForgedItem(lootItem).catch(() => {});
+                            });
                         }
                     }
                 }

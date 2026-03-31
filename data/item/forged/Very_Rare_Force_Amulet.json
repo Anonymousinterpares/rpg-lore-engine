@@ -1,0 +1,54 @@
+{
+  "name": "Very Rare Force Amulet",
+  "type": "Adventuring Gear",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 2500,
+    "pp": 0
+  },
+  "weight": 1,
+  "description": "A holy symbol is a representation of a god or pantheon. It might be an amulet depicting a symbol representing a deity, the same symbol carefully engraved or inlaid as an emblem on a shield, or a tiny box holding a fragment of a sacred relic.\nAppendix B lists the symbols commonly associated with many gods in the multiverse. A cleric or paladin can use a holy symbol as a spellcasting focus. To use the symbol in this way, the caster must hold it in hand, wear it visibly, or bear it on a shield.",
+  "isMagic": true,
+  "modifiers": [
+    {
+      "type": "StatBonus",
+      "target": "CHA",
+      "value": 3
+    },
+    {
+      "type": "SaveBonus",
+      "target": "CHA",
+      "value": 2
+    },
+    {
+      "type": "DamageResistance",
+      "target": "Force",
+      "value": 1
+    }
+  ],
+  "tags": [],
+  "quantity": 1,
+  "rarity": "Very Rare",
+  "itemLevel": 12,
+  "isForged": true,
+  "forgeSource": "Deva CR 12 Ruins",
+  "magicalProperties": [
+    {
+      "type": "StatBonus",
+      "value": 3,
+      "description": "+3 CHA"
+    },
+    {
+      "type": "SaveBonus",
+      "value": 2,
+      "description": "+2 to CHA saving throws"
+    },
+    {
+      "type": "Resistance",
+      "element": "Force",
+      "description": "Resistance to Force damage"
+    }
+  ]
+}
