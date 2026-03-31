@@ -9,11 +9,12 @@ interface HandRingsProps {
     equippedSlots: Record<string, PaperdollItem | null>;
     onDrop: (slotId: string, item: PaperdollItem) => void;
     onUnequip: (slotId: string) => void;
+    onItemContextMenu?: (e: React.MouseEvent, item: PaperdollItem, slotId: string) => void;
 }
 
 const FINGER_LABELS = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky'];
 
-const HandRings: React.FC<HandRingsProps> = ({ hand, sex, equippedSlots, onDrop, onUnequip }) => {
+const HandRings: React.FC<HandRingsProps> = ({ hand, sex, equippedSlots, onDrop, onUnequip, onItemContextMenu }) => {
     const slotConfigs: SlotConfig[] = FINGER_LABELS.map((finger, i) => ({
         id: `${hand}Ring${i + 1}` as SlotId,
         label: `${finger}`,
@@ -39,6 +40,7 @@ const HandRings: React.FC<HandRingsProps> = ({ hand, sex, equippedSlots, onDrop,
                             item={equippedSlots[slotConfig.id] || null}
                             onDrop={onDrop}
                             onUnequip={onUnequip}
+                            onItemContextMenu={onItemContextMenu}
                             isRingSlot
                         />
                         <span className={styles.fingerLabel}>{FINGER_LABELS[i][0]}</span>

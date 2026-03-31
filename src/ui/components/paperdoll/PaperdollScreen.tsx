@@ -1,7 +1,9 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import styles from './PaperdollScreen.module.css';
 import PaperdollFigure from './PaperdollFigure';
 import InventoryBag from './InventoryBag';
+import ItemContextMenu from '../inventory/ItemContextMenu';
+import ItemDatasheet from '../inventory/ItemDatasheet';
 import { PaperdollItem, EquippedSlots, SlotId, ItemType } from './types';
 import { useGameState } from '../../hooks/useGameState';
 import { DataManager } from '../../../ruleset/data/DataManager';
@@ -137,6 +139,31 @@ const PaperdollScreen: React.FC = () => {
         }
     }, [engine, state?.character?.equipmentSlots]);
 
+    // Context menu state for equipment slots
+    const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number; item: PaperdollItem; slotId: string } | null>(null);
+    const [datasheetItem, setDatasheetItem] = useState<any>(null);
+
+    const handleSlotContextMenu = useCallback((e: React.MouseEvent, item: PaperdollItem, slotId: string) => {
+        setCtxMenu({ x: e.clientX, y: e.clientY, item, slotId });
+    }, []);
+
+    const handleCtxAction = useCallback(async (action: string) => {
+        if (!ctxMenu) return;
+        const { item, slotId } = ctxMenu;
+        setCtxMenu(null);
+
+        if (action === 'info') {
+            const baseItem = DataManager.getItem(item.id);
+            setDatasheetItem({ ...baseItem, ...item });
+        } else if (action === 'equip' && engine) {
+            // "Unequip" for equipped items
+            await engine.unequipFromSlot(slotId);
+        } else if (action === 'drop' && engine) {
+            await engine.unequipFromSlot(slotId);
+            // Could also drop, but unequip is the safe action
+        }
+    }, [ctxMenu, engine]);
+
     if (!state?.character) {
         return <div className={styles.screen}>Loading...</div>;
     }
@@ -150,6 +177,7 @@ const PaperdollScreen: React.FC = () => {
                     sex={sex}
                     onDrop={handleEquipToSlot}
                     onUnequip={handleUnequip}
+                    onItemContextMenu={handleSlotContextMenu}
                 />
                 <InventoryBag
                     items={inventoryItems}
@@ -159,6 +187,25 @@ const PaperdollScreen: React.FC = () => {
                 />
             </div>
             <div className={styles.ornamentBottom} />
+
+            {ctxMenu && (
+                <ItemContextMenu
+                    x={ctxMenu.x}
+                    y={ctxMenu.y}
+                    itemName={ctxMenu.item.name}
+                    isEquippable={true}
+                    equipAllowed={true}
+                    onClose={() => setCtxMenu(null)}
+                    onAction={handleCtxAction}
+                />
+            )}
+
+            {datasheetItem && (
+                <ItemDatasheet
+                    item={datasheetItem}
+                    onClose={() => setDatasheetItem(null)}
+                />
+            )}
         </div>
     );
 };

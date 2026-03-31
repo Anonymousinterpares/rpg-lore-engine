@@ -13,6 +13,7 @@ interface EquipmentSlotProps {
     item: PaperdollItem | null;
     onDrop: (slotId: string, item: PaperdollItem) => void;
     onUnequip: (slotId: string) => void;
+    onItemContextMenu?: (e: React.MouseEvent, item: PaperdollItem, slotId: string) => void;
     isRingSlot?: boolean;
 }
 
@@ -54,7 +55,7 @@ const RARITY_GLOW: Record<string, string> = {
     legendary: 'rgba(255, 128, 0, 0.5)',
 };
 
-const EquipmentSlot: React.FC<EquipmentSlotProps> = ({ config, item, onDrop, onUnequip, isRingSlot }) => {
+const EquipmentSlot: React.FC<EquipmentSlotProps> = ({ config, item, onDrop, onUnequip, onItemContextMenu, isRingSlot }) => {
     const [dragOver, setDragOver] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false);
     const slotRef = useRef<HTMLDivElement>(null);
@@ -91,8 +92,10 @@ const EquipmentSlot: React.FC<EquipmentSlotProps> = ({ config, item, onDrop, onU
 
     const handleContextMenu = useCallback((e: React.MouseEvent) => {
         e.preventDefault();
-        if (item) onUnequip(config.id);
-    }, [item, config.id, onUnequip]);
+        if (item && onItemContextMenu) {
+            onItemContextMenu(e, item, config.id);
+        }
+    }, [item, config.id, onItemContextMenu]);
 
     const rarityGlow = item?.rarity ? RARITY_GLOW[item.rarity] : undefined;
     const anchorRect = slotRef.current?.getBoundingClientRect() ?? null;

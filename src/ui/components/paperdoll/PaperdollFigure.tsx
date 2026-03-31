@@ -9,6 +9,7 @@ interface PaperdollFigureProps {
     sex: 'male' | 'female';
     onDrop: (slotId: string, item: PaperdollItem) => void;
     onUnequip: (slotId: string) => void;
+    onItemContextMenu?: (e: React.MouseEvent, item: PaperdollItem, slotId: string) => void;
 }
 
 // Slot positions are percentages relative to the figure container.
@@ -29,7 +30,7 @@ const SLOT_CONFIGS: SlotConfig[] = [
     { id: 'feet',       label: 'Boots',      accepts: ['Boots', 'Magic Item'],                position: { top: '82%', left: '50%' } },
 ];
 
-const PaperdollFigure: React.FC<PaperdollFigureProps> = ({ equippedSlots, sex, onDrop, onUnequip }) => {
+const PaperdollFigure: React.FC<PaperdollFigureProps> = ({ equippedSlots, sex, onDrop, onUnequip, onItemContextMenu }) => {
     return (
         <div className={styles.container}>
             <h3 className={styles.title}>Equipment</h3>
@@ -60,6 +61,7 @@ const PaperdollFigure: React.FC<PaperdollFigureProps> = ({ equippedSlots, sex, o
                             item={equippedSlots[config.id] || null}
                             onDrop={onDrop}
                             onUnequip={onUnequip}
+                            onItemContextMenu={onItemContextMenu}
                         />
                     </div>
                 ))}
@@ -73,6 +75,7 @@ const PaperdollFigure: React.FC<PaperdollFigureProps> = ({ equippedSlots, sex, o
                     equippedSlots={equippedSlots}
                     onDrop={onDrop}
                     onUnequip={onUnequip}
+                    onItemContextMenu={onItemContextMenu}
                 />
                 <HandRings
                     hand="right"
@@ -80,6 +83,7 @@ const PaperdollFigure: React.FC<PaperdollFigureProps> = ({ equippedSlots, sex, o
                     equippedSlots={equippedSlots}
                     onDrop={onDrop}
                     onUnequip={onUnequip}
+                    onItemContextMenu={onItemContextMenu}
                 />
             </div>
         </div>

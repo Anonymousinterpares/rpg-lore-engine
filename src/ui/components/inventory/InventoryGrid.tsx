@@ -262,15 +262,18 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
             )}
 
             {contextMenu && (() => {
-                const fullItem = DataManager.getItem(contextMenu.item.id);
-                if (!state || !fullItem) return null;
+                const baseItem = DataManager.getItem(contextMenu.item.id);
+                // For forged items, inventory data takes priority; fall back to item itself if DataManager misses
+                const fullItem = baseItem ? { ...baseItem, ...contextMenu.item } : contextMenu.item;
+                if (!state) return null;
                 const validation = EquipmentEngine.canEquip(state.character, fullItem as any);
+                const equippableTypes = ['weapon', 'armor', 'shield', 'ring', 'amulet', 'cloak', 'belt', 'boots', 'gloves', 'bracers', 'helmet'];
                 return (
                     <ItemContextMenu
                         x={contextMenu.x}
                         y={contextMenu.y}
                         itemName={contextMenu.item.name}
-                        isEquippable={['weapon', 'armor', 'shield'].some(t => contextMenu.item.type.toLowerCase().includes(t))}
+                        isEquippable={equippableTypes.some(t => (contextMenu.item.type || '').toLowerCase().includes(t))}
                         equipAllowed={validation.valid}
                         equipReason={validation.reason}
                         onClose={() => setContextMenu(null)}
