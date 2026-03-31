@@ -2,13 +2,26 @@
 
 ---
 
-# PART A: Rest Guidance via Narrator System Prompt
+# PART A: Rest Guidance via Narrator System Prompt — ✅ COMPLETED (2026-03-31)
 
 ## Problem
 When a player types "I want to rest for the night" or similar natural language, IntentRouter classifies it as `NARRATIVE` (not a command). The Narrator LLM generates a narrative response but has no instruction to guide the player toward the actual rest mechanic. The player gets a story paragraph but no HP recovery.
 
-## Solution
-Add rest-awareness to the Narrator system prompt. When the LLM detects rest/camp/sleep intent in the player's message, it narrates the scene AND appends a mechanical guidance hint.
+## Solution (REVISED from original plan)
+Three-part rework of the rest/wait narration UX:
+1. **Pre-rest**: Minimal hint only — LLM responds with brief acknowledgment + `[You can use the Rest button to rest and recover.]`. No premature camping narration.
+2. **Post-rest/wait narration**: AFTER rest actually completes, LLM generates time-accurate atmospheric narration (matching actual duration, time of day, weather, biome) with mechanical recovery info appended.
+3. **Ambush pre-combat narration**: When encounters interrupt rest, LLM generates tense ambush narration that types out fully in NarrativeBox BEFORE combat mode activates (trigger-based, not time-based).
+
+## Files Modified
+- `src/ruleset/agents/NarratorService.ts` — PLAYER ACTION GUIDANCE prompt section (minimal hint); `narrateRestCompletion()` + `narrateAmbush()` methods
+- `src/ruleset/combat/GameLoop.ts` — async `completeRest()` with LLM narration; `generateAmbushNarration()`; `initializeCombat()` accepts pre-narration; `setNarrative()` for state propagation; `/rest` + `/wait` command handlers updated
+- `src/ruleset/combat/managers/TimeManager.ts` — `completeRest()` made async
+- `src/ui/components/narrative/NarrativeBox.tsx` — `onTypingComplete` callback (ref-based to avoid re-triggering)
+- `src/ui/components/layout/MainViewport.tsx` — `pendingCombat` state; `handleAmbush`/`handleTypingComplete` flow; action bar shows "Ambush..." during narration
+- `src/ui/components/exploration/RestWaitModal.tsx` — `onAmbush` prop; fire-and-forget rest completion (modal closes immediately)
+- `cli/repl.ts` — CLI hint detection translating UI hints to CLI commands
+- `cli/tests/test_rest_guidance.ts` — 21 assertions, all passing
 
 ## Files to Modify
 
@@ -555,6 +568,31 @@ static async nameForgedItem(item: ForgedItem, context: ForgeContext): Promise<{n
 }
 ```
 
+## Phase 4.5: Forged Item Persistence (Rare+ Auto-Catalog)
+
+### Strategy: Tiered Persistence
+- **All forged items** persist in save files as full objects (free — already how items work)
+- **Rare, Very Rare, Legendary** items auto-write to `data/item/forged/` as separate JSON files
+- Items written to disk become available as potential loot/shop items in ALL future sessions
+- Deduplication by name prevents collisions
+
+### `src/ruleset/data/DataManager.ts` — Add `registerItem()` + load forged items
+- New method: `registerItem(item: Item)` — adds item to the in-memory registry at runtime
+- On startup: also load from `data/item/forged/*.json` alongside base items
+- CLI: `DataManagerCLI.ts` loads forged items from disk via fs
+
+### `src/ruleset/combat/ItemForgeEngine.ts` — Add `persistIfRare()`
+- After forging, check rarity >= Rare
+- If yes, check if name already exists in DataManager registry (deduplication)
+- If new: write JSON to `data/item/forged/{sanitized_name}.json`
+- Register in DataManager immediately (available this session)
+
+### `src/ruleset/data/ForgedItemCatalog.ts` — New file
+- Handles read/write of forged item files
+- `writeForgedItem(item, projectRoot)` — writes to `data/item/forged/`
+- `loadForgedItems(projectRoot)` — reads all JSON from `data/item/forged/`
+- Deduplication check: `exists(itemName)` before writing
+
 ## Phase 7: CLI Test
 
 ### `cli/tests/test_itemforge.ts`
@@ -568,6 +606,25 @@ static async nameForgedItem(item: ForgedItem, context: ForgeContext): Promise<{n
 7. Test schema validation: every forged item passes `ItemSchema.parse()`
 8. Test LootEngine integration: defeat a Skeleton and verify forged loot appears
 9. Test equipment integration: equip a forged +2 weapon, verify AC/attack calculations change
+10. Test persistence: forge a Rare item → verify JSON file written to `data/item/forged/`
+11. Test deduplication: forge same-name item twice → only one file exists
+12. Test DataManager.registerItem(): forged item available via getItem() after registration
+
+## Phase 8: Enshrine System (Final Phase)
+
+> **NOTE**: Implement AFTER all other ItemForge phases are complete and tested.
+
+### Concept
+Player can explicitly "Enshrine" any item (regardless of rarity) to permanently add it to the
+game's item database. Like a trophy case — the player curates which items become part of the world.
+
+### Planned Features
+- UI: Right-click item → "Enshrine" option (or dedicated button in inventory)
+- CLI: `/enshrine <instanceId>` command
+- Enshrined items written to `data/item/forged/` with `enshrined: true` flag
+- Enshrined items have higher weight in loot/shop pools than auto-cataloged items
+- Visual indicator in inventory (star icon or border) for enshrined items
+- Codex integration: enshrined items appear in a "Hall of Artifacts" codex page
 
 ---
 

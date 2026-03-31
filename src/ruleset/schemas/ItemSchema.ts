@@ -6,11 +6,38 @@ export const ItemTypeSchema = z.enum([
     'Ring', 'Amulet', 'Cloak', 'Belt', 'Boots', 'Gloves', 'Bracers', 'Helmet', 'Ammunition'
 ]);
 
+export const RaritySchema = z.enum(['Common', 'Uncommon', 'Rare', 'Very Rare', 'Legendary']);
+export type Rarity = z.infer<typeof RaritySchema>;
+
 export const ModifierSchema = z.object({
-    type: z.enum(['StatBonus', 'ACBonus', 'DamageAdd', 'AbilitySET', 'RangePenaltyReduction']),
-    target: z.string(), // e.g., "AC", "STR", "Attack"
+    type: z.enum([
+        'StatBonus', 'ACBonus', 'DamageAdd', 'AbilitySET', 'RangePenaltyReduction',
+        'HitBonus',           // +X to attack rolls
+        'SaveBonus',          // +X to saving throws
+        'DamageResistance',   // Resistance to a damage type
+    ]),
+    target: z.string(), // e.g., "AC", "STR", "Attack", "Fire"
     value: z.number()
 });
+
+export const MagicalPropertySchema = z.object({
+    type: z.enum([
+        'BonusDamage',        // +Xd4 Fire/Cold/etc.
+        'Resistance',          // Resistance to damage type
+        'StatBonus',           // +X to ability score
+        'SaveBonus',           // +X to saving throws
+        'ConditionImmunity',   // Immune to Frightened, etc.
+        'SpellCharge',         // Cast spell X times per rest
+        'BonusAC',             // +X AC (jewelry/cloaks)
+    ]),
+    element: z.string().optional(),    // "Fire", "Necrotic", etc.
+    value: z.number().optional(),      // Bonus amount or dice average
+    dice: z.string().optional(),       // "1d4", "1d6" for variable bonuses
+    spellName: z.string().optional(),  // For SpellCharge type
+    maxCharges: z.number().optional(), // For SpellCharge type
+    description: z.string().optional() // Flavor text for this property
+});
+export type MagicalProperty = z.infer<typeof MagicalPropertySchema>;
 
 export const BaseItemSchema = z.object({
     id: z.string().optional(), // Populated by DataManager
@@ -23,7 +50,14 @@ export const BaseItemSchema = z.object({
     modifiers: z.array(ModifierSchema).default([]),
     tags: z.array(z.string()).default([]),
     charges: z.number().optional(),
-    quantity: z.number().default(1)
+    quantity: z.number().default(1),
+    // ItemForge fields (all optional with defaults for backward compatibility)
+    rarity: RaritySchema.default('Common'),
+    itemLevel: z.number().min(1).max(20).default(1),
+    isForged: z.boolean().default(false),
+    forgeSource: z.string().optional(),              // e.g., "Skeleton CR 0.25 Ruins"
+    magicalProperties: z.array(MagicalPropertySchema).default([]),
+    instanceId: z.string().optional(),               // Unique per physical item in the world
 });
 
 export const WeaponSchema = BaseItemSchema.extend({

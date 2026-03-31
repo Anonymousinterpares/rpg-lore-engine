@@ -17,7 +17,8 @@
       "Bash(npx tsx -e \":*)",
       "Bash(grep:*)",
       "Bash(npm run:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(find . -path */data/* -name *.json -path *item*)"
     ]
   }
 }
