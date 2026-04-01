@@ -94,6 +94,16 @@ export const FullSaveStateSchema = z.object({
     // --- Narrative & LLM ---
     storySummary: z.string().default(''),
     lastNarrative: z.string().default(''),
+    lastSkillCheck: z.object({
+        id: z.string(),
+        dieValue: z.number(),
+        modifier: z.number(),
+        total: z.number(),
+        dc: z.number(),
+        success: z.boolean(),
+        skillName: z.string(),
+        label: z.string(),
+    }).optional(),
     conversationHistory: z.array(ConversationTurnSchema).default([]),
     triggeredEvents: z.array(z.string()).default([]),
     codexEntries: z.array(z.object({

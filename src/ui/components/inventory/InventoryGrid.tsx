@@ -286,14 +286,14 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                     if (!hasArcana && !hasInvestigation) {
                         examineDisabledReason = `${pc.name} lacks Arcana or Investigation skill. Visit a merchant for identification.`;
                     } else {
-                        const cooldownKey = `examine_${(contextMenu.item as any).instanceId}`;
+                        const cooldownKey = `examine_skill`;
                         const lastAttempt = (state as any)._examineCooldowns?.[cooldownKey];
                         const currentTurn = state.worldTime?.totalTurns || 0;
                         const cooldownTurns = 14400;
                         if (lastAttempt !== undefined && (currentTurn - lastAttempt) < cooldownTurns) {
                             const remaining = cooldownTurns - (currentTurn - lastAttempt);
                             const hoursLeft = Math.ceil(remaining / 600);
-                            examineDisabledReason = `Already attempted. Try again in ~${hoursLeft}h.`;
+                            examineDisabledReason = `Identification on cooldown. ~${hoursLeft}h remaining.`;
                         }
                     }
                 }

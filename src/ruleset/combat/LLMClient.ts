@@ -193,6 +193,9 @@ export class LLMClient {
 
         console.log(`[LLMClient] Requesting ${model.id} via ${provider.id}...`);
         console.log(`[LLMClient] URL: ${url.split('?')[0]} (API Key hidden)`);
+        console.log(`[LLMClient] SYSTEM PROMPT: ${systemPrompt.substring(0, 200)}${systemPrompt.length > 200 ? '...' : ''}`);
+        console.log(`[LLMClient] USER MSG: ${userMessage.substring(0, 200)}${userMessage.length > 200 ? '...' : ''}`);
+        console.log(`[LLMClient] maxTokens: ${maxTokens}, temp: ${temperature}, format: ${responseFormat}`);
 
         const startTime = Date.now();
         const response = await fetch(url, {
@@ -233,6 +236,7 @@ export class LLMClient {
         }
 
         console.log(`[LLMClient] Content length: ${result.length} characters.`);
+        console.log(`[LLMClient] FULL RESPONSE: ${result}`);
 
         // Detect silent token timeout (Thinking models failing to write content)
         if (!result && provider.id !== 'gemini' && provider.id !== 'anthropic') {

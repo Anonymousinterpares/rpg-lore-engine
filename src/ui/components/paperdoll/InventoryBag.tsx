@@ -13,6 +13,7 @@ interface InventoryBagProps {
     gold: { gp: number; sp: number; cp: number };
     onItemEquipped: (item: PaperdollItem) => void;
     onReceiveItem: (item: PaperdollItem) => void;
+    onItemContextMenu?: (e: React.MouseEvent, item: PaperdollItem) => void;
 }
 
 const ITEM_ICONS: Record<string, React.ReactNode> = {
@@ -45,7 +46,7 @@ const RARITY_BORDER: Record<string, string> = {
 
 const MAX_SLOTS = 24;
 
-const InventoryBag: React.FC<InventoryBagProps> = ({ items, gold, onItemEquipped, onReceiveItem }) => {
+const InventoryBag: React.FC<InventoryBagProps> = ({ items, gold, onItemEquipped, onReceiveItem, onItemContextMenu }) => {
     const [tooltipItem, setTooltipItem] = useState<PaperdollItem | null>(null);
     const [tooltipRect, setTooltipRect] = useState<DOMRect | null>(null);
     const gridRef = useRef<HTMLDivElement>(null);
@@ -117,6 +118,7 @@ const InventoryBag: React.FC<InventoryBagProps> = ({ items, gold, onItemEquipped
                         onMouseEnter={(e) => handleMouseEnter(e, item)}
                         onMouseLeave={handleMouseLeave}
                         onDoubleClick={() => handleDoubleClick(item)}
+                        onContextMenu={(e) => { e.preventDefault(); onItemContextMenu?.(e, item); }}
                     >
                         <div className={styles.itemIcon}>
                             {ITEM_ICONS[item.type] || <Package size={18} />}

@@ -6,44 +6,81 @@ interface NarrativeBoxProps {
     text: string;
     speed?: number; // ms per character
     title?: string;
+    paused?: boolean; // When true, queue new text instead of starting typewriter
     onTypingComplete?: () => void;
+    onTypingStart?: () => void;
 }
 
-const NarrativeBox: React.FC<NarrativeBoxProps> = ({ text, speed = 20, title, onTypingComplete }) => {
+const NarrativeBox: React.FC<NarrativeBoxProps> = ({ text, speed = 20, title, paused = false, onTypingComplete, onTypingStart }) => {
     const [displayedText, setDisplayedText] = useState('');
     const [isComplete, setIsComplete] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
     const onTypingCompleteRef = useRef(onTypingComplete);
     onTypingCompleteRef.current = onTypingComplete;
+    const onTypingStartRef = useRef(onTypingStart);
+    onTypingStartRef.current = onTypingStart;
 
-    useEffect(() => {
-        console.log('[NarrativeBox] Text received, first 50 chars:', JSON.stringify(text.substring(0, 50)));
-        console.log('[NarrativeBox] First char code:', text.charCodeAt(0));
+    // Track what text is queued vs what's actively being typed
+    const pendingTextRef = useRef<string | null>(null);
+    const typingTextRef = useRef<string | null>(null); // text currently being typed
+    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+    // Start the typewriter for a given text
+    const startTypewriter = (targetText: string) => {
+        // Don't restart if already typing the same text
+        if (typingTextRef.current === targetText) return;
+        typingTextRef.current = targetText;
+
+        // Clear any existing timer
+        if (timerRef.current) clearInterval(timerRef.current);
+
+        console.log('[NarrativeBox] Starting typewriter, first 50 chars:', JSON.stringify(targetText.substring(0, 50)));
         setDisplayedText('');
         setIsComplete(false);
+        onTypingStartRef.current?.();
         let index = 0;
 
-        const timer = setInterval(() => {
-            if (index < text.length) {
-                // CRITICAL: Capture the character BEFORE incrementing index
-                // This prevents the closure from reading the wrong index value
-                const currentChar = text.charAt(index);
+        timerRef.current = setInterval(() => {
+            if (index < targetText.length) {
+                const currentChar = targetText.charAt(index);
                 setDisplayedText((prev) => prev + currentChar);
                 index++;
 
-                // Auto-scroll to bottom
                 if (scrollRef.current) {
                     scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
                 }
             } else {
                 setIsComplete(true);
-                clearInterval(timer);
+                if (timerRef.current) clearInterval(timerRef.current);
+                timerRef.current = null;
+                typingTextRef.current = null;
                 onTypingCompleteRef.current?.();
             }
         }, speed);
+    };
 
-        return () => clearInterval(timer);
-    }, [text, speed]);
+    // Handle new text arriving
+    useEffect(() => {
+        if (paused) {
+            // Queue for later — do NOT touch any running typewriter
+            pendingTextRef.current = text;
+            return;
+        }
+
+        // Check if there's pending text from when we were paused
+        const targetText = pendingTextRef.current ?? text;
+        pendingTextRef.current = null;
+
+        startTypewriter(targetText);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [text, speed, paused]);
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            if (timerRef.current) clearInterval(timerRef.current);
+        };
+    }, []);
 
     return (
         <div className={`${parchmentStyles.panel} ${styles.narrativeBox}`} ref={scrollRef}>

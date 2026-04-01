@@ -1,0 +1,125 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    animation: overlayIn 0.3s ease-out;
+}
+
+.overlay.fadeout {
+    animation: overlayOut 0.4s ease-in forwards;
+}
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem 3rem;
+    background: rgba(15, 15, 25, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.03);
+    min-width: 280px;
+}
+
+.label {
+    font-family: var(--font-narrative, serif);
+    font-size: 1.1rem;
+    letter-spacing: 0.15rem;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.diceArea {
+    margin: 0.5rem 0;
+}
+
+.breakdown {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-ui, sans-serif);
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.roll {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.mod {
+    color: var(--glass-accent, #4ecdc4);
+}
+
+.equals {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.total {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.vs {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.9rem;
+    margin-left: 0.3rem;
+}
+
+.verdict {
+    font-family: var(--font-narrative, serif);
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 0.4rem;
+    text-transform: uppercase;
+    animation: verdictIn 0.4s ease-out;
+    margin-top: 0.5rem;
+}
+
+.success {
+    color: #a8d8a8;
+    text-shadow: 0 0 20px rgba(168, 216, 168, 0.4);
+}
+
+.failure {
+    color: #d8a8a8;
+    text-shadow: 0 0 20px rgba(216, 168, 168, 0.4);
+}
+
+@keyframes overlayIn {
+    from {
+        opacity: 0;
+        backdrop-filter: blur(0);
+    }
+    to {
+        opacity: 1;
+        backdrop-filter: blur(4px);
+    }
+}
+
+@keyframes overlayOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes verdictIn {
+    0% { opacity: 0; transform: scale(0.7); }
+    60% { transform: scale(1.1); }
+    100% { opacity: 1; transform: scale(1); }
+}

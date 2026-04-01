@@ -15,7 +15,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter, onCompass, onCodex }) => {
-    const { state, engine, updateState } = useGameState();
+    const { state, engine, updateState, processCommand } = useGameState();
 
     const items = state?.character?.inventory?.items || [];
     const gold = state?.character?.inventory?.gold || { gp: 0, sp: 0, cp: 0 };
@@ -38,7 +38,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter, onCompass, on
         } else if (action === 'pickupLoot') {
             await engine.pickupCombatLoot!(item.instanceId);
         } else if (action === 'examine') {
-            await engine.processTurn('/examine ' + item.instanceId);
+            await processCommand('/examine ' + item.instanceId);
         }
     };
 

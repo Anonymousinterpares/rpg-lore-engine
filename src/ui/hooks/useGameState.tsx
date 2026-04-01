@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { GameLoop } from '../../ruleset/combat/GameLoop';
 import { GameStateManager, GameState } from '../../ruleset/combat/GameStateManager';
 import { NetworkStorageProvider } from '../../ruleset/combat/NetworkStorageProvider';
@@ -12,6 +12,7 @@ interface GameContextType {
     engine: GameLoop | null;
     isActive: boolean;
     isLoading: boolean;
+    isProcessing: boolean;
     startGame: (initialState: GameState) => Promise<void>;
     endGame: () => void;
     processCommand: (command: string) => Promise<void>;
@@ -31,6 +32,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [state, setState] = useState<GameState | null>(null);
     const [isActive, setIsActive] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
+    const processingRef = useRef(false);
 
     // Choose storage based on environment or settings
     const [storage] = useState<IStorageProvider>(new NetworkStorageProvider());
@@ -93,12 +96,17 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, []);
 
     const processCommand = useCallback(async (command: string) => {
-        if (!engine) return;
+        if (!engine || processingRef.current) return;
+        processingRef.current = true;
+        setIsProcessing(true);
+        // Safety timeout: unblock input after 30s even if LLM hangs
+        const timeout = setTimeout(() => { processingRef.current = false; setIsProcessing(false); }, 30_000);
         try {
             await engine.processTurn(command);
-            // No need for updateState() here anymore as the engine will notify us via subscription
         } finally {
-            // No global loading screen for regular commands
+            clearTimeout(timeout);
+            processingRef.current = false;
+            setIsProcessing(false);
         }
     }, [engine]);
 
@@ -174,6 +182,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
             engine,
             isActive,
             isLoading,
+            isProcessing,
             startGame,
             endGame,
             processCommand,

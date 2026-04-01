@@ -260,8 +260,8 @@ export class GameLoop {
         if (intent.type === 'COMMAND') {
             systemResponse = await this.handleCommand(intent);
 
-            // Trade commands are fully deterministic — bypass the LLM narrator pipeline entirely.
-            const tradeCommands = ['trade', 'buy', 'sell', 'haggle', 'intimidate', 'deceive', 'buyback', 'closetrade'];
+            // Trade and examination commands are fully deterministic — bypass the LLM narrator pipeline entirely.
+            const tradeCommands = ['trade', 'buy', 'sell', 'haggle', 'intimidate', 'deceive', 'buyback', 'closetrade', 'examine', 'identify', 'merchantidentify'];
             if (tradeCommands.includes(intent.command || '')) {
                 this.state.lastNarrative = systemResponse;
                 await this.emitStateUpdate();
@@ -898,15 +898,13 @@ export class GameLoop {
                     return `${this.state.character.name} lacks the Arcana or Investigation skill to examine this item. Visit a merchant for identification.`;
                 }
 
-                // Check 24h cooldown per item
-                const cooldownKey = `examine_${(examineItem as any).instanceId}`;
+                // Check 24h global cooldown for identification skill (one attempt per 24h regardless of item)
+                const cooldownKey = `examine_skill`;
                 const lastAttempt = (this.state as any)._examineCooldowns?.[cooldownKey];
                 const currentTurn = this.state.worldTime.totalTurns;
                 const cooldownTurns = 14400; // 24h at 6s/turn
                 if (lastAttempt !== undefined && (currentTurn - lastAttempt) < cooldownTurns) {
-                    const remaining = cooldownTurns - (currentTurn - lastAttempt);
-                    const hoursLeft = Math.ceil(remaining / 600);
-                    return `You already attempted to examine this item recently. Try again in approximately ${hoursLeft} hour${hoursLeft > 1 ? 's' : ''}.`;
+                    return ''; // UI handles cooldown via disabled button + tooltip
                 }
 
                 const dc = ItemForgeEngine.getIdentifyDC(examineItem);
@@ -916,42 +914,72 @@ export class GameLoop {
                 const roll = Dice.d20();
                 const total = roll + intMod + prof;
 
-                if (total >= dc) {
-                    const msg = ItemForgeEngine.identifyItem(examineItem, 'skill');
+                // Track global skill cooldown (consumed regardless of success/failure)
+                if (!(this.state as any)._examineCooldowns) (this.state as any)._examineCooldowns = {};
+                (this.state as any)._examineCooldowns[cooldownKey] = currentTurn;
 
-                    // Generate LLM lore for the identified item
+                // Emit structured dice data for UI overlay
+                this.state.lastSkillCheck = {
+                    id: `sk_${Date.now()}`,
+                    dieValue: roll,
+                    modifier: intMod + prof,
+                    total,
+                    dc,
+                    success: total >= dc,
+                    skillName: bestSkill,
+                    label: `${bestSkill} Check`,
+                };
+                await this.emitStateUpdate();
+
+                if (total >= dc) {
+                    ItemForgeEngine.identifyItem(examineItem, 'skill');
+                    await this.emitStateUpdate();
+
+                    // Generate immersive identification narrative
+                    let narrative = '';
                     try {
-                        const loreResult = await LoreService.nameForgedItem(examineItem, {
-                            monsterName: (examineItem as any).forgeSource?.split(' CR ')?.[0] || 'Unknown',
-                            biome: (examineItem as any).forgeSource?.split(' ')?.pop() || 'Unknown',
-                        });
-                        if (loreResult.description) {
-                            (examineItem as any).lore = loreResult.description;
-                            (examineItem as any).description = loreResult.description;
+                        narrative = await LoreService.generateIdentificationNarrative(
+                            examineItem,
+                            this.state.character.name,
+                            bestSkill,
+                        );
+                        if (narrative) {
+                            (examineItem as any).lore = narrative;
+                            (examineItem as any).description = narrative;
+                            await this.emitStateUpdate();
                         }
                     } catch { /* LLM failure is non-critical */ }
 
-                    await this.emitStateUpdate();
-
-                    const magicDesc = ((examineItem as any).magicalProperties || [])
-                        .map((mp: any) => mp.description || `${mp.dice || ''} ${mp.element || ''} ${mp.type}`.trim())
-                        .filter(Boolean).join('; ');
-
-                    const narrative = `${bestSkill} check: ${roll} + ${intMod + prof} = ${total} vs DC ${dc}. Success!\n\n` +
-                        `As you study the item closely, its true nature is revealed: **${examineItem.name}** (${(examineItem as any).rarity}).` +
-                        (magicDesc ? `\n\nMagical properties: ${magicDesc}` : '') +
-                        ((examineItem as any).description ? `\n\n${(examineItem as any).description}` : '');
+                    // Fallback if LLM fails
+                    if (!narrative) {
+                        const magicDesc = ((examineItem as any).magicalProperties || [])
+                            .map((mp: any) => mp.description || `${mp.dice || ''} ${mp.element || ''} ${mp.type}`.trim())
+                            .filter(Boolean).join('; ');
+                        narrative = `Through careful examination, the item's true nature is revealed: ${examineItem.name} (${(examineItem as any).rarity}).` +
+                            (magicDesc ? ` Magical properties: ${magicDesc}.` : '');
+                    }
 
                     this.state.lastNarrative = narrative;
                     return narrative;
                 } else {
-                    // Track cooldown
-                    if (!(this.state as any)._examineCooldowns) (this.state as any)._examineCooldowns = {};
-                    (this.state as any)._examineCooldowns[cooldownKey] = currentTurn;
                     await this.emitStateUpdate();
 
-                    const hoursWait = 24;
-                    return `${bestSkill} check: ${roll} + ${intMod + prof} = ${total} vs DC ${dc}. Failed.\n\nThe item's true nature eludes you. You may attempt again in ${hoursWait} hours.`;
+                    // Generate immersive failure narrative
+                    let failNarrative = '';
+                    try {
+                        failNarrative = await LoreService.generateIdentificationFailure(
+                            this.state.character.name,
+                            bestSkill,
+                            examineItem.name,
+                        );
+                    } catch { /* non-critical */ }
+
+                    if (!failNarrative) {
+                        failNarrative = `${this.state.character.name} studies the item intently, but its true nature remains hidden. The secrets within resist revelation. Perhaps another attempt after resting will yield different results.`;
+                    }
+
+                    this.state.lastNarrative = failNarrative;
+                    return failNarrative;
                 }
             }
 

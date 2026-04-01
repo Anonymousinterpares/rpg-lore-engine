@@ -113,6 +113,88 @@ export class LoreService {
     }
 
     /**
+     * Generates an immersive narrative for a successful item identification.
+     * Describes the examination experience, what the character discovers, and the item's history.
+     */
+    public static async generateIdentificationNarrative(
+        item: any,
+        characterName: string,
+        skillUsed: string,
+    ): Promise<string> {
+        const agentProfile = AgentManager.getAgentProfile('LORE_KEEPER');
+        if (!agentProfile) return '';
+
+        const provider = AgentManager.getProviderForAgent(agentProfile);
+        const model = AgentManager.getModelForAgent(agentProfile);
+        if (!provider || !model) return '';
+
+        const magicDesc = (item.magicalProperties || [])
+            .map((p: any) => p.description || `${p.element || ''} ${p.type}`.trim())
+            .filter(Boolean).join(', ');
+
+        const modDesc = (item.modifiers || [])
+            .map((m: any) => `+${m.value} ${m.target} (${m.type})`)
+            .join(', ');
+
+        const prompt = `${characterName} examines a mysterious item using their ${skillUsed} skill. Write an immersive 3-5 sentence narrative describing:
+1. The examination process (arcane runes glowing, magical auras revealing themselves, etc.)
+2. The moment of revelation — the item's true identity
+3. What was discovered about the item's history and power
+
+Item details:
+- True name: "${item.name}"
+- True rarity: ${item.rarity}
+- Type: ${item.type}
+${modDesc ? `- Bonuses: ${modDesc}` : ''}
+${magicDesc ? `- Magical properties: ${magicDesc}` : ''}
+${item.forgeSource ? `- Origin: ${item.forgeSource}` : ''}
+
+Write ONLY the narrative. No dice rolls, no mechanical numbers, no game terms like "DC" or "check". Pure immersive storytelling.`;
+
+        try {
+            const response = await LLMClient.generateCompletion(provider, model, {
+                systemPrompt: 'You are a D&D narrator. Write immersive item identification scenes. Plain text only, no JSON, no markdown headers.',
+                userMessage: prompt,
+                temperature: 0.8,
+                maxTokens: 400,
+                responseFormat: 'text'
+            });
+            return response.trim();
+        } catch {
+            return '';
+        }
+    }
+
+    /**
+     * Generates a brief narrative for a failed item identification attempt.
+     */
+    public static async generateIdentificationFailure(
+        characterName: string,
+        skillUsed: string,
+        itemPerceivedName: string,
+    ): Promise<string> {
+        const agentProfile = AgentManager.getAgentProfile('LORE_KEEPER');
+        if (!agentProfile) return '';
+
+        const provider = AgentManager.getProviderForAgent(agentProfile);
+        const model = AgentManager.getModelForAgent(agentProfile);
+        if (!provider || !model) return '';
+
+        try {
+            const response = await LLMClient.generateCompletion(provider, model, {
+                systemPrompt: 'You are a D&D narrator. Write a brief failure scene. Plain text, 2-3 sentences max.',
+                userMessage: `${characterName} attempts to examine "${itemPerceivedName}" using ${skillUsed}, but fails to uncover its secrets. Describe the failed attempt immersively. End by noting they may try again after resting. No dice rolls or game mechanics.`,
+                temperature: 0.8,
+                maxTokens: 300,
+                responseFormat: 'text'
+            });
+            return response.trim();
+        } catch {
+            return '';
+        }
+    }
+
+    /**
      * Generates an evocative name and description for a forged item via LLM.
      * Non-blocking: returns default values if LLM fails or is unavailable.
      */
@@ -152,7 +234,7 @@ Do NOT alter stats. You are ONLY naming and describing.`;
                     systemPrompt: 'You are a legendary artificer and namer of enchanted weapons and armor.',
                     userMessage: prompt,
                     temperature: 0.9,
-                    maxTokens: 300,
+                    maxTokens: 600,
                     responseFormat: 'json'
                 }
             );

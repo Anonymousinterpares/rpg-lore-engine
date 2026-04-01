@@ -38,17 +38,24 @@ const PERSIST_RARITIES = ['Rare', 'Very Rare', 'Legendary'];
 
 /**
  * Checks if an item should be persisted to the catalog.
+ * Uses trueRarity (not perceived) for the check.
  */
 export function shouldPersist(item: any): boolean {
-    return item.isForged === true && PERSIST_RARITIES.includes(item.rarity);
+    const effectiveRarity = item.trueRarity || item.rarity;
+    return item.isForged === true && PERSIST_RARITIES.includes(effectiveRarity);
 }
 
 /**
- * Builds a clean item object for persistence (strip runtime-only fields).
+ * Builds a clean item object for persistence using TRUE values (not perceived).
+ * The saved file represents the fully identified item.
  */
 function buildPersistedItem(item: any): any {
+    const trueName = item.trueName || item.name;
+    const trueRarity = item.trueRarity || item.rarity;
+    // Recalculate true cost based on true rarity
+    const baseGp = item._baseCostGp || item.cost?.gp || 0;
     return {
-        name: item.name,
+        name: trueName,
         type: item.type,
         cost: item.cost,
         weight: item.weight,
@@ -57,7 +64,7 @@ function buildPersistedItem(item: any): any {
         modifiers: item.modifiers || [],
         tags: item.tags || [],
         quantity: 1,
-        rarity: item.rarity,
+        rarity: trueRarity,
         itemLevel: item.itemLevel,
         isForged: true,
         forgeSource: item.forgeSource,
@@ -82,8 +89,9 @@ function buildPersistedItem(item: any): any {
 export async function persistForgedItem(item: any, projectRoot: string): Promise<boolean> {
     if (!shouldPersist(item)) return false;
 
-    // Deduplication: skip if name already in DataManager
-    if (DataManager.getItem(item.name)) {
+    // Deduplication: skip if true name already in DataManager
+    const trueName = item.trueName || item.name;
+    if (DataManager.getItem(trueName)) {
         return false;
     }
 
@@ -160,7 +168,8 @@ async function persistViaFS(item: any, projectRoot: string): Promise<boolean> {
  */
 export async function tryPersistForgedItem(item: any): Promise<boolean> {
     if (!shouldPersist(item)) return false;
-    if (DataManager.getItem(item.name)) return false;
+    const trueName = item.trueName || item.name;
+    if (DataManager.getItem(trueName)) return false;
 
     const isBrowser = typeof window !== 'undefined';
     const persistedItem = buildPersistedItem(item);

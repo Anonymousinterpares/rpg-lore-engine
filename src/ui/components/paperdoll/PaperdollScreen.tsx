@@ -68,13 +68,13 @@ function mapToPaperdollItem(item: any): PaperdollItem {
 }
 
 const PaperdollScreen: React.FC = () => {
-    const { state, engine } = useGameState();
+    const { state, engine, processCommand } = useGameState();
 
     const sex = (state?.character as any)?.sex || 'male';
 
     // Derive a change key so useMemo invalidates on equip/unequip
     const equipKey = JSON.stringify(state?.character?.equipmentSlots);
-    const invKey = state?.character?.inventory?.items?.map(i => `${i.instanceId}:${i.equipped}`).join(',');
+    const invKey = state?.character?.inventory?.items?.map(i => `${i.instanceId}:${i.equipped}:${(i as any).identified}:${(i as any).rarity}`).join(',');
 
     // Map inventory items to PaperdollItems (unequipped only for the bag)
     const inventoryItems = useMemo(() => {
@@ -145,29 +145,40 @@ const PaperdollScreen: React.FC = () => {
     }, [engine, state?.character?.equipmentSlots]);
 
     // Context menu state for equipment slots
-    const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number; item: PaperdollItem; slotId: string } | null>(null);
+    const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number; item: PaperdollItem; slotId?: string; source: 'slot' | 'bag' } | null>(null);
     const [datasheetItem, setDatasheetItem] = useState<any>(null);
 
     const handleSlotContextMenu = useCallback((e: React.MouseEvent, item: PaperdollItem, slotId: string) => {
-        setCtxMenu({ x: e.clientX, y: e.clientY, item, slotId });
+        setCtxMenu({ x: e.clientX, y: e.clientY, item, slotId, source: 'slot' });
+    }, []);
+
+    const handleBagContextMenu = useCallback((e: React.MouseEvent, item: PaperdollItem) => {
+        setCtxMenu({ x: e.clientX, y: e.clientY, item, source: 'bag' });
     }, []);
 
     const handleCtxAction = useCallback(async (action: string) => {
         if (!ctxMenu) return;
-        const { item, slotId } = ctxMenu;
+        const { item, slotId, source } = ctxMenu;
         setCtxMenu(null);
 
         if (action === 'info') {
             const baseItem = DataManager.getItem(item.id);
             setDatasheetItem({ ...baseItem, ...item });
         } else if (action === 'equip' && engine) {
-            // "Unequip" for equipped items
-            await engine.unequipFromSlot(slotId);
+            if (source === 'slot' && slotId) {
+                await engine.unequipFromSlot(slotId);
+            } else {
+                await engine.equipItem(item.instanceId);
+            }
+        } else if (action === 'examine') {
+            await processCommand('/examine ' + item.instanceId);
         } else if (action === 'drop' && engine) {
-            await engine.unequipFromSlot(slotId);
-            // Could also drop, but unequip is the safe action
+            if (source === 'slot' && slotId) {
+                await engine.unequipFromSlot(slotId);
+            }
+            await engine.dropItem(item.instanceId);
         }
-    }, [ctxMenu, engine]);
+    }, [ctxMenu, engine, processCommand]);
 
     if (!state?.character) {
         return <div className={styles.screen}>Loading...</div>;
@@ -189,21 +200,45 @@ const PaperdollScreen: React.FC = () => {
                     gold={gold}
                     onItemEquipped={handleInventoryEquip}
                     onReceiveItem={handleReceiveFromSlot}
+                    onItemContextMenu={handleBagContextMenu}
                 />
             </div>
             <div className={styles.ornamentBottom} />
 
-            {ctxMenu && (
-                <ItemContextMenu
-                    x={ctxMenu.x}
-                    y={ctxMenu.y}
-                    itemName={ctxMenu.item.name}
-                    isEquippable={true}
-                    equipAllowed={true}
-                    onClose={() => setCtxMenu(null)}
-                    onAction={handleCtxAction}
-                />
-            )}
+            {ctxMenu && (() => {
+                const isUnidentified = ctxMenu.item.identified === false;
+                let examineDisabledReason: string | undefined;
+                if (isUnidentified && state?.character) {
+                    const pc = state.character;
+                    const hasArcana = pc.skillProficiencies?.includes('Arcana' as any);
+                    const hasInvestigation = pc.skillProficiencies?.includes('Investigation' as any);
+                    if (!hasArcana && !hasInvestigation) {
+                        examineDisabledReason = `${pc.name} lacks Arcana or Investigation skill.`;
+                    } else {
+                        const cooldownKey = `examine_skill`;
+                        const lastAttempt = (state as any)._examineCooldowns?.[cooldownKey];
+                        const currentTurn = state.worldTime?.totalTurns || 0;
+                        if (lastAttempt !== undefined && (currentTurn - lastAttempt) < 14400) {
+                            const hoursLeft = Math.ceil((14400 - (currentTurn - lastAttempt)) / 600);
+                            examineDisabledReason = `Identification on cooldown. ~${hoursLeft}h remaining.`;
+                        }
+                    }
+                }
+                const equippableTypes = ['weapon', 'armor', 'shield', 'ring', 'amulet', 'cloak', 'belt', 'boots', 'gloves', 'bracers', 'helmet'];
+                return (
+                    <ItemContextMenu
+                        x={ctxMenu.x}
+                        y={ctxMenu.y}
+                        itemName={ctxMenu.item.name}
+                        isEquippable={equippableTypes.some(t => (ctxMenu.item.type || '').toLowerCase().includes(t))}
+                        equipAllowed={true}
+                        isUnidentified={isUnidentified}
+                        examineDisabledReason={examineDisabledReason}
+                        onClose={() => setCtxMenu(null)}
+                        onAction={handleCtxAction}
+                    />
+                );
+            })()}
 
             {datasheetItem && (
                 <ItemDatasheet

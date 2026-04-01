@@ -41,8 +41,13 @@
     gap: var(--spacing-sm);
 }
 
-.textInput {
+.inputWrapper {
     flex: 1;
+    position: relative;
+}
+
+.textInput {
+    width: 100%;
     background: rgba(0, 0, 0, 0.3);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-md);
@@ -57,9 +62,54 @@
     box-shadow: 0 0 8px var(--glass-accent-glow);
 }
 
+.textInput:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: none;
+}
+
 .submitButton {
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
     padding: 0 var(--spacing-lg);
+}
+
+.submitButton:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Processing indicator overlay inside the input */
+.processingOverlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    pointer-events: none;
+}
+
+.processingDot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--glass-accent, #4ecdc4);
+    opacity: 0.3;
+    animation: dotPulse 0.9s ease-in-out infinite;
+}
+
+.processingLabel {
+    margin-left: 0.5rem;
+    font-size: 0.85rem;
+    font-style: italic;
+    color: var(--glass-text, #f0f0f0);
+    opacity: 0.6;
+}
+
+@keyframes dotPulse {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 1; }
 }

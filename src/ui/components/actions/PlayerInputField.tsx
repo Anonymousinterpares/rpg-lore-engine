@@ -8,6 +8,7 @@ interface PlayerInputFieldProps {
     onSubmit: (text: string) => void;
     placeholder?: string;
     disabled?: boolean;
+    processingMessage?: string; // e.g. "The narrator contemplates..." or "The narrator is answering..."
     mode?: 'exploration' | 'combat' | 'dialogue';
 }
 
@@ -16,6 +17,7 @@ export const PlayerInputField: React.FC<PlayerInputFieldProps> = ({
     onSubmit,
     placeholder = "What do you do?",
     disabled = false,
+    processingMessage,
     mode = 'exploration'
 }) => {
     const [input, setInput] = useState('');
@@ -52,14 +54,24 @@ export const PlayerInputField: React.FC<PlayerInputFieldProps> = ({
                 </div>
             )}
             <form onSubmit={handleSubmit} className={styles.inputRow}>
-                <input
-                    type="text"
-                    className={`${styles.textInput} ${parchmentStyles.input}`}
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder={placeholder}
-                    disabled={disabled}
-                />
+                <div className={styles.inputWrapper}>
+                    <input
+                        type="text"
+                        className={`${styles.textInput} ${parchmentStyles.input}`}
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        placeholder={processingMessage ? '' : placeholder}
+                        disabled={disabled}
+                    />
+                    {disabled && processingMessage && (
+                        <div className={styles.processingOverlay}>
+                            <span className={styles.processingDot} />
+                            <span className={styles.processingDot} style={{ animationDelay: '0.3s' }} />
+                            <span className={styles.processingDot} style={{ animationDelay: '0.6s' }} />
+                            <span className={styles.processingLabel}>{processingMessage}</span>
+                        </div>
+                    )}
+                </div>
                 <button
                     type="submit"
                     className={`${parchmentStyles.button} ${styles.submitButton}`}
