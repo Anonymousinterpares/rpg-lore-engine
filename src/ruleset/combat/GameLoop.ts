@@ -29,7 +29,7 @@ import { InventoryManager } from './managers/InventoryManager';
 import { SpellManager } from './managers/SpellManager';
 import { TimeManager } from './managers/TimeManager';
 import { CombatOrchestrator } from './managers/CombatOrchestrator';
-import { MERCHANT_POOLS, BIOME_COMMERCE, COMMON_ITEMS, DEFAULT_COMMERCE } from '../data/MerchantInventoryPool';
+import { MERCHANT_POOLS, BIOME_COMMERCE, COMMON_ITEMS, DEFAULT_COMMERCE, getForgedItemsForMerchant } from '../data/MerchantInventoryPool';
 import { WorldNPC } from '../schemas/WorldEnrichmentSchema';
 import { NPCMovementEngine } from './managers/NPCMovementEngine';
 import { QuestEngine } from './managers/QuestEngine';
@@ -1626,8 +1626,14 @@ export class GameLoop {
         const goldGP = Dice.roll(commerce.goldDice);
 
         // 4. Initialize ShopState
+        const baseInventory = Array.from(pickedItems);
+
+        // Append forged items from catalog (1-3 if eligible)
+        const forgedNames = getForgedItemsForMerchant(biome, this.state.character.level, baseInventory, this.state);
+        baseInventory.push(...forgedNames);
+
         npc.shopState = {
-            inventory: Array.from(pickedItems),
+            inventory: baseInventory,
             soldByPlayer: [],
             lastHaggleFailure: {},
             markup: 1.0 + (Math.random() * 0.2), // Random markup between 1.0 and 1.2

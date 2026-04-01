@@ -5,8 +5,26 @@ import { useGameState } from '../../hooks/useGameState';
 import { ShopEngine } from '../../../ruleset/combat/ShopEngine';
 import { DataManager } from '../../../ruleset/data/DataManager';
 import { CurrencyEngine } from '../../../ruleset/combat/CurrencyEngine';
-import { ShoppingBag, Coins, Scale, Info, ShieldAlert, Heart, Zap } from 'lucide-react';
+import { ShoppingBag, Coins, Scale, Info, ShieldAlert, Heart, Zap, Sparkles, Hammer } from 'lucide-react';
 import CurrencyDisplay from '../common/CurrencyDisplay';
+
+const RARITY_COLORS: Record<string, string> = {
+    'Common': '#c8c8c8',
+    'Uncommon': '#1eff00',
+    'Rare': '#0070dd',
+    'Very Rare': '#a335ee',
+    'Legendary': '#ff8000',
+};
+
+function getModifierSummary(item: any): string {
+    const parts: string[] = [];
+    for (const mod of (item.modifiers || [])) {
+        if (mod.value && mod.target) {
+            parts.push(`+${mod.value} ${mod.target}`);
+        }
+    }
+    return parts.join(', ');
+}
 
 interface TradeModalProps {
     onClose: () => void;
@@ -118,13 +136,19 @@ const TradeModal: React.FC<TradeModalProps> = ({ onClose, onOpenCodex }) => {
                     <div className={styles.pane}>
                         <h3>MERCHANT STOCK <span><Coins size={14} /> {Math.floor(merchantGold)}gp</span></h3>
                         <div className={styles.itemList}>
-                            {merchantInventory.map((item, idx) => (
+                            {merchantInventory.map((item, idx) => {
+                                const rarityColor = RARITY_COLORS[item!.data.rarity] || undefined;
+                                const modSummary = getModifierSummary(item!.data);
+                                return (
                                 <div key={`${item!.data.name}-${idx}`} className={styles.itemEntry}>
                                     <div className={styles.itemMain}>
-                                        <div className={styles.itemName}>
+                                        <div className={styles.itemName} style={rarityColor ? { color: rarityColor } : undefined}>
                                             {item!.data.name}
                                             {item!.isBuyback && <span className={styles.itemBadge}>★ WAS YOURS</span>}
+                                            {(item!.data as any).isMagic && <span className={styles.magicBadge}><Sparkles size={10} /> Magic</span>}
+                                            {(item!.data as any).isForged && <span className={styles.forgedBadge}><Hammer size={10} /> Forged</span>}
                                         </div>
+                                        {modSummary && <div className={styles.modSummary}>{modSummary}</div>}
                                         <div className={styles.itemPrice}>
                                             {item!.isDiscounted && (
                                                 <span className={styles.originalPrice}>
@@ -161,7 +185,8 @@ const TradeModal: React.FC<TradeModalProps> = ({ onClose, onOpenCodex }) => {
                                         )}
                                     </div>
                                 </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
 

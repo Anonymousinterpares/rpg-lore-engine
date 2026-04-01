@@ -1,4 +1,5 @@
 import { BiomeType } from '../schemas/BiomeSchema';
+import { DataManager } from './DataManager';
 
 // Biome → item pool (DataManager keys as found in data/item/*.json)
 export const MERCHANT_POOLS: Record<string, string[]> = {
@@ -96,3 +97,68 @@ export const DEFAULT_COMMERCE: BiomeCommerceConfig = {
     goldDice: '2d10+10',
     itemDice: '1d6+4'
 };
+
+/**
+ * Select forged items from the catalog for a merchant to stock.
+ * Filters by level, biome affinity, world uniqueness, and identification status.
+ * Returns 0-3 item names.
+ */
+export function getForgedItemsForMerchant(
+    biome: string,
+    playerLevel: number,
+    existingInventory: string[],
+    worldState: any,
+): string[] {
+    const allForged = DataManager.getForgedItems();
+    if (allForged.length === 0) return [];
+
+    const existingSet = new Set(existingInventory.map(s => s.toLowerCase()));
+
+    // Build set of item names the player already has
+    const playerNames = new Set<string>();
+    for (const i of (worldState.character?.inventory?.items || [])) {
+        if (i.name) playerNames.add(i.name.toLowerCase());
+        if ((i as any).trueName) playerNames.add((i as any).trueName.toLowerCase());
+    }
+
+    // Build set of item names already in any merchant's inventory
+    const merchantNames = new Set<string>();
+    for (const npc of (worldState.worldNpcs || [])) {
+        for (const id of (npc.shopState?.inventory || [])) {
+            merchantNames.add(id.toLowerCase());
+        }
+    }
+
+    const eligible = allForged.filter((item: any) => {
+        const name = item.name;
+        const nameLower = name.toLowerCase();
+
+        // Already in this merchant's stock
+        if (existingSet.has(nameLower)) return false;
+
+        // Level gate: ±3 of player level
+        const itemLevel = item.itemLevel || 1;
+        if (Math.abs(itemLevel - playerLevel) > 3) return false;
+
+        // Biome affinity: match forgeSource, or 20% chance for non-matching
+        const source = (item.forgeSource || '').toLowerCase();
+        const biomeLower = biome.toLowerCase();
+        if (!source.includes(biomeLower) && Math.random() > 0.2) return false;
+
+        // World uniqueness: not in player inventory or other merchants
+        if (playerNames.has(nameLower)) return false;
+        if (merchantNames.has(nameLower)) return false;
+
+        // Merchants only sell identified goods (catalog items are stored fully identified)
+        if (item.identified === false) return false;
+
+        return true;
+    });
+
+    if (eligible.length === 0) return [];
+
+    // Shuffle and pick 1-3
+    const shuffled = eligible.sort(() => Math.random() - 0.5);
+    const count = Math.min(1 + Math.floor(Math.random() * 3), shuffled.length);
+    return shuffled.slice(0, count).map((i: any) => i.name);
+}

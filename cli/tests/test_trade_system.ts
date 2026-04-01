@@ -189,10 +189,13 @@ async function main() {
     await gl.processTurn('/trade test_merchant_01');
 
     const forgedCostGP = forgedWeapon.cost.gp;
+    const trueCostGP = (forgedWeapon as any)._trueCostGp;
     const baseLongswordGP = DataManager.getItem('Longsword')?.cost.gp || 15;
     console.log(`  Base Longsword: ${baseLongswordGP}gp`);
-    console.log(`  Forged (Rare): ${forgedCostGP}gp (should be ${baseLongswordGP * 50}gp)`);
-    assert(forgedCostGP === baseLongswordGP * 50, `Forged cost = base * 50 (Rare multiplier)`);
+    console.log(`  Forged visible cost (perceived): ${forgedCostGP}gp (Uncommon = base * 5)`);
+    console.log(`  Forged true cost (_trueCostGp): ${trueCostGP}gp (Rare = base * 50)`);
+    assert(forgedCostGP === baseLongswordGP * 5, `Unidentified Rare shows perceived Uncommon cost (base * 5)`);
+    assert(trueCostGP === baseLongswordGP * 50, `True cost stored as _trueCostGp (base * 50)`);
 
     r = await gl.processTurn('/sell ' + forgedWeapon.name);
     console.log(`  Sell result: ${r}`);

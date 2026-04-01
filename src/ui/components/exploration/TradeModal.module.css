@@ -367,3 +367,34 @@
     border-radius: 3px;
     margin-left: 0.5rem;
 }
+
+.magicBadge {
+    font-size: 0.65rem;
+    background-color: rgba(163, 53, 238, 0.2);
+    color: #a335ee;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 0.4rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.forgedBadge {
+    font-size: 0.65rem;
+    background-color: rgba(255, 128, 0, 0.15);
+    color: #ff8000;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 0.4rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.modSummary {
+    font-size: 0.72rem;
+    color: #7f8c8d;
+    font-style: italic;
+    margin-top: 1px;
+}

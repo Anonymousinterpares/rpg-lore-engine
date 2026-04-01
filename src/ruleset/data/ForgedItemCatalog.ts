@@ -52,12 +52,11 @@ export function shouldPersist(item: any): boolean {
 function buildPersistedItem(item: any): any {
     const trueName = item.trueName || item.name;
     const trueRarity = item.trueRarity || item.rarity;
-    // Recalculate true cost based on true rarity
-    const baseGp = item._baseCostGp || item.cost?.gp || 0;
+    const trueCostGp = item._trueCostGp || item.cost?.gp || 0;
     return {
         name: trueName,
         type: item.type,
-        cost: item.cost,
+        cost: { ...item.cost, gp: trueCostGp },
         weight: item.weight,
         description: item.description,
         isMagic: item.isMagic || false,

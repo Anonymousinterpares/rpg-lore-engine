@@ -352,10 +352,17 @@ export class ShopEngine {
         pc.inventory.gold = CurrencyEngine.add(pc.inventory.gold, price);
 
         // Add to merchant with buyback metadata
+        // Buyback uses true value for forged items (merchant knows what they bought)
+        let buybackPrice = priceCopper;
+        if ((item as any).isForged && (item as any)._trueCostGp) {
+            const trueItem = { ...item, cost: { ...item.cost, gp: (item as any)._trueCostGp } };
+            buybackPrice = CurrencyEngine.toCopper(this.getBuyPrice(trueItem as any, npc, pc));
+        }
+
         npc.shopState.inventory.push(item.name);
         npc.shopState.soldByPlayer.push({
             itemId: item.name,
-            originalSellPrice: priceCopper,
+            originalSellPrice: buybackPrice,
             buybackEligible: true
         });
 

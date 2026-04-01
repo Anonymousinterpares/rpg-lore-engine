@@ -152,6 +152,15 @@ export class DataManager {
         this.items[item.name.toLowerCase().replace(/ /g, '_')] = item;
     }
 
+    public static getForgedItems(): Item[] {
+        const seen = new Set<string>();
+        return Object.values(this.items).filter(i => {
+            if (!(i as any).isForged || seen.has(i.name)) return false;
+            seen.add(i.name);
+            return true;
+        });
+    }
+
     public static getItem(idOrName: string): Item | undefined {
         const key = idOrName.toLowerCase();
         if (this.items[idOrName]) return this.items[idOrName];

@@ -110,9 +110,13 @@ export class ItemForgeEngine {
         item.rarity = trueRarity;
         item.identifiedBy = method;
 
-        // Restore true cost
-        const baseGp = DataManager.getItem(item.id)?.cost?.gp || 1;
-        item.cost = { ...item.cost, gp: baseGp * RARITY_VALUE_MULTIPLIER[trueRarity as Rarity] };
+        // Restore true cost (use stored _trueCostGp if available, otherwise recalculate)
+        if (item._trueCostGp) {
+            item.cost = { ...item.cost, gp: item._trueCostGp };
+        } else {
+            const baseGp = DataManager.getItem(item.id)?.cost?.gp || 1;
+            item.cost = { ...item.cost, gp: baseGp * RARITY_VALUE_MULTIPLIER[trueRarity as Rarity] };
+        }
 
         // Reveal lore as description if available
         if (item.lore && !item.description) {
@@ -165,19 +169,24 @@ export class ItemForgeEngine {
         const bonusVal = hitMod || acMod;
         const perceivedName = this.generateDefaultName(displayBase, perceived, bonusVal, []);
 
+        const baseGp = DataManager.getItem((item as any).id)?.cost?.gp || 1;
+        const trueCostGp = baseGp * RARITY_VALUE_MULTIPLIER[rarity];
+        const perceivedCostGp = baseGp * RARITY_VALUE_MULTIPLIER[perceived as Rarity];
+
         return {
             ...item,
             // Store truth
             trueRarity: rarity,
             trueName: item.name, // will be overwritten by LLM naming later
+            _trueCostGp: trueCostGp, // preserved for buyback pricing and identification restore
             // Show perceived
             identified: false,
             perceivedRarity: perceived,
             perceivedName: perceivedName,
             name: perceivedName,
             rarity: perceived,
-            // Cost reflects perceived rarity (true cost restored on identification)
-            cost: { ...item.cost, gp: (DataManager.getItem((item as any).id)?.cost?.gp || 1) * RARITY_VALUE_MULTIPLIER[perceived] },
+            // Sell price reflects perceived rarity (true cost restored on identification)
+            cost: { ...item.cost, gp: perceivedCostGp },
         } as any;
     }
 
