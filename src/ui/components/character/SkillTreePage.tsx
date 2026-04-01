@@ -32,6 +32,7 @@ const SkillTreePage: React.FC = () => {
     });
     const [confirmReset, setConfirmReset] = useState(false);
     const [pending, setPending] = useState<PendingInvestment[]>([]);
+    const [confirmedSkills, setConfirmedSkills] = useState<Set<string>>(new Set());
 
     const pc = state?.character;
     if (!pc) return <div className={styles.empty}>No character loaded.</div>;
@@ -86,11 +87,15 @@ const SkillTreePage: React.FC = () => {
     }, [pc, effectiveSpAvailable, pending]);
 
     const handleConfirm = useCallback(() => {
+        const invested = new Set(pending.map(p => p.skillName));
         for (const p of pending) {
             SkillEngine.invest(pc, p.skillName);
         }
         setPending([]);
+        setConfirmedSkills(invested);
         updateState();
+        // Clear animation after 3s
+        setTimeout(() => setConfirmedSkills(new Set()), 3000);
     }, [pc, pending, updateState]);
 
     const handleRevert = useCallback(() => {
@@ -127,6 +132,7 @@ const SkillTreePage: React.FC = () => {
         const realTier = SkillEngine.getSkillTier(pc, skillName);
         const effectiveTier = getEffectiveTier(skillName);
         const hasPendingForThis = effectiveTier > realTier;
+        const justConfirmed = confirmedSkills.has(skillName);
         const tierName = TIER_NAMES[effectiveTier];
         const mult = effectiveTier > 0 ? SkillEngine.getTierMultiplier(skillName, effectiveTier) : 0;
         const abilityScore = (pc.stats as Record<string, number>)[def.ability] || 10;
@@ -152,7 +158,7 @@ const SkillTreePage: React.FC = () => {
         }
 
         return (
-            <div key={skillName} className={`${styles.skillCard} ${isMaxed ? styles.skillMaxed : ''} ${hasPendingForThis ? styles.skillPending : ''}`}>
+            <div key={skillName} className={`${styles.skillCard} ${isMaxed ? styles.skillMaxed : ''} ${hasPendingForThis ? styles.skillPending : ''} ${justConfirmed ? styles.skillConfirmed : ''}`}>
                 <div className={styles.skillHeader}>
                     <div className={styles.skillNameRow}>
                         {renderTierPips(effectiveTier, hasPendingForThis)}
