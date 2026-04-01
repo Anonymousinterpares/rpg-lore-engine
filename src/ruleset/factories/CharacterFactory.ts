@@ -147,6 +147,7 @@ export class CharacterFactory {
                 level: 1,
                 race: race.name,
                 class: characterClass.name,
+                multiclassLevels: {},
                 conditions: [],
                 stats: finalStats,
                 savingThrowProficiencies: characterClass.savingThrowProficiencies,

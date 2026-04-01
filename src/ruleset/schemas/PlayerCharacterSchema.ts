@@ -38,7 +38,9 @@ export const PlayerCharacterSchema = z.object({
     sex: z.enum(['male', 'female']).default('male'),
     level: z.number().min(1).max(20),
     race: z.string(),
-    class: z.string(),
+    class: z.string(), // Primary class
+    secondaryClass: z.string().optional(), // Multiclass (max 2)
+    multiclassLevels: z.record(z.string(), z.number()).default({}), // { "Fighter": 5, "Rogue": 3 }
     conditions: z.array(CombatConditionSchema).default([]),
     stats: z.record(AbilityScoreSchema, z.number()),
     savingThrowProficiencies: z.array(AbilityScoreSchema).default([]),

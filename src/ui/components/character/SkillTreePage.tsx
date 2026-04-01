@@ -4,7 +4,9 @@ import parchmentStyles from '../../styles/parchment.module.css';
 import { useGameState } from '../../hooks/useGameState';
 import { SkillEngine } from '../../../ruleset/combat/SkillEngine';
 import { MechanicsEngine } from '../../../ruleset/combat/MechanicsEngine';
-import { ChevronDown, ChevronRight, Zap, Shield, Star, Lock, RotateCcw, TrendingUp, Check, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, Zap, Shield, Star, Lock, RotateCcw, TrendingUp, Check, X, Plus, Swords } from 'lucide-react';
+import { DataManager } from '../../../ruleset/data/DataManager';
+import { MulticlassingEngine } from '../../../ruleset/combat/MulticlassingEngine';
 
 const TIER_NAMES = ['Untrained', 'Proficient', 'Expert', 'Master', 'Grandmaster'];
 const TIER_COLORS = ['#888', '#c8c8c8', '#1eff00', '#0070dd', '#ff8000'];
@@ -26,13 +28,14 @@ interface PendingInvestment {
 }
 
 const SkillTreePage: React.FC = () => {
-    const { state, updateState } = useGameState();
+    const { state, engine, updateState } = useGameState();
     const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
         STR: true, DEX: true, INT: true, WIS: true, CHA: true,
     });
     const [confirmReset, setConfirmReset] = useState(false);
     const [pending, setPending] = useState<PendingInvestment[]>([]);
     const [confirmedSkills, setConfirmedSkills] = useState<Set<string>>(new Set());
+    const [showMulticlassSelect, setShowMulticlassSelect] = useState(false);
 
     const pc = state?.character;
     if (!pc) return <div className={styles.empty}>No character loaded.</div>;
@@ -268,6 +271,64 @@ const SkillTreePage: React.FC = () => {
                         </div>
                     )}
                 </div>
+            </div>
+
+            {/* Class Section */}
+            <div className={styles.classSection}>
+                <div className={styles.classInfo}>
+                    <Swords size={16} />
+                    <span className={styles.className}>{pc.class}</span>
+                    {pc.multiclassLevels && Object.keys(pc.multiclassLevels).length > 0 && (
+                        <span className={styles.classLevels}>
+                            ({Object.entries(pc.multiclassLevels).map(([c, l]) => `${c} ${l}`).join(' / ')})
+                        </span>
+                    )}
+                    {(pc as any).secondaryClass && (
+                        <span className={styles.secondaryClass}>
+                            + {(pc as any).secondaryClass}
+                        </span>
+                    )}
+                </div>
+                {!(pc as any).secondaryClass && !showMulticlassSelect && (
+                    <button
+                        className={`${parchmentStyles.button} ${styles.multiclassBtn}`}
+                        onClick={() => setShowMulticlassSelect(true)}
+                    >
+                        <Plus size={12} /> Multiclass
+                    </button>
+                )}
+                {showMulticlassSelect && (
+                    <div className={styles.multiclassSelect}>
+                        <span className={styles.multiclassLabel}>Add second class:</span>
+                        <div className={styles.classOptions}>
+                            {DataManager.getClasses()
+                                .filter((c: any) => c.name !== pc.class)
+                                .map((c: any) => {
+                                    const check = MulticlassingEngine.canMulticlass(pc, c.name);
+                                    return (
+                                        <button
+                                            key={c.name}
+                                            className={`${parchmentStyles.button} ${styles.classOption} ${!check.success ? styles.classOptionDisabled : ''}`}
+                                            disabled={!check.success}
+                                            title={check.success ? `Multiclass into ${c.name}` : check.message}
+                                            onClick={async () => {
+                                                if (engine) {
+                                                    await engine.processTurn(`/multiclass ${c.name}`);
+                                                    updateState();
+                                                    setShowMulticlassSelect(false);
+                                                }
+                                            }}
+                                        >
+                                            {c.name}
+                                        </button>
+                                    );
+                                })}
+                        </div>
+                        <button className={`${parchmentStyles.button} ${styles.cancelBtn}`} onClick={() => setShowMulticlassSelect(false)}>
+                            Cancel
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Skill Groups */}

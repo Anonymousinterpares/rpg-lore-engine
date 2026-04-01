@@ -200,6 +200,89 @@
 /* Confirmed skill: no row animation, only pip glow persists */
 .skillConfirmed {}
 
+/* Class Section */
+.classSection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(139, 115, 85, 0.15);
+    border-radius: var(--radius-md);
+}
+
+.classInfo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.className {
+    font-family: var(--font-narrative);
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.classLevels {
+    font-size: 0.75rem;
+    opacity: 0.5;
+}
+
+.secondaryClass {
+    font-family: var(--font-narrative);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--parchment-accent);
+}
+
+.multiclassBtn {
+    font-size: 0.75rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.multiclassSelect {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    width: 100%;
+    margin-top: var(--spacing-xs);
+}
+
+.multiclassLabel {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+.classOptions {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+}
+
+.classOption {
+    font-size: 0.72rem;
+    padding: 2px 8px;
+}
+
+.classOptionDisabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.cancelBtn {
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    margin-left: auto;
+    opacity: 0.6;
+}
+
 /* Ability Groups */
 .groups {
     display: flex;

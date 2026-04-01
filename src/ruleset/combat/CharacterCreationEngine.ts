@@ -107,6 +107,7 @@ export class CharacterCreationEngine {
             level: 1,
             race: request.race.name,
             class: request.className,
+            multiclassLevels: {},
             conditions: [],
             stats: finalStats,
             savingThrowProficiencies: request.classData.savingThrowProficiencies as AbilityScore[],

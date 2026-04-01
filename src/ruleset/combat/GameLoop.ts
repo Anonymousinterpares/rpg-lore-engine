@@ -1071,7 +1071,9 @@ export class GameLoop {
                     const nextXP = MechanicsEngine.getNextLevelXP(this.state.character.level);
                     return `Not enough XP to level up. Current: ${this.state.character.xp}, Need: ${nextXP}.`;
                 }
-                const msg = LevelingEngine.levelUp(this.state.character);
+                const chosenClass = args[0] || undefined; // Optional: /levelup Fighter
+                const msg = LevelingEngine.levelUp(this.state.character, chosenClass);
+                if (msg.includes('specify class')) return msg; // Multiclass needs class choice
                 await this.emitStateUpdate();
                 return msg;
             }
@@ -1161,9 +1163,35 @@ export class GameLoop {
             case 'multiclass': {
                 if (!args[0]) return "Usage: /multiclass <ClassName>";
                 const targetClass = args[0].charAt(0).toUpperCase() + args[0].slice(1).toLowerCase();
-                const check = MulticlassingEngine.canMulticlass(this.state.character, targetClass);
+                const pc = this.state.character;
+
+                // Already multiclassed into this
+                if (pc.secondaryClass === targetClass) return `Already multiclassed into ${targetClass}.`;
+                // Same as primary
+                if (pc.class === targetClass) return `${targetClass} is already your primary class.`;
+                // Max 2 classes
+                if (pc.secondaryClass && pc.secondaryClass !== targetClass) {
+                    return `Already multiclassed into ${pc.secondaryClass}. Maximum 2 classes allowed.`;
+                }
+
+                const check = MulticlassingEngine.canMulticlass(pc, targetClass);
                 if (!check.success) return check.message;
-                return `${check.message} Multiclassing is not yet fully wired — prerequisites check passed.`;
+
+                // Verify target class exists
+                const targetClassData = DataManager.getClass(targetClass);
+                if (!targetClassData) return `Unknown class: ${targetClass}.`;
+
+                // Execute multiclass
+                pc.secondaryClass = targetClass;
+                // Initialize multiclassLevels tracking
+                if (!pc.multiclassLevels || Object.keys(pc.multiclassLevels).length === 0) {
+                    pc.multiclassLevels = { [pc.class]: pc.level, [targetClass]: 0 };
+                } else {
+                    pc.multiclassLevels[targetClass] = 0;
+                }
+
+                await this.emitStateUpdate();
+                return `Multiclassed into ${targetClass}! On your next level up, use /levelup <class> to choose which class gains the level.`;
             }
 
             // ===== STABILIZE (in-combat companion action) =====

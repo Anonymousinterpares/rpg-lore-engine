@@ -41,36 +41,65 @@ export class LevelingEngine {
 
     /**
      * Applies level up changes to a character.
+     * For multiclass characters, chosenClass determines which class gains the level.
      * Returns a summary of what changed. SP and ASI choices are deferred to player.
      */
-    public static levelUp(pc: PlayerCharacter): string {
+    public static levelUp(pc: PlayerCharacter, chosenClass?: string): string {
         if (!this.canLevelUp(pc)) return `${pc.name} does not have enough XP to level up.`;
+
+        const isMulticlass = !!(pc as any).secondaryClass;
+
+        // Determine which class is leveling
+        let levelingClass = pc.class;
+        if (isMulticlass) {
+            if (!chosenClass) {
+                return `Multiclass character: specify class. Usage: /levelup ${pc.class} or /levelup ${(pc as any).secondaryClass}`;
+            }
+            const normalized = chosenClass.charAt(0).toUpperCase() + chosenClass.slice(1).toLowerCase();
+            if (normalized !== pc.class && normalized !== (pc as any).secondaryClass) {
+                return `${normalized} is not one of your classes (${pc.class} / ${(pc as any).secondaryClass}).`;
+            }
+            levelingClass = normalized;
+        }
 
         pc.level++;
 
-        // HP Increase (Average of hit die + CON mod)
-        const hitDieValue = parseInt(pc.hitDice.dieType.replace('1d', ''));
+        // Track multiclass levels
+        if (isMulticlass) {
+            if (!pc.multiclassLevels) pc.multiclassLevels = {};
+            pc.multiclassLevels[levelingClass] = (pc.multiclassLevels[levelingClass] || 0) + 1;
+        }
+
+        // HP Increase (uses the leveling class's hit die)
+        const classData = DataManager.getClass(levelingClass);
+        const hitDie = (classData as any)?.hitDie || pc.hitDice.dieType;
+        const hitDieValue = parseInt(hitDie.replace('1d', ''));
         const conMod = MechanicsEngine.getModifier(pc.stats['CON'] || 10);
         const hpIncrease = Math.max(1, Math.floor(hitDieValue / 2) + 1 + conMod);
 
         pc.hp.max += hpIncrease;
-        pc.hp.current = pc.hp.max; // Heal on level up
+        pc.hp.current = pc.hp.max;
 
         // Increase Hit Dice
         pc.hitDice.max++;
         pc.hitDice.current = pc.hitDice.max;
 
-        // Grant Skill Points from class config
-        const classData = DataManager.getClass(pc.class);
+        // Grant Skill Points from the leveling class's config
         const spGrant = (classData as any)?.skillPointsPerLevel || 2;
         SkillEngine.grantSkillPoints(pc, spGrant);
 
-        let summary = `${pc.name} reached Level ${pc.level}! HP +${hpIncrease} (max ${pc.hp.max}). Gained ${spGrant} Skill Points.`;
+        const classLabel = isMulticlass ? ` (${levelingClass})` : '';
+        let summary = `${pc.name} reached Level ${pc.level}${classLabel}! HP +${hpIncrease} (max ${pc.hp.max}). Gained ${spGrant} SP.`;
 
-        // ASI at milestone levels
+        if (isMulticlass && pc.multiclassLevels) {
+            const levels = Object.entries(pc.multiclassLevels).map(([c, l]) => `${c} ${l}`).join(' / ');
+            summary += ` [${levels}]`;
+        }
+
+        // ASI at milestone character levels
         if (ASI_LEVELS.includes(pc.level)) {
             (pc as any)._pendingASI = ((pc as any)._pendingASI || 0) + 1;
-            summary += ` ASI available! (+2 to one ability or +1/+1 to two, cap 20)`;
+            summary += ` ASI available!`;
         }
 
         return summary;
