@@ -3,6 +3,7 @@ import { Item } from '../schemas/ItemSchema';
 import { CurrencyEngine, Currency } from './CurrencyEngine';
 import { Dice } from './Dice';
 import { WorldNPC } from '../schemas/WorldEnrichmentSchema';
+import { SkillEngine } from './SkillEngine';
 import { MechanicsEngine } from './MechanicsEngine';
 import { DataManager } from '../data/DataManager';
 import { BiomeType } from '../schemas/BiomeSchema';
@@ -154,12 +155,13 @@ export class ShopEngine {
         const shopMarkup = npc.shopState?.markup || 1.0;
         const shopDiscount = npc.shopState?.discount || 0.0;
 
-        // Passive Persuasion
+        // Passive Persuasion (tier-based)
         let persuasionDiscount = 0;
         if (pc) {
             const charismaMod = Math.floor(((pc.stats['CHA'] || 10) - 10) / 2);
-            const isProficient = pc.skillProficiencies.includes('Persuasion');
-            const profBonus = isProficient ? MechanicsEngine.getProficiencyBonus(pc.level) : 0;
+            const tier = SkillEngine.getSkillTier(pc, 'Persuasion');
+            const mult = tier > 0 ? SkillEngine.getTierMultiplier('Persuasion', tier) : 0;
+            const profBonus = mult * MechanicsEngine.getProficiencyBonus(pc.level);
             const passivePersuasion = 10 + charismaMod + profBonus;
 
             if (passivePersuasion >= 20) persuasionDiscount = 0.15;
@@ -184,12 +186,13 @@ export class ShopEngine {
         if (standing >= 25) modifier = 0.6;
         if (standing >= 75) modifier = 0.7;
 
-        // Passive Persuasion also helps selling
+        // Passive Persuasion also helps selling (tier-based)
         let persuasionBonus = 0;
         if (pc) {
             const charismaMod = Math.floor(((pc.stats['CHA'] || 10) - 10) / 2);
-            const isProficient = pc.skillProficiencies.includes('Persuasion');
-            const profBonus = isProficient ? MechanicsEngine.getProficiencyBonus(pc.level) : 0;
+            const tier = SkillEngine.getSkillTier(pc, 'Persuasion');
+            const mult = tier > 0 ? SkillEngine.getTierMultiplier('Persuasion', tier) : 0;
+            const profBonus = mult * MechanicsEngine.getProficiencyBonus(pc.level);
             const passivePersuasion = 10 + charismaMod + profBonus;
 
             if (passivePersuasion >= 20) persuasionBonus = 0.10;

@@ -41,6 +41,7 @@
       "level": 1,
       "name": "Expertise",
       "description": "Choose two of your skill proficiencies; your proficiency bonus is doubled for any ability check you make that uses either of them.",
+      "count": 2,
       "actionCost": "NONE",
       "usage": {
         "type": "PASSIVE"

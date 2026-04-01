@@ -138,8 +138,9 @@ export class SkillEngine {
         const cost = def.tierCosts[currentTier];
         const newTier = currentTier + 1;
 
-        // Initialize skills Record if needed
+        // Initialize if needed (legacy character protection)
         if (!(pc as any).skills) (pc as any).skills = {};
+        if (!(pc as any).skillPoints) (pc as any).skillPoints = { available: 0, totalEarned: 0 };
         if (!(pc as any).skills[skillName]) {
             (pc as any).skills[skillName] = { tier: 0, pointsInvested: 0, chosenAbility: {} };
         }
@@ -156,6 +157,7 @@ export class SkillEngine {
      * Full respec: reset ALL skills to Tier 0, return all invested SP to pool.
      */
     static resetAll(pc: PlayerCharacter): string {
+        if (!(pc as any).skillPoints) (pc as any).skillPoints = { available: 0, totalEarned: 0 };
         let totalRefunded = 0;
         const skills = (pc as any).skills || {};
 

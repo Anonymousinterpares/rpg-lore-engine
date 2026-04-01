@@ -47,7 +47,10 @@ const TradeModal: React.FC<TradeModalProps> = ({ onClose, onOpenCodex }) => {
 
     // Derived stats for UI
     const charismaMod = Math.floor(((pc.stats['CHA'] || 10) - 10) / 2);
-    const pcPersuasion = 10 + charismaMod + (pc.skillProficiencies.includes('Persuasion') ? (pc.level >= 17 ? 6 : pc.level >= 13 ? 5 : pc.level >= 9 ? 4 : pc.level >= 5 ? 3 : 2) : 0);
+    const persuasionTier = (pc as any).skills?.['Persuasion']?.tier || 0;
+    const persuasionMult = persuasionTier > 0 ? [0, 1, 2, 2, 3][persuasionTier] : 0;
+    const profBonus = pc.level >= 17 ? 6 : pc.level >= 13 ? 5 : pc.level >= 9 ? 4 : pc.level >= 5 ? 3 : 2;
+    const pcPersuasion = 10 + charismaMod + (profBonus * persuasionMult);
     const passiveDiscountPercent = pcPersuasion >= 20 ? 15 : pcPersuasion >= 18 ? 10 : pcPersuasion >= 15 ? 5 : 0;
 
     const currentWeight = pc.inventory.items.reduce((sum, i) => sum + (i.weight * (i.quantity || 1)), 0);

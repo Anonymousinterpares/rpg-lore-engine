@@ -277,23 +277,25 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                 const equippableTypes = ['weapon', 'armor', 'shield', 'ring', 'amulet', 'cloak', 'belt', 'boots', 'gloves', 'bracers', 'helmet'];
                 const isUnidentified = (contextMenu.item as any).identified === false;
 
-                // Determine examine disabled reason
+                // Determine examine disabled reason (tier-based attempts)
                 let examineDisabledReason: string | undefined;
                 if (isUnidentified) {
                     const pc = state.character;
-                    const hasArcana = pc.skillProficiencies?.includes('Arcana' as any);
-                    const hasInvestigation = pc.skillProficiencies?.includes('Investigation' as any);
-                    if (!hasArcana && !hasInvestigation) {
+                    const arcanaTier = (pc as any).skills?.['Arcana']?.tier || 0;
+                    const investTier = (pc as any).skills?.['Investigation']?.tier || 0;
+                    const bestTier = Math.max(arcanaTier, investTier);
+                    if (bestTier === 0) {
                         examineDisabledReason = `${pc.name} lacks Arcana or Investigation skill. Visit a merchant for identification.`;
                     } else {
-                        const cooldownKey = `examine_skill`;
-                        const lastAttempt = (state as any)._examineCooldowns?.[cooldownKey];
-                        const currentTurn = state.worldTime?.totalTurns || 0;
+                        const maxAttempts = Math.min(3, bestTier);
                         const cooldownTurns = 14400;
-                        if (lastAttempt !== undefined && (currentTurn - lastAttempt) < cooldownTurns) {
-                            const remaining = cooldownTurns - (currentTurn - lastAttempt);
-                            const hoursLeft = Math.ceil(remaining / 600);
-                            examineDisabledReason = `Identification on cooldown. ~${hoursLeft}h remaining.`;
+                        const currentTurn = state.worldTime?.totalTurns || 0;
+                        const attempts: number[] = (state as any)._examineCooldowns?.examine_attempts || [];
+                        const recentAttempts = attempts.filter((t: number) => (currentTurn - t) < cooldownTurns);
+                        if (recentAttempts.length >= maxAttempts) {
+                            const oldest = Math.min(...recentAttempts);
+                            const hoursLeft = Math.ceil((cooldownTurns - (currentTurn - oldest)) / 600);
+                            examineDisabledReason = `${recentAttempts.length}/${maxAttempts} attempts used. Next in ~${hoursLeft}h.`;
                         }
                     }
                 }

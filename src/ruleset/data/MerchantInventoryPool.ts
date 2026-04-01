@@ -137,7 +137,7 @@ export function getForgedItemsForMerchant(
         if (existingSet.has(nameLower)) return false;
 
         // Level gate: ±3 of player level
-        const itemLevel = item.itemLevel || 1;
+        const itemLevel = item.itemLevel ?? playerLevel; // Default to player level if missing
         if (Math.abs(itemLevel - playerLevel) > 3) return false;
 
         // Biome affinity: match forgeSource, or 20% chance for non-matching

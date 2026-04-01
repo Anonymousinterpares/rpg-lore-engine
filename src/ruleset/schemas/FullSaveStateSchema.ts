@@ -104,6 +104,10 @@ export const FullSaveStateSchema = z.object({
         skillName: z.string(),
         label: z.string(),
     }).optional(),
+    _examineCooldowns: z.object({
+        examine_attempts: z.array(z.number()).default([]),
+    }).default({}),
+    _pendingASI: z.number().default(0),
     conversationHistory: z.array(ConversationTurnSchema).default([]),
     triggeredEvents: z.array(z.string()).default([]),
     codexEntries: z.array(z.object({

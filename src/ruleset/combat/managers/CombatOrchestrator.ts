@@ -1164,7 +1164,7 @@ export class CombatOrchestrator {
             if (!inPlayerInv) {
                 // Import existing item data from catalog instead of the forged stats
                 const catalogItem = DataManager.getItem(collidedName);
-                if (catalogItem) {
+                if (catalogItem && catalogItem.name) {
                     // Replace loot item data with the catalog item, preserving instanceId
                     const instanceId = lootItem.instanceId;
                     Object.assign(lootItem, catalogItem, { instanceId, equipped: false });

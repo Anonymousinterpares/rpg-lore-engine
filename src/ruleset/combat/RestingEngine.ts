@@ -1,6 +1,7 @@
 import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
 import { Dice } from './Dice';
 import { MechanicsEngine } from './MechanicsEngine';
+import { SkillEngine } from './SkillEngine';
 
 export interface RestResult {
     message: string;
@@ -25,10 +26,17 @@ export class RestingEngine {
         // Rest ratio (based on 8-hour long rest)
         const ratio = Math.min(1.0, durationMinutes / 480);
 
-        // 1. HP Recovery
+        // 1. HP Recovery (Medicine tier boosts short rest healing)
         // Long rest (8h) recovers 100%. Fractional rest recovers ratio * max.
+        // Medicine: Tier 2 +25%, Tier 3+ +50% bonus to HP recovery (short rests only)
+        let medicineMult = 1.0;
+        if (durationMinutes < 480) { // Only for short rests (not long rests which are already 100%)
+            const medicineTier = SkillEngine.getSkillTier(pc, 'Medicine');
+            if (medicineTier >= 3) medicineMult = 1.5;
+            else if (medicineTier >= 2) medicineMult = 1.25;
+        }
         const oldHp = pc.hp.current;
-        const hpToRecover = Math.floor(pc.hp.max * ratio);
+        const hpToRecover = Math.floor(pc.hp.max * ratio * medicineMult);
         pc.hp.current = Math.min(pc.hp.max, pc.hp.current + hpToRecover);
         const actualHpHealed = pc.hp.current - oldHp;
 
@@ -93,9 +101,13 @@ export class RestingEngine {
         let totalHealed = 0;
         const conMod = MechanicsEngine.getModifier(pc.stats['CON'] || 10);
 
+        // Medicine tier bonus for hit dice healing
+        const medicineTier = SkillEngine.getSkillTier(pc, 'Medicine');
+        const medicineMult = medicineTier >= 3 ? 1.5 : medicineTier >= 2 ? 1.25 : 1.0;
+
         for (let i = 0; i < diceToSpend; i++) {
             const roll = Dice.roll(pc.hitDice.dieType);
-            totalHealed += Math.max(0, roll + conMod);
+            totalHealed += Math.max(0, Math.floor((roll + conMod) * medicineMult));
             pc.hitDice.current--;
         }
 

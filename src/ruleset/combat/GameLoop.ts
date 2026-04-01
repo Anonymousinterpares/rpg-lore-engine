@@ -30,6 +30,7 @@ import { SpellManager } from './managers/SpellManager';
 import { TimeManager } from './managers/TimeManager';
 import { CombatOrchestrator } from './managers/CombatOrchestrator';
 import { MERCHANT_POOLS, BIOME_COMMERCE, COMMON_ITEMS, DEFAULT_COMMERCE, getForgedItemsForMerchant } from '../data/MerchantInventoryPool';
+import { SkillEngine } from './SkillEngine';
 import { WorldNPC } from '../schemas/WorldEnrichmentSchema';
 import { NPCMovementEngine } from './managers/NPCMovementEngine';
 import { QuestEngine } from './managers/QuestEngine';
@@ -202,6 +203,9 @@ export class GameLoop {
      * Main entry point for player input.
      */
     public async processTurn(input: string): Promise<string> {
+        // Clear one-shot UI signals from previous turn
+        this.state.lastSkillCheck = undefined;
+
         // DIALOGUE MODE INTERCEPT
         if (this.state.activeDialogueNpcId && this.state.mode === 'EXPLORATION') {
             const dialogueIntent = IntentRouter.parse(input, false);
@@ -510,13 +514,14 @@ export class GameLoop {
                 const currentHex = this.hexMapManager.getHex(this.state.location.hexId);
                 let discoveredPath = false;
 
-                // Survival Passive Discovery (Phase 3)
-                const isSurvivalProficient = this.state.character.skillProficiencies.includes('Survival');
-                if (currentHex && currentHex.connections && isSurvivalProficient) {
+                // Survival Passive Discovery (Phase 3) — tier-based
+                const survivalTier = SkillEngine.getSkillTier(this.state.character, 'Survival');
+                if (currentHex && currentHex.connections && survivalTier > 0) {
                     const roll = Math.floor(Math.random() * 20) + 1;
                     const wisScore = this.state.character.stats['WIS'] || 10;
                     const wisMod = Math.floor((wisScore - 10) / 2);
-                    const proficiencyBonus = 2 + Math.floor((this.state.character.level - 1) / 4);
+                    const baseProfBonus = MechanicsEngine.getProficiencyBonus(this.state.character.level);
+                    const proficiencyBonus = baseProfBonus * SkillEngine.getTierMultiplier('Survival', survivalTier);
                     const total = roll + wisMod + proficiencyBonus;
 
                     // Biome-Scaled DC (§5.4)
@@ -753,8 +758,8 @@ export class GameLoop {
                 const intScore = pc.stats['INT'] || 10;
                 const wisScore = pc.stats['WIS'] || 10;
 
-                const isProficient = pc.skillProficiencies.includes('Cartography');
-                const profBonus = isProficient ? (2 + Math.floor((pc.level - 1) / 4)) : 0;
+                const cartoTier = SkillEngine.getSkillTier(pc, 'Cartography');
+                const profBonus = cartoTier > 0 ? MechanicsEngine.getProficiencyBonus(pc.level) * SkillEngine.getTierMultiplier('Cartography', cartoTier) : 0;
                 const roll = Math.floor(Math.random() * 20) + 1;
                 const total = roll + intScore + Math.floor(wisScore / 2) + profBonus;
 
@@ -892,31 +897,38 @@ export class GameLoop {
                 if ((examineItem as any).identified !== false) return `${examineItem.name} is already fully identified.`;
 
                 // Check if character has any identification capability
-                const hasArcana = this.state.character.skillProficiencies?.includes('Arcana' as any);
-                const hasInvestigation = this.state.character.skillProficiencies?.includes('Investigation' as any);
-                if (!hasArcana && !hasInvestigation) {
+                const arcanaTier = SkillEngine.getSkillTier(this.state.character, 'Arcana');
+                const investigationTier = SkillEngine.getSkillTier(this.state.character, 'Investigation');
+                const bestTier = Math.max(arcanaTier, investigationTier);
+                if (bestTier === 0) {
                     return `${this.state.character.name} lacks the Arcana or Investigation skill to examine this item. Visit a merchant for identification.`;
                 }
 
-                // Check 24h global cooldown for identification skill (one attempt per 24h regardless of item)
-                const cooldownKey = `examine_skill`;
-                const lastAttempt = (this.state as any)._examineCooldowns?.[cooldownKey];
+                // Tier-based daily attempts: T1=1, T2=2, T3=3, T4=3
+                const maxAttempts = Math.min(3, bestTier);
                 const currentTurn = this.state.worldTime.totalTurns;
                 const cooldownTurns = 14400; // 24h at 6s/turn
-                if (lastAttempt !== undefined && (currentTurn - lastAttempt) < cooldownTurns) {
+
+                // Track attempts as array of turn numbers (with corruption guard)
+                if (!this.state._examineCooldowns) this.state._examineCooldowns = { examine_attempts: [] };
+                const rawAttempts = this.state._examineCooldowns.examine_attempts;
+                const attempts: number[] = Array.isArray(rawAttempts) ? rawAttempts : [];
+                // Filter to only recent attempts (within 24h)
+                const recentAttempts = attempts.filter((t: number) => (currentTurn - t) < cooldownTurns);
+                if (recentAttempts.length >= maxAttempts) {
                     return ''; // UI handles cooldown via disabled button + tooltip
                 }
 
                 const dc = ItemForgeEngine.getIdentifyDC(examineItem);
                 const intMod = MechanicsEngine.getModifier(this.state.character.stats.INT || 10);
-                const bestSkill = hasArcana ? 'Arcana' : 'Investigation';
-                const prof = (hasArcana || hasInvestigation) ? MechanicsEngine.getProficiencyBonus(this.state.character.level) : 0;
+                const bestSkill = arcanaTier >= investigationTier ? 'Arcana' : 'Investigation';
+                const prof = MechanicsEngine.getProficiencyBonus(this.state.character.level) * SkillEngine.getTierMultiplier(bestSkill, bestTier);
                 const roll = Dice.d20();
                 const total = roll + intMod + prof;
 
-                // Track global skill cooldown (consumed regardless of success/failure)
-                if (!(this.state as any)._examineCooldowns) (this.state as any)._examineCooldowns = {};
-                (this.state as any)._examineCooldowns[cooldownKey] = currentTurn;
+                // Track attempt
+                recentAttempts.push(currentTurn);
+                this.state._examineCooldowns.examine_attempts = recentAttempts;
 
                 // Emit structured dice data for UI overlay
                 this.state.lastSkillCheck = {

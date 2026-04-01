@@ -210,17 +210,21 @@ const PaperdollScreen: React.FC = () => {
                 let examineDisabledReason: string | undefined;
                 if (isUnidentified && state?.character) {
                     const pc = state.character;
-                    const hasArcana = pc.skillProficiencies?.includes('Arcana' as any);
-                    const hasInvestigation = pc.skillProficiencies?.includes('Investigation' as any);
-                    if (!hasArcana && !hasInvestigation) {
+                    const arcanaTier = (pc as any).skills?.['Arcana']?.tier || 0;
+                    const investTier = (pc as any).skills?.['Investigation']?.tier || 0;
+                    const bestTier = Math.max(arcanaTier, investTier);
+                    if (bestTier === 0) {
                         examineDisabledReason = `${pc.name} lacks Arcana or Investigation skill.`;
                     } else {
-                        const cooldownKey = `examine_skill`;
-                        const lastAttempt = (state as any)._examineCooldowns?.[cooldownKey];
+                        const maxAttempts = Math.min(3, bestTier);
+                        const cooldownTurns = 14400;
                         const currentTurn = state.worldTime?.totalTurns || 0;
-                        if (lastAttempt !== undefined && (currentTurn - lastAttempt) < 14400) {
-                            const hoursLeft = Math.ceil((14400 - (currentTurn - lastAttempt)) / 600);
-                            examineDisabledReason = `Identification on cooldown. ~${hoursLeft}h remaining.`;
+                        const attempts: number[] = (state as any)._examineCooldowns?.examine_attempts || [];
+                        const recentAttempts = attempts.filter((t: number) => (currentTurn - t) < cooldownTurns);
+                        if (recentAttempts.length >= maxAttempts) {
+                            const oldest = Math.min(...recentAttempts);
+                            const hoursLeft = Math.ceil((cooldownTurns - (currentTurn - oldest)) / 600);
+                            examineDisabledReason = `${recentAttempts.length}/${maxAttempts} attempts used. Next in ~${hoursLeft}h.`;
                         }
                     }
                 }

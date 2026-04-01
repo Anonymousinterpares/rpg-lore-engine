@@ -151,7 +151,19 @@ export class CharacterFactory {
                 stats: finalStats,
                 savingThrowProficiencies: characterClass.savingThrowProficiencies,
                 skillProficiencies: skillProficiencies as any,
-                skills: Object.fromEntries(skillProficiencies.map(s => [s, { tier: 1, pointsInvested: 0, chosenAbility: {} }])),
+                skills: (() => {
+                    const skills: Record<string, any> = Object.fromEntries(skillProficiencies.map(s => [s, { tier: 1, pointsInvested: 0, chosenAbility: {} }]));
+                    // Expertise: class features that grant free Tier 2 (e.g., Rogue at level 1)
+                    const expertiseFeature = (characterClass as any).allFeatures?.find((f: any) => f.name === 'Expertise' && f.level === 1);
+                    if (expertiseFeature) {
+                        const count = (expertiseFeature as any).count || 2;
+                        const eligibleSkills = skillProficiencies.slice(0, count);
+                        for (const s of eligibleSkills) {
+                            if (skills[s]) skills[s].tier = 2;
+                        }
+                    }
+                    return skills;
+                })(),
                 skillPoints: { available: 0, totalEarned: 0 },
                 weaponProficiencies: [],
                 hp: { current: maxHp, max: maxHp, temp: 0 },
@@ -268,7 +280,9 @@ export class CharacterFactory {
             clearedHexes: {},
             settings: options.campaignSettings || SettingsManager.getGlobalSettings(),
             codexEntries: [],
-            notifications: []
+            notifications: [],
+            _examineCooldowns: { examine_attempts: [] },
+            _pendingASI: 0,
         };
     }
 }
