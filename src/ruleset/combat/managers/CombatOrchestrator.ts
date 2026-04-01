@@ -779,43 +779,10 @@ export class CombatOrchestrator {
                         const trueRarity = (lootItem as any).trueRarity || (lootItem as any).rarity;
                         const isRarePlus = ['Rare', 'Very Rare', 'Legendary'].includes(trueRarity);
 
-                        LoreService.nameForgedItem(lootItem, {
-                            monsterName: enemy.name,
-                            biome,
-                        }).then(async ({ name, description }) => {
-                            let uniqueName = name;
-                            let finalDesc = description;
-
-                            // Uniqueness check: if name collides, request one new name from LLM
-                            if (this.isForgedNameInWorld(uniqueName)) {
-                                try {
-                                    const retry = await LoreService.nameForgedItem(lootItem, {
-                                        monsterName: enemy.name,
-                                        biome,
-                                    });
-                                    if (retry.name && !this.isForgedNameInWorld(retry.name)) {
-                                        uniqueName = retry.name;
-                                        finalDesc = retry.description || finalDesc;
-                                    } else {
-                                        // Both LLM names collided — keep mechanical name
-                                        uniqueName = lootItem.name;
-                                    }
-                                } catch {
-                                    uniqueName = lootItem.name;
-                                }
-                            }
-
-                            if ((lootItem as any).identified === false) {
-                                (lootItem as any).trueName = uniqueName;
-                                if (finalDesc) (lootItem as any).lore = finalDesc;
-                            } else {
-                                lootItem.name = uniqueName;
-                                if (finalDesc) (lootItem as any).description = finalDesc;
-                            }
-                            if (isRarePlus) tryPersistForgedItem(lootItem).catch(() => {});
-                        }).catch(() => {
-                            if (isRarePlus) tryPersistForgedItem(lootItem).catch(() => {});
-                        });
+                        this.resolveUniqueForgedName(lootItem, enemy.name, biome, isRarePlus)
+                            .catch(() => {
+                                if (isRarePlus) tryPersistForgedItem(lootItem).catch(() => {});
+                            });
                     }
                 }
             }
@@ -1158,6 +1125,93 @@ export class CombatOrchestrator {
             }
         }
 
+        return result;
+    }
+
+    /**
+     * Resolve a unique name for a forged item via LLM with a multi-tier fallback:
+     * 1. Up to 3 LLM naming attempts
+     * 2. If all collide: reuse an existing catalog item whose name isn't in player inventory
+     * 3. If all collided names are in player inventory: LLM generates a lore-flavored distinguisher
+     * 4. Final fallback: mechanical suffix
+     */
+    private async resolveUniqueForgedName(lootItem: any, monsterName: string, biome: string, isRarePlus: boolean): Promise<void> {
+        const ctx = { monsterName, biome };
+        const MAX_RETRIES = 3;
+        const collidedNames: string[] = [];
+
+        // Tier 1: Up to 3 LLM naming attempts
+        for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+            try {
+                const { name, description } = await LoreService.nameForgedItem(lootItem, ctx);
+                if (!this.isForgedNameInWorld(name)) {
+                    this.applyForgedName(lootItem, name, description, isRarePlus);
+                    return;
+                }
+                collidedNames.push(name);
+            } catch {
+                break; // LLM failure, proceed to fallbacks
+            }
+        }
+
+        // Tier 2: Check if any collided name exists in catalog but NOT in player inventory
+        const playerItems = this.state.character?.inventory?.items || [];
+        for (const collidedName of collidedNames) {
+            const inPlayerInv = playerItems.some((i: any) =>
+                i.name?.toLowerCase() === collidedName.toLowerCase() ||
+                i.trueName?.toLowerCase() === collidedName.toLowerCase()
+            );
+            if (!inPlayerInv) {
+                // Import existing item data from catalog instead of the forged stats
+                const catalogItem = DataManager.getItem(collidedName);
+                if (catalogItem) {
+                    // Replace loot item data with the catalog item, preserving instanceId
+                    const instanceId = lootItem.instanceId;
+                    Object.assign(lootItem, catalogItem, { instanceId, equipped: false });
+                    if (isRarePlus) tryPersistForgedItem(lootItem).catch(() => {});
+                    return;
+                }
+            }
+        }
+
+        // Tier 3: LLM lore-flavored distinguisher
+        try {
+            const { name, description } = await LoreService.nameForgedItem(lootItem, ctx);
+            const distinguished = `${name} of the ${biome}`;
+            if (!this.isForgedNameInWorld(distinguished)) {
+                this.applyForgedName(lootItem, distinguished, description, isRarePlus);
+                return;
+            }
+        } catch { /* proceed to final fallback */ }
+
+        // Tier 4: Mechanical suffix
+        const baseName = collidedNames[0] || lootItem.name;
+        let suffixed = baseName;
+        for (let i = 2; i < 100; i++) {
+            suffixed = `${baseName} ${this.toRoman(i)}`;
+            if (!this.isForgedNameInWorld(suffixed)) break;
+        }
+        this.applyForgedName(lootItem, suffixed, undefined, isRarePlus);
+    }
+
+    private applyForgedName(lootItem: any, name: string, description: string | undefined, isRarePlus: boolean): void {
+        if (lootItem.identified === false) {
+            lootItem.trueName = name;
+            if (description) lootItem.lore = description;
+        } else {
+            lootItem.name = name;
+            if (description) lootItem.description = description;
+        }
+        if (isRarePlus) tryPersistForgedItem(lootItem).catch(() => {});
+    }
+
+    private toRoman(num: number): string {
+        const vals = [10, 9, 5, 4, 1];
+        const syms = ['X', 'IX', 'V', 'IV', 'I'];
+        let result = '';
+        for (let i = 0; i < vals.length; i++) {
+            while (num >= vals[i]) { result += syms[i]; num -= vals[i]; }
+        }
         return result;
     }
 
