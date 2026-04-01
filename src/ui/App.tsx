@@ -10,6 +10,7 @@ import { useGameState } from './hooks/useGameState';
 import CharacterCreator from './components/creation/CharacterCreator';
 import Codex from './components/codex/Codex';
 import CharacterSheet from './components/character/CharacterSheet';
+import SkillTreePage from './components/character/SkillTreePage';
 import BookModal from './components/book/BookModal';
 import SpellPreparationPanel from './components/book/SpellPreparationPanel';
 import WorldMapPage from './components/book/WorldMapPage';
@@ -186,6 +187,12 @@ const App: React.FC = () => {
             id: 'character',
             label: 'Character',
             content: <CharacterSheet onClose={() => setBookOpen(false)} isPage={true} />,
+            permanent: true
+        },
+        {
+            id: 'skills',
+            label: 'Skills',
+            content: <SkillTreePage />,
             permanent: true
         },
         {

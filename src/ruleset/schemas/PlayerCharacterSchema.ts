@@ -45,6 +45,7 @@ export const PlayerCharacterSchema = z.object({
     skillProficiencies: z.array(SkillNameSchema).default([]), // Legacy — kept for migration; new code uses `skills`
     skills: z.record(SkillNameSchema, z.object({
         tier: z.number().min(0).max(4).default(0),
+        baseTier: z.number().min(0).max(4).default(0), // Tier granted at creation (preserved on reset)
         pointsInvested: z.number().default(0),
         chosenAbility: z.object({
             tier3: z.enum(['passive', 'active']).optional(),

@@ -425,6 +425,66 @@
         "archmage"
       ],
       "items": []
+    },
+    "skills": {
+      "Arcana": {
+        "tier": 1,
+        "pointsInvested": 0,
+        "chosenAbility": {},
+        "baseTier": 1
+      },
+      "History": {
+        "tier": 1,
+        "pointsInvested": 0,
+        "chosenAbility": {},
+        "baseTier": 1
+      },
+      "Cartography": {
+        "tier": 1,
+        "pointsInvested": 0,
+        "chosenAbility": {},
+        "baseTier": 1
+      },
+      "Perception": {
+        "tier": 1,
+        "pointsInvested": 0,
+        "chosenAbility": {},
+        "baseTier": 1
+      },
+      "Athletics": {
+        "tier": 1,
+        "pointsInvested": 0,
+        "chosenAbility": {},
+        "baseTier": 1
+      },
+      "Intimidation": {
+        "tier": 1,
+        "pointsInvested": 0,
+        "chosenAbility": {},
+        "baseTier": 1
+      },
+      "Nature": {
+        "tier": 1,
+        "pointsInvested": 0,
+        "chosenAbility": {},
+        "baseTier": 1
+      },
+      "Religion": {
+        "tier": 1,
+        "pointsInvested": 0,
+        "chosenAbility": {},
+        "baseTier": 1
+      },
+      "Survival": {
+        "tier": 1,
+        "pointsInvested": 0,
+        "chosenAbility": {},
+        "baseTier": 1
+      }
+    },
+    "skillPoints": {
+      "available": 2,
+      "totalEarned": 2
     }
   },
   "companions": [],

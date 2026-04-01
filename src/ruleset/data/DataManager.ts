@@ -109,6 +109,24 @@ export class DataManager {
             }
         }
 
+        // Load Skill Registry
+        try {
+            const { SkillEngine } = await import('../combat/SkillEngine');
+            const skillModule = await import('../../../data/skills/skills.json');
+            SkillEngine.loadRegistry(skillModule.default || skillModule);
+        } catch (e) {
+            console.warn('[DataManager] Failed to load skill registry:', e);
+        }
+
+        // Load Difficulty Config
+        try {
+            const { DifficultyEngine } = await import('../combat/DifficultyEngine');
+            const diffModule = await import('../../../data/config/difficulty.json');
+            DifficultyEngine.loadConfigs(diffModule.default || diffModule);
+        } catch (e) {
+            console.warn('[DataManager] Failed to load difficulty config:', e);
+        }
+
         // Load Biome-Monster Mapping
         const mappingModule = await import('../../../data/mappings/biome_monster_mapping.json');
         this.monsterMapping = mappingModule.default || mappingModule;

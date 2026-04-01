@@ -1,0 +1,392 @@
+.container {
+    padding: var(--spacing-lg);
+    max-width: 800px;
+    margin: 0 auto;
+    font-family: var(--font-ui);
+    color: var(--parchment-text);
+    height: 100%;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.container::-webkit-scrollbar-track {
+    background: rgba(93, 64, 55, 0.05);
+}
+
+.container::-webkit-scrollbar-thumb {
+    background: rgba(93, 64, 55, 0.3);
+    border-radius: 3px;
+}
+
+.empty {
+    padding: var(--spacing-xl);
+    text-align: center;
+    opacity: 0.5;
+    font-style: italic;
+}
+
+/* Header */
+.header {
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 2px solid var(--parchment-border);
+}
+
+.titleRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.title {
+    font-family: var(--font-narrative);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--parchment-accent);
+    margin: 0;
+    letter-spacing: 0.05rem;
+}
+
+.spCounter {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    background: rgba(0, 0, 0, 0.05);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--parchment-border);
+}
+
+.spValue {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--parchment-accent);
+}
+
+.spLabel {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+.spTotal {
+    font-size: 0.7rem;
+    opacity: 0.4;
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    font-size: 0.85rem;
+}
+
+.levelInfo {
+    opacity: 0.6;
+}
+
+.profInfo {
+    opacity: 0.6;
+}
+
+.resetBtn {
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    opacity: 0.7;
+}
+
+.resetBtn:hover {
+    opacity: 1;
+    color: #c0392b;
+}
+
+.confirmReset {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #c0392b;
+}
+
+.confirmYes {
+    font-size: 0.75rem;
+    padding: 2px 10px;
+    color: #c0392b;
+    border-color: #c0392b;
+}
+
+.confirmNo {
+    font-size: 0.75rem;
+    padding: 2px 10px;
+}
+
+/* Pending changes bar */
+.pendingBar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-top: var(--spacing-sm);
+    background: rgba(201, 162, 39, 0.1);
+    border: 1px solid rgba(201, 162, 39, 0.3);
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    color: var(--parchment-accent);
+}
+
+.confirmBtn {
+    font-size: 0.75rem;
+    padding: 3px 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #27ae60;
+    border-color: #27ae60;
+}
+
+.confirmBtn:hover {
+    background: rgba(39, 174, 96, 0.1);
+}
+
+.revertBtn {
+    font-size: 0.75rem;
+    padding: 3px 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #c0392b;
+    border-color: #c0392b;
+}
+
+.revertBtn:hover {
+    background: rgba(192, 57, 43, 0.1);
+}
+
+.pendingTag {
+    font-size: 0.65rem;
+    color: var(--parchment-accent);
+    font-style: normal;
+}
+
+.skillPending {
+    background: rgba(201, 162, 39, 0.08);
+    border-left: 3px solid var(--parchment-accent);
+}
+
+.pipPending {
+    animation: pipPulse 1s ease-in-out infinite;
+}
+
+@keyframes pipPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Ability Groups */
+.groups {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.group {
+    border: 1px solid rgba(139, 115, 85, 0.2);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.groupHeader {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(0, 0, 0, 0.03);
+    cursor: pointer;
+    user-select: none;
+    border-left: 4px solid;
+    transition: background 0.15s ease;
+}
+
+.groupHeader:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.groupLabel {
+    font-family: var(--font-narrative);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.03rem;
+}
+
+.groupAbility {
+    font-size: 0.75rem;
+    opacity: 0.4;
+}
+
+.groupCount {
+    margin-left: auto;
+    font-size: 0.75rem;
+    opacity: 0.5;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 1px 8px;
+    border-radius: 10px;
+}
+
+.groupSkills {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: rgba(139, 115, 85, 0.08);
+}
+
+/* Skill Card */
+.skillCard {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(244, 228, 188, 0.4);
+    transition: background 0.15s ease;
+}
+
+.skillCard:hover {
+    background: rgba(244, 228, 188, 0.7);
+}
+
+.skillMaxed {
+    background: rgba(255, 128, 0, 0.05);
+}
+
+.skillHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.skillNameRow {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.skillName {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.tierLabel {
+    font-size: 0.7rem;
+    opacity: 0.7;
+    font-style: italic;
+}
+
+.skillBonus {
+    text-align: right;
+}
+
+.bonusValue {
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+/* Tier Pips */
+.pips {
+    display: flex;
+    gap: 3px;
+}
+
+.pip {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid rgba(139, 115, 85, 0.3);
+    transition: all 0.2s ease;
+}
+
+.pipFilled {
+    border-color: transparent;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+}
+
+.pipEmpty {
+    background: transparent;
+}
+
+/* Details */
+.skillDetails {
+    margin-top: 2px;
+}
+
+.skillDesc {
+    font-size: 0.72rem;
+    opacity: 0.5;
+    font-style: italic;
+}
+
+.skillFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--spacing-xs);
+}
+
+.profDetail {
+    font-size: 0.72rem;
+    opacity: 0.45;
+}
+
+.investArea {
+    display: flex;
+    align-items: center;
+}
+
+.investBtn {
+    font-size: 0.72rem;
+    padding: 2px 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border-color: var(--parchment-accent);
+    color: var(--parchment-accent);
+}
+
+.investBtn:hover {
+    background: rgba(201, 162, 39, 0.1);
+}
+
+.maxBadge {
+    font-size: 0.72rem;
+    color: #ff8000;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-weight: 600;
+}
+
+.lockedReason {
+    font-size: 0.72rem;
+    opacity: 0.4;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+/* Tier 3/4 Ability Choice */
+.abilityChoice {
+    margin-top: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: rgba(41, 128, 185, 0.06);
+    border-left: 2px solid #2980b9;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 0.72rem;
+    color: #2980b9;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}

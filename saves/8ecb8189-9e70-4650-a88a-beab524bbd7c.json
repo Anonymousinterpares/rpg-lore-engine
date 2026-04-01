@@ -166,6 +166,36 @@
         "Giant_Weasel"
       ],
       "items": []
+    },
+    "skills": {
+      "Athletics": {
+        "tier": 1,
+        "pointsInvested": 0,
+        "chosenAbility": {},
+        "baseTier": 1
+      },
+      "Intimidation": {
+        "tier": 1,
+        "pointsInvested": 0,
+        "chosenAbility": {},
+        "baseTier": 1
+      },
+      "Nature": {
+        "tier": 1,
+        "pointsInvested": 0,
+        "chosenAbility": {},
+        "baseTier": 1
+      },
+      "Perception": {
+        "tier": 1,
+        "pointsInvested": 0,
+        "chosenAbility": {},
+        "baseTier": 1
+      }
+    },
+    "skillPoints": {
+      "available": 0,
+      "totalEarned": 0
     }
   },
   "companions": [],

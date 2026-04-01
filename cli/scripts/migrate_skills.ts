@@ -10,7 +10,10 @@
  */
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const SAVES_DIR = path.join(__dirname, '..', '..', 'saves');
 
 function migrateSave(filePath: string): boolean {
@@ -21,9 +24,21 @@ function migrateSave(filePath: string): boolean {
         const char = data.character;
         if (!char) return false;
 
-        // Already migrated?
+        // Already migrated — but check if baseTier is missing (added in later patch)
         if (char.skills && Object.keys(char.skills).length > 0) {
-            console.log(`  [SKIP] ${filePath} — already has skills Record`);
+            let patched = false;
+            for (const [name, skill] of Object.entries(char.skills) as [string, any][]) {
+                if (skill.baseTier === undefined) {
+                    skill.baseTier = skill.pointsInvested === 0 ? skill.tier : (skill.tier > 0 ? 1 : 0);
+                    patched = true;
+                }
+            }
+            if (patched) {
+                fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+                console.log(`  [PATCH] ${filePath} — added baseTier to existing skills`);
+                return true;
+            }
+            console.log(`  [SKIP] ${filePath} — already has skills + baseTier`);
             return false;
         }
 
@@ -33,6 +48,7 @@ function migrateSave(filePath: string): boolean {
         for (const skillName of proficiencies) {
             skills[skillName] = {
                 tier: 1,
+                baseTier: 1,
                 pointsInvested: 0,
                 chosenAbility: {}
             };

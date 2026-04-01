@@ -85,8 +85,8 @@ async function main() {
     const beforeReset = (pc as any).skillPoints.available;
     const resetResult = SkillEngine.resetAll(pc);
     console.log(`  ${resetResult}`);
-    assert(SkillEngine.getSkillTier(pc, 'Athletics') === 0, 'Athletics reset to Tier 0');
-    assert(SkillEngine.getSkillTier(pc, 'Arcana') === 0, 'Arcana reset to Tier 0');
+    assert(SkillEngine.getSkillTier(pc, 'Athletics') === 1, 'Athletics reset to Tier 1 (creation skill preserved)');
+    assert(SkillEngine.getSkillTier(pc, 'Arcana') === 0, 'Arcana reset to Tier 0 (acquired via SP)');
     assert((pc as any).skillPoints.available > beforeReset, 'SP refunded');
 
     // --- 6. Tier-based resolution ---

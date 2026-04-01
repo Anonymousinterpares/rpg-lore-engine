@@ -138,12 +138,21 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ onClose, isPage = false
                     <section className={styles.section}>
                         <h2 className={styles.sectionTitle} onClick={() => openCodex('mechanics', 'general_skills')} style={{ cursor: 'pointer' }}>
                             Skills
+                            {(char as any).skillPoints?.available > 0 && (
+                                <span style={{ marginLeft: 8, fontSize: '0.75rem', color: '#c9a227', fontWeight: 'normal' }}>
+                                    {(char as any).skillPoints.available} SP available
+                                </span>
+                            )}
                         </h2>
                         <div className={styles.skillGrid}>
                             {SKILLS.map(skill => {
-                                const isProf = char.skillProficiencies?.includes(skill.name as any);
+                                const tier = (char as any).skills?.[skill.name]?.tier || (char.skillProficiencies?.includes(skill.name as any) ? 1 : 0);
+                                const tierNames = ['', 'Prof', 'Exp', 'Mst', 'GM'];
+                                const tierColors = ['#888', '#c8c8c8', '#1eff00', '#0070dd', '#ff8000'];
+                                const mult = tier > 0 ? [0, 1, 2, 2, 3][tier] : 0;
                                 const abilityScore = (stats as any)[skill.ability] || 10;
-                                const mod = getMod(abilityScore) + (isProf ? profBonus : 0);
+                                const mod = getMod(abilityScore) + (profBonus * mult);
+                                const stars = '●'.repeat(tier) + '○'.repeat(Math.max(0, 4 - tier));
                                 return (
                                     <div
                                         key={skill.name}
@@ -152,10 +161,9 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ onClose, isPage = false
                                         style={{ cursor: 'pointer' }}
                                     >
                                         <div className={styles.skillInfo}>
-                                            <div className={styles.profMarker}>
-                                                {isProf ? <Check size={14} /> : <div style={{ width: 14 }} />}
-                                            </div>
+                                            <span style={{ fontSize: '0.6rem', letterSpacing: 2, color: tierColors[tier], minWidth: 36 }}>{stars}</span>
                                             <span>{skill.name} <small style={{ opacity: 0.5 }}>({skill.ability.toLowerCase()})</small></span>
+                                            {tier > 0 && <small style={{ color: tierColors[tier], marginLeft: 4, fontSize: '0.65rem' }}>{tierNames[tier]}</small>}
                                         </div>
                                         <span className={styles.skillBonus}>{formatMod(mod)}</span>
                                     </div>

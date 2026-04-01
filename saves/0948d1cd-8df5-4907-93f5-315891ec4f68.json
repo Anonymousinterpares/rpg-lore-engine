@@ -192,6 +192,36 @@
           "event": "The adventure begins."
         }
       ]
+    },
+    "skills": {
+      "Deception": {
+        "tier": 1,
+        "pointsInvested": 0,
+        "chosenAbility": {},
+        "baseTier": 1
+      },
+      "Stealth": {
+        "tier": 1,
+        "pointsInvested": 0,
+        "chosenAbility": {},
+        "baseTier": 1
+      },
+      "Athletics": {
+        "tier": 1,
+        "pointsInvested": 0,
+        "chosenAbility": {},
+        "baseTier": 1
+      },
+      "Perception": {
+        "tier": 1,
+        "pointsInvested": 0,
+        "chosenAbility": {},
+        "baseTier": 1
+      }
+    },
+    "skillPoints": {
+      "available": 0,
+      "totalEarned": 0
     }
   },
   "companions": [],

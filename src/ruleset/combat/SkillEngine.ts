@@ -154,7 +154,8 @@ export class SkillEngine {
     }
 
     /**
-     * Full respec: reset ALL skills to Tier 0, return all invested SP to pool.
+     * Full respec: revert all PLAYER-INVESTED skill points.
+     * Creation skills are preserved at their baseTier (Tier 1 for proficiency, Tier 2 for Expertise).
      */
     static resetAll(pc: PlayerCharacter): string {
         if (!(pc as any).skillPoints) (pc as any).skillPoints = { available: 0, totalEarned: 0 };
@@ -162,14 +163,20 @@ export class SkillEngine {
         const skills = (pc as any).skills || {};
 
         for (const skillName of Object.keys(skills)) {
-            totalRefunded += skills[skillName].pointsInvested || 0;
-            skills[skillName].tier = 0;
-            skills[skillName].pointsInvested = 0;
-            skills[skillName].chosenAbility = {};
+            const skill = skills[skillName];
+            const invested = skill.pointsInvested || 0;
+            if (invested === 0) continue; // No player investment — don't touch
+
+            totalRefunded += invested;
+            skill.tier = skill.baseTier || 0; // Restore to creation tier
+            skill.pointsInvested = 0;
+            skill.chosenAbility = {};
         }
 
         (pc as any).skillPoints.available += totalRefunded;
-        return `Reset all skills. Refunded ${totalRefunded} SP. Available: ${(pc as any).skillPoints.available} SP.`;
+        return totalRefunded > 0
+            ? `Reset invested skills. Refunded ${totalRefunded} SP. Available: ${(pc as any).skillPoints.available} SP.`
+            : 'No invested skill points to reset.';
     }
 
     /**
