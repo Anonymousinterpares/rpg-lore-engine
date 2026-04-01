@@ -22,6 +22,7 @@ import { hasCondition, addCondition, removeCondition, tickConditions, conditionN
 import { DeathEngine } from '../DeathEngine';
 import { LoreService } from '../../agents/LoreService';
 import { tryPersistForgedItem } from '../../data/ForgedItemCatalog';
+import { DifficultyEngine, DifficultyLevel } from '../DifficultyEngine';
 
 
 /**
@@ -29,6 +30,7 @@ import { tryPersistForgedItem } from '../../data/ForgedItemCatalog';
  */
 export class CombatOrchestrator {
     private turnProcessing: boolean = false;
+    private lastDifficulty: DifficultyLevel = 'normal';
 
     constructor(
         private state: GameState,
@@ -43,6 +45,18 @@ export class CombatOrchestrator {
         console.log(`[Orchestrator] Processing Queue. State: ${!!this.state.combat}, Locked: ${this.turnProcessing}`);
         if (!this.state.combat || this.turnProcessing) return;
         this.turnProcessing = true;
+
+        // Detect mid-combat difficulty change and rescale enemies
+        const currentDiff = ((this.state.settings as any)?.gameplay?.difficulty || 'normal') as DifficultyLevel;
+        if (currentDiff !== this.lastDifficulty && this.state.combat) {
+            for (const c of this.state.combat.combatants) {
+                if (c.type === 'enemy') {
+                    DifficultyEngine.rescaleCombatantHP(c, this.lastDifficulty, currentDiff);
+                }
+            }
+            this.addCombatLog(`Difficulty changed to ${currentDiff}!`);
+            this.lastDifficulty = currentDiff;
+        }
 
         // Ensure monsters are loaded if game was resumed mid-combat
         await DataManager.loadMonsters();
@@ -740,11 +754,11 @@ export class CombatOrchestrator {
                 totalXP += monsterData ? MechanicsEngine.getCRtoXP(monsterData.cr) : 50;
             }
 
-            // Apply difficulty modifier from settings
-            const difficulty = (this.state.settings?.gameplay as any)?.difficulty || 'normal';
-            if (difficulty === 'hard') {
-                totalXP = Math.floor(totalXP * 1.25);
-                this.addCombatLog(`Bonus XP awarded for Hard difficulty!`);
+            // Apply difficulty scaling from DifficultyEngine
+            const difficulty = ((this.state.settings as any)?.gameplay?.difficulty || 'normal') as DifficultyLevel;
+            totalXP = DifficultyEngine.scaleXP(totalXP, difficulty);
+            if (difficulty !== 'normal') {
+                this.addCombatLog(`${difficulty === 'hard' ? 'Bonus' : 'Reduced'} XP for ${difficulty} difficulty.`);
             }
 
             const char = this.state.character;
@@ -1045,8 +1059,15 @@ export class CombatOrchestrator {
                     };
                 }
 
-                this.emitCombatEvent(result.type, target.id, result.damage || 0);
-                await this.applyCombatDamage(target, result.damage);
+                // Scale enemy damage by difficulty
+                let finalDamage = result.damage;
+                if (actor.type === 'enemy' && finalDamage > 0) {
+                    const diff = ((this.state.settings as any)?.gameplay?.difficulty || 'normal') as DifficultyLevel;
+                    finalDamage = DifficultyEngine.scaleEnemyDamage(finalDamage, diff);
+                }
+
+                this.emitCombatEvent(result.type, target.id, finalDamage || 0);
+                await this.applyCombatDamage(target, finalDamage);
                 const logMsg = CombatLogFormatter.format(result, actor.name, target.name, isRanged);
                 this.addCombatLog(logMsg);
                 this.state.combat.turnActions.push(logMsg);

@@ -9,6 +9,7 @@ import { DataManager } from '../data/DataManager';
 import { Dice } from './Dice';
 import { MechanicsEngine } from './MechanicsEngine';
 import { LoreService } from '../agents/LoreService';
+import { DifficultyEngine, DifficultyLevel } from './DifficultyEngine';
 
 export class CombatManager {
     private state: GameState;
@@ -80,6 +81,14 @@ export class CombatManager {
                     traits: [],
                     legendaryActions: []
                 } as any, `enemy_${i}`);
+                // Apply difficulty scaling to enemy stats
+                const difficulty = ((this.state.settings as any)?.gameplay?.difficulty || 'normal') as DifficultyLevel;
+                if (difficulty !== 'normal') {
+                    monster.hp.max = DifficultyEngine.scaleEnemyHP(monster.hp.max, difficulty);
+                    monster.hp.current = monster.hp.max;
+                    monster.ac = DifficultyEngine.scaleEnemyStat(monster.ac, difficulty);
+                }
+
                 monster.initiative = Dice.d20() + (monsterData ? MechanicsEngine.getModifier(monsterData.stats['DEX'] || 10) : 0);
                 monster.position = pos;
                 combatants.push(monster);

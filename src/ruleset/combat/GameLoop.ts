@@ -1461,7 +1461,20 @@ export class GameLoop {
     }
 
     public async updateSettings(settings: any) {
+        const oldDifficulty = ((this.state.settings as any)?.gameplay?.difficulty || 'normal') as string;
         this.state.settings = settings;
+        const newDifficulty = ((settings?.gameplay?.difficulty) || 'normal') as string;
+
+        // Immediately rescale enemies if difficulty changed mid-combat
+        if (oldDifficulty !== newDifficulty && this.state.combat) {
+            const { DifficultyEngine } = await import('./DifficultyEngine');
+            for (const c of this.state.combat.combatants) {
+                if (c.type === 'enemy') {
+                    DifficultyEngine.rescaleCombatantHP(c, oldDifficulty as any, newDifficulty as any);
+                }
+            }
+        }
+
         await this.emitStateUpdate();
     }
 

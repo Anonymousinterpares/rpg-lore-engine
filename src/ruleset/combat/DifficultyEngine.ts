@@ -50,7 +50,11 @@ export class DifficultyEngine {
      * Scale a value by the specified factor for the current difficulty.
      */
     static scaleEnemyHP(baseHP: number, difficulty: DifficultyLevel): number {
-        return Math.max(1, Math.round(baseHP * configs[difficulty].enemyHPScale));
+        const scaled = Math.round(baseHP * configs[difficulty].enemyHPScale);
+        // Guarantee at least ±1 difference from base for non-normal difficulties
+        if (difficulty === 'easy' && scaled >= baseHP) return Math.max(1, baseHP - 1);
+        if (difficulty === 'hard' && scaled <= baseHP) return baseHP + 1;
+        return Math.max(1, scaled);
     }
 
     static scaleEnemyStat(baseStat: number, difficulty: DifficultyLevel): number {
