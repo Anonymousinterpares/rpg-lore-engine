@@ -16,6 +16,7 @@
     "Quarterstaffs",
     "Light crossbows"
   ],
+  "skillPointsPerLevel": 2,
   "skillChoices": {
     "count": 2,
     "options": [

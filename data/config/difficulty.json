@@ -1,0 +1,26 @@
+{
+  "easy": {
+    "label": "Easy",
+    "description": "Reduced enemy power, less XP reward.",
+    "enemyStatScale": 0.75,
+    "enemyHPScale": 0.75,
+    "enemyDamageScale": 0.8,
+    "xpScale": 0.75
+  },
+  "normal": {
+    "label": "Normal",
+    "description": "Standard D&D 5e balance.",
+    "enemyStatScale": 1.0,
+    "enemyHPScale": 1.0,
+    "enemyDamageScale": 1.0,
+    "xpScale": 1.0
+  },
+  "hard": {
+    "label": "Hard",
+    "description": "Tougher enemies, greater XP reward.",
+    "enemyStatScale": 1.25,
+    "enemyHPScale": 1.5,
+    "enemyDamageScale": 1.2,
+    "xpScale": 1.25
+  }
+}

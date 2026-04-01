@@ -42,7 +42,19 @@ export const PlayerCharacterSchema = z.object({
     conditions: z.array(CombatConditionSchema).default([]),
     stats: z.record(AbilityScoreSchema, z.number()),
     savingThrowProficiencies: z.array(AbilityScoreSchema).default([]),
-    skillProficiencies: z.array(SkillNameSchema).default([]),
+    skillProficiencies: z.array(SkillNameSchema).default([]), // Legacy — kept for migration; new code uses `skills`
+    skills: z.record(SkillNameSchema, z.object({
+        tier: z.number().min(0).max(4).default(0),
+        pointsInvested: z.number().default(0),
+        chosenAbility: z.object({
+            tier3: z.enum(['passive', 'active']).optional(),
+            tier4: z.enum(['passive', 'active']).optional(),
+        }).default({})
+    })).default({}),
+    skillPoints: z.object({
+        available: z.number().default(0),
+        totalEarned: z.number().default(0),
+    }).default({}),
     weaponProficiencies: z.array(z.string()).default([]), // e.g. "Simple Weapons", "Longsword"
     hp: z.object({
         current: z.number(),

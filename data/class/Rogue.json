@@ -18,6 +18,7 @@
     "Rapiers",
     "Shortswords"
   ],
+  "skillPointsPerLevel": 3,
   "skillChoices": {
     "count": 4,
     "options": [

@@ -1,0 +1,149 @@
+{
+  "_meta": {
+    "description": "Master skill registry. Plug-and-play: add new skills here + SkillNameSchema + class options.",
+    "tierNames": ["Untrained", "Proficient", "Expert", "Master", "Grandmaster"],
+    "tierCostsDescription": "SP cost to advance TO this tier (cumulative total = sum of all)",
+    "levelGatesDescription": "Minimum character level required to reach this tier",
+    "tierMultipliersDescription": "Proficiency bonus multiplier at this tier (0=none, 1=single, 2=double, 3=triple)"
+  },
+  "Acrobatics": {
+    "ability": "DEX",
+    "description": "Balance, tumbling, and aerial maneuvers.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  },
+  "Animal Handling": {
+    "ability": "WIS",
+    "description": "Calm, control, or communicate with beasts.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  },
+  "Arcana": {
+    "ability": "INT",
+    "description": "Knowledge of magic, spells, magical items, and arcane traditions.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  },
+  "Athletics": {
+    "ability": "STR",
+    "description": "Climbing, jumping, swimming, and feats of physical power.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  },
+  "Cartography": {
+    "ability": "INT",
+    "description": "Map-making, navigation, and terrain analysis.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  },
+  "Deception": {
+    "ability": "CHA",
+    "description": "Misleading others through words, disguise, or misdirection.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  },
+  "History": {
+    "ability": "INT",
+    "description": "Knowledge of historical events, legends, and civilizations.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  },
+  "Insight": {
+    "ability": "WIS",
+    "description": "Reading body language, detecting lies, and understanding motives.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  },
+  "Intimidation": {
+    "ability": "CHA",
+    "description": "Influencing others through threats, hostile actions, or physical presence.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  },
+  "Investigation": {
+    "ability": "INT",
+    "description": "Searching for clues, making deductions, and analyzing evidence.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  },
+  "Medicine": {
+    "ability": "WIS",
+    "description": "Diagnosing illness, stabilizing the dying, and tending wounds.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  },
+  "Nature": {
+    "ability": "INT",
+    "description": "Knowledge of terrain, plants, animals, and natural phenomena.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  },
+  "Perception": {
+    "ability": "WIS",
+    "description": "Spotting, hearing, or detecting the presence of something.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  },
+  "Performance": {
+    "ability": "CHA",
+    "description": "Entertaining through music, dance, acting, or storytelling.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  },
+  "Persuasion": {
+    "ability": "CHA",
+    "description": "Influencing others through tact, social graces, or good nature.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  },
+  "Religion": {
+    "ability": "INT",
+    "description": "Knowledge of deities, rites, prayers, and religious hierarchies.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  },
+  "Sleight of Hand": {
+    "ability": "DEX",
+    "description": "Legerdemain, pickpocketing, and concealing objects.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  },
+  "Stealth": {
+    "ability": "DEX",
+    "description": "Moving silently, hiding, and avoiding detection.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  },
+  "Survival": {
+    "ability": "WIS",
+    "description": "Tracking, foraging, navigating wilderness, and predicting weather.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  },
+  "Unarmed Combat": {
+    "ability": "STR",
+    "description": "Fighting without weapons using fists, grapples, and martial techniques.",
+    "tierCosts": [2, 3, 5, 8],
+    "levelGates": [1, 1, 8, 15],
+    "tierMultipliers": [1, 2, 2, 3]
+  }
+}

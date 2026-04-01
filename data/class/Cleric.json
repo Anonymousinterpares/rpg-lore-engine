@@ -16,6 +16,7 @@
   "weaponProficiencies": [
     "Simple weapons"
   ],
+  "skillPointsPerLevel": 2,
   "skillChoices": {
     "count": 2,
     "options": [

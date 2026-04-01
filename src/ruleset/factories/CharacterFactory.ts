@@ -151,6 +151,8 @@ export class CharacterFactory {
                 stats: finalStats,
                 savingThrowProficiencies: characterClass.savingThrowProficiencies,
                 skillProficiencies: skillProficiencies as any,
+                skills: Object.fromEntries(skillProficiencies.map(s => [s, { tier: 1, pointsInvested: 0, chosenAbility: {} }])),
+                skillPoints: { available: 0, totalEarned: 0 },
                 weaponProficiencies: [],
                 hp: { current: maxHp, max: maxHp, temp: 0 },
                 deathSaves: { successes: 0, failures: 0 },

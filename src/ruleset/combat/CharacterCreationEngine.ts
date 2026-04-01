@@ -111,6 +111,8 @@ export class CharacterCreationEngine {
             stats: finalStats,
             savingThrowProficiencies: request.classData.savingThrowProficiencies as AbilityScore[],
             skillProficiencies: skillProficiencies as SkillName[],
+            skills: Object.fromEntries(skillProficiencies.map(s => [s, { tier: 1, pointsInvested: 0, chosenAbility: {} }])) as any,
+            skillPoints: { available: 0, totalEarned: 0 },
             weaponProficiencies: [],
             hp: {
                 current: maxHP,

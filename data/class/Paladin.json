@@ -17,6 +17,7 @@
     "Simple weapons",
     "Martial weapons"
   ],
+  "skillPointsPerLevel": 2,
   "skillChoices": {
     "count": 2,
     "options": [

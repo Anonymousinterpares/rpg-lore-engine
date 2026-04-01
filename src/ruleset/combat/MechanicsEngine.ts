@@ -61,15 +61,24 @@ export class MechanicsEngine {
         const score = stats[ability] || 10;
         const modifier = this.getModifier(score);
 
-        // Proficiency logic
+        // Proficiency logic — tier-based for skills, binary for saving throws
         let profBonus = 0;
         if ('level' in actor) {
-            // Player
             const pc = actor as PlayerCharacter;
-            const isProficient = (skill && pc.skillProficiencies.includes(skill)) ||
-                (!skill && pc.savingThrowProficiencies.includes(ability));
-            if (isProficient) {
-                profBonus = this.getProficiencyBonus(pc.level);
+            if (skill) {
+                // Skill check: use tier-based multiplier from SkillEngine
+                const { SkillEngine } = require('./SkillEngine');
+                const tier = SkillEngine.getSkillTier(pc, skill);
+                if (tier > 0) {
+                    const baseProfBonus = this.getProficiencyBonus(pc.level);
+                    const multiplier = SkillEngine.getTierMultiplier(skill, tier);
+                    profBonus = baseProfBonus * multiplier;
+                }
+            } else {
+                // Saving throw: binary proficiency (unchanged)
+                if (pc.savingThrowProficiencies.includes(ability)) {
+                    profBonus = this.getProficiencyBonus(pc.level);
+                }
             }
         } else {
             // Monster
@@ -146,12 +155,15 @@ export class MechanicsEngine {
 
         if ('level' in actor) {
             const pc = actor as PlayerCharacter;
-            if (pc.skillProficiencies.includes('Perception')) {
-                profBonus = this.getProficiencyBonus(pc.level);
+            const { SkillEngine } = require('./SkillEngine');
+            const tier = SkillEngine.getSkillTier(pc, 'Perception');
+            if (tier > 0) {
+                const baseProfBonus = this.getProficiencyBonus(pc.level);
+                const multiplier = SkillEngine.getTierMultiplier('Perception', tier);
+                profBonus = baseProfBonus * multiplier;
             }
         } else {
-            // Monsters often have explicit passive perception, 
-            // but we'll calculate if it's a generic poll
+            // Monsters: use their explicit passive perception if available
         }
 
         return 10 + wisMod + profBonus;
@@ -303,10 +315,12 @@ export class MechanicsEngine {
 
         // Mitigation (Skills - Perception)
         let skillMitigation = 0;
-        if ('skillProficiencies' in attacker) {
+        if ('level' in attacker) {
             const pc = attacker as PlayerCharacter;
-            if (pc.skillProficiencies.includes('Perception')) {
-                skillMitigation = this.getProficiencyBonus(pc.level);
+            const { SkillEngine } = require('./SkillEngine');
+            const tier = SkillEngine.getSkillTier(pc, 'Perception');
+            if (tier > 0) {
+                skillMitigation = this.getProficiencyBonus(pc.level) * SkillEngine.getTierMultiplier('Perception', tier);
             }
         }
 
