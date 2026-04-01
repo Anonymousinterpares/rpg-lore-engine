@@ -782,15 +782,35 @@ export class CombatOrchestrator {
                         LoreService.nameForgedItem(lootItem, {
                             monsterName: enemy.name,
                             biome,
-                        }).then(({ name, description }) => {
+                        }).then(async ({ name, description }) => {
+                            let uniqueName = name;
+                            let finalDesc = description;
+
+                            // Uniqueness check: if name collides, request one new name from LLM
+                            if (this.isForgedNameInWorld(uniqueName)) {
+                                try {
+                                    const retry = await LoreService.nameForgedItem(lootItem, {
+                                        monsterName: enemy.name,
+                                        biome,
+                                    });
+                                    if (retry.name && !this.isForgedNameInWorld(retry.name)) {
+                                        uniqueName = retry.name;
+                                        finalDesc = retry.description || finalDesc;
+                                    } else {
+                                        // Both LLM names collided — keep mechanical name
+                                        uniqueName = lootItem.name;
+                                    }
+                                } catch {
+                                    uniqueName = lootItem.name;
+                                }
+                            }
+
                             if ((lootItem as any).identified === false) {
-                                // Unidentified: store LLM name as trueName, keep perceived name visible
-                                (lootItem as any).trueName = name;
-                                if (description) (lootItem as any).lore = description;
+                                (lootItem as any).trueName = uniqueName;
+                                if (finalDesc) (lootItem as any).lore = finalDesc;
                             } else {
-                                // Identified (Common/Uncommon): set name directly
-                                lootItem.name = name;
-                                if (description) (lootItem as any).description = description;
+                                lootItem.name = uniqueName;
+                                if (finalDesc) (lootItem as any).description = finalDesc;
                             }
                             if (isRarePlus) tryPersistForgedItem(lootItem).catch(() => {});
                         }).catch(() => {
@@ -1139,5 +1159,30 @@ export class CombatOrchestrator {
         }
 
         return result;
+    }
+
+    /**
+     * Check if a forged item name already exists anywhere in the game world:
+     * player inventory, combat loot on the ground, merchant shops, or persisted catalog.
+     */
+    private isForgedNameInWorld(name: string): boolean {
+        const lowerName = name.toLowerCase();
+
+        // Player inventory (name or trueName)
+        const inv = this.state.character?.inventory?.items || [];
+        if (inv.some((i: any) => i.name?.toLowerCase() === lowerName || i.trueName?.toLowerCase() === lowerName)) return true;
+
+        // Combat loot on the ground
+        const loot = (this.state.location as any)?.combatLoot || [];
+        if (loot.some((i: any) => i.name?.toLowerCase() === lowerName || i.trueName?.toLowerCase() === lowerName)) return true;
+
+        // Merchant inventories (string arrays of item names)
+        const npcs = this.state.worldNpcs || [];
+        if (npcs.some((n: any) => n.shopState?.inventory?.some((id: string) => id.toLowerCase() === lowerName))) return true;
+
+        // Persisted catalog (DataManager)
+        if (DataManager.getItem(name)) return true;
+
+        return false;
     }
 }
