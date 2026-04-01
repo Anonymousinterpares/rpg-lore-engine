@@ -102,6 +102,22 @@ export async function patchDataManagerForNode(projectRoot: string): Promise<{
     // --- Load Forged Items from catalog ---
     const forgedCount = await loadForgedItems(projectRoot);
 
+    // --- Load Skill Registry ---
+    const { SkillEngine } = await import('../src/ruleset/combat/SkillEngine');
+    const skillsPath = path.join(dataDir, 'skills', 'skills.json');
+    if (fs.existsSync(skillsPath)) {
+        const skillData = JSON.parse(fs.readFileSync(skillsPath, 'utf-8'));
+        SkillEngine.loadRegistry(skillData);
+    }
+
+    // --- Load Difficulty Config ---
+    const { DifficultyEngine } = await import('../src/ruleset/combat/DifficultyEngine');
+    const difficultyPath = path.join(dataDir, 'config', 'difficulty.json');
+    if (fs.existsSync(difficultyPath)) {
+        const diffData = JSON.parse(fs.readFileSync(difficultyPath, 'utf-8'));
+        DifficultyEngine.loadConfigs(diffData);
+    }
+
     // --- Load Spells (with dual-key indexing) ---
     const spells: Record<string, any> = {};
     const spellLookup: Record<string, any> = {};

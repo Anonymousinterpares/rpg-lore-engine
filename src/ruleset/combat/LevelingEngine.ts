@@ -1,5 +1,10 @@
 import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
 import { MechanicsEngine } from './MechanicsEngine';
+import { SkillEngine } from './SkillEngine';
+import { DataManager } from '../data/DataManager';
+
+/** Levels at which ASI (Ability Score Improvement) is granted. */
+const ASI_LEVELS = [4, 8, 12, 16, 19];
 
 export class LevelingEngine {
     private static readonly XP_THRESHOLDS: Record<number, number> = {
@@ -36,7 +41,7 @@ export class LevelingEngine {
 
     /**
      * Applies level up changes to a character.
-     * Note: This is an engine-level apply. UI/Wizard would handle choices.
+     * Returns a summary of what changed. SP and ASI choices are deferred to player.
      */
     public static levelUp(pc: PlayerCharacter): string {
         if (!this.canLevelUp(pc)) return `${pc.name} does not have enough XP to level up.`;
@@ -46,18 +51,87 @@ export class LevelingEngine {
         // HP Increase (Average of hit die + CON mod)
         const hitDieValue = parseInt(pc.hitDice.dieType.replace('1d', ''));
         const conMod = MechanicsEngine.getModifier(pc.stats['CON'] || 10);
-        const hpIncrease = (Math.floor(hitDieValue / 2) + 1 + conMod) || 1;
+        const hpIncrease = Math.max(1, Math.floor(hitDieValue / 2) + 1 + conMod);
 
         pc.hp.max += hpIncrease;
         pc.hp.current = pc.hp.max; // Heal on level up
 
         // Increase Hit Dice
         pc.hitDice.max++;
-        pc.hitDice.current = pc.hitDice.max; // Restore hit dice
+        pc.hitDice.current = pc.hitDice.max;
 
-        // Proficiency Bonus implicitly increases (MechanicsEngine uses level)
+        // Grant Skill Points from class config
+        const classData = DataManager.getClass(pc.class);
+        const spGrant = (classData as any)?.skillPointsPerLevel || 2;
+        SkillEngine.grantSkillPoints(pc, spGrant);
 
-        return `${pc.name} reached Level ${pc.level}! Max HP increased to ${pc.hp.max}.`;
+        let summary = `${pc.name} reached Level ${pc.level}! HP +${hpIncrease} (max ${pc.hp.max}). Gained ${spGrant} Skill Points.`;
+
+        // ASI at milestone levels
+        if (ASI_LEVELS.includes(pc.level)) {
+            (pc as any)._pendingASI = ((pc as any)._pendingASI || 0) + 1;
+            summary += ` ASI available! (+2 to one ability or +1/+1 to two, cap 20)`;
+        }
+
+        return summary;
+    }
+
+    /**
+     * Check if the character has a pending ASI to allocate.
+     */
+    public static hasPendingASI(pc: PlayerCharacter): boolean {
+        return ((pc as any)._pendingASI || 0) > 0;
+    }
+
+    /**
+     * Apply ASI: +2 to one ability score (capped at 20).
+     */
+    public static applyASISingle(pc: PlayerCharacter, ability: string): string {
+        if (!this.hasPendingASI(pc)) return 'No pending ASI.';
+        const stats = pc.stats as Record<string, number>;
+        const current = stats[ability] || 10;
+        if (current >= 20) return `${ability} is already at maximum (20).`;
+
+        const increase = Math.min(2, 20 - current);
+        stats[ability] = current + increase;
+        (pc as any)._pendingASI--;
+
+        if (ability === 'CON') {
+            const hpBonus = (MechanicsEngine.getModifier(stats[ability]) - MechanicsEngine.getModifier(current)) * pc.level;
+            pc.hp.max += hpBonus;
+            pc.hp.current = Math.min(pc.hp.current + hpBonus, pc.hp.max);
+        }
+
+        return `${ability} increased by ${increase} (now ${stats[ability]}).`;
+    }
+
+    /**
+     * Apply ASI: +1 to two different ability scores (each capped at 20).
+     */
+    public static applyASISplit(pc: PlayerCharacter, ability1: string, ability2: string): string {
+        if (!this.hasPendingASI(pc)) return 'No pending ASI.';
+        if (ability1 === ability2) return 'Must choose two different abilities.';
+
+        const stats = pc.stats as Record<string, number>;
+        const results: string[] = [];
+        for (const ability of [ability1, ability2]) {
+            const current = stats[ability] || 10;
+            if (current >= 20) {
+                results.push(`${ability} already at 20 — skipped.`);
+                continue;
+            }
+            stats[ability] = current + 1;
+            results.push(`${ability} +1 (now ${stats[ability]})`);
+
+            if (ability === 'CON') {
+                const hpBonus = (MechanicsEngine.getModifier(stats[ability]) - MechanicsEngine.getModifier(current)) * pc.level;
+                pc.hp.max += hpBonus;
+                pc.hp.current = Math.min(pc.hp.current + hpBonus, pc.hp.max);
+            }
+        }
+
+        (pc as any)._pendingASI--;
+        return `ASI applied: ${results.join(', ')}.`;
     }
 
     /**

@@ -4,6 +4,7 @@ import { Monster } from '../schemas/MonsterSchema';
 import { Item } from '../schemas/ItemSchema';
 import { Combatant } from '../schemas/CombatSchema';
 import { AbilityScore, SkillName } from '../schemas/BaseSchemas';
+import { SkillEngine } from './SkillEngine';
 
 export interface RollResult {
     roll: number;
@@ -67,7 +68,6 @@ export class MechanicsEngine {
             const pc = actor as PlayerCharacter;
             if (skill) {
                 // Skill check: use tier-based multiplier from SkillEngine
-                const { SkillEngine } = require('./SkillEngine');
                 const tier = SkillEngine.getSkillTier(pc, skill);
                 if (tier > 0) {
                     const baseProfBonus = this.getProficiencyBonus(pc.level);

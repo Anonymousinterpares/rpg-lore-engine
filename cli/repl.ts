@@ -77,6 +77,10 @@ function showHelp() {
 ║                                               ║
 ║ PROGRESSION                                   ║
 ║  /levelup       — Level up (if XP sufficient) ║
+║  /skills        — View skill tiers & SP       ║
+║  /invest <skill>— Spend SP to advance a skill ║
+║  /resetskills   — Respec: reset all skills    ║
+║  /asi <+2 STR>  — Apply ASI (+2 one or +1/+1) ║
 ║  /prepare <s>   — Prepare spells for the day  ║
 ║  /export [type] — Export sheet or chronicle    ║
 ║  /multiclass <c>— Check multiclass prereqs    ║
@@ -250,6 +254,75 @@ async function gameREPL(rl: readline.Interface, initialState: GameState) {
 
         if (trimmed === '/spells') {
             console.log(renderSpells(gameLoop.getState()));
+            continue;
+        }
+
+        // --- Skill System Commands ---
+        if (trimmed === '/skills') {
+            const s = gameLoop.getState();
+            const pc = s.character;
+            const sp = (pc as any).skillPoints || { available: 0, totalEarned: 0 };
+            const pendingASI = (pc as any)._pendingASI || 0;
+            console.log(`\n  === SKILL MASTERY === (Level ${pc.level})  SP Available: ${sp.available} / ${sp.totalEarned} earned`);
+            if (pendingASI > 0) console.log(`  *** ${pendingASI} ASI pending! Use /asi to allocate ***`);
+            const { SkillEngine } = require('../src/ruleset/combat/SkillEngine');
+            const registry = SkillEngine.getRegistry();
+            const byAbility: Record<string, string[]> = {};
+            for (const [name, def] of Object.entries(registry) as [string, any][]) {
+                if (!byAbility[def.ability]) byAbility[def.ability] = [];
+                byAbility[def.ability].push(name);
+            }
+            const profBonus = require('../src/ruleset/combat/MechanicsEngine').MechanicsEngine.getProficiencyBonus(pc.level);
+            for (const [ability, skills] of Object.entries(byAbility)) {
+                console.log(`\n  ${ability}`);
+                for (const skillName of skills.sort()) {
+                    const tier = SkillEngine.getSkillTier(pc, skillName);
+                    const tierName = SkillEngine.getTierName(tier);
+                    const mult = tier > 0 ? SkillEngine.getTierMultiplier(skillName, tier) : 0;
+                    const abilityMod = require('../src/ruleset/combat/MechanicsEngine').MechanicsEngine.getModifier(pc.stats[ability] || 10);
+                    const bonus = abilityMod + (profBonus * mult);
+                    const stars = '★'.repeat(tier) + '☆'.repeat(4 - tier);
+                    const cost = SkillEngine.getCostToNextTier(skillName, tier);
+                    const costStr = cost !== null ? `[Invest ${cost}SP]` : '[MAX]';
+                    console.log(`    ${stars}  ${skillName.padEnd(18)} ${tierName.padEnd(13)} +${bonus}  ${costStr}`);
+                }
+            }
+            console.log('');
+            continue;
+        }
+
+        if (trimmed.startsWith('/invest ')) {
+            const skillName = trimmed.slice(8).trim();
+            const { SkillEngine } = require('../src/ruleset/combat/SkillEngine');
+            const result = SkillEngine.invest(gameLoop.getState().character, skillName);
+            console.log(`  ${result}`);
+            continue;
+        }
+
+        if (trimmed === '/resetskills') {
+            const { SkillEngine } = require('../src/ruleset/combat/SkillEngine');
+            const result = SkillEngine.resetAll(gameLoop.getState().character);
+            console.log(`  ${result}`);
+            continue;
+        }
+
+        if (trimmed.startsWith('/asi')) {
+            const args = trimmed.slice(4).trim();
+            const { LevelingEngine } = require('../src/ruleset/combat/LevelingEngine');
+            const pc = gameLoop.getState().character;
+            if (!LevelingEngine.hasPendingASI(pc)) {
+                console.log('  No pending ASI. ASI is granted at levels 4, 8, 12, 16, 19.');
+                continue;
+            }
+            // Parse: "/asi +2 STR" or "/asi +1 STR +1 DEX"
+            const parts = args.toUpperCase().split(/\s+/);
+            if (parts.length === 2 && parts[0] === '+2') {
+                console.log(`  ${LevelingEngine.applyASISingle(pc, parts[1])}`);
+            } else if (parts.length === 4 && parts[0] === '+1' && parts[2] === '+1') {
+                console.log(`  ${LevelingEngine.applyASISplit(pc, parts[1], parts[3])}`);
+            } else {
+                console.log('  Usage: /asi +2 STR  or  /asi +1 STR +1 DEX');
+            }
             continue;
         }
 
