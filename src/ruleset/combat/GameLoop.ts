@@ -1110,11 +1110,16 @@ export class GameLoop {
                     const nextXP = MechanicsEngine.getNextLevelXP(this.state.character.level);
                     return `Not enough XP to level up. Current: ${this.state.character.xp}, Need: ${nextXP}.`;
                 }
-                const chosenClass = args[0] || undefined; // Optional: /levelup Fighter
-                const msg = LevelingEngine.levelUp(this.state.character, chosenClass);
-                if (msg.includes('specify class')) return msg; // Multiclass needs class choice
+                const chosenClass = args[0] || undefined;
+                const messages: string[] = [];
+                // Loop to handle multi-level jumps from large XP gains
+                while (LevelingEngine.canLevelUp(this.state.character)) {
+                    const msg = LevelingEngine.levelUp(this.state.character, chosenClass);
+                    if (msg.includes('specify class')) return msg;
+                    messages.push(msg);
+                }
                 await this.emitStateUpdate();
-                return msg;
+                return messages.join('\n');
             }
 
             case 'addxp': {

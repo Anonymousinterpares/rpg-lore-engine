@@ -52,16 +52,19 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
         }
     }, [state?.lastSkillCheck]);
 
-    // Detect level up → show overlay
+    // Detect level up → show overlay (handles multi-level jumps)
     useEffect(() => {
         const currentLevel = state?.character?.level || 0;
         if (currentLevel > lastLevelRef.current && lastLevelRef.current > 0) {
+            const levelsGained = currentLevel - lastLevelRef.current;
             const ASI_LEVELS = [4, 8, 12, 16, 19];
+            const hasASI = ASI_LEVELS.some(l => l > lastLevelRef.current && l <= currentLevel);
+            const spPerLevel = (state?.character as any)?.skillPoints ? 2 : 0; // approximate
             setLevelUpOverlay({
                 level: currentLevel,
                 className: state?.character?.class || '',
-                spGained: 2, // Default; actual value already applied by engine
-                hasASI: ASI_LEVELS.includes(currentLevel),
+                spGained: levelsGained * spPerLevel,
+                hasASI,
             });
         }
         lastLevelRef.current = currentLevel;

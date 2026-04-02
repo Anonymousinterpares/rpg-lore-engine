@@ -813,10 +813,9 @@ export class CombatOrchestrator {
                 }
             }
 
-            // Check for level up using LevelingEngine (grants SP, ASI, class-appropriate HP)
-            if (LevelingEngine.canLevelUp(char)) {
+            // Check for level up — loop to handle multi-level jumps from large XP gains
+            while (LevelingEngine.canLevelUp(char)) {
                 const levelMsg = LevelingEngine.levelUp(char);
-                // Restore spell slots on level up
                 Object.values(char.spellSlots).forEach(s => s.current = s.max);
                 this.addCombatLog(`LEVEL UP! ${levelMsg} Spell Slots restored.`);
             }
