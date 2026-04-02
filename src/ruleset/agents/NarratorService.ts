@@ -67,8 +67,27 @@ export class NarratorService {
             try {
                 parsed = JSON.parse(cleanJson);
             } catch (jsonError) {
-                console.error('[NarratorService] JSON parse error:', jsonError);
-                console.error('[NarratorService] Clean JSON was:', cleanJson.substring(0, 500));
+                console.warn('[NarratorService] JSON parse error:', jsonError);
+                // Attempt to salvage narrative_output from malformed JSON via regex
+                const narrativeMatch = cleanJson.match(/"narrative_output"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+                if (narrativeMatch) {
+                    console.log('[NarratorService] Salvaged narrative from malformed JSON');
+                    return {
+                        narrative_output: narrativeMatch[1].replace(/\\n/g, '\n').replace(/\\"/g, '"'),
+                        engine_calls: [],
+                        world_updates: { hex_discovery: null, poi_unlocked: null }
+                    };
+                }
+                // Last resort: use the raw text as narrative
+                const rawText = cleanJson.replace(/[{}"\[\]]/g, '').replace(/narrative_output\s*:/i, '').trim();
+                if (rawText.length > 20) {
+                    console.log('[NarratorService] Using raw text as fallback narrative');
+                    return {
+                        narrative_output: rawText.substring(0, 2000),
+                        engine_calls: [],
+                        world_updates: { hex_discovery: null, poi_unlocked: null }
+                    };
+                }
                 throw new Error('LLM returned invalid JSON');
             }
 

@@ -380,7 +380,8 @@
       "available": 0,
       "totalEarned": 0
     },
-    "darkvision": 60
+    "darkvision": 60,
+    "multiclassLevels": {}
   },
   "companions": [],
   "mode": "EXPLORATION",
@@ -2737,5 +2738,10 @@
     "[13:17:22] [NPC] Fenton Oakheart ready to move (Turns: 300 >= 24)",
     "[13:17:22] [NPC] Fenton Oakheart (Wander) - Found 4 valid biomes, picking -5,0",
     "[13:17:22] [NPC] Fenton Oakheart moving from -6,1 to -5,0"
-  ]
+  ],
+  "_examineCooldowns": {
+    "examine_attempts": []
+  },
+  "_pendingASI": 0,
+  "_abilityUses": {}
 }

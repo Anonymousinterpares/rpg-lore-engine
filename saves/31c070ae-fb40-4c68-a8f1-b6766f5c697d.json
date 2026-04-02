@@ -273,7 +273,8 @@
       "available": 0,
       "totalEarned": 0
     },
-    "darkvision": 60
+    "darkvision": 60,
+    "multiclassLevels": {}
   },
   "companions": [],
   "mode": "EXPLORATION",
@@ -1890,5 +1891,10 @@
       "developerMode": false
     }
   },
-  "activeDialogueNpcId": "fda5bdc0-b900-4299-a7a0-467be7b0e57d"
+  "activeDialogueNpcId": "fda5bdc0-b900-4299-a7a0-467be7b0e57d",
+  "_examineCooldowns": {
+    "examine_attempts": []
+  },
+  "_pendingASI": 0,
+  "_abilityUses": {}
 }

@@ -24,11 +24,13 @@ const NarrativeBox: React.FC<NarrativeBoxProps> = ({ text, speed = 20, title, pa
     const pendingTextRef = useRef<string | null>(null);
     const typingTextRef = useRef<string | null>(null); // text currently being typed
     const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const isFirstRenderRef = useRef(true); // Skip typewriter on initial mount (loaded save)
 
     // Start the typewriter for a given text
     const startTypewriter = (targetText: string) => {
+        if (!targetText) return;
         // Don't restart if already typing the same text
-        if (typingTextRef.current === targetText) return;
+        if (typingTextRef.current === targetText && timerRef.current !== null) return;
         typingTextRef.current = targetText;
 
         // Clear any existing timer
@@ -62,14 +64,23 @@ const NarrativeBox: React.FC<NarrativeBoxProps> = ({ text, speed = 20, title, pa
     // Handle new text arriving
     useEffect(() => {
         if (paused) {
-            // Queue for later — do NOT touch any running typewriter
             pendingTextRef.current = text;
             return;
         }
 
-        // Check if there's pending text from when we were paused
         const targetText = pendingTextRef.current ?? text;
         pendingTextRef.current = null;
+
+        if (!targetText) return;
+
+        // On first render (game load), show text instantly — no typewriter
+        if (isFirstRenderRef.current) {
+            isFirstRenderRef.current = false;
+            typingTextRef.current = targetText;
+            setDisplayedText(targetText);
+            setIsComplete(true);
+            return;
+        }
 
         startTypewriter(targetText);
         // eslint-disable-next-line react-hooks/exhaustive-deps

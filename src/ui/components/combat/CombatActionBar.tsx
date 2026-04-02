@@ -104,13 +104,11 @@ export const CombatActionBar: React.FC = () => {
         await processCommand(command);
     };
 
-    const handleCastSpell = async (spell: Spell) => {
+    const handleCastSpell = async (spell: Spell, slotLevel?: number) => {
         if (!engine || !state?.combat) return;
 
-        // Use the public castSpell API instead of processCommand
         const targetId = state.combat.selectedTargetId;
-        await engine.castSpell(spell.name, targetId);
-        // updateState(); // Subscriber in context handles this now
+        await engine.castSpell(spell.name, targetId, slotLevel);
         setShowSpells(false);
     };
 

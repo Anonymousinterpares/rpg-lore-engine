@@ -462,7 +462,8 @@
       "available": 2,
       "totalEarned": 2
     },
-    "darkvision": 60
+    "darkvision": 60,
+    "multiclassLevels": {}
   },
   "companions": [],
   "mode": "EXPLORATION",
@@ -1448,5 +1449,10 @@
     },
     "ai": {}
   },
-  "debugLog": []
+  "debugLog": [],
+  "_examineCooldowns": {
+    "examine_attempts": []
+  },
+  "_pendingASI": 0,
+  "_abilityUses": {}
 }

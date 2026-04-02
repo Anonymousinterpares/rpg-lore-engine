@@ -33,11 +33,26 @@ function migrateSave(filePath: string): boolean {
                     patched = true;
                 }
             }
-            // Also patch darkvision if missing
+            // Patch all missing Phase 10+ fields
             if (char.darkvision === undefined) {
-                // Look up race darkvision from data files
                 const racesWithDarkvision = ['Elf', 'High_Elf', 'High Elf', 'Dwarf', 'Hill_Dwarf', 'Hill Dwarf', 'Gnome', 'Rock_Gnome', 'Rock Gnome', 'Half-Elf', 'Half-Orc', 'Tiefling'];
                 char.darkvision = racesWithDarkvision.some(r => char.race?.includes(r)) ? 60 : 0;
+                patched = true;
+            }
+            if (char.multiclassLevels === undefined) {
+                char.multiclassLevels = {};
+                patched = true;
+            }
+            if (data._examineCooldowns === undefined) {
+                data._examineCooldowns = { examine_attempts: [] };
+                patched = true;
+            }
+            if (data._pendingASI === undefined) {
+                data._pendingASI = 0;
+                patched = true;
+            }
+            if (data._abilityUses === undefined) {
+                data._abilityUses = {};
                 patched = true;
             }
 

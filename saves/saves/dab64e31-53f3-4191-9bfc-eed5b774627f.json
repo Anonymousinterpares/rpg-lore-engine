@@ -217,7 +217,8 @@
       "available": 0,
       "totalEarned": 0
     },
-    "darkvision": 0
+    "darkvision": 0,
+    "multiclassLevels": {}
   },
   "companions": [],
   "mode": "GAME_OVER",
@@ -4194,5 +4195,10 @@
       "type": "ENEMY",
       "visible": true
     }
-  }
+  },
+  "_examineCooldowns": {
+    "examine_attempts": []
+  },
+  "_pendingASI": 0,
+  "_abilityUses": {}
 }

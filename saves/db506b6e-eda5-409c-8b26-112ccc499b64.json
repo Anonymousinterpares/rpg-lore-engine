@@ -197,7 +197,8 @@
       "available": 0,
       "totalEarned": 0
     },
-    "darkvision": 0
+    "darkvision": 0,
+    "multiclassLevels": {}
   },
   "companions": [],
   "mode": "EXPLORATION",
@@ -1691,5 +1692,10 @@
       "autosave": false,
       "developerMode": true
     }
-  }
+  },
+  "_examineCooldowns": {
+    "examine_attempts": []
+  },
+  "_pendingASI": 0,
+  "_abilityUses": {}
 }

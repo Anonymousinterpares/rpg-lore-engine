@@ -1472,8 +1472,8 @@ export class GameLoop {
         await this.emitStateUpdate();
     }
 
-    public async castSpell(spellName: string, targetId?: string) {
-        return await this.spells.castSpell(spellName, targetId);
+    public async castSpell(spellName: string, targetId?: string, slotLevel?: number) {
+        return await this.spells.castSpell(spellName, targetId, slotLevel);
     }
 
     public async pickupCombatLoot(instanceId: string) {

@@ -235,3 +235,180 @@
     color: var(--parchment-border);
     font-style: italic;
 }
+
+/* Mode toggle button */
+.modeToggle {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+    padding: 2px 8px;
+    border: 1px solid var(--parchment-border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--parchment-border);
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+.modeToggle:hover {
+    opacity: 1;
+}
+
+.hasUpcast {
+    border-left: 2px solid var(--parchment-accent);
+}
+
+.spellDamage {
+    font-weight: 600;
+    color: var(--parchment-accent);
+}
+
+.expandIndicator {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.4;
+}
+
+/* ===== MODE: INLINE ===== */
+.upcastInline {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding-top: 4px;
+    margin-top: 4px;
+    border-top: 1px solid rgba(139, 115, 85, 0.15);
+    flex-wrap: wrap;
+}
+
+.upcastLabel {
+    font-size: 0.6rem;
+    opacity: 0.5;
+    margin-right: 2px;
+}
+
+.slotBtn {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid rgba(139, 115, 85, 0.3);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    transition: all 0.15s ease;
+}
+
+.slotBtn:hover {
+    background: rgba(201, 162, 39, 0.15);
+    border-color: var(--parchment-accent);
+}
+
+.slotBtnBase {
+    color: var(--parchment-accent);
+    border-color: var(--parchment-accent);
+}
+
+.slotBtnUp {
+    color: #2980b9;
+    border-color: rgba(41, 128, 185, 0.4);
+}
+
+.slotBtnUp:hover {
+    background: rgba(41, 128, 185, 0.1);
+    border-color: #2980b9;
+}
+
+.slotDice {
+    font-size: 0.55rem;
+    font-weight: 400;
+    opacity: 0.7;
+}
+
+/* ===== MODE: EXPAND ===== */
+.upcastExpand {
+    padding: 6px 0 2px;
+    margin-top: 4px;
+    border-top: 1px solid rgba(139, 115, 85, 0.15);
+}
+
+.expandTitle {
+    font-size: 0.6rem;
+    opacity: 0.5;
+    margin-bottom: 4px;
+}
+
+.expandOption {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 3px 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.72rem;
+    border-radius: 3px;
+    transition: background 0.1s;
+}
+
+.expandOption:hover {
+    background: rgba(201, 162, 39, 0.1);
+}
+
+.expandLv {
+    font-weight: 600;
+    min-width: 36px;
+}
+
+.expandDice {
+    color: var(--parchment-accent);
+    font-weight: 600;
+}
+
+.expandSlots {
+    opacity: 0.4;
+    font-size: 0.65rem;
+}
+
+.expandBase {
+    color: var(--parchment-accent);
+    font-size: 0.6rem;
+}
+
+/* ===== MODE: TOOLTIP ===== */
+.upcastTooltip {
+    position: absolute;
+    right: -140px;
+    top: 0;
+    background: rgba(30, 25, 20, 0.95);
+    border: 1px solid var(--parchment-border);
+    border-radius: var(--radius-sm);
+    padding: 4px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 120px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.tooltipOption {
+    font-size: 0.72rem;
+    padding: 4px 8px;
+    border: none;
+    background: transparent;
+    color: #f0f0f0;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 2px;
+    transition: background 0.1s;
+}
+
+.tooltipOption:hover {
+    background: rgba(201, 162, 39, 0.2);
+}
