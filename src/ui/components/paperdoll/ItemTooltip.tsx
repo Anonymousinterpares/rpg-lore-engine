@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
 import styles from './ItemTooltip.module.css';
 import { PaperdollItem } from './types';
 
@@ -37,7 +38,7 @@ const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, anchorRect, visible }) 
 
     const rarityColor = RARITY_COLORS[item.rarity || 'common'];
 
-    return (
+    return ReactDOM.createPortal(
         <div
             ref={tooltipRef}
             className={styles.tooltip}
@@ -174,7 +175,8 @@ const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, anchorRect, visible }) 
                     Source: {item.forgeSource}
                 </p>
             )}
-        </div>
+        </div>,
+        document.body
     );
 };
 

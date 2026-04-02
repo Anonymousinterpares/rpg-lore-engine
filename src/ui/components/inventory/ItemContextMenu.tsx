@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import styles from './ItemContextMenu.module.css';
 import { Info, Trash2, Search, Zap, ArrowUpCircle, Package } from 'lucide-react';
 
@@ -36,7 +37,7 @@ const ItemContextMenu: React.FC<ItemContextMenuProps> = ({
     const adjustedX = Math.min(x, window.innerWidth - 160);
     const adjustedY = Math.min(y, window.innerHeight - 200);
 
-    return (
+    return ReactDOM.createPortal(
         <div
             ref={menuRef}
             className={styles.menu}
@@ -96,7 +97,8 @@ const ItemContextMenu: React.FC<ItemContextMenuProps> = ({
                     </button>
                 </>
             )}
-        </div>
+        </div>,
+        document.body
     );
 };
 

@@ -14,6 +14,8 @@ import Codex from '../codex/Codex';
 import { Shield, Zap, Heart, Footprints, Info, Award, BookOpen, Users, CheckCircle2 as Check } from 'lucide-react';
 import { PaperdollItem, SlotId } from '../paperdoll/types';
 import { DataManager } from '../../../ruleset/data/DataManager';
+import ItemContextMenu from '../inventory/ItemContextMenu';
+import ItemDatasheet from '../inventory/ItemDatasheet';
 
 const SKILL_GROUPS = [
     { ability: 'STR', label: 'Strength', skills: ['Athletics', 'Unarmed Combat'] },
@@ -27,12 +29,14 @@ const TIER_NAMES = ['', 'Prof', 'Exp', 'Mst', 'GM'];
 const TIER_COLORS = ['#555', '#e8d5b5', '#1eff00', '#0070dd', '#ff8000'];
 
 const UnifiedCharacterPage: React.FC = () => {
-    const { state, engine, updateState } = useGameState();
+    const { state, engine, updateState, processCommand } = useGameState();
     const { pushPage } = useBook();
     const [pendingASI, setPendingASI] = useState<Record<string, number>>({});
     const [pendingSP, setPendingSP] = useState<Record<string, number>>({});
     const [showFeatures, setShowFeatures] = useState(false);
     const [showPersonality, setShowPersonality] = useState(false);
+    const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number; item: PaperdollItem; source: 'slot' | 'bag'; slotId?: string } | null>(null);
+    const [datasheetItem, setDatasheetItem] = useState<any>(null);
 
     if (!state?.character) return <div className={styles.page}>No character loaded.</div>;
 
@@ -64,15 +68,25 @@ const UnifiedCharacterPage: React.FC = () => {
     }
     const effectiveSP = sp.available - totalPendingSPCost;
 
-    // Paperdoll helpers (simplified from PaperdollScreen)
+    const normalizeRarity = (rarity?: string): PaperdollItem['rarity'] => {
+        if (!rarity) return undefined;
+        return rarity.toLowerCase().replace(' ', '-') as PaperdollItem['rarity'];
+    };
+
+    // Paperdoll helpers (same mapping as PaperdollScreen)
     const mapItem = (item: any): PaperdollItem => {
         const enriched = DataManager.getItem(item.name || item.id);
         const src = item.isForged ? { ...enriched, ...item } : { ...item };
+        const base = enriched || {};
         return {
             id: src.id || item.name, instanceId: item.instanceId, name: item.name,
-            type: (src.type || 'Misc') as any, weight: src.weight || 0, quantity: item.quantity || 1, rarity: undefined,
+            type: (src.type || 'Misc') as any, weight: src.weight || 0, quantity: item.quantity || 1,
+            rarity: normalizeRarity((src as any).rarity || (base as any).rarity),
             equipped: item.equipped, icon: undefined, identified: (item as any).identified,
-        };
+            isMagic: (src as any).isMagic, isForged: (src as any).isForged,
+            modifiers: (src as any).modifiers, magicalProperties: (src as any).magicalProperties,
+            forgeSource: (src as any).forgeSource,
+        } as any;
     };
 
     const inventoryItems = (pc.inventory?.items || []).filter((i: any) => !i.equipped).map(mapItem);
@@ -196,6 +210,9 @@ const UnifiedCharacterPage: React.FC = () => {
                         sex={(pc as any).sex || 'male'}
                         onDrop={async (slot: string, item: PaperdollItem) => { if(engine) await engine.equipItemToSlot(item.instanceId, slot); }}
                         onUnequip={async (slot) => { if(engine) await engine.unequipFromSlot(slot); }}
+                        onItemContextMenu={(e: React.MouseEvent, item: PaperdollItem, slotId: string) => {
+                            setCtxMenu({ x: e.clientX, y: e.clientY, item, source: 'slot', slotId });
+                        }}
                     />
                 </div>
 
@@ -206,6 +223,9 @@ const UnifiedCharacterPage: React.FC = () => {
                         gold={gold as any}
                         onItemEquipped={async (item) => { if(engine) await engine.equipItem(item.instanceId); }}
                         onReceiveItem={() => {}}
+                        onItemContextMenu={(e: React.MouseEvent, item: PaperdollItem) => {
+                            setCtxMenu({ x: e.clientX, y: e.clientY, item, source: 'bag' });
+                        }}
                     />
 
                     <div className={styles.combatMetrics}>
@@ -288,6 +308,45 @@ const UnifiedCharacterPage: React.FC = () => {
 
                 </div>{/* /canvas */}
             </div>{/* /scaleWrapper */}
+
+            {/* Context Menu for inventory/equipment items */}
+            {ctxMenu && (() => {
+                const equippableTypes = ['weapon', 'armor', 'shield', 'ring', 'amulet', 'cloak', 'belt', 'boots', 'gloves', 'bracers', 'helmet'];
+                const isUnid = ctxMenu.item.identified === false;
+                return (
+                    <ItemContextMenu
+                        x={ctxMenu.x}
+                        y={ctxMenu.y}
+                        itemName={ctxMenu.item.name}
+                        isEquippable={equippableTypes.some(t => (ctxMenu.item.type || '').toLowerCase().includes(t))}
+                        equipAllowed={true}
+                        isUnidentified={isUnid}
+                        onClose={() => setCtxMenu(null)}
+                        onAction={async (action) => {
+                            if (!ctxMenu) return;
+                            const { item, slotId, source } = ctxMenu;
+                            setCtxMenu(null);
+                            if (action === 'info') {
+                                const baseItem = DataManager.getItem(item.id);
+                                setDatasheetItem({ ...baseItem, ...item });
+                            } else if (action === 'equip' && engine) {
+                                if (source === 'slot' && slotId) await engine.unequipFromSlot(slotId);
+                                else await engine.equipItem(item.instanceId);
+                            } else if (action === 'examine') {
+                                if (engine) await processCommand('/examine ' + item.instanceId);
+                            } else if (action === 'drop' && engine) {
+                                if (source === 'slot' && slotId) await engine.unequipFromSlot(slotId);
+                                await engine.dropItem(item.instanceId);
+                            }
+                        }}
+                    />
+                );
+            })()}
+
+            {/* Item Datasheet popover */}
+            {datasheetItem && (
+                <ItemDatasheet item={datasheetItem} onClose={() => setDatasheetItem(null)} />
+            )}
 
             {/* OVERLAYS — outside scale wrapper (fixed position) */}
             {showFeatures && (

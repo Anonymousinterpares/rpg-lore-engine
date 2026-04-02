@@ -191,13 +191,6 @@ const App: React.FC = () => {
             content: <UnifiedCharacterPage />,
             permanent: true
         },
-        // Skills tab unplugged — merged into Character tab
-        // {
-        //     id: 'skills',
-        //     label: 'Skills',
-        //     content: <SkillTreePage />,
-        //     permanent: true
-        // },
         {
             id: 'world_map',
             label: 'World Map',
@@ -210,13 +203,6 @@ const App: React.FC = () => {
             content: <QuestsPage />,
             permanent: true,
             hasNotification: state?.activeQuests?.some(q => q.isNew)
-        },
-        {
-            // Equipment tab unplugged — merged into unified Character tab
-            id: 'equipment',
-            label: 'Equipment',
-            content: <PaperdollScreen isPage={true} />,
-            permanent: false // hidden from tabs
         },
         {
             id: 'world',
