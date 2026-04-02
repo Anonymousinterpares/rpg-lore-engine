@@ -51,5 +51,6 @@
       "description": "The planetar touches another creature. The target magically regains 30 (6d8 + 3) hit points and is freed from any curse, disease, poison, blindness, or deafness."
     }
   ],
-  "legendaryActions": []
+  "legendaryActions": [],
+  "darkvision": 120
 }

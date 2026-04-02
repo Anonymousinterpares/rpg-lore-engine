@@ -48,5 +48,6 @@
       "description": "The demon chooses what to summon and attempts a magical summoning.\nA hezrou has a 30 percent chance of summoning 2d6 dretches or one hezrou.\nA summoned demon appears in an unoccupied space within 60 feet of its summoner, acts as an ally of its summoner, and can't summon other demons. It remains for 1 minute, until it or its summoner dies, or until its summoner dismisses it as an action."
     }
   ],
-  "legendaryActions": []
+  "legendaryActions": [],
+  "darkvision": 120
 }

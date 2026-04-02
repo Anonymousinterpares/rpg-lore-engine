@@ -81,5 +81,6 @@
       "name": "Bite (Costs 2 Actions)",
       "description": "The vampire makes one bite attack."
     }
-  ]
+  ],
+  "darkvision": 60
 }

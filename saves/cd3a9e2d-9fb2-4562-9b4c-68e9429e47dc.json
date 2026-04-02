@@ -386,7 +386,8 @@
     "skillPoints": {
       "available": 0,
       "totalEarned": 0
-    }
+    },
+    "darkvision": 60
   },
   "companions": [],
   "mode": "COMBAT",

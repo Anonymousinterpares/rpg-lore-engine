@@ -326,7 +326,8 @@
         "goblin"
       ],
       "items": []
-    }
+    },
+    "darkvision": 60
   },
   "companions": [],
   "mode": "COMBAT",

@@ -45,5 +45,6 @@
       "description": "Gentle Lullaby. The creature falls asleep and is unconscious for 1 minute. The effect ends if the creature takes damage or if someone takes an action to shake the creature awake."
     }
   ],
-  "legendaryActions": []
+  "legendaryActions": [],
+  "darkvision": 60
 }

@@ -40,5 +40,6 @@
       "attackBonus": 3
     }
   ],
-  "legendaryActions": []
+  "legendaryActions": [],
+  "darkvision": 0
 }

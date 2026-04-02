@@ -485,7 +485,8 @@
     "skillPoints": {
       "available": 2,
       "totalEarned": 2
-    }
+    },
+    "darkvision": 60
   },
   "companions": [],
   "mode": "EXPLORATION",

@@ -52,5 +52,6 @@
       "description": "The roper pulls each creature grappled by it up to 25 ft. straight toward it."
     }
   ],
-  "legendaryActions": []
+  "legendaryActions": [],
+  "darkvision": 60
 }

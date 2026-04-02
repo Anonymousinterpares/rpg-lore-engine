@@ -61,5 +61,6 @@
       "name": "Wing Attack (Costs 2 Actions)",
       "description": "The dragon beats its wings. Each creature within 15 ft. of the dragon must succeed on a DC 24 Dexterity saving throw or take 16 (2d6 + 9) bludgeoning damage and be knocked prone. The dragon can then fly up to half its flying speed."
     }
-  ]
+  ],
+  "darkvision": 120
 }

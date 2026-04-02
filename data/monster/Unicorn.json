@@ -73,5 +73,6 @@
       "name": "Heal Self (Costs 3 Actions)",
       "description": "The unicorn magically regains 11 (2d8 + 2) hit points."
     }
-  ]
+  ],
+  "darkvision": 120
 }
