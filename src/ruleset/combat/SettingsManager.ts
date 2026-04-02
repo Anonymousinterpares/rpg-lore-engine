@@ -18,7 +18,8 @@ export class SettingsManager {
         video: {
             fullscreen: false,
             vsync: true,
-            resolutionScale: 1.0
+            resolutionScale: 1.0,
+            instantNarration: false
         },
         audio: {
             master: 0.8,

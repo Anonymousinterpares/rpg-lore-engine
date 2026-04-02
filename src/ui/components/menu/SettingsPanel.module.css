@@ -470,3 +470,11 @@
         transform: rotate(360deg);
     }
 }
+
+.settingHint {
+    font-size: 0.7rem;
+    opacity: 0.5;
+    font-style: italic;
+    margin-top: -4px;
+    padding-left: 4px;
+}

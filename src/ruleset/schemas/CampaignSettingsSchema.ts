@@ -15,7 +15,8 @@ export const CampaignSettingsSchema = z.object({
     video: z.object({
         fullscreen: z.boolean().default(false),
         vsync: z.boolean().default(true),
-        resolutionScale: z.number().default(1.0)
+        resolutionScale: z.number().default(1.0),
+        instantNarration: z.boolean().default(false)
     }).default({}),
     audio: z.object({
         master: z.number().default(0.8),

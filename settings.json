@@ -10,7 +10,8 @@
   "video": {
     "fullscreen": false,
     "vsync": true,
-    "resolutionScale": 1
+    "resolutionScale": 1,
+    "instantNarration": false
   },
   "audio": {
     "master": 0.8,

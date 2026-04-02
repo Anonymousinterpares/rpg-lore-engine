@@ -143,4 +143,27 @@ Flags applied to entities that alter their capabilities.
 *   If carrying > Capacity, Speed drops to 5ft/0.
 
 ## 8. Multiclassing
-*   **Not Supported** in Version 1.0. Characters adhere to a single class progression table.
+*   **Supported** — Maximum 2 classes. See [Skill Mastery](Skill_Mastery.md) for details.
+
+## 9. Leveling Up
+
+When you earn enough XP, your character levels up. If you earn enough XP to skip multiple levels,
+all levels are gained at once with cumulative benefits.
+
+**Per-level gains:**
+| Benefit | Formula | Example (Wizard) |
+|:---|:---|:---|
+| HP increase | `floor(hitDie / 2) + 1 + CON modifier` | d6 → floor(3) + 1 + CON mod = 4 + CON mod |
+| Hit Dice max | +1 | Level 5 = 5 hit dice |
+| Proficiency bonus | Automatic by level tier | +2 (1-4), +3 (5-8), +4 (9-12), +5 (13-16), +6 (17-20) |
+| Skill Points | From class config | Fighter: 2, Rogue: 3, Bard: 3 |
+| ASI | At levels 4, 8, 12, 16, 19 | +2 to one ability or +1 to two (max 20) |
+| Spell Slots | Restored on level up | All slots reset to max |
+
+**Hit Die by class:**
+| Class | Hit Die | Avg HP/level (before CON) |
+|:---|:---:|:---:|
+| Barbarian | d12 | 7 |
+| Fighter, Paladin, Ranger | d10 | 6 |
+| Bard, Cleric, Druid, Monk, Rogue, Warlock | d8 | 5 |
+| Sorcerer, Wizard | d6 | 4 |

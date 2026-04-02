@@ -8,7 +8,8 @@ interface PlayerInputFieldProps {
     onSubmit: (text: string) => void;
     placeholder?: string;
     disabled?: boolean;
-    processingMessage?: string; // e.g. "The narrator contemplates..." or "The narrator is answering..."
+    processingMessage?: string;
+    onSkipToEnd?: (() => void) | null; // Skip typewriter to end
     mode?: 'exploration' | 'combat' | 'dialogue';
 }
 
@@ -18,6 +19,7 @@ export const PlayerInputField: React.FC<PlayerInputFieldProps> = ({
     placeholder = "What do you do?",
     disabled = false,
     processingMessage,
+    onSkipToEnd,
     mode = 'exploration'
 }) => {
     const [input, setInput] = useState('');
@@ -72,14 +74,25 @@ export const PlayerInputField: React.FC<PlayerInputFieldProps> = ({
                         </div>
                     )}
                 </div>
-                <button
-                    type="submit"
-                    className={`${parchmentStyles.button} ${styles.submitButton}`}
-                    disabled={disabled || !input.trim()}
-                >
-                    <Send size={18} />
-                    <span>Submit</span>
-                </button>
+                <div className={styles.buttonGroup}>
+                    {onSkipToEnd && (
+                        <button
+                            type="button"
+                            className={styles.skipButton}
+                            onClick={onSkipToEnd}
+                        >
+                            Skip to end
+                        </button>
+                    )}
+                    <button
+                        type="submit"
+                        className={`${parchmentStyles.button} ${styles.submitButton}`}
+                        disabled={disabled || !input.trim()}
+                    >
+                        <Send size={18} />
+                        <span>Submit</span>
+                    </button>
+                </div>
             </form>
         </div>
     );

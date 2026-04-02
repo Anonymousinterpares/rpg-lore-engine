@@ -41,6 +41,10 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
     const [levelUpOverlay, setLevelUpOverlay] = useState<{ level: number; className: string; spGained: number; hasASI: boolean } | null>(null);
     const lastLevelRef = useRef<number>(state?.character?.level || 0);
 
+    // Skip-to-end for typewriter
+    const [skipFn, setSkipFn] = useState<(() => void) | null>(null);
+    const instantNarration = !!(state?.settings as any)?.video?.instantNarration;
+
     // Detect new skill check from engine state → show dice overlay
     // This does NOT stop any running typewriter — it only gates future narrative text
     useEffect(() => {
@@ -289,8 +293,10 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
                         title={locationTitle}
                         text={narrativeText}
                         paused={narrativePaused}
+                        instantMode={instantNarration}
                         onTypingStart={handleTypingStart}
                         onTypingComplete={handleTypingComplete}
+                        onSkipAvailable={(fn) => setSkipFn(() => fn)}
                     />
                 </div>
 
@@ -325,6 +331,7 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
                         placeholder={state?.activeDialogueNpcId ? `Say something to ${state.worldNpcs.find(n => n.id === state.activeDialogueNpcId)?.name}...` : "What do you do?"}
                         disabled={inputDisabled}
                         processingMessage={processingMessage}
+                        onSkipToEnd={skipFn}
                     />
                 )}
             </div>

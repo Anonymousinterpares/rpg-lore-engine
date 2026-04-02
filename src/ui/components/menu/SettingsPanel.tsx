@@ -258,6 +258,11 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ onClose, onSave, initialS
                                 />
                                 <span>{Math.round(settings.video.resolutionScale * 100)}%</span>
                             </div>
+                            <div className={styles.settingRow}>
+                                <span>Instant Narration</span>
+                                <input type="checkbox" checked={settings.video.instantNarration || false} onChange={() => handleToggle('instantNarration', 'video')} />
+                            </div>
+                            <div className={styles.settingHint}>Skip typewriter effect — show narrative text instantly.</div>
                         </div>
                     )}
 
