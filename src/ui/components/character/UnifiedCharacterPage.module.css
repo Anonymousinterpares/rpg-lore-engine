@@ -213,7 +213,13 @@
 .centerRight::-webkit-scrollbar { width: 4px; }
 .centerRight::-webkit-scrollbar-thumb { background: rgba(232, 213, 181, 0.2); border-radius: 2px; }
 
+.weightRow {
+    font-size: 10px; color: #e8d5b5; opacity: 0.6;
+    padding: 2px 4px; margin-bottom: 4px;
+}
+
 .combatMetrics { display: flex; gap: 4px; margin-bottom: var(--uc-gap-metrics-to-btn); }
+.metricInfo { opacity: 0.3; margin-left: 2px; }
 .metricBox {
     flex: 1; text-align: center; padding: 4px;
     background: rgba(232, 213, 181, 0.05);
@@ -273,6 +279,8 @@
 }
 
 .skillName { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: var(--uc-skill-name-size); color: var(--uc-skill-name-color); }
+.lockSlot { width: 14px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: help; }
+.lockIcon { color: #8b6914; opacity: 0.6; }
 .tierTag { font-size: var(--uc-skill-tier-size); flex-shrink: 0; }
 .skillMod { min-width: 24px; text-align: right; font-weight: 600; flex-shrink: 0; font-size: var(--uc-skill-mod-size); }
 .infoBtn { background: none; border: none; color: #dfb46b; opacity: 0.7; cursor: pointer; padding: 1px; flex-shrink: 0; }

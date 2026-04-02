@@ -64,6 +64,10 @@ export const CODEX_LORE = {
             name: 'Skills',
             content: `### Skills\nEach ability covers a broad range of capabilities, including skills that a character or a monster can be proficient in. A proficiency in a skill represents an individual's focus on one aspect of an ability, and a character's proficiency in a skill is reflected in his or her ability check.`
         },
+        'skill_proficiency_tiers': {
+            name: 'Skill Proficiency Tiers',
+            content: `### Skill Proficiency Tiers\n\nSkills progress through five tiers of mastery. Higher tiers multiply your proficiency bonus when making skill checks.\n\n**Tier 0 — Untrained:** No proficiency bonus. You rely on raw ability alone.\n\n**Tier 1 — Proficient:** Standard proficiency bonus (×1). Gained at character creation from class and background choices.\n\n**Tier 2 — Expert:** Double proficiency bonus (×2). Your training deepens significantly. Rogues begin with Expertise (Tier 2) in two skills.\n\n**Tier 3 — Master:** Double proficiency bonus (×2) plus a special ability. Requires character level 8+. At this tier you choose a passive or active ability unique to the skill.\n\n**Tier 4 — Grandmaster:** Triple proficiency bonus (×3) plus a powerful ability. Requires character level 15+. The pinnacle of mastery.\n\n**Skill Points (SP):** Earned each level (2 per level for most classes, 3 for Rogues and Bards). Spend SP to advance skills through tiers.\n\n**Tier Costs:** Untrained→Proficient: 2 SP | Proficient→Expert: 3 SP | Expert→Master: 5 SP | Master→Grandmaster: 8 SP\n\n**Total to max one skill:** 18 SP. By level 20 you earn ~38 SP — enough for 2 Grandmaster skills or a broader spread.`
+        },
         'combat_ac': {
             name: 'Armor Class (AC)',
             content: `### Armor Class (AC)\nYour Armor Class represents how hard it is for opponents to land a damaging blow on you. It is determined by your equipment, dexterity, and various magical or racial bonuses. An attack roll must equal or exceed your AC to hit.`

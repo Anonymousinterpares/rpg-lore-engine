@@ -11,6 +11,7 @@ import {
 interface InventoryBagProps {
     items: PaperdollItem[];
     gold: { gp: number; sp: number; cp: number };
+    capacity?: number; // Max carry weight in lbs (STR * 15)
     onItemEquipped: (item: PaperdollItem) => void;
     onReceiveItem: (item: PaperdollItem) => void;
     onItemContextMenu?: (e: React.MouseEvent, item: PaperdollItem) => void;
@@ -46,7 +47,7 @@ const RARITY_BORDER: Record<string, string> = {
 
 const MAX_SLOTS = 24;
 
-const InventoryBag: React.FC<InventoryBagProps> = ({ items, gold, onItemEquipped, onReceiveItem, onItemContextMenu }) => {
+const InventoryBag: React.FC<InventoryBagProps> = ({ items, gold, capacity, onItemEquipped, onReceiveItem, onItemContextMenu }) => {
     const [tooltipItem, setTooltipItem] = useState<PaperdollItem | null>(null);
     const [tooltipRect, setTooltipRect] = useState<DOMRect | null>(null);
     const gridRef = useRef<HTMLDivElement>(null);
@@ -100,7 +101,12 @@ const InventoryBag: React.FC<InventoryBagProps> = ({ items, gold, onItemEquipped
                 </div>
             </div>
 
-            <div className={styles.slotCount}>{items.length}/{MAX_SLOTS} slots</div>
+            <div className={styles.slotCount}>
+                {items.length}/{MAX_SLOTS} slots
+            </div>
+            <div className={styles.slotCount}>
+                Weight: {items.reduce((s, i) => s + (i.weight || 0) * (i.quantity || 1), 0).toFixed(1)}{capacity ? ` / ${capacity}` : ''} lbs
+            </div>
 
             <div
                 ref={gridRef}

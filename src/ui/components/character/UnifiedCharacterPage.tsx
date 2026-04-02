@@ -11,7 +11,7 @@ import InventoryBag from '../paperdoll/InventoryBag';
 import XPBar from './XPBar';
 import HealthBar from './HealthBar';
 import Codex from '../codex/Codex';
-import { Shield, Zap, Heart, Footprints, Info, Award, BookOpen, Users, CheckCircle2 as Check } from 'lucide-react';
+import { Shield, Zap, Heart, Footprints, Info, Award, BookOpen, Users, CheckCircle2 as Check, Lock } from 'lucide-react';
 import { PaperdollItem, SlotId } from '../paperdoll/types';
 import { DataManager } from '../../../ruleset/data/DataManager';
 import ItemContextMenu from '../inventory/ItemContextMenu';
@@ -25,7 +25,7 @@ const SKILL_GROUPS = [
     { ability: 'CHA', label: 'Charisma', skills: ['Deception', 'Intimidation', 'Performance', 'Persuasion'] },
 ];
 
-const TIER_NAMES = ['', 'Prof', 'Exp', 'Mst', 'GM'];
+const TIER_NAMES = ['', 'Proficient', 'Expert', 'Master', 'Grandmaster'];
 const TIER_COLORS = ['#555', '#e8d5b5', '#1eff00', '#0070dd', '#ff8000'];
 
 const UnifiedCharacterPage: React.FC = () => {
@@ -221,6 +221,7 @@ const UnifiedCharacterPage: React.FC = () => {
                     <InventoryBag
                         items={inventoryItems}
                         gold={gold as any}
+                        capacity={(stats.STR || 10) * 15}
                         onItemEquipped={async (item) => { if(engine) await engine.equipItem(item.instanceId); }}
                         onReceiveItem={() => {}}
                         onItemContextMenu={(e: React.MouseEvent, item: PaperdollItem) => {
@@ -229,17 +230,17 @@ const UnifiedCharacterPage: React.FC = () => {
                     />
 
                     <div className={styles.combatMetrics}>
-                        <div className={styles.metricBox}>
+                        <div className={styles.metricBox} onClick={() => openCodex('mechanics', 'combat_ac')} style={{cursor:'pointer'}}>
                             <div className={styles.metricVal}>{pc.ac}</div>
-                            <div className={styles.metricLbl}><Shield size={12} /> AC</div>
+                            <div className={styles.metricLbl}><Shield size={12} /> AC <Info size={8} className={styles.metricInfo} /></div>
                         </div>
-                        <div className={styles.metricBox}>
+                        <div className={styles.metricBox} onClick={() => openCodex('mechanics', 'combat_initiative')} style={{cursor:'pointer'}}>
                             <div className={styles.metricVal}>{fmtMod(getMod(stats.DEX || 10))}</div>
-                            <div className={styles.metricLbl}><Zap size={12} /> Init</div>
+                            <div className={styles.metricLbl}><Zap size={12} /> Init <Info size={8} className={styles.metricInfo} /></div>
                         </div>
-                        <div className={styles.metricBox}>
+                        <div className={styles.metricBox} onClick={() => openCodex('mechanics', 'combat_speed')} style={{cursor:'pointer'}}>
                             <div className={styles.metricVal}>30ft</div>
-                            <div className={styles.metricLbl}><Footprints size={12} /> Spd</div>
+                            <div className={styles.metricLbl}><Footprints size={12} /> Spd <Info size={8} className={styles.metricInfo} /></div>
                         </div>
                     </div>
 
@@ -280,6 +281,15 @@ const UnifiedCharacterPage: React.FC = () => {
                                     const cost = def?.tierCosts?.[eTier];
                                     const gate = def?.levelGates?.[eTier] || 1;
                                     const canInv = eTier < 4 && cost !== undefined && effectiveSP >= cost && pc.level >= gate;
+                                    // Determine lock reason (when can't invest but not because of max tier)
+                                    let lockReason = '';
+                                    if (!canInv && eTier < 4) {
+                                        if (pc.level < gate) lockReason = `Requires level ${gate}`;
+                                        else if (cost !== undefined && effectiveSP < cost) lockReason = `Needs ${cost} SP (have ${effectiveSP})`;
+                                    } else if (eTier >= 4) {
+                                        lockReason = 'Maximum tier reached';
+                                    }
+                                    const showLock = lockReason && effectiveSP > 0 && eTier < 4;
                                     const pips = Array.from({length:4},(_,i) => i < baseTier ? 'f' : i < eTier ? 'p' : 'e');
                                     return (
                                         <div key={sn} className={`${styles.skillRow} ${pAdv > 0 ? styles.rowPending : ''}`}>
@@ -288,8 +298,11 @@ const UnifiedCharacterPage: React.FC = () => {
                                                     style={p==='f'?{backgroundColor:TIER_COLORS[baseTier]}:undefined} />)}
                                             </span>
                                             <span className={styles.skillName}>{sn}</span>
-                                            {eTier > 0 && <span className={styles.tierTag} style={{color:TIER_COLORS[eTier]}}>{TIER_NAMES[eTier]}</span>}
+                                            {eTier > 0 && <span className={styles.tierTag} style={{color:TIER_COLORS[eTier], cursor:'pointer'}} onClick={(e) => {e.stopPropagation(); openCodex('mechanics', 'skill_proficiency_tiers');}}>{TIER_NAMES[eTier]}</span>}
                                             <span className={styles.skillMod}>{fmtMod(mod)}</span>
+                                            <span className={styles.lockSlot} title={lockReason || undefined}>
+                                                {showLock ? <Lock size={10} className={styles.lockIcon} /> : null}
+                                            </span>
                                             <button className={styles.infoBtn} onClick={() => openCodex('skills', sn)}><Info size={10} /></button>
                                             <div className={styles.pmSlotSm}>
                                                 <button className={styles.minusBtn} style={{width:16,height:16,fontSize:'0.65rem',visibility:pAdv>0?'visible':'hidden'}}

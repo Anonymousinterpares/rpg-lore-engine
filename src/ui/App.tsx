@@ -9,8 +9,6 @@ import SettingsPanel from './components/menu/SettingsPanel';
 import { useGameState } from './hooks/useGameState';
 import CharacterCreator from './components/creation/CharacterCreator';
 import Codex from './components/codex/Codex';
-import CharacterSheet from './components/character/CharacterSheet';
-import SkillTreePage from './components/character/SkillTreePage';
 import UnifiedCharacterPage from './components/character/UnifiedCharacterPage';
 import BookModal from './components/book/BookModal';
 import SpellPreparationPanel from './components/book/SpellPreparationPanel';
@@ -26,8 +24,6 @@ import DevOverlay from './components/exploration/DevOverlay';
 import NavigationModal from './components/exploration/NavigationModal';
 import TradeModal from './components/exploration/TradeModal';
 import { SettingsManager } from '../ruleset/combat/SettingsManager';
-import EquipmentOverlay from './components/paperdoll/EquipmentOverlay';
-import PaperdollScreen from './components/paperdoll/PaperdollScreen';
 
 const App: React.FC = () => {
     const [showSaveModal, setShowSaveModal] = useState(false);
@@ -43,7 +39,6 @@ const App: React.FC = () => {
     const [activeBookPageId, setActiveBookPageId] = useState<string>('character');
     const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
     const [isNavigationModalOpen, setIsNavigationModalOpen] = useState(false);
-    const [equipmentOpen, setEquipmentOpen] = useState(false);
     const [codexDeepLink, setCodexDeepLink] = useState<{ category: string; entryId?: string } | undefined>(undefined);
 
     const [appSettings, setAppSettings] = useState(SettingsManager.getGlobalSettings());
@@ -381,10 +376,6 @@ const App: React.FC = () => {
                         )}
                     </>
                 )}
-                <EquipmentOverlay
-                    isOpen={equipmentOpen}
-                    onClose={() => setEquipmentOpen(false)}
-                />
                 {bookOpen && (
                     <BookModal
                         isOpen={bookOpen}
