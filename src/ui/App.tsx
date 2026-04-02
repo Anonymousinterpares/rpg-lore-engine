@@ -11,6 +11,7 @@ import CharacterCreator from './components/creation/CharacterCreator';
 import Codex from './components/codex/Codex';
 import CharacterSheet from './components/character/CharacterSheet';
 import SkillTreePage from './components/character/SkillTreePage';
+import UnifiedCharacterPage from './components/character/UnifiedCharacterPage';
 import BookModal from './components/book/BookModal';
 import SpellPreparationPanel from './components/book/SpellPreparationPanel';
 import WorldMapPage from './components/book/WorldMapPage';
@@ -187,7 +188,7 @@ const App: React.FC = () => {
         {
             id: 'character',
             label: 'Character',
-            content: <CharacterSheet onClose={() => setBookOpen(false)} isPage={true} />,
+            content: <UnifiedCharacterPage />,
             permanent: true
         },
         // Skills tab unplugged — merged into Character tab
@@ -211,10 +212,11 @@ const App: React.FC = () => {
             hasNotification: state?.activeQuests?.some(q => q.isNew)
         },
         {
+            // Equipment tab unplugged — merged into unified Character tab
             id: 'equipment',
             label: 'Equipment',
             content: <PaperdollScreen isPage={true} />,
-            permanent: true
+            permanent: false // hidden from tabs
         },
         {
             id: 'world',
