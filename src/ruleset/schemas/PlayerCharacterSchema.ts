@@ -59,6 +59,7 @@ export const PlayerCharacterSchema = z.object({
         available: z.number().default(0),
         totalEarned: z.number().default(0),
     }).default({}),
+    feats: z.array(z.string()).default([]), // Feat names chosen at ASI levels
     weaponProficiencies: z.array(z.string()).default([]), // e.g. "Simple Weapons", "Longsword"
     hp: z.object({
         current: z.number(),

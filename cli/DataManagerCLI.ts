@@ -102,6 +102,18 @@ export async function patchDataManagerForNode(projectRoot: string): Promise<{
     // --- Load Forged Items from catalog ---
     const forgedCount = await loadForgedItems(projectRoot);
 
+    // --- Load Feat Registry ---
+    const featsPath = path.join(dataDir, 'feats', 'feats.json');
+    if (fs.existsSync(featsPath)) {
+        const featData = JSON.parse(fs.readFileSync(featsPath, 'utf-8'));
+        const feats: Record<string, any> = {};
+        for (const [k, v] of Object.entries(featData)) {
+            if (k === '_meta') continue;
+            feats[k] = v;
+        }
+        (globalThis as any).__featRegistry = feats;
+    }
+
     // --- Load Skill Registry + Abilities ---
     const { SkillEngine } = await import('../src/ruleset/combat/SkillEngine');
     const { SkillAbilityEngine } = await import('../src/ruleset/combat/SkillAbilityEngine');

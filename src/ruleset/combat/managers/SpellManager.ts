@@ -79,7 +79,23 @@ export class SpellManager {
         if (effect?.targets?.type === 'ENEMY' || spell.damage) {
             const potentialTargets = combo.combatants.filter(c => c.type === 'enemy' && c.hp.current > 0);
             if (effect?.targets?.count === 'ALL_IN_AREA') {
-                targets = potentialTargets;
+                // Filter by AoE radius if spell defines area size
+                const areaSize = effect?.area?.size;
+                if (areaSize && combo.grid) {
+                    const gridManager = new CombatGridManager(combo.grid);
+                    const radiusCells = Math.ceil(areaSize / 5); // Convert feet to cells (5ft/cell)
+                    targets = potentialTargets.filter(t => {
+                        const dist = gridManager.getDistance(caster.position, t.position);
+                        return dist <= radiusCells;
+                    });
+                    // Also exclude targets behind full cover from caster
+                    targets = targets.filter(t => {
+                        const cover = gridManager.getCover(caster.position, t.position);
+                        return cover !== 'Full';
+                    });
+                } else {
+                    targets = potentialTargets;
+                }
             } else {
                 let target = potentialTargets.find(t => t.id === combo.selectedTargetId);
                 if (!target) target = potentialTargets[0];
@@ -139,7 +155,17 @@ export class SpellManager {
         const spellSaveDC = 8 + spellAttackBonus;
 
         for (const target of targets) {
-            const result = CombatResolutionEngine.resolveSpell(caster, target, effectiveSpell, spellAttackBonus, spellSaveDC);
+            // Compute cover save bonus (D&D 5e: half cover +2, three-quarters +5)
+            let coverSaveBonus = 0;
+            if (combo.grid && effectiveSpell.save) {
+                const gm = new CombatGridManager(combo.grid);
+                const cover = gm.getCover(caster.position, target.position);
+                if (cover === 'Half') coverSaveBonus = 2;
+                else if (cover === 'Three-Quarters') coverSaveBonus = 5;
+                // Sharpshooter feat: ignore half and three-quarters cover
+                if (this.state.character.feats?.includes('Sharpshooter') && !effectiveSpell.save) coverSaveBonus = 0;
+            }
+            const result = CombatResolutionEngine.resolveSpell(caster, target, effectiveSpell, spellAttackBonus, spellSaveDC, coverSaveBonus);
 
             // Fix: Feed UI dice roller
             if (this.state.combat && result.details?.total) {

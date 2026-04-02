@@ -267,7 +267,7 @@ export class GameLoop {
 
             // Trade and examination commands are fully deterministic — bypass the LLM narrator pipeline entirely.
             const tradeCommands = ['trade', 'buy', 'sell', 'haggle', 'intimidate', 'deceive', 'buyback', 'closetrade', 'examine', 'identify', 'merchantidentify',
-                'levelup', 'level', 'invest', 'resetskills', 'asi', 'multiclass', 'skillability', 'ability', 'chooseability', 'use'];
+                'levelup', 'level', 'invest', 'resetskills', 'asi', 'feat', 'multiclass', 'skillability', 'ability', 'chooseability', 'use'];
             if (tradeCommands.includes(intent.command || '')) {
                 this.state.lastNarrative = systemResponse;
                 await this.emitStateUpdate();
@@ -1334,7 +1334,21 @@ export class GameLoop {
                     await this.emitStateUpdate();
                     return result;
                 }
-                return 'Usage: /asi +2 STR  or  /asi +1 STR +1 DEX';
+                return 'Usage: /asi +2 STR  or  /asi +1 STR +1 DEX  or  /feat <name>';
+            }
+
+            case 'feat': {
+                if (!args[0] || args[0].toLowerCase() === 'list') {
+                    const available = LevelingEngine.getAvailableFeats(this.state.character);
+                    if (available.length === 0) return 'No feats available.';
+                    const hasPending = LevelingEngine.hasPendingASI(this.state.character);
+                    const lines = available.map((f: any) => `  ${f.name} — ${f.description}`);
+                    return `Available Feats${hasPending ? ' (you have a pending ASI/Feat choice)' : ''}:\n${lines.join('\n')}`;
+                }
+                const featName = args.join(' ');
+                const result = LevelingEngine.selectFeat(this.state.character, featName);
+                await this.emitStateUpdate();
+                return result;
             }
 
             // ===== SKILL ABILITY (use active ability) =====

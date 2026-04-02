@@ -113,6 +113,7 @@ export class CharacterCreationEngine {
             stats: finalStats,
             savingThrowProficiencies: request.classData.savingThrowProficiencies as AbilityScore[],
             skillProficiencies: skillProficiencies as SkillName[],
+            feats: [],
             skills: (() => {
                 const skills: Record<string, any> = Object.fromEntries(skillProficiencies.map(s => [s, { tier: 1, baseTier: 1, pointsInvested: 0, chosenAbility: {} }]));
                 const expertiseFeature = (request.classData as any).allFeatures?.find((f: any) => f.name === 'Expertise' && f.level === 1);

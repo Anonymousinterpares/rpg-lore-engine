@@ -153,6 +153,7 @@ export class CharacterFactory {
                 stats: finalStats,
                 savingThrowProficiencies: characterClass.savingThrowProficiencies,
                 skillProficiencies: skillProficiencies as any,
+                feats: [],
                 skills: (() => {
                     const skills: Record<string, any> = Object.fromEntries(skillProficiencies.map(s => [s, { tier: 1, baseTier: 1, pointsInvested: 0, chosenAbility: {} }]));
                     // Expertise: class features that grant free Tier 2 (e.g., Rogue at level 1)

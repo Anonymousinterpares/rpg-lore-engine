@@ -109,6 +109,20 @@ export class DataManager {
             }
         }
 
+        // Load Feat Registry
+        try {
+            const featModule = await import('../../../data/feats/feats.json');
+            const featData = featModule.default || featModule;
+            const feats: Record<string, any> = {};
+            for (const [k, v] of Object.entries(featData)) {
+                if (k === '_meta') continue;
+                feats[k] = v;
+            }
+            (globalThis as any).__featRegistry = feats;
+        } catch (e) {
+            console.warn('[DataManager] Failed to load feat registry:', e);
+        }
+
         // Load Skill Registry
         try {
             const { SkillEngine } = await import('../combat/SkillEngine');

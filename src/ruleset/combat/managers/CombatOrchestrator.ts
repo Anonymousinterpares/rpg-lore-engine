@@ -25,6 +25,7 @@ import { tryPersistForgedItem } from '../../data/ForgedItemCatalog';
 import { DifficultyEngine, DifficultyLevel } from '../DifficultyEngine';
 import { SkillAbilityEngine } from '../SkillAbilityEngine';
 import { LevelingEngine } from '../LevelingEngine';
+import { LightLevel } from '../VisibilityEngine';
 
 
 /**
@@ -511,11 +512,12 @@ export class CombatOrchestrator {
                 const result = CombatResolutionEngine.resolveAttack(
                     currentCombatant,
                     target,
-                    modifiers, // NOW PASSING MODIFIERS ARRAY
+                    modifiers,
                     damageFormula,
                     dmgBonus,
                     isRanged,
-                    forceDisadvantage
+                    forceDisadvantage,
+                    this.getCombatLighting()
                 );
 
                 if (isRanged) {
@@ -1052,9 +1054,10 @@ export class CombatOrchestrator {
                     target,
                     modifiers,
                     damageFormula,
-                    0, // statMod already in modifiers for players, baked in for monsters
+                    0,
                     isRanged,
-                    forceDisadvantage
+                    forceDisadvantage,
+                    this.getCombatLighting()
                 );
 
 
@@ -1250,6 +1253,19 @@ export class CombatOrchestrator {
      * Check if a forged item name already exists anywhere in the game world:
      * player inventory, combat loot on the ground, merchant shops, or persisted catalog.
      */
+    /**
+     * Determine current combat lighting based on time of day and weather.
+     */
+    private getCombatLighting(): LightLevel {
+        const hour = this.state.worldTime?.hour ?? 12;
+        const weather = (this.state as any).weather?.type || 'Clear';
+        // Night: 21:00-05:00 = Darkness, Dawn/Dusk: 05-07 / 19-21 = Dim
+        if (hour >= 21 || hour < 5) return weather === 'Storm' ? 'Darkness' : 'Darkness';
+        if (hour < 7 || hour >= 19) return 'Dim';
+        if (weather === 'Fog' || weather === 'Storm') return 'Dim';
+        return 'Bright';
+    }
+
     private isForgedNameInWorld(name: string): boolean {
         const lowerName = name.toLowerCase();
 

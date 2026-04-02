@@ -42,7 +42,10 @@ export class CombatManager {
 
             // Add Player
             const pc = CombatFactory.fromPlayer(this.state.character);
-            pc.initiative = Dice.d20() + MechanicsEngine.getModifier(this.state.character.stats.DEX || 10);
+            let initBonus = MechanicsEngine.getModifier(this.state.character.stats.DEX || 10);
+            // Alert feat: +5 initiative
+            if (this.state.character.feats?.includes('Alert')) initBonus += 5;
+            pc.initiative = Dice.d20() + initBonus;
             pc.position = grid.playerStartZone[0] || { x: 10, y: 40 };
             combatants.push(pc);
 

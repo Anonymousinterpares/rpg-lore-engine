@@ -1,0 +1,129 @@
+{
+  "_meta": {
+    "description": "Feat definitions. Players choose one feat instead of ASI at levels 4, 8, 12, 16, 19."
+  },
+  "Alert": {
+    "name": "Alert",
+    "description": "+5 to Initiative. Can't be surprised while conscious. Unseen attackers don't gain advantage against you.",
+    "prerequisites": {},
+    "effects": [
+      { "type": "initiative_bonus", "value": 5 },
+      { "type": "immune_surprise", "value": true },
+      { "type": "no_unseen_advantage", "value": true }
+    ],
+    "tags": ["combat", "defense"]
+  },
+  "Athlete": {
+    "name": "Athlete",
+    "description": "Increase STR or DEX by 1 (max 20). Standing from prone costs only 5ft. Climbing doesn't cost extra movement.",
+    "prerequisites": {},
+    "effects": [
+      { "type": "ability_increase", "choices": ["STR", "DEX"], "value": 1 },
+      { "type": "prone_stand_cost", "value": 5 },
+      { "type": "climb_no_extra", "value": true }
+    ],
+    "tags": ["physical"]
+  },
+  "Actor": {
+    "name": "Actor",
+    "description": "Increase CHA by 1 (max 20). Advantage on Deception/Performance when impersonating. Can mimic speech.",
+    "prerequisites": {},
+    "effects": [
+      { "type": "ability_increase", "ability": "CHA", "value": 1 },
+      { "type": "skill_advantage", "skills": ["Deception", "Performance"], "condition": "impersonating" }
+    ],
+    "tags": ["social"]
+  },
+  "Great Weapon Master": {
+    "name": "Great Weapon Master",
+    "description": "On crit or kill, bonus action melee attack. Can take -5 attack for +10 damage with Heavy weapons.",
+    "prerequisites": {},
+    "effects": [
+      { "type": "crit_kill_bonus_attack", "value": true },
+      { "type": "power_attack", "attackPenalty": -5, "damageBonus": 10, "requires": "heavy" }
+    ],
+    "tags": ["combat", "offense"]
+  },
+  "Lucky": {
+    "name": "Lucky",
+    "description": "3 Luck Points per long rest. Spend to roll extra d20 on attacks, checks, or saves and choose which to use.",
+    "prerequisites": {},
+    "effects": [
+      { "type": "luck_points", "maxUses": 3, "resetOn": "long_rest" }
+    ],
+    "tags": ["universal"]
+  },
+  "Mobile": {
+    "name": "Mobile",
+    "description": "+10ft speed. Dash ignores difficult terrain. After melee attack, no opportunity attacks from that target.",
+    "prerequisites": {},
+    "effects": [
+      { "type": "speed_bonus", "value": 10 },
+      { "type": "dash_ignore_difficult", "value": true },
+      { "type": "no_opp_attack_after_melee", "value": true }
+    ],
+    "tags": ["combat", "mobility"]
+  },
+  "Polearm Master": {
+    "name": "Polearm Master",
+    "description": "Bonus action butt-end attack (1d4) with glaive/halberd/staff. Enemies provoke opportunity attack on entering reach.",
+    "prerequisites": {},
+    "effects": [
+      { "type": "bonus_action_attack", "damageDice": "1d4", "damageType": "Bludgeoning", "requires": "polearm" },
+      { "type": "reach_opportunity_attack", "value": true }
+    ],
+    "tags": ["combat", "offense"]
+  },
+  "Resilient": {
+    "name": "Resilient",
+    "description": "Increase one ability by 1. Gain proficiency in saving throws for that ability.",
+    "prerequisites": {},
+    "effects": [
+      { "type": "ability_increase", "choices": ["STR", "DEX", "CON", "INT", "WIS", "CHA"], "value": 1 },
+      { "type": "saving_throw_proficiency", "ability": "chosen" }
+    ],
+    "tags": ["defense"]
+  },
+  "Sentinel": {
+    "name": "Sentinel",
+    "description": "Opportunity attacks reduce target speed to 0. Disengage doesn't prevent your opportunity attacks. Reaction attack when ally is hit within 5ft.",
+    "prerequisites": {},
+    "effects": [
+      { "type": "opp_attack_stops_movement", "value": true },
+      { "type": "ignore_disengage", "value": true },
+      { "type": "ally_protection_reaction", "range": 5 }
+    ],
+    "tags": ["combat", "defense"]
+  },
+  "Sharpshooter": {
+    "name": "Sharpshooter",
+    "description": "Long range doesn't impose disadvantage. Ignore half and three-quarters cover. Can take -5 attack for +10 damage with ranged weapons.",
+    "prerequisites": {},
+    "effects": [
+      { "type": "no_long_range_disadvantage", "value": true },
+      { "type": "ignore_cover", "coverTypes": ["Half", "Three-Quarters"] },
+      { "type": "power_attack", "attackPenalty": -5, "damageBonus": 10, "requires": "ranged" }
+    ],
+    "tags": ["combat", "offense"]
+  },
+  "Tough": {
+    "name": "Tough",
+    "description": "Max HP increases by 2 for every level (including retroactively).",
+    "prerequisites": {},
+    "effects": [
+      { "type": "hp_per_level", "value": 2 }
+    ],
+    "tags": ["defense"]
+  },
+  "War Caster": {
+    "name": "War Caster",
+    "description": "Advantage on CON saves to maintain concentration. Can perform somatic components with full hands. Cast spell as opportunity attack.",
+    "prerequisites": { "spellcaster": true },
+    "effects": [
+      { "type": "concentration_advantage", "value": true },
+      { "type": "somatic_with_hands_full", "value": true },
+      { "type": "spell_opportunity_attack", "value": true }
+    ],
+    "tags": ["combat", "spellcasting"]
+  }
+}

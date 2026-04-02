@@ -1,5 +1,6 @@
 import { Dice } from './Dice';
 import { MechanicsEngine } from './MechanicsEngine';
+import { VisibilityEngine, LightLevel } from './VisibilityEngine';
 import { Spell } from '../schemas/SpellSchema';
 import { z } from 'zod';
 import { CombatantSchema, Modifier, RollDetails } from '../schemas/CombatSchema';
@@ -34,8 +35,16 @@ export class CombatResolutionEngine {
         damageFormula: string,
         statMod: number,
         isRanged: boolean = false,
-        forceDisadvantage: boolean = false
+        forceDisadvantage: boolean = false,
+        lightLevel: LightLevel = 'Bright'
     ): CombatActionResult {
+        // Darkvision/lighting checks
+        const attackerVision = VisibilityEngine.getVisibilityEffect(attacker as any, lightLevel);
+        const targetVision = VisibilityEngine.getVisibilityEffect(target as any, lightLevel);
+        // Attacker blinded in darkness → disadvantage; target blinded → attacker has advantage
+        const darkDisadvantage = attackerVision.blinded || attackerVision.disadvantage;
+        const darkAdvantage = targetVision.blinded;
+
         const hasDodgeDisadvantage = target.statusEffects.some(e => e.id === 'dodge');
         const isSprinting = target.statusEffects.some(e => e.id === 'sprint_reckless');
         const isEvasive = target.statusEffects.some(e => e.id === 'evasive_movement');
@@ -46,9 +55,11 @@ export class CombatResolutionEngine {
         const isUnseen = attacker.statusEffects.some(e => e.id === 'unseen');
         const isFlanking = attacker.statusEffects.some(e => e.id === 'flanking');
 
-        const attackAdvantage = (!isRanged && (hasPressAdvantage || isUnseen || isFlanking));
-        const finalAdvantage = (attackAdvantage && !hasDodgeDisadvantage && !forceDisadvantage) ? 'advantage' : 'none';
-        const finalDisadvantage = (hasDodgeDisadvantage || forceDisadvantage) ? 'disadvantage' : 'none';
+        const attackAdvantage = (!isRanged && (hasPressAdvantage || isUnseen || isFlanking)) || darkAdvantage;
+        const attackDisadvantage = hasDodgeDisadvantage || forceDisadvantage || darkDisadvantage;
+        // Advantage and disadvantage cancel each other out (D&D 5e)
+        const finalAdvantage = (attackAdvantage && !attackDisadvantage) ? 'advantage' : 'none';
+        const finalDisadvantage = (attackDisadvantage && !attackAdvantage) ? 'disadvantage' : 'none';
 
         const d20 = (finalAdvantage === 'advantage') ? Dice.advantage() :
             (finalDisadvantage === 'disadvantage') ? Dice.disadvantage() : Dice.d20();
@@ -128,7 +139,8 @@ export class CombatResolutionEngine {
         target: Combatant,
         spell: Spell,
         spellAttackBonus: number,
-        spellSaveDC: number
+        spellSaveDC: number,
+        coverSaveBonus: number = 0 // +2 for half cover, +5 for three-quarters (D&D 5e)
     ): CombatActionResult {
         let type: CombatActionResult['type'] = 'EFFECT';
         let damage = 0;
@@ -147,14 +159,16 @@ export class CombatResolutionEngine {
             const targetStat = target.stats[saveAbility] || 10;
             const targetMod = MechanicsEngine.getModifier(targetStat);
             const saveRoll = Dice.d20();
-            const saveTotal = saveRoll + targetMod;
+            const totalMod = targetMod + coverSaveBonus;
+            const saveTotal = saveRoll + totalMod;
             const saveSuccess = saveTotal >= spellSaveDC;
 
             type = saveSuccess ? 'SAVE_SUCCESS' : 'SAVE_FAIL';
-            success = !saveSuccess; // Caster "succeeds" if target fails save
-            details = { roll: saveRoll, modifier: targetMod, total: saveTotal, saveDC: spellSaveDC };
+            success = !saveSuccess;
+            details = { roll: saveRoll, modifier: totalMod, total: saveTotal, saveDC: spellSaveDC, coverBonus: coverSaveBonus };
 
-            message = `${target.name} makes a ${saveAbility} save vs ${caster.name}'s ${spell.name}: ${saveRoll} + ${targetMod} = ${saveTotal}. `;
+            const coverNote = coverSaveBonus > 0 ? ` (+${coverSaveBonus} cover)` : '';
+            message = `${target.name} makes a ${saveAbility} save vs ${caster.name}'s ${spell.name}: ${saveRoll} + ${targetMod}${coverNote} = ${saveTotal}. `;
             message += saveSuccess ? `SUCCESS.` : `FAILURE.`;
         } else if (category === 'DAMAGE' || category === 'DEBUFF' || category === 'CONTROL') {
             // Default to Spell Attack if no save and it's offensive

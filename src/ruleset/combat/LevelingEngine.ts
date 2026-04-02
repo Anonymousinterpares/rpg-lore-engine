@@ -164,6 +164,73 @@ export class LevelingEngine {
     }
 
     /**
+     * Select a feat instead of ASI. Consumes one pending ASI.
+     * Returns success message or error.
+     */
+    public static selectFeat(pc: PlayerCharacter, featName: string): string {
+        if (!this.hasPendingASI(pc)) return 'No pending ASI/Feat choice available.';
+
+        // Load feat data
+        const featRegistry = (globalThis as any).__featRegistry;
+        if (!featRegistry) return 'Feat data not loaded.';
+
+        const feat = featRegistry[featName];
+        if (!feat) return `Unknown feat: ${featName}. Use /feat list to see available feats.`;
+
+        // Check if already has this feat (most feats can only be taken once)
+        if (pc.feats?.includes(featName)) return `You already have ${featName}.`;
+
+        // Check prerequisites
+        if (feat.prerequisites?.spellcaster) {
+            const isSpellcaster = Object.values(pc.spellSlots || {}).some((s: any) => s.max > 0);
+            if (!isSpellcaster) return `${featName} requires spellcasting ability.`;
+        }
+
+        // Apply feat
+        if (!pc.feats) (pc as any).feats = [];
+        pc.feats.push(featName);
+        (pc as any)._pendingASI--;
+
+        // Apply immediate effects
+        const results: string[] = [`Feat acquired: ${featName}!`];
+
+        for (const effect of (feat.effects || [])) {
+            if (effect.type === 'ability_increase' && effect.ability) {
+                const stats = pc.stats as Record<string, number>;
+                const current = stats[effect.ability] || 10;
+                if (current < 20) {
+                    stats[effect.ability] = Math.min(20, current + effect.value);
+                    results.push(`${effect.ability} +${effect.value} (now ${stats[effect.ability]})`);
+                }
+            }
+            if (effect.type === 'hp_per_level') {
+                // Tough: retroactive HP bonus
+                const bonus = effect.value * pc.level;
+                pc.hp.max += bonus;
+                pc.hp.current += bonus;
+                results.push(`+${bonus} max HP (${effect.value} per level)`);
+            }
+            if (effect.type === 'initiative_bonus') {
+                results.push(`+${effect.value} Initiative`);
+            }
+            if (effect.type === 'speed_bonus') {
+                results.push(`+${effect.value}ft movement speed`);
+            }
+        }
+
+        return results.join(' ');
+    }
+
+    /**
+     * Get all available feats (not already taken).
+     */
+    public static getAvailableFeats(pc: PlayerCharacter): any[] {
+        const registry = (globalThis as any).__featRegistry || {};
+        const taken = new Set(pc.feats || []);
+        return Object.values(registry).filter((f: any) => f.name && !taken.has(f.name));
+    }
+
+    /**
      * Adds XP to a character and returns true if they reached a new level.
      */
     public static addXP(pc: PlayerCharacter, xp: number): { totalXP: number, leveledUp: boolean } {
