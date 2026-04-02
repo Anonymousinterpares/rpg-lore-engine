@@ -151,19 +151,49 @@ When you earn enough XP, your character levels up. If you earn enough XP to skip
 all levels are gained at once with cumulative benefits.
 
 **Per-level gains:**
-| Benefit | Formula | Example (Wizard) |
-|:---|:---|:---|
-| HP increase | `floor(hitDie / 2) + 1 + CON modifier` | d6 → floor(3) + 1 + CON mod = 4 + CON mod |
-| Hit Dice max | +1 | Level 5 = 5 hit dice |
-| Proficiency bonus | Automatic by level tier | +2 (1-4), +3 (5-8), +4 (9-12), +5 (13-16), +6 (17-20) |
-| Skill Points | From class config | Fighter: 2, Rogue: 3, Bard: 3 |
-| ASI | At levels 4, 8, 12, 16, 19 | +2 to one ability or +1 to two (max 20) |
-| Spell Slots | Restored on level up | All slots reset to max |
+| Benefit | How it works |
+|:---|:---|
+| **HP increase** | `floor(hitDie / 2) + 1 + CON modifier` per level (see hit die table below) |
+| **Hit Dice max** | +1 per level (used for short rest healing) |
+| **Proficiency bonus** | Increases automatically: +2 (levels 1-4), +3 (5-8), +4 (9-12), +5 (13-16), +6 (17-20) |
+| **Skill Points (SP)** | Granted per level based on your class (see SP table below) |
+| **ASI** | At levels 4, 8, 12, 16, 19: choose +2 to one ability score or +1 to two (max 20 each) |
+| **Spell Slots** | All spell slots restored to maximum on level up |
 
-**Hit Die by class:**
-| Class | Hit Die | Avg HP/level (before CON) |
+**HP and Hit Die by class:**
+
+| Class | Hit Die | HP per level (before CON mod) |
 |:---|:---:|:---:|
 | Barbarian | d12 | 7 |
-| Fighter, Paladin, Ranger | d10 | 6 |
-| Bard, Cleric, Druid, Monk, Rogue, Warlock | d8 | 5 |
-| Sorcerer, Wizard | d6 | 4 |
+| Fighter | d10 | 6 |
+| Paladin | d10 | 6 |
+| Ranger | d10 | 6 |
+| Bard | d8 | 5 |
+| Cleric | d8 | 5 |
+| Druid | d8 | 5 |
+| Monk | d8 | 5 |
+| Rogue | d8 | 5 |
+| Warlock | d8 | 5 |
+| Sorcerer | d6 | 4 |
+| Wizard | d6 | 4 |
+
+**Skill Points (SP) per level by class:**
+
+These values are defined in each class's data file (`data/class/<ClassName>.json`, field `skillPointsPerLevel`).
+
+| Class | SP per level |
+|:---|:---:|
+| Rogue | 3 |
+| Bard | 3 |
+| Barbarian | 2 |
+| Cleric | 2 |
+| Druid | 2 |
+| Fighter | 2 |
+| Monk | 2 |
+| Paladin | 2 |
+| Ranger | 2 |
+| Sorcerer | 2 |
+| Warlock | 2 |
+| Wizard | 2 |
+
+For details on how to spend SP, see [Skill Mastery](Skill_Mastery.md).
