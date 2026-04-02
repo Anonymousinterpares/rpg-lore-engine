@@ -127,6 +127,10 @@ export class LevelingEngine {
         stats[ability] = current + increase;
         (pc as any)._pendingASI--;
 
+        // Track for respec
+        if (!(pc as any)._asiHistory) (pc as any)._asiHistory = [];
+        (pc as any)._asiHistory.push({ type: 'single', ability, increase });
+
         if (ability === 'CON') {
             const hpBonus = (MechanicsEngine.getModifier(stats[ability]) - MechanicsEngine.getModifier(current)) * pc.level;
             pc.hp.max += hpBonus;
@@ -162,6 +166,9 @@ export class LevelingEngine {
         }
 
         (pc as any)._pendingASI--;
+        // Track for respec
+        if (!(pc as any)._asiHistory) (pc as any)._asiHistory = [];
+        (pc as any)._asiHistory.push({ type: 'split', abilities: { [ability1]: 1, [ability2]: 1 } });
         return `ASI applied: ${results.join(', ')}.`;
     }
 

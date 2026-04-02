@@ -12,9 +12,10 @@ import { MechanicsEngine } from '../../../ruleset/combat/MechanicsEngine';
 
 interface CharacterPanelProps {
     onCharacter?: () => void;
+    onSkills?: () => void;
 }
 
-const CharacterPanel: React.FC<CharacterPanelProps> = ({ onCharacter }) => {
+const CharacterPanel: React.FC<CharacterPanelProps> = ({ onCharacter, onSkills }) => {
     const { state } = useGameState();
 
     if (!state || !state.character) {
@@ -32,9 +33,15 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({ onCharacter }) => {
         <div className={styles.panel}>
             <div className={styles.header} onClick={onCharacter} style={{ cursor: 'pointer' }} title="Open Character Sheet">
                 <h2 className={styles.name}>{char.name}</h2>
-                <div className={`${styles.level} ${(char as any).skillPoints?.available > 0 ? styles.levelGlow : ''}`}>
+                <div
+                    className={`${styles.level} ${(char as any).skillPoints?.available > 0 ? styles.levelGlow : ''}`}
+                    onClick={(e) => { if ((char as any).skillPoints?.available > 0 && onSkills) { e.stopPropagation(); onSkills(); } }}
+                    style={(char as any).skillPoints?.available > 0 ? { cursor: 'pointer' } : undefined}
+                    title={(char as any).skillPoints?.available > 0 ? 'Open Skill Mastery' : undefined}
+                >
                     Level {char.level} {char.class}
                     {(char as any).skillPoints?.available > 0 && <span className={styles.spBadge}>{(char as any).skillPoints.available} SP</span>}
+                    {(char as any)._pendingASI > 0 && <span className={styles.asiBadge}>ASI</span>}
                 </div>
             </div>
 

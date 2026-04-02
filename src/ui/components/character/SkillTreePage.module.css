@@ -283,6 +283,148 @@
     opacity: 0.6;
 }
 
+/* ASI / Feat Section */
+.asiSection {
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.08), rgba(70, 130, 230, 0.08));
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: var(--radius-md);
+}
+
+.asiHeader {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-weight: 700;
+    font-family: var(--font-narrative);
+    color: #ffd700;
+    margin-bottom: var(--spacing-md);
+    font-size: 1rem;
+}
+
+.asiChoiceButtons {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    justify-content: center;
+}
+
+.asiChoiceBtn {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.asiFeatBtn {
+    color: #2980b9;
+    border-color: #2980b9;
+}
+
+.asiOr {
+    opacity: 0.4;
+    font-style: italic;
+}
+
+.asiAbilityPanel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.asiAbilityRow {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+}
+
+.asiAbilityRow select {
+    padding: 3px 8px;
+    border: 1px solid var(--parchment-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+}
+
+.asiApplyBtn {
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    color: #27ae60;
+    border-color: #27ae60;
+}
+
+.asiDivider {
+    text-align: center;
+    font-size: 0.75rem;
+    opacity: 0.4;
+    padding: 2px 0;
+}
+
+.asiBackBtn {
+    background: none;
+    border: none;
+    color: var(--parchment-border);
+    cursor: pointer;
+    font-size: 0.75rem;
+    margin-top: var(--spacing-sm);
+    opacity: 0.6;
+}
+
+.asiBackBtn:hover {
+    opacity: 1;
+}
+
+.asiFeatPanel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.featList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.featCard {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(139, 115, 85, 0.15);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.featCard:hover {
+    background: rgba(41, 128, 185, 0.05);
+    border-color: rgba(41, 128, 185, 0.3);
+}
+
+.featName {
+    font-weight: 700;
+    min-width: 120px;
+    font-size: 0.85rem;
+}
+
+.featDesc {
+    flex: 1;
+    font-size: 0.72rem;
+    opacity: 0.7;
+}
+
+.featPickBtn {
+    font-size: 0.7rem;
+    padding: 2px 10px;
+    white-space: nowrap;
+    color: #2980b9;
+    border-color: #2980b9;
+}
+
 /* Ability Groups */
 .groups {
     display: flex;

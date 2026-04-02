@@ -258,6 +258,11 @@ const App: React.FC = () => {
         setBookOpen(true);
     };
 
+    const openSkillsPage = () => {
+        setActiveBookPageId('skills');
+        setBookOpen(true);
+    };
+
     const openCodex = (category: string = 'mechanics', entryId?: string) => {
         setCodexDeepLink(entryId ? { category, entryId } : undefined);
         setActiveBookPageId('codex');
@@ -335,6 +340,7 @@ const App: React.FC = () => {
                             <Sidebar
                                 className={styles.sidebar}
                                 onCharacter={openCharacterSheet}
+                                onSkills={openSkillsPage}
                                 onCompass={() => setIsNavigationModalOpen(true)}
                                 onCodex={openCodex}
                             />

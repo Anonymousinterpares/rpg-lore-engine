@@ -8,6 +8,7 @@ import { ChevronDown, ChevronRight, Zap, Shield, Star, Lock, RotateCcw, Trending
 import { DataManager } from '../../../ruleset/data/DataManager';
 import { MulticlassingEngine } from '../../../ruleset/combat/MulticlassingEngine';
 import { SkillAbilityEngine } from '../../../ruleset/combat/SkillAbilityEngine';
+import { LevelingEngine } from '../../../ruleset/combat/LevelingEngine';
 
 const TIER_NAMES = ['Untrained', 'Proficient', 'Expert', 'Master', 'Grandmaster'];
 const TIER_COLORS = ['#888', '#c8c8c8', '#1eff00', '#0070dd', '#ff8000'];
@@ -20,13 +21,12 @@ const ABILITY_GROUPS: { ability: string; label: string; color: string }[] = [
     { ability: 'CHA', label: 'Charisma', color: '#e67e22' },
 ];
 
-// Pending investment: tracks uncommitted changes
-interface PendingInvestment {
-    skillName: string;
-    cost: number;
-    fromTier: number;
-    toTier: number;
-}
+// Unified pending action system — SP investments, ASI, and feats all queue together
+type PendingAction =
+    | { type: 'invest'; skillName: string; cost: number; fromTier: number; toTier: number }
+    | { type: 'asi_single'; ability: string }
+    | { type: 'asi_split'; ability1: string; ability2: string }
+    | { type: 'feat'; featName: string };
 
 const SkillTreePage: React.FC = () => {
     const { state, engine, updateState } = useGameState();
@@ -34,9 +34,12 @@ const SkillTreePage: React.FC = () => {
         STR: true, DEX: true, INT: true, WIS: true, CHA: true,
     });
     const [confirmReset, setConfirmReset] = useState(false);
-    const [pending, setPending] = useState<PendingInvestment[]>([]);
+    const [pending, setPending] = useState<PendingAction[]>([]);
     const [confirmedSkills, setConfirmedSkills] = useState<Set<string>>(new Set());
     const [showMulticlassSelect, setShowMulticlassSelect] = useState(false);
+    const [asiMode, setAsiMode] = useState<'choice' | 'ability' | 'feat' | null>(null);
+    const [asiAbility1, setAsiAbility1] = useState('');
+    const [asiAbility2, setAsiAbility2] = useState('');
 
     const pc = state?.character;
     if (!pc) return <div className={styles.empty}>No character loaded.</div>;
@@ -45,14 +48,18 @@ const SkillTreePage: React.FC = () => {
     const profBonus = MechanicsEngine.getProficiencyBonus(pc.level);
     const sp = (pc as any).skillPoints || { available: 0, totalEarned: 0 };
 
-    // Calculate effective state with pending changes applied
-    const pendingSpUsed = pending.reduce((sum, p) => sum + p.cost, 0);
+    // Pending counts
+    const pendingInvests = pending.filter(p => p.type === 'invest') as Extract<PendingAction, { type: 'invest' }>[];
+    const pendingASIFeats = pending.filter(p => p.type === 'asi_single' || p.type === 'asi_split' || p.type === 'feat');
+    const pendingSpUsed = pendingInvests.reduce((sum, p) => sum + p.cost, 0);
+    const pendingASIUsed = pendingASIFeats.length;
     const effectiveSpAvailable = sp.available - pendingSpUsed;
+    const effectiveASIPending = ((pc as any)._pendingASI || 0) - pendingASIUsed;
 
     // Get effective tier for a skill (real + pending)
     const getEffectiveTier = (skillName: string): number => {
         const baseTier = SkillEngine.getSkillTier(pc, skillName);
-        const pendingForSkill = pending.filter(p => p.skillName === skillName);
+        const pendingForSkill = pendingInvests.filter(p => p.skillName === skillName);
         return baseTier + pendingForSkill.length;
     };
 
@@ -83,6 +90,7 @@ const SkillTreePage: React.FC = () => {
         if (pc.level < levelGate) return;
 
         setPending(prev => [...prev, {
+            type: 'invest' as const,
             skillName,
             cost,
             fromTier: effectiveTier,
@@ -91,19 +99,31 @@ const SkillTreePage: React.FC = () => {
     }, [pc, effectiveSpAvailable, pending]);
 
     const handleConfirm = useCallback(() => {
-        const invested = new Set(pending.map(p => p.skillName));
+        const investedSkills = new Set<string>();
         for (const p of pending) {
-            SkillEngine.invest(pc, p.skillName);
+            if (p.type === 'invest') {
+                SkillEngine.invest(pc, p.skillName);
+                investedSkills.add(p.skillName);
+            } else if (p.type === 'asi_single') {
+                LevelingEngine.applyASISingle(pc, p.ability);
+            } else if (p.type === 'asi_split') {
+                LevelingEngine.applyASISplit(pc, p.ability1, p.ability2);
+            } else if (p.type === 'feat') {
+                LevelingEngine.selectFeat(pc, p.featName);
+            }
         }
         setPending([]);
-        setConfirmedSkills(invested);
+        setAsiMode(null);
+        setConfirmedSkills(investedSkills);
         updateState();
-        // Clear animation after 3s
         setTimeout(() => setConfirmedSkills(new Set()), 3000);
     }, [pc, pending, updateState]);
 
     const handleRevert = useCallback(() => {
         setPending([]);
+        setAsiMode(null);
+        setAsiAbility1('');
+        setAsiAbility2('');
     }, []);
 
     const handleReset = useCallback(() => {
@@ -287,7 +307,11 @@ const SkillTreePage: React.FC = () => {
                 {/* Confirm / Revert bar — shown when pending changes exist */}
                 {hasPendingChanges && (
                     <div className={styles.pendingBar}>
-                        <span>{pending.length} pending investment{pending.length > 1 ? 's' : ''} ({pendingSpUsed} SP)</span>
+                        <span>
+                            {pending.length} pending change{pending.length > 1 ? 's' : ''}
+                            {pendingSpUsed > 0 && ` (${pendingSpUsed} SP)`}
+                            {pendingASIUsed > 0 && ` (${pendingASIUsed} ASI/Feat)`}
+                        </span>
                         <button className={`${parchmentStyles.button} ${styles.confirmBtn}`} onClick={handleConfirm}>
                             <Check size={14} /> Confirm
                         </button>
@@ -376,6 +400,85 @@ const SkillTreePage: React.FC = () => {
                     </div>
                 )}
             </div>
+
+            {/* ASI / Feat Choice */}
+            {effectiveASIPending > 0 && (
+                <div className={styles.asiSection}>
+                    <div className={styles.asiHeader}>
+                        <Zap size={16} />
+                        <span>Ability Score Improvement — Choose one:</span>
+                    </div>
+
+                    {(!asiMode || asiMode === 'choice') && (
+                        <div className={styles.asiChoiceButtons}>
+                            <button className={`${parchmentStyles.button} ${styles.asiChoiceBtn}`} onClick={() => setAsiMode('ability')}>
+                                Increase Ability Scores
+                            </button>
+                            <span className={styles.asiOr}>or</span>
+                            <button className={`${parchmentStyles.button} ${styles.asiChoiceBtn} ${styles.asiFeatBtn}`} onClick={() => setAsiMode('feat')}>
+                                Choose a Feat
+                            </button>
+                        </div>
+                    )}
+
+                    {asiMode === 'ability' && (
+                        <div className={styles.asiAbilityPanel}>
+                            <div className={styles.asiAbilityRow}>
+                                <span>+2 to one ability:</span>
+                                <select value={asiAbility1} onChange={e => setAsiAbility1(e.target.value)}>
+                                    <option value="">Select...</option>
+                                    {['STR','DEX','CON','INT','WIS','CHA'].map(a => (
+                                        <option key={a} value={a} disabled={((pc.stats as any)[a] || 10) >= 20}>{a} ({(pc.stats as any)[a] || 10})</option>
+                                    ))}
+                                </select>
+                                <button className={`${parchmentStyles.button} ${styles.asiApplyBtn}`} disabled={!asiAbility1} onClick={() => {
+                                    setPending(prev => [...prev, { type: 'asi_single' as const, ability: asiAbility1 }]);
+                                    setAsiMode(null); setAsiAbility1('');
+                                }}>Queue +2</button>
+                            </div>
+                            <div className={styles.asiDivider}>— or —</div>
+                            <div className={styles.asiAbilityRow}>
+                                <span>+1 to two abilities:</span>
+                                <select value={asiAbility1} onChange={e => setAsiAbility1(e.target.value)}>
+                                    <option value="">First...</option>
+                                    {['STR','DEX','CON','INT','WIS','CHA'].map(a => (
+                                        <option key={a} value={a} disabled={((pc.stats as any)[a] || 10) >= 20}>{a} ({(pc.stats as any)[a] || 10})</option>
+                                    ))}
+                                </select>
+                                <select value={asiAbility2} onChange={e => setAsiAbility2(e.target.value)}>
+                                    <option value="">Second...</option>
+                                    {['STR','DEX','CON','INT','WIS','CHA'].filter(a => a !== asiAbility1).map(a => (
+                                        <option key={a} value={a} disabled={((pc.stats as any)[a] || 10) >= 20}>{a} ({(pc.stats as any)[a] || 10})</option>
+                                    ))}
+                                </select>
+                                <button className={`${parchmentStyles.button} ${styles.asiApplyBtn}`} disabled={!asiAbility1 || !asiAbility2} onClick={() => {
+                                    setPending(prev => [...prev, { type: 'asi_split' as const, ability1: asiAbility1, ability2: asiAbility2 }]);
+                                    setAsiMode(null); setAsiAbility1(''); setAsiAbility2('');
+                                }}>Apply +1/+1</button>
+                            </div>
+                            <button className={styles.asiBackBtn} onClick={() => setAsiMode('choice')}>← Back</button>
+                        </div>
+                    )}
+
+                    {asiMode === 'feat' && (
+                        <div className={styles.asiFeatPanel}>
+                            <div className={styles.featList}>
+                                {LevelingEngine.getAvailableFeats(pc).map((feat: any) => (
+                                    <div key={feat.name} className={styles.featCard}>
+                                        <div className={styles.featName}>{feat.name}</div>
+                                        <div className={styles.featDesc}>{feat.description}</div>
+                                        <button className={`${parchmentStyles.button} ${styles.featPickBtn}`} onClick={() => {
+                                            setPending(prev => [...prev, { type: 'feat' as const, featName: feat.name }]);
+                                            setAsiMode(null);
+                                        }}>Select</button>
+                                    </div>
+                                ))}
+                            </div>
+                            <button className={styles.asiBackBtn} onClick={() => setAsiMode('choice')}>← Back</button>
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* Skill Groups */}
             <div className={styles.groups}>

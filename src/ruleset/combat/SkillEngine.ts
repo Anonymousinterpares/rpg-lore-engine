@@ -159,24 +159,67 @@ export class SkillEngine {
      */
     static resetAll(pc: PlayerCharacter): string {
         if (!(pc as any).skillPoints) (pc as any).skillPoints = { available: 0, totalEarned: 0 };
+        const results: string[] = [];
+
+        // 1. Reset SP investments
         let totalRefunded = 0;
         const skills = (pc as any).skills || {};
-
         for (const skillName of Object.keys(skills)) {
             const skill = skills[skillName];
             const invested = skill.pointsInvested || 0;
-            if (invested === 0) continue; // No player investment — don't touch
-
+            if (invested === 0) continue;
             totalRefunded += invested;
-            skill.tier = skill.baseTier || 0; // Restore to creation tier
+            skill.tier = skill.baseTier || 0;
             skill.pointsInvested = 0;
             skill.chosenAbility = {};
         }
+        if (totalRefunded > 0) {
+            (pc as any).skillPoints.available += totalRefunded;
+            results.push(`Refunded ${totalRefunded} SP`);
+        }
 
-        (pc as any).skillPoints.available += totalRefunded;
-        return totalRefunded > 0
-            ? `Reset invested skills. Refunded ${totalRefunded} SP. Available: ${(pc as any).skillPoints.available} SP.`
-            : 'No invested skill points to reset.';
+        // 2. Reverse ASI history
+        const asiHistory: any[] = (pc as any)._asiHistory || [];
+        const stats = pc.stats as Record<string, number>;
+        let asiCount = 0;
+        for (const entry of asiHistory) {
+            if (entry.type === 'single') {
+                stats[entry.ability] = Math.max(1, (stats[entry.ability] || 10) - (entry.increase || 2));
+                asiCount++;
+            } else if (entry.type === 'split' && entry.abilities) {
+                for (const [ab, val] of Object.entries(entry.abilities)) {
+                    stats[ab] = Math.max(1, (stats[ab] || 10) - (val as number));
+                }
+                asiCount++;
+            }
+        }
+        if (asiCount > 0) {
+            (pc as any)._pendingASI = ((pc as any)._pendingASI || 0) + asiCount;
+            (pc as any)._asiHistory = [];
+            results.push(`Reversed ${asiCount} ASI`);
+        }
+
+        // 3. Remove feats and restore _pendingASI
+        const feats = pc.feats || [];
+        if (feats.length > 0) {
+            // Reverse Tough HP bonus
+            if (feats.includes('Tough')) {
+                const toughBonus = 2 * pc.level;
+                pc.hp.max = Math.max(1, pc.hp.max - toughBonus);
+                pc.hp.current = Math.min(pc.hp.current, pc.hp.max);
+            }
+            (pc as any)._pendingASI = ((pc as any)._pendingASI || 0) + feats.length;
+            (pc as any).feats = [];
+            results.push(`Removed ${feats.length} feat(s)`);
+        }
+
+        // Recalculate HP for CON changes
+        // (simplified — just ensure current doesn't exceed max)
+        pc.hp.current = Math.min(pc.hp.current, pc.hp.max);
+
+        return results.length > 0
+            ? `Full respec: ${results.join(', ')}. SP: ${(pc as any).skillPoints.available}, ASI pending: ${(pc as any)._pendingASI}`
+            : 'Nothing to reset.';
     }
 
     /**

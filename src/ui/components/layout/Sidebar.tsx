@@ -10,11 +10,12 @@ import { useGameState } from '../../hooks/useGameState';
 interface SidebarProps {
     className?: string;
     onCharacter?: () => void;
+    onSkills?: () => void;
     onCompass?: () => void;
     onCodex?: (category?: string, entryId?: string) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter, onCompass, onCodex }) => {
+const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter, onSkills, onCompass, onCodex }) => {
     const { state, engine, updateState, processCommand } = useGameState();
 
     const items = state?.character?.inventory?.items || [];
@@ -85,7 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter, onCompass, on
                     onCodex={onCodex} // Pass down for future use (e.g. clicking biome/faction badges)
                 />
             )}
-            <CharacterPanel onCharacter={onCharacter} />
+            <CharacterPanel onCharacter={onCharacter} onSkills={onSkills} />
             <InventoryGrid
                 items={items as any}
                 gold={gold as any}

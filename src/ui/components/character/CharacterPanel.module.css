@@ -30,7 +30,8 @@
     color: #ffd700;
     opacity: 1;
     text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
-    -webkit-text-stroke: 0.3px rgba(0, 0, 0, 0.3);
+    -webkit-text-stroke: 0.8px #1a1000;
+    paint-order: stroke fill;
     animation: levelGlowPulse 2s ease-in-out infinite;
 }
 
@@ -43,6 +44,23 @@
     padding: 1px 6px;
     border-radius: 8px;
     border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.asiBadge {
+    font-size: 0.6rem;
+    font-style: normal;
+    font-weight: 700;
+    background: rgba(70, 130, 230, 0.2);
+    color: #87ceeb;
+    padding: 1px 5px;
+    border-radius: 8px;
+    border: 1px solid rgba(70, 130, 230, 0.4);
+    animation: asiBadgePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes asiBadgePulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; box-shadow: 0 0 6px rgba(70, 130, 230, 0.5); }
 }
 
 @keyframes levelGlowPulse {
