@@ -67,7 +67,7 @@ function mapToPaperdollItem(item: any): PaperdollItem {
     };
 }
 
-const PaperdollScreen: React.FC = () => {
+const PaperdollScreen: React.FC<{ isPage?: boolean }> = ({ isPage = false }) => {
     const { state, engine, processCommand } = useGameState();
 
     const sex = (state?.character as any)?.sex || 'male';
@@ -181,11 +181,11 @@ const PaperdollScreen: React.FC = () => {
     }, [ctxMenu, engine, processCommand]);
 
     if (!state?.character) {
-        return <div className={styles.screen}>Loading...</div>;
+        return <div className={`${styles.screen} ${isPage ? styles.screenPage : ''}`}>Loading...</div>;
     }
 
     return (
-        <div className={styles.screen}>
+        <div className={`${styles.screen} ${isPage ? styles.screenPage : ''}`}>
             <div className={styles.ornamentTop} />
             <div className={styles.content}>
                 <PaperdollFigure

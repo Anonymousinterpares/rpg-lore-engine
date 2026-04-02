@@ -26,6 +26,7 @@ import NavigationModal from './components/exploration/NavigationModal';
 import TradeModal from './components/exploration/TradeModal';
 import { SettingsManager } from '../ruleset/combat/SettingsManager';
 import EquipmentOverlay from './components/paperdoll/EquipmentOverlay';
+import PaperdollScreen from './components/paperdoll/PaperdollScreen';
 
 const App: React.FC = () => {
     const [showSaveModal, setShowSaveModal] = useState(false);
@@ -212,12 +213,7 @@ const App: React.FC = () => {
         {
             id: 'equipment',
             label: 'Equipment',
-            content: (
-                <div style={{ padding: '60px', textAlign: 'center' }}>
-                    <h2 style={{ fontFamily: 'Cinzel, serif', color: '#5d4037' }}>Equipment</h2>
-                    <p style={{ fontStyle: 'italic', opacity: 0.6 }}>Use the backpack icon in the header to open your equipment.</p>
-                </div>
-            ),
+            content: <PaperdollScreen isPage={true} />,
             permanent: true
         },
         {
@@ -271,7 +267,8 @@ const App: React.FC = () => {
     };
 
     const openEquipment = () => {
-        setEquipmentOpen(prev => !prev);
+        setActiveBookPageId('equipment');
+        setBookOpen(true);
     };
 
     const openSettings = () => {

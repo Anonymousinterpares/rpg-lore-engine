@@ -13,6 +13,11 @@
     position: relative;
 }
 
+.screenPage {
+    width: 100%;
+    height: 100%;
+}
+
 /* Decorative top ornament line */
 .ornamentTop,
 .ornamentBottom {
