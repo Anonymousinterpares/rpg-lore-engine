@@ -1,3 +1,41 @@
+/* === HYBRID OPTION C: Fixed pixel design at 1300x780, scaled to fit container === */
+
+/* ===================== CENTRALIZED CONFIG ===================== */
+/* Edit these values to adjust the entire layout from one place   */
+:root {
+    /* --- FONT SIZES --- */
+    --uc-name-size: 22px;            /* Character name */
+    --uc-subtitle-size: 11px;        /* Level/race/class line */
+    --uc-section-label-size: 15px;   /* ABILITIES, SAVING THROWS headers */
+    --uc-skills-label-size: 15px;    /* SKILLS header (next to SP count) */
+    --uc-skill-group-hdr-size: 15px; /* STRENGTH (STR), DEXTERITY (DEX) etc */
+    --uc-ability-row-size: 13px;     /* STR 10 +0 rows */
+    --uc-save-row-size: 13px;        /* Saving throw rows */
+    --uc-skill-name-size: 13px;      /* Individual skill names */
+    --uc-skill-mod-size: 12px;       /* Skill modifier (+5 etc) */
+    --uc-skill-tier-size: 10px;      /* Prof, Exp, Mst, GM tags */
+    --uc-metric-val-size: 18px;      /* AC/Init/Speed numbers */
+    --uc-metric-lbl-size: 11px;      /* AC/Init/Speed labels */
+    --uc-button-size: 18px;          /* Class Features / Personality buttons */
+    --uc-feat-size: 10px;            /* Feat names */
+    --uc-points-label-size: 14px;    /* SP / ASI point counters */
+
+    /* --- COLORS --- */
+    --uc-text-default: #e8d5b5;              /* Default text */
+    --uc-section-label-color: #c9a84c;       /* ABILITIES, SAVING THROWS headers */
+    --uc-skills-label-color: #c9a84c;        /* SKILLS header */
+    --uc-skill-group-hdr-color: #a08050;     /* STR/DEX/INT/WIS/CHA group headers */
+    --uc-skill-name-color: #e8d5b5;          /* Individual skill names */
+    --uc-points-color: #ffd700;              /* SP / ASI counters */
+    --uc-name-color: #c9a84c;               /* Character name */
+    --uc-prof-check-color: #27ae60;          /* Green proficiency circles */
+
+    /* --- SPACING --- */
+    --uc-gap-section: 20px;          /* Gap between sections (abilities → saves, etc) */
+    --uc-gap-metrics-to-btn: 10px;    /* Gap between AC/Init/Speed and buttons below */
+    --uc-gap-bars: 10px;              /* Gap between HP bar and XP bar */
+}
+
 .page {
     width: 100%;
     height: 100%;
@@ -7,68 +45,79 @@
     font-family: var(--font-ui, 'Inter', sans-serif);
     overflow: hidden;
     display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+/* JS sets transform: scale(X) on this wrapper based on container vs design size */
+.scaleWrapper {
+    transform-origin: top center;
+}
+
+/* Fixed design canvas — all children use px, never % or vw */
+.canvas {
+    width: 1300px;
+    height: 780px;
+    display: flex;
     flex-direction: column;
+    padding-top: 16px;
     box-sizing: border-box;
 }
 
-.topSpacer { height: 3vh; flex-shrink: 0; }
-
-/* Layout: 1% + 17% + 1% + 25% + 1% + 23% + 2% + 28% + 1% = 99% + 1% internal gaps = 100% */
-/* Using a single container with no flex gap — padding/margins on children control spacing */
+/*
+ * Pixel budget (horizontal):
+ * 12 + 220 + 12 + 320 + 12 + 290 + 24 + 370 + 12 = 1272px (28px slack in 1300px canvas)
+ */
 .mainGrid {
     display: flex;
     flex: 1;
     overflow: hidden;
-    box-sizing: border-box;
-    /* Total must not exceed container — use min-width to force proportional shrink */
-    min-width: 0;
+    padding: 0 12px;
+    gap: 12px;
 }
 
-/* LEFT COLUMN: 17% + 1% left margin + 1% right margin = 19% total */
+/* LEFT: 190px — name, xp, abilities, saves */
 .leftCol {
-    width: 17%;
-    flex: 0 0 17%;
+    width: 190px;
+    flex: 0 0 190px;
     overflow-y: auto;
-    margin-left: 1%;
-    margin-right: 1%;
 }
 
 .leftCol::-webkit-scrollbar { width: 4px; }
 .leftCol::-webkit-scrollbar-thumb { background: rgba(232, 213, 181, 0.2); border-radius: 2px; }
 
 .charHeader { margin-bottom: 8px; }
-.charName { font-family: var(--font-narrative, serif); font-size: 1.3rem; margin: 0; color: #e8d5b5; }
-.charSub { font-size: 0.75rem; opacity: 0.6; font-style: italic; }
-.xpWrap { width: 85%; margin-top: 4px; }
+.charName { font-family: var(--font-narrative, serif); font-size: var(--uc-name-size); margin: 0; color: var(--uc-name-color); }
+.charSub { font-size: var(--uc-subtitle-size); opacity: 0.6; font-style: italic; }
+.xpWrap { width: 180px; margin-top: var(--uc-gap-bars); }
+.barWrap { width: 190px; margin-top: var(--uc-gap-bars); }
 
 .featsRow {
-    font-size: 0.7rem;
-    opacity: 0.7;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    margin-bottom: 6px;
-    color: #2980b9;
+    font-size: var(--uc-feat-size); opacity: 0.7;
+    display: flex; align-items: center; gap: 4px;
+    margin-bottom: 4px; color: #2980b9;
 }
 
 .sectionLabel {
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08rem;
-    opacity: 0.5;
+    font-size: var(--uc-section-label-size); font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--uc-section-label-color);
     border-bottom: 1px solid rgba(232, 213, 181, 0.15);
-    padding-bottom: 2px;
-    margin: 8px 0 4px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    padding-bottom: 2px; margin: var(--uc-gap-section) 0 3px;
+    display: flex; align-items: center; gap: 6px;
+}
+
+/* Skills label gets its own color */
+.skillsLabel {
+    font-size: var(--uc-skills-label-size); font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--uc-skills-label-color);
+    border-bottom: 1px solid rgba(232, 213, 181, 0.15);
+    padding-bottom: 2px; margin: 0 0 3px;
+    display: flex; align-items: center; gap: 6px;
 }
 
 .pointsLabel {
-    color: #ffd700;
-    font-weight: 700;
-    opacity: 1;
+    font-size: var(--uc-points-label-size);
+    color: var(--uc-points-color); font-weight: 700; opacity: 1;
     animation: glow 2s ease-in-out infinite;
 }
 
@@ -78,43 +127,41 @@
 }
 
 .confirmBtn {
-    width: 100%;
-    padding: 3px 8px;
-    margin-bottom: 4px;
-    font-size: 0.7rem;
-    background: rgba(39, 174, 96, 0.15);
-    border: 1px solid rgba(39, 174, 96, 0.4);
-    border-radius: 3px;
-    color: #27ae60;
-    cursor: pointer;
+    width: 100%; padding: 2px 6px; margin-bottom: 3px;
+    font-size: 10px; background: rgba(39, 174, 96, 0.15);
+    border: 1px solid rgba(39, 174, 96, 0.4); border-radius: 3px;
+    color: #27ae60; cursor: pointer;
 }
 
-.abilityRow, .saveRow {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px 4px;
-    border-bottom: 1px solid rgba(232, 213, 181, 0.06);
-    font-size: 0.8rem;
+.abilityRow {
+    display: flex; align-items: center; gap: 4px;
+    padding: 3px 2px; border-bottom: 1px solid rgba(232, 213, 181, 0.06);
+    font-size: var(--uc-ability-row-size); cursor: pointer;
 }
+
+.saveRow {
+    display: flex; align-items: center; gap: 4px;
+    padding: 3px 2px; border-bottom: 1px solid rgba(232, 213, 181, 0.06);
+    font-size: var(--uc-save-row-size); cursor: pointer;
+}
+
+.abilityRow:hover, .saveRow:hover { background: rgba(232, 213, 181, 0.04); }
 
 .rowPending { background: rgba(255, 215, 0, 0.08); }
 
-.abName { width: 32px; font-weight: 700; font-size: 0.75rem; }
-.abScore { width: 24px; text-align: center; }
-.abMod { width: 28px; text-align: right; font-weight: 600; }
+.abName { width: 34px; font-weight: 700; flex-shrink: 0; }
+.saveName { width: 34px; font-weight: 700; flex-shrink: 0; }
+.abScore { width: 24px; text-align: center; flex-shrink: 0; }
+.abMod, .saveMod { width: 28px; text-align: right; font-weight: 600; flex-shrink: 0; }
+.profCheck { color: var(--uc-prof-check-color); flex-shrink: 0; width: 20px; }
+.profEmpty { width: 20px; flex-shrink: 0; display: inline-block; }
 
-.saveName { flex: 1; font-size: 0.75rem; }
-.saveMod { width: 28px; text-align: right; font-weight: 600; font-size: 0.8rem; }
-.profCheck { color: #27ae60; flex-shrink: 0; }
-.profEmpty { width: 10px; flex-shrink: 0; }
-
-.pmSlot { display: flex; gap: 3px; flex-shrink: 0; width: 46px; }
+.pmSlot { display: flex; gap: 3px; flex-shrink: 0; width: 44px; }
 .pmSlotSm { display: flex; gap: 2px; flex-shrink: 0; width: 36px; }
 
 .plusBtn, .minusBtn {
-    width: 20px; height: 20px; border-radius: 50%; border: none;
-    font-weight: 700; font-size: 0.8rem; cursor: pointer;
+    width: 18px; height: 18px; border-radius: 50%; border: none;
+    font-weight: 700; font-size: 12px; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
 }
 .plusBtn { background: rgba(255, 215, 0, 0.2); color: #ffd700; box-shadow: 0 0 6px rgba(255, 215, 0, 0.4); animation: glowPulse 1.5s ease-in-out infinite; }
@@ -129,97 +176,68 @@
 
 .featChoiceBtn {
     display: flex; align-items: center; gap: 4px;
-    padding: 4px 8px; margin: 4px 0;
+    padding: 3px 6px; margin: 3px 0; width: 100%;
     background: rgba(41, 128, 185, 0.08);
     border: 1px dashed rgba(41, 128, 185, 0.3);
     border-radius: 3px; color: #87ceeb;
-    font-size: 0.72rem; cursor: pointer;
+    font-size: 11px; cursor: pointer;
 }
 
-/* CENTER-LEFT: Paperdoll — 25% + 0 margins (adjacent to left's right margin) */
+/* CENTER-LEFT: Paperdoll — 430px (absorbed 100px slack from canvas) */
 .centerLeft {
-    width: 25%;
-    flex: 0 0 25%;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
+    width: 400px;
+    flex: 0 0 400px;
+    height: 750px;
     overflow: hidden;
+    position: relative;
 }
 
 .centerLeft > * {
-    transform: scale(0.65);
-    transform-origin: top center;
+    transform: scale(0.87);
+    transform-origin: top left;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
-/* CENTER-RIGHT: Inventory + metrics + HP + buttons — 23% + 1% left margin */
+/* CENTER-RIGHT: Inventory + metrics + HP + buttons — 290px */
 .centerRight {
-    width: 23%;
-    flex: 0 0 23%;
-    margin-left: 1%;
+    width: 290px;
+    flex: 0 0 290px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
     overflow-y: auto;
 }
 
 .centerRight::-webkit-scrollbar { width: 4px; }
 .centerRight::-webkit-scrollbar-thumb { background: rgba(232, 213, 181, 0.2); border-radius: 2px; }
 
-.combatMetrics {
-    display: flex;
-    gap: 4px;
-}
-
+.combatMetrics { display: flex; gap: 4px; margin-bottom: var(--uc-gap-metrics-to-btn); }
 .metricBox {
-    flex: 1;
-    text-align: center;
-    padding: 4px;
+    flex: 1; text-align: center; padding: 4px;
     background: rgba(232, 213, 181, 0.05);
-    border: 1px solid rgba(232, 213, 181, 0.1);
-    border-radius: 4px;
+    border: 1px solid rgba(232, 213, 181, 0.1); border-radius: 4px;
 }
-
-.metricVal { font-size: 1.1rem; font-weight: 700; }
-.metricLbl { font-size: 0.6rem; opacity: 0.5; display: flex; align-items: center; justify-content: center; gap: 3px; }
-
-.hpBox {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 10px;
-    background: rgba(232, 213, 181, 0.05);
-    border: 1px solid rgba(232, 213, 181, 0.1);
-    border-radius: 4px;
-}
-
-.hpLabel { font-size: 0.65rem; opacity: 0.5; text-transform: uppercase; }
-.hpValue { font-size: 1.3rem; font-weight: 800; }
+.metricVal { font-size: var(--uc-metric-val-size); font-weight: 700; }
+.metricLbl { font-size: var(--uc-metric-lbl-size); opacity: 0.5; display: flex; align-items: center; justify-content: center; gap: 3px; }
 
 .panelBtn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
+    display: flex; align-items: center; gap: 5px;
+    padding: 5px 8px;
     background: rgba(232, 213, 181, 0.05);
-    border: 1px solid rgba(232, 213, 181, 0.12);
-    border-radius: 4px;
-    color: #e8d5b5;
-    font-size: 0.78rem;
-    cursor: pointer;
+    border: 1px solid rgba(232, 213, 181, 0.12); border-radius: 4px;
+    color: var(--uc-text-default); font-size: var(--uc-button-size); cursor: pointer;
     transition: background 0.15s;
 }
-
 .panelBtn:hover { background: rgba(232, 213, 181, 0.1); }
 
-/* RIGHT COLUMN: Skills — 29% + 2% left margin + 1% right margin */
+/* RIGHT: Skills — 370px (takes remaining + 12px gap from mainGrid) */
 .rightCol {
-    width: 29%;
-    flex: 0 0 29%;
-    margin-left: 2%;
-    margin-right: 1%;
+    width: 330px;
+    flex: 0 0 330px;
     overflow-y: auto;
 }
-/* Breakdown: 1% + 17% + 1% + 25% + 1% + 23% + 2% + 29% + 1% = 100% */
 
 .rightCol::-webkit-scrollbar { width: 4px; }
 .rightCol::-webkit-scrollbar-thumb { background: rgba(232, 213, 181, 0.2); border-radius: 2px; }
@@ -227,31 +245,24 @@
 .skillsList { display: flex; flex-direction: column; }
 
 .skillGroupHdr {
-    font-size: 0.6rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04rem;
-    opacity: 0.4;
-    padding: 4px 0 1px;
+    font-size: var(--uc-skill-group-hdr-size); font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; color: var(--uc-skill-group-hdr-color);
+    padding: 3px 0 1px;
     border-bottom: 1px solid rgba(232, 213, 181, 0.08);
 }
 
 .skillRow {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    padding: 2px 2px;
-    font-size: 0.75rem;
+    display: flex; align-items: center; gap: 3px;
+    padding: 2px 2px; font-size: 12px;
     border-bottom: 1px solid rgba(232, 213, 181, 0.04);
 }
 
-.pips { display: flex; gap: 2px; flex-shrink: 0; min-width: 30px; }
+.pips { display: flex; gap: 2px; flex-shrink: 0; width: 30px; }
 .pip { width: 6px; height: 6px; border-radius: 50%; border: 1px solid rgba(232, 213, 181, 0.2); }
 .pipF { border-color: transparent; box-shadow: 0 0 2px rgba(0,0,0,0.2); }
 .pipE { background: transparent; }
 .pipP {
-    background-color: #ff8c00 !important;
-    border-color: transparent;
+    background-color: #ff8c00 !important; border-color: transparent;
     box-shadow: 0 0 5px 2px rgba(255, 140, 0, 0.7);
     animation: pipGlow 1s ease-in-out infinite;
 }
@@ -261,47 +272,34 @@
     50% { box-shadow: 0 0 8px 3px rgba(255, 140, 0, 0.9); }
 }
 
-.skillName { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tierTag { font-size: 0.55rem; flex-shrink: 0; }
-.skillMod { min-width: 24px; text-align: right; font-weight: 600; flex-shrink: 0; }
-.infoBtn { background: none; border: none; color: #e8d5b5; opacity: 0.25; cursor: pointer; padding: 1px; flex-shrink: 0; }
-.infoBtn:hover { opacity: 0.7; }
+.skillName { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: var(--uc-skill-name-size); color: var(--uc-skill-name-color); }
+.tierTag { font-size: var(--uc-skill-tier-size); flex-shrink: 0; }
+.skillMod { min-width: 24px; text-align: right; font-weight: 600; flex-shrink: 0; font-size: var(--uc-skill-mod-size); }
+.infoBtn { background: none; border: none; color: #dfb46b; opacity: 0.7; cursor: pointer; padding: 1px; flex-shrink: 0; }
+.infoBtn:hover { opacity: 1; }
+.sectionInfoBtn { background: none; border: none; color: #dfb46b; opacity: 0.5; cursor: pointer; padding: 0 2px; }
+.sectionInfoBtn:hover { opacity: 1; }
 
 /* OVERLAYS */
 .overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 2000;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(4px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
 }
 
 .overlayPanel {
-    background: #1a1208;
-    border: 2px solid rgba(232, 213, 181, 0.2);
-    border-radius: 8px;
-    padding: 20px;
-    max-width: 600px;
-    max-height: 70vh;
-    overflow-y: auto;
-    color: #e8d5b5;
+    background: #1a1208; border: 2px solid rgba(232, 213, 181, 0.2);
+    border-radius: 8px; padding: 20px;
+    max-width: 600px; max-height: 70vh; overflow-y: auto; color: #e8d5b5;
 }
 
 .overlayTitle {
     font-family: var(--font-narrative, serif);
-    font-size: 1.1rem;
-    margin: 0 0 12px;
-    color: #ffd700;
+    font-size: 16px; margin: 0 0 12px; color: #ffd700;
 }
 
 .featureCard {
-    padding: 8px;
-    margin-bottom: 6px;
-    border-left: 3px solid rgba(232, 213, 181, 0.2);
-    font-size: 0.8rem;
+    padding: 8px; margin-bottom: 6px;
+    border-left: 3px solid rgba(232, 213, 181, 0.2); font-size: 12px;
 }
-
-.featureCard p { margin: 4px 0 0; opacity: 0.7; font-size: 0.75rem; }
+.featureCard p { margin: 4px 0 0; opacity: 0.7; font-size: 11px; }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './UnifiedCharacterPage.module.css';
 import { useGameState } from '../../hooks/useGameState';
 import { useBook } from '../../context/BookContext';
@@ -9,6 +9,7 @@ import { AbilityParser } from '../../../ruleset/combat/AbilityParser';
 import PaperdollFigure from '../paperdoll/PaperdollFigure';
 import InventoryBag from '../paperdoll/InventoryBag';
 import XPBar from './XPBar';
+import HealthBar from './HealthBar';
 import Codex from '../codex/Codex';
 import { Shield, Zap, Heart, Footprints, Info, Award, BookOpen, Users, CheckCircle2 as Check } from 'lucide-react';
 import { PaperdollItem, SlotId } from '../paperdoll/types';
@@ -86,10 +87,29 @@ const UnifiedCharacterPage: React.FC = () => {
         }
     }
 
+    // Fixed design resolution — scale to fit container
+    const DESIGN_W = 1300;
+    const DESIGN_H = 780;
+    const pageRef = useRef<HTMLDivElement>(null);
+    const [scale, setScale] = useState(1);
+
+    useEffect(() => {
+        const calc = () => {
+            if (!pageRef.current) return;
+            const w = pageRef.current.clientWidth;
+            const h = pageRef.current.clientHeight;
+            setScale(Math.min(w / DESIGN_W, h / DESIGN_H));
+        };
+        calc();
+        const obs = new ResizeObserver(calc);
+        if (pageRef.current) obs.observe(pageRef.current);
+        return () => obs.disconnect();
+    }, []);
+
     return (
-        <div className={styles.page}>
-            {/* TOP SPACER */}
-            <div className={styles.topSpacer} />
+        <div className={styles.page} ref={pageRef}>
+            <div className={styles.scaleWrapper} style={{ transform: `scale(${scale})` }}>
+                <div className={styles.canvas}>
 
             <div className={styles.mainGrid}>
                 {/* LEFT: Character info + Abilities + Saves */}
@@ -97,7 +117,10 @@ const UnifiedCharacterPage: React.FC = () => {
                     <div className={styles.charHeader}>
                         <h1 className={styles.charName}>{pc.name}</h1>
                         <div className={styles.charSub}>Level {pc.level} {pc.race} {pc.class} • {bio.background || ''}</div>
-                        <div className={styles.xpWrap}><XPBar current={pc.xp} max={MechanicsEngine.getNextLevelXP(pc.level)} /></div>
+                        <div className={styles.barWrap}>
+                            <HealthBar current={pc.hp.current} max={pc.hp.max} />
+                        </div>
+                        <div className={styles.barWrap}><XPBar current={pc.xp} max={MechanicsEngine.getNextLevelXP(pc.level)} /></div>
                     </div>
 
                     {/* Feats */}
@@ -125,7 +148,9 @@ const UnifiedCharacterPage: React.FC = () => {
                         const hasPending = (pendingASI[ab] || 0) > 0;
                         const canAdd = totalASIPoints > 0 && usedASIPoints < totalASIPoints && val < 20;
                         return (
-                            <div key={ab} className={`${styles.abilityRow} ${hasPending ? styles.rowPending : ''}`}>
+                            <div key={ab} className={`${styles.abilityRow} ${hasPending ? styles.rowPending : ''}`}
+                                onClick={() => openCodex('mechanics', `ability_${ab.toLowerCase()}`)}>
+                                <span className={styles.profEmpty} />{/* spacer to align with saving throw proficiency markers */}
                                 <span className={styles.abName}>{ab}</span>
                                 <span className={styles.abScore}>{val}</span>
                                 <span className={styles.abMod}>{fmtMod(getMod(val))}</span>
@@ -146,14 +171,18 @@ const UnifiedCharacterPage: React.FC = () => {
                         </button>
                     )}
 
-                    <div className={styles.sectionLabel}>Saving Throws</div>
+                    <div className={styles.sectionLabel}>
+                        Saving Throws
+                        <button className={styles.sectionInfoBtn} onClick={() => openCodex('mechanics', 'general_saving_throws')}><Info size={12} /></button>
+                    </div>
                     {['STR','DEX','CON','INT','WIS','CHA'].map(ab => {
                         const isProf = pc.savingThrowProficiencies?.includes(ab as any);
                         const mod = getMod(stats[ab] || 10) + (isProf ? profBonus : 0);
                         return (
                             <div key={ab} className={styles.saveRow}>
-                                {isProf ? <Check size={10} className={styles.profCheck} /> : <span className={styles.profEmpty} />}
+                                {isProf ? <Check size={15} className={styles.profCheck} /> : <span className={styles.profEmpty} />}
                                 <span className={styles.saveName}>{ab}</span>
+                                <span className={styles.abScore} />{/* spacer to align with ability score column */}
                                 <span className={styles.saveMod}>{fmtMod(mod)}</span>
                             </div>
                         );
@@ -194,13 +223,6 @@ const UnifiedCharacterPage: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className={styles.hpBox}>
-                        <Heart size={20} color="#cc4444" />
-                        <div>
-                            <div className={styles.hpLabel}>Hit Points</div>
-                            <div className={styles.hpValue}>{pc.hp.current} / {pc.hp.max}</div>
-                        </div>
-                    </div>
 
                     <button className={styles.panelBtn} onClick={() => setShowFeatures(!showFeatures)}>
                         <BookOpen size={13} /> Class Features ({AbilityParser.getCombatAbilities(pc).length})
@@ -264,7 +286,10 @@ const UnifiedCharacterPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* OVERLAYS for Class Features / Personality */}
+                </div>{/* /canvas */}
+            </div>{/* /scaleWrapper */}
+
+            {/* OVERLAYS — outside scale wrapper (fixed position) */}
             {showFeatures && (
                 <div className={styles.overlay} onClick={() => setShowFeatures(false)}>
                     <div className={styles.overlayPanel} onClick={e => e.stopPropagation()}>

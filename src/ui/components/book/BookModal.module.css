@@ -191,7 +191,7 @@
 .turnBackOverlay {
     position: absolute;
     top: 50%;
-    left: -40px;
+    left: -80px;
     transform: translateY(-50%);
     z-index: 200;
     cursor: pointer;
