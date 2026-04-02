@@ -9,26 +9,14 @@ import { MechanicsEngine } from '../../../ruleset/combat/MechanicsEngine';
 import XPBar from './XPBar';
 import Codex from '../codex/Codex';
 import { LevelingEngine } from '../../../ruleset/combat/LevelingEngine';
+import { SkillEngine } from '../../../ruleset/combat/SkillEngine';
 
-const SKILLS = [
-    { name: 'Acrobatics', ability: 'DEX' },
-    { name: 'Animal Handling', ability: 'WIS' },
-    { name: 'Arcana', ability: 'INT' },
-    { name: 'Athletics', ability: 'STR' },
-    { name: 'Deception', ability: 'CHA' },
-    { name: 'History', ability: 'INT' },
-    { name: 'Insight', ability: 'WIS' },
-    { name: 'Intimidation', ability: 'CHA' },
-    { name: 'Investigation', ability: 'INT' },
-    { name: 'Medicine', ability: 'WIS' },
-    { name: 'Nature', ability: 'INT' },
-    { name: 'Perception', ability: 'WIS' },
-    { name: 'Performance', ability: 'CHA' },
-    { name: 'Persuasion', ability: 'CHA' },
-    { name: 'Religion', ability: 'INT' },
-    { name: 'Sleight of Hand', ability: 'DEX' },
-    { name: 'Stealth', ability: 'DEX' },
-    { name: 'Survival', ability: 'WIS' },
+const SKILL_GROUPS: { ability: string; label: string; skills: string[] }[] = [
+    { ability: 'STR', label: 'Strength', skills: ['Athletics', 'Unarmed Combat'] },
+    { ability: 'DEX', label: 'Dexterity', skills: ['Acrobatics', 'Sleight of Hand', 'Stealth'] },
+    { ability: 'INT', label: 'Intelligence', skills: ['Arcana', 'Cartography', 'History', 'Investigation', 'Nature', 'Religion'] },
+    { ability: 'WIS', label: 'Wisdom', skills: ['Animal Handling', 'Insight', 'Medicine', 'Perception', 'Survival'] },
+    { ability: 'CHA', label: 'Charisma', skills: ['Deception', 'Intimidation', 'Performance', 'Persuasion'] },
 ];
 
 interface CharacterSheetProps {
@@ -41,9 +29,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ onClose, isPage = false
     const { pushPage } = useBook();
     const [showFeatures, setShowFeatures] = useState(false);
     const [showPersonality, setShowPersonality] = useState(false);
-    // Pending ASI: tracks ability point increases before confirm
-    // Each ASI grants 2 distributable points
-    const [pendingASI, setPendingASI] = useState<Record<string, number>>({}); // e.g. { STR: 1, DEX: 1 }
+    const [pendingASI, setPendingASI] = useState<Record<string, number>>({});
+    const [pendingSP, setPendingSP] = useState<Record<string, number>>({}); // skillName → tiers invested
 
     if (!state || !state.character) return null;
 
@@ -191,42 +178,99 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ onClose, isPage = false
                         </div>
                     </section>
 
-                    {/* SKILLS */}
+                    {/* SKILLS — grouped by ability with inline SP +/- */}
                     <section className={styles.section}>
-                        <h2 className={styles.sectionTitle} onClick={() => openCodex('mechanics', 'general_skills')} style={{ cursor: 'pointer' }}>
-                            Skills
-                            {(char as any).skillPoints?.available > 0 && (
-                                <span style={{ marginLeft: 8, fontSize: '0.75rem', color: '#c9a227', fontWeight: 'normal' }}>
-                                    {(char as any).skillPoints.available} SP available
-                                </span>
-                            )}
-                        </h2>
-                        <div className={styles.skillGrid}>
-                            {SKILLS.map(skill => {
-                                const tier = (char as any).skills?.[skill.name]?.tier || (char.skillProficiencies?.includes(skill.name as any) ? 1 : 0);
-                                const tierNames = ['', 'Prof', 'Exp', 'Mst', 'GM'];
-                                const tierColors = ['#888', '#c8c8c8', '#1eff00', '#0070dd', '#ff8000'];
-                                const mult = tier > 0 ? [0, 1, 2, 2, 3][tier] : 0;
-                                const abilityScore = (stats as any)[skill.ability] || 10;
-                                const mod = getMod(abilityScore) + (profBonus * mult);
-                                const stars = '●'.repeat(tier) + '○'.repeat(Math.max(0, 4 - tier));
-                                return (
-                                    <div
-                                        key={skill.name}
-                                        className={styles.skillRow}
-                                        onClick={() => openCodex('skills', skill.name)}
-                                        style={{ cursor: 'pointer' }}
-                                    >
-                                        <div className={styles.skillInfo}>
-                                            <span style={{ fontSize: '0.6rem', letterSpacing: 2, color: tierColors[tier], minWidth: 36 }}>{stars}</span>
-                                            <span>{skill.name} <small style={{ opacity: 0.5 }}>({skill.ability.toLowerCase()})</small></span>
-                                            {tier > 0 && <small style={{ color: tierColors[tier], marginLeft: 4, fontSize: '0.65rem' }}>{tierNames[tier]}</small>}
+                        {(() => {
+                            const spAvail = (char as any).skillPoints?.available || 0;
+                            const spPendingUsed = Object.values(pendingSP).reduce((s: number, v: any) => {
+                                // Each entry = number of tier advances. Calculate SP cost for each.
+                                return s; // Simplified — we'll compute actual cost below
+                            }, 0);
+                            // Compute actual SP used by pending
+                            let totalPendingSPCost = 0;
+                            for (const [skillName, advances] of Object.entries(pendingSP)) {
+                                const baseTier = SkillEngine.getSkillTier(char, skillName);
+                                const def = SkillEngine.getSkillDef(skillName);
+                                if (!def) continue;
+                                for (let i = 0; i < (advances as number); i++) {
+                                    totalPendingSPCost += def.tierCosts[baseTier + i] || 0;
+                                }
+                            }
+                            const effectiveSP = spAvail - totalPendingSPCost;
+                            const hasPendingSP = totalPendingSPCost > 0;
+
+                            return (
+                                <>
+                                    <h2 className={styles.sectionTitle}>
+                                        Skills
+                                        {spAvail > 0 && (
+                                            <span className={styles.asiPointsLabel}>{effectiveSP} SP available</span>
+                                        )}
+                                    </h2>
+                                    {hasPendingSP && (
+                                        <div className={styles.asiPendingBar}>
+                                            <span>{totalPendingSPCost} SP queued</span>
+                                            <button className={styles.asiConfirmBtn} onClick={() => {
+                                                for (const [sn, adv] of Object.entries(pendingSP)) {
+                                                    for (let i = 0; i < (adv as number); i++) SkillEngine.invest(char, sn);
+                                                }
+                                                setPendingSP({});
+                                                updateState();
+                                            }}>Confirm</button>
+                                            <button className={styles.asiRevertBtn} onClick={() => setPendingSP({})}>Revert</button>
                                         </div>
-                                        <span className={styles.skillBonus}>{formatMod(mod)}</span>
-                                    </div>
-                                );
-                            })}
-                        </div>
+                                    )}
+                                    {SKILL_GROUPS.map(group => (
+                                        <div key={group.ability} className={styles.skillGroupSection}>
+                                            <div className={styles.skillGroupLabel}>{group.label} ({group.ability})</div>
+                                            {group.skills.map(skillName => {
+                                                const baseTier = SkillEngine.getSkillTier(char, skillName);
+                                                const pendingAdv = (pendingSP[skillName] || 0) as number;
+                                                const effectiveTier = baseTier + pendingAdv;
+                                                const tierNames = ['', 'Prof', 'Exp', 'Mst', 'GM'];
+                                                const tierColors = ['#888', '#c8c8c8', '#1eff00', '#0070dd', '#ff8000'];
+                                                const mult = effectiveTier > 0 ? [0, 1, 2, 2, 3][effectiveTier] : 0;
+                                                const abilityScore = (stats as any)[group.ability] || 10;
+                                                const mod = getMod(abilityScore) + (profBonus * mult);
+                                                const stars = '●'.repeat(effectiveTier) + '○'.repeat(Math.max(0, 4 - effectiveTier));
+
+                                                const def = SkillEngine.getSkillDef(skillName);
+                                                const nextCost = def?.tierCosts?.[effectiveTier];
+                                                const levelGate = def?.levelGates?.[effectiveTier] || 1;
+                                                const canInvest = effectiveTier < 4 && nextCost !== undefined && effectiveSP >= nextCost && char.level >= levelGate;
+
+                                                return (
+                                                    <div key={skillName} className={`${styles.skillRow} ${pendingAdv > 0 ? styles.abilityPending : ''}`}>
+                                                        <div className={styles.skillInfo}>
+                                                            <span style={{ fontSize: '0.55rem', letterSpacing: 2, color: tierColors[effectiveTier], minWidth: 32 }}>{stars}</span>
+                                                            <span className={styles.skillNameText}>{skillName}</span>
+                                                            {effectiveTier > 0 && <small style={{ color: tierColors[effectiveTier], fontSize: '0.6rem' }}>{tierNames[effectiveTier]}</small>}
+                                                        </div>
+                                                        <span className={styles.skillBonus}>{formatMod(mod)}</span>
+                                                        <button
+                                                            className={styles.skillInfoBtn}
+                                                            onClick={(e) => { e.stopPropagation(); openCodex('skills', skillName); }}
+                                                            title={`View ${skillName} in Codex`}
+                                                        ><Info size={11} /></button>
+                                                        {canInvest && (
+                                                            <button className={styles.asiPlusBtn} style={{ width: 18, height: 18, fontSize: '0.75rem' }}
+                                                                onClick={(e) => { e.stopPropagation(); setPendingSP(prev => ({ ...prev, [skillName]: (prev[skillName] || 0) + 1 })); }}
+                                                                title={`Invest ${nextCost} SP → ${tierNames[effectiveTier + 1]}`}
+                                                            >+</button>
+                                                        )}
+                                                        {pendingAdv > 0 && (
+                                                            <button className={styles.asiMinusBtn} style={{ width: 18, height: 18, fontSize: '0.75rem' }}
+                                                                onClick={(e) => { e.stopPropagation(); setPendingSP(prev => { const n = { ...prev }; n[skillName] = (n[skillName] || 0) - 1; if (n[skillName] <= 0) delete n[skillName]; return n; }); }}
+                                                            >-</button>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    ))}
+                                </>
+                            );
+                        })()}
                     </section>
                 </aside>
 

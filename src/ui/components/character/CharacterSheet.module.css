@@ -523,3 +523,39 @@
     font-size: 0.72rem;
     opacity: 0.65;
 }
+
+/* Skill groups */
+.skillGroupSection {
+    margin-bottom: var(--spacing-sm);
+}
+
+.skillGroupLabel {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+    opacity: 0.5;
+    padding: 4px 0 2px;
+    border-bottom: 1px solid rgba(139, 115, 85, 0.1);
+    margin-bottom: 2px;
+}
+
+.skillNameText {
+    font-size: 0.8rem;
+    flex: 1;
+}
+
+.skillInfoBtn {
+    background: none;
+    border: none;
+    opacity: 0.3;
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+}
+
+.skillInfoBtn:hover {
+    opacity: 0.8;
+    color: #2980b9;
+}
