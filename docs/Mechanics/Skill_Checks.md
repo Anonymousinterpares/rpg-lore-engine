@@ -1,7 +1,16 @@
 # Mechanics: Skill Checks
 
+> **See also:** [Skill Mastery](Skill_Mastery.md) for the full guide on skill tiers, skill points, and special abilities.
+
 ## 1. Skill List
-Checks typically use the formula `d20 + Ability + Prof`.
+Checks use the formula `d20 + Ability Modifier + (Proficiency Bonus x Tier Multiplier)`.
+
+Your Tier Multiplier depends on how much you've invested in the skill:
+- Tier 0 (Untrained): x0 — no proficiency bonus
+- Tier 1 (Proficient): x1 — standard
+- Tier 2 (Expert): x2 — doubled
+- Tier 3 (Master): x2 — doubled + special ability
+- Tier 4 (Grandmaster): x3 — tripled + special ability
 
 | Skill | Ability | Description |
 | :--- | :--- | :--- |
@@ -23,6 +32,8 @@ Checks typically use the formula `d20 + Ability + Prof`.
 | **Sleight of Hand** | DEX | Pickpocketing, concealing objects. |
 | **Stealth** | DEX | Hiding, moving silently. |
 | **Survival** | WIS | Tracking, foraging, navigating. |
+| **Cartography** | INT | Map-making, navigation, terrain analysis. |
+| **Unarmed Combat** | STR | Fighting with fists, grapples, martial techniques. |
 
 ## 2. Difficulty Class (DC) Table
 The Engine sets the DC based on the task difficulty.
@@ -38,5 +49,7 @@ The Engine sets the DC based on the task difficulty.
 
 ## 3. Passive Checks
 Used when the character is not actively rolling but the environment acts upon them.
-*   **Formula:** `10 + Modifier` (e.g., Passive Perception = 10 + WIS Mod + Prof).
+*   **Formula:** `10 + Ability Modifier + (Proficiency Bonus x Tier Multiplier)`
+*   **Example:** Passive Perception at Tier 2 (Expert), Level 5, WIS 14 = 10 + 2 + (3 x 2) = 18
 *   **Advantage/Disadvantage:** +/- 5 to the Passive Score.
+*   **Perception Master bonus:** Tier 3 passive ability adds +5 on top.
