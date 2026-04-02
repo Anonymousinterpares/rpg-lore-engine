@@ -27,7 +27,7 @@ export class SpellManager {
         private applyCombatDamage: (target: Combatant, damage: number) => Promise<void>
     ) { }
 
-    public async castSpell(spellName: string, targetId?: string): Promise<string> {
+    public async castSpell(spellName: string, targetId?: string, slotLevel?: number): Promise<string> {
         const combat = this.state.combat;
         if (this.state.mode === 'COMBAT' && combat) {
             const currentCombatant = combat.combatants[combat.currentTurnIndex];
@@ -36,7 +36,7 @@ export class SpellManager {
 
             if (targetId) combat.selectedTargetId = targetId;
 
-            const result = await this.handleCast(currentCombatant, spellName);
+            const result = await this.handleCast(currentCombatant, spellName, slotLevel);
             this.addCombatLog(result);
             currentCombatant.resources.actionSpent = true;
             await this.emitStateUpdate();
@@ -46,16 +46,29 @@ export class SpellManager {
         }
     }
 
-    private async handleCast(caster: Combatant, spellName: string): Promise<string> {
+    private async handleCast(caster: Combatant, spellName: string, requestedSlotLevel?: number): Promise<string> {
         const spell = DataManager.getSpell(spellName);
         if (!spell) return `Unknown spell: ${spellName}`;
 
         const pc = this.state.character;
 
+        // Determine which slot level to use
+        let castSlotLevel = spell.level;
         if (spell.level > 0) {
-            const slotData = pc.spellSlots[spell.level.toString()];
-            if (!slotData || slotData.current <= 0) {
-                return `You have no ${spell.level}${this.getOrdinal(spell.level)} level spell slots remaining!`;
+            if (requestedSlotLevel !== undefined) {
+                // Player requested specific slot level
+                if (requestedSlotLevel < spell.level) return `Cannot cast ${spell.name} below level ${spell.level}.`;
+                const slotData = pc.spellSlots[requestedSlotLevel.toString()];
+                if (!slotData || slotData.current <= 0) {
+                    return `No level ${requestedSlotLevel} spell slots remaining!`;
+                }
+                castSlotLevel = requestedSlotLevel;
+            } else {
+                // Auto-find lowest available slot (base level first, then higher)
+                castSlotLevel = this.findAvailableSlot(pc, spell.level);
+                if (castSlotLevel === -1) {
+                    return `No spell slots available to cast ${spell.name} (level ${spell.level}+)!`;
+                }
             }
         }
 
@@ -102,12 +115,25 @@ export class SpellManager {
             }
         }
 
-        let fullMessage = `${caster.name} casts ${spell.name}! `;
+        // Apply upcasting: create a spell copy with scaled damage if casting at higher level
+        let effectiveSpell = spell;
+        if (castSlotLevel > spell.level && spell.damage?.scaling) {
+            const scalingIndex = spell.damage.scaling.levels.indexOf(castSlotLevel);
+            if (scalingIndex !== -1) {
+                effectiveSpell = {
+                    ...spell,
+                    damage: { ...spell.damage, dice: spell.damage.scaling.values[scalingIndex] }
+                } as any;
+            }
+        }
+
+        const upcastLabel = castSlotLevel > spell.level ? ` (upcast at level ${castSlotLevel})` : '';
+        let fullMessage = `${caster.name} casts ${spell.name}${upcastLabel}! `;
         const spellAttackBonus = MechanicsEngine.getModifier(caster.stats['INT'] || caster.stats['WIS'] || caster.stats['CHA'] || 10) + MechanicsEngine.getProficiencyBonus(pc.level);
         const spellSaveDC = 8 + spellAttackBonus;
 
         for (const target of targets) {
-            const result = CombatResolutionEngine.resolveSpell(caster, target, spell, spellAttackBonus, spellSaveDC);
+            const result = CombatResolutionEngine.resolveSpell(caster, target, effectiveSpell, spellAttackBonus, spellSaveDC);
 
             // Fix: Feed UI dice roller
             if (this.state.combat && result.details?.total) {
@@ -158,7 +184,7 @@ export class SpellManager {
         }
 
         if (spell.level > 0) {
-            pc.spellSlots[spell.level.toString()].current--;
+            pc.spellSlots[castSlotLevel.toString()].current--;
         }
 
         return fullMessage;
@@ -210,6 +236,7 @@ export class SpellManager {
                 name: `${monsterData?.name || monsterId} (Summoned)`,
                 type: 'summon',
                 isPlayer: false,
+                darkvision: (monsterData as any)?.darkvision || 0,
                 hp: monsterData ? { current: monsterData.hp.average, max: monsterData.hp.average, temp: 0 } : { current: 10, max: 10, temp: 0 },
                 ac: monsterData?.ac || 12,
                 stats: (monsterData?.stats || { 'STR': 10, 'DEX': 10, 'CON': 10, 'INT': 10, 'WIS': 10, 'CHA': 10 }) as Record<string, number>,
@@ -365,6 +392,78 @@ export class SpellManager {
         if (spell.level > 0) pc.spellSlots[spell.level.toString()].current--;
         await this.emitStateUpdate();
         return `You cast ${spell.name}, but its primary effects are best seen in the heat of battle.`;
+    }
+
+    /**
+     * Cast a spell from a scroll (no slot consumed, fixed level).
+     */
+    public async castSpellFromScroll(spell: any, scrollLevel: number): Promise<string> {
+        const combat = this.state.combat;
+        if (!combat) return `${spell.name} takes effect!`;
+
+        const caster = combat.combatants[combat.currentTurnIndex];
+        if (!caster.isPlayer) return "It is not your turn.";
+
+        const pc = this.state.character;
+        let targets: Combatant[] = [];
+        const effect = spell.effect;
+
+        if (effect?.targets?.type === 'ENEMY' || spell.damage) {
+            const potentialTargets = combat.combatants.filter((c: any) => c.type === 'enemy' && c.hp.current > 0);
+            if (effect?.targets?.count === 'ALL_IN_AREA') {
+                targets = potentialTargets;
+            } else {
+                let target = potentialTargets.find((t: any) => t.id === combat.selectedTargetId);
+                if (!target) target = potentialTargets[0];
+                if (target) targets = [target];
+            }
+        } else {
+            targets = [caster];
+        }
+
+        if (targets.length === 0) return "No valid targets.";
+
+        // Apply scaling if scroll level > spell base level
+        let effectiveSpell = spell;
+        if (scrollLevel > spell.level && spell.damage?.scaling) {
+            const idx = spell.damage.scaling.levels.indexOf(scrollLevel);
+            if (idx !== -1) {
+                effectiveSpell = { ...spell, damage: { ...spell.damage, dice: spell.damage.scaling.values[idx] } };
+            }
+        }
+
+        const spellAttackBonus = MechanicsEngine.getModifier(caster.stats['INT'] || caster.stats['WIS'] || caster.stats['CHA'] || 10) + MechanicsEngine.getProficiencyBonus(pc.level);
+        const spellSaveDC = 8 + spellAttackBonus;
+
+        let msg = `${caster.name} reads the scroll of ${spell.name}! `;
+        for (const target of targets) {
+            const result = CombatResolutionEngine.resolveSpell(caster, target, effectiveSpell, spellAttackBonus, spellSaveDC);
+            if (result.damage > 0) {
+                await this.applyCombatDamage(target, result.damage);
+                this.emitCombatEvent(result.type, target.id, result.damage);
+            }
+            if (result.heal > 0) {
+                CombatResolutionEngine.applyHealing(target, result.heal);
+                this.emitCombatEvent('HEAL', target.id, result.heal);
+            }
+            msg += result.message + " ";
+        }
+
+        // No slot consumed — scroll is the cost
+        this.addCombatLog(msg);
+        return msg;
+    }
+
+    /**
+     * Find the lowest available spell slot at or above the given level.
+     * Returns -1 if no slots available.
+     */
+    private findAvailableSlot(pc: any, minLevel: number): number {
+        for (let level = minLevel; level <= 9; level++) {
+            const slot = pc.spellSlots[level.toString()];
+            if (slot && slot.current > 0) return level;
+        }
+        return -1;
     }
 
     private getOrdinal(n: number): string {

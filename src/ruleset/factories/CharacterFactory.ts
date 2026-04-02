@@ -146,6 +146,7 @@ export class CharacterFactory {
                 sex: options.sex || 'male',
                 level: 1,
                 race: race.name,
+                darkvision: (race as any).darkvision || 0,
                 class: characterClass.name,
                 multiclassLevels: {},
                 conditions: [],

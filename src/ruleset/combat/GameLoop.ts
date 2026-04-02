@@ -267,7 +267,7 @@ export class GameLoop {
 
             // Trade and examination commands are fully deterministic — bypass the LLM narrator pipeline entirely.
             const tradeCommands = ['trade', 'buy', 'sell', 'haggle', 'intimidate', 'deceive', 'buyback', 'closetrade', 'examine', 'identify', 'merchantidentify',
-                'levelup', 'level', 'invest', 'resetskills', 'asi', 'multiclass', 'skillability', 'ability', 'chooseability'];
+                'levelup', 'level', 'invest', 'resetskills', 'asi', 'multiclass', 'skillability', 'ability', 'chooseability', 'use'];
             if (tradeCommands.includes(intent.command || '')) {
                 this.state.lastNarrative = systemResponse;
                 await this.emitStateUpdate();
@@ -734,9 +734,22 @@ export class GameLoop {
                 return await this.completeRest(duration);
             }
 
-            case 'cast':
-                if (!args[0]) return "Usage: /cast <spell name> [target]";
-                return await this.spells.castSpell(args[0], args[1]);
+            case 'cast': {
+                if (!args[0]) return "Usage: /cast <spell name> [target] [slot level]";
+                // Parse: /cast "Fireball" target_id 5  OR  /cast Fireball target_id  OR  /cast Fireball 5
+                let castSpellName = args[0];
+                let castTarget: string | undefined;
+                let castSlot: number | undefined;
+                // Check if last arg is a number (slot level)
+                const lastArg = args[args.length - 1];
+                if (args.length >= 2 && /^\d+$/.test(lastArg)) {
+                    castSlot = parseInt(lastArg);
+                    castTarget = args.length >= 3 ? args[1] : undefined;
+                } else {
+                    castTarget = args[1];
+                }
+                return await this.spells.castSpell(castSpellName, castTarget, castSlot);
+            }
 
             case 'pace':
                 this.state.travelPace = args[0] as any;
@@ -1218,6 +1231,60 @@ export class GameLoop {
 
                 await this.emitStateUpdate();
                 return `Multiclassed into ${targetClass}! On your next level up, use /levelup <class> to choose which class gains the level.`;
+            }
+
+            // ===== USE ITEM (Spell Scrolls etc.) =====
+            case 'use': {
+                if (!args[0]) return 'Usage: /use <item name or instanceId>';
+                const useTarget = args.join(' ');
+                const useItem = this.state.character.inventory.items.find(
+                    (i: any) => i.instanceId === useTarget || i.name.toLowerCase() === useTarget.toLowerCase()
+                );
+                if (!useItem) return `You don't have "${useTarget}".`;
+
+                // Spell Scroll casting
+                if ((useItem as any).type === 'Spell Scroll' && (useItem as any).spellName) {
+                    const scrollSpellName = (useItem as any).spellName;
+                    const scrollLevel = (useItem as any).spellLevel || 0;
+                    const spell = DataManager.getSpell(scrollSpellName);
+                    if (!spell) return `Scroll references unknown spell: ${scrollSpellName}.`;
+
+                    // Check if spell is on character's class spell list — if not, Arcana check required
+                    const pc = this.state.character;
+                    const arcanaTier = SkillEngine.getSkillTier(pc, 'Arcana');
+                    const isOnClassList = spell.classes?.includes(pc.class) || false;
+
+                    if (!isOnClassList) {
+                        const dc = 10 + scrollLevel;
+                        const intMod = MechanicsEngine.getModifier(pc.stats.INT || 10);
+                        const profBonus = arcanaTier > 0 ? MechanicsEngine.getProficiencyBonus(pc.level) * SkillEngine.getTierMultiplier('Arcana', arcanaTier) : 0;
+                        const roll = Dice.d20();
+                        const total = roll + intMod + profBonus;
+                        if (total < dc) {
+                            // Failed — scroll consumed, spell fizzles
+                            const idx = this.state.character.inventory.items.indexOf(useItem);
+                            if (idx !== -1) this.state.character.inventory.items.splice(idx, 1);
+                            await this.emitStateUpdate();
+                            return `Arcana check ${roll}+${intMod + profBonus}=${total} vs DC ${dc}: Failed! The scroll crumbles as the spell fizzles.`;
+                        }
+                    }
+
+                    // Cast the spell from scroll (at scroll's fixed level, no upcasting)
+                    let castResult: string;
+                    if (this.state.mode === 'COMBAT' && this.state.combat) {
+                        castResult = await this.spells.castSpellFromScroll(spell, scrollLevel);
+                    } else {
+                        castResult = `You read the scroll aloud. ${spell.name} (level ${scrollLevel}) takes effect!`;
+                    }
+
+                    // Consume scroll
+                    const idx = this.state.character.inventory.items.indexOf(useItem);
+                    if (idx !== -1) this.state.character.inventory.items.splice(idx, 1);
+                    await this.emitStateUpdate();
+                    return `${castResult} The scroll disintegrates.`;
+                }
+
+                return `You can't use ${useItem.name} in this way.`;
             }
 
             // ===== SKILL INVESTMENT =====

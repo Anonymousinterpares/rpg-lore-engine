@@ -27,6 +27,7 @@ export class CombatFactory {
             conditions: [],
             statusEffects: [],
             isPlayer: false,
+            darkvision: (monster as any).darkvision || 0,
             resources: {
                 actionSpent: false,
                 bonusActionSpent: false,
@@ -133,6 +134,7 @@ export class CombatFactory {
             conditions: [],
             statusEffects: [],
             isPlayer: true,
+            darkvision: (pc as any).darkvision || 0,
             resources: {
                 actionSpent: false,
                 bonusActionSpent: false,

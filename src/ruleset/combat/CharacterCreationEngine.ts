@@ -106,6 +106,7 @@ export class CharacterCreationEngine {
             sex: (request as any).sex || 'male',
             level: 1,
             race: request.race.name,
+            darkvision: (request.race as any).darkvision || 0,
             class: request.className,
             multiclassLevels: {},
             conditions: [],

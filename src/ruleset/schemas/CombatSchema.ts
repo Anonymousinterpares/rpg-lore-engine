@@ -51,6 +51,7 @@ export const CombatantSchema = z.object({
     name: z.string(),
     type: z.enum(['player', 'companion', 'enemy', 'summon']),
     isPlayer: z.boolean(),
+    darkvision: z.number().default(0),
 
     // Core Attributes
     hp: z.object({

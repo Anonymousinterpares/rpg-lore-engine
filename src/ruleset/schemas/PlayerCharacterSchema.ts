@@ -38,6 +38,7 @@ export const PlayerCharacterSchema = z.object({
     sex: z.enum(['male', 'female']).default('male'),
     level: z.number().min(1).max(20),
     race: z.string(),
+    darkvision: z.number().default(0), // Range in feet (0 = none, 60 = standard)
     class: z.string(), // Primary class
     secondaryClass: z.string().optional(), // Multiclass (max 2)
     multiclassLevels: z.record(z.string(), z.number()).default({}), // { "Fighter": 5, "Rogue": 3 }

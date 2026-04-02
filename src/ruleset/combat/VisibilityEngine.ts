@@ -12,13 +12,7 @@ export class VisibilityEngine {
         currentLight: LightLevel
     ): { disadvantage: boolean; blinded: boolean } {
 
-        let darkvision = 0;
-        if ('darkvision' in observer) {
-            darkvision = (observer as any).darkvision || 0;
-        } else if ('race' in observer) {
-            // Need to look up race trait, but for now we check a hidden property 
-            // or assume some races have it.
-        }
+        const darkvision = (observer as any).darkvision || 0;
 
         if (currentLight === 'Darkness') {
             if (darkvision > 0) return { disadvantage: true, blinded: false };

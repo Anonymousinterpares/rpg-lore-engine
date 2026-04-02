@@ -51,6 +51,100 @@ but have NO gameplay effect beyond the proficiency bonus on generic skill checks
 
 ## Other Missing Systems
 
+---
+
+## Implementation Plan Audit Gaps (verified April 2026)
+
+Items from the original implementation_plan.md that are incomplete or missing.
+
+### Feat System — MISSING
+- ASI at levels 4/8/12/16/19 only offers ability score increases (+2/+1+1)
+- D&D 5e allows choosing a Feat instead of ASI — not implemented
+- No FeatSchema, no feat data directory, no feat selection UI
+- Human Variant feat at level 1 also not implemented
+- **To implement:** FeatSchema + data/feats/*.json + ASI choice UI (feat or ability increase)
+
+### Exhaustion System (6 Levels) — DEFERRED TO SURVIVAL EXPANSION
+- D&D 5e has graduated exhaustion: level 1 = disadvantage on ability checks, up to level 6 = death
+- WeatherEngine has `exhaustionRisk: true` flag but never applies it
+- No exhaustion level tracking on character, no graduated penalties
+- **Deferred:** Not suitable as standalone feature. Should be part of a broader Survival Expansion
+  that includes forced march, starvation/dehydration, extreme weather, and camp quality.
+  Exhaustion would be the penalty system tying those mechanics together.
+  For solo play, exhaustion should be generous (easy to recover, hard to reach level 3+).
+
+### Spell Upcasting — PARTIALLY IMPLEMENTED
+- Spell JSONs have `damage.scaling` arrays with correct upcast values (Fireball, Cure Wounds, etc.)
+- SpellcastingEngine validates `slotLevel >= spell.level` for casting
+- BUT engine does NOT apply upcast damage scaling when casting at higher levels — always uses base dice
+- **To implement:** In SpellcastingEngine.castSpell(), read `spell.damage.scaling[slotLevel - spell.level]` when slotLevel > spell.level
+
+### AoE Spell Geometry — PARTIALLY IMPLEMENTED
+- SpellSchema defines area shapes: CONE, SPHERE, RADIUS, CUBE, CYLINDER, LINE
+- Spell JSONs use these shapes (Fireball = RADIUS 20ft, Cone of Cold = CONE 60ft)
+- ALL_IN_AREA spells currently hit ALL enemies regardless of distance — no radius check
+- CombatGridManager has line-of-sight (Bresenham's algorithm) but NO AoE targeting geometry
+- Cover does NOT add to saving throws (D&D 5e: half cover = +2 DEX saves, three-quarters = +5)
+- Cover AC bonus only applies when character has "hunkered_down" status, not passively
+- **To implement:**
+  - AoE geometry resolver: filter targets within spell radius from origin point
+  - Cover save bonus: add cover-based bonus to DEX saves for AoE spells
+  - Full cover should block AoE effects entirely
+  - Fix cover to apply passively (not only when hunkered)
+
+### Combat Narrator Tactical Awareness — MISSING
+- The LLM narrator during combat receives ONLY: round number, enemy summary, whose turn
+- NO spatial/positional data, distances, cover info, hazard tiles, AoE results, terrain features,
+  formation data, visibility conditions, or movement paths are passed to the narrator
+- Combat logs are text-only — narrator infers spatial context from log messages
+- NarrativeGenerator.ts has tactical description templates but they're only used for UI labels,
+  not fed to the LLM narrator
+- **Impact:** Narrator cannot describe tactical situations ("the goblin ducks behind the pillar"
+  or "the fireball engulfs the group in the open") because it has no awareness of these systems
+- **To implement:** Enrich ContextBuilder.buildCombatContext() with:
+  - Combatant positions and distances from player
+  - Cover status per combatant
+  - Active hazard tiles near combat
+  - Recent AoE results (who was hit, who was shielded)
+  - Terrain features near combatants
+  - Lighting conditions
+
+### Environmental Hazards — PARTIALLY IMPLEMENTED
+- BiomeRegistry defines hazards: Lava (2d6 Fire), Spike Pit (2d6 Piercing), Thin Ice (1d6 Cold), etc.
+- No dedicated HazardEngine
+- Falling damage (1d6 per 10ft) NOT implemented
+- Drowning (CON saves) NOT implemented
+- Unclear if combat actually triggers hazard damage when combatants move to hazardous terrain tiles
+- **To implement:** HazardEngine with falling/drowning rules, wire grid hazard tiles into CombatOrchestrator movement
+
+### Light & Darkness — PARTIALLY IMPLEMENTED
+- VisibilityEngine has correct logic for Bright/Dim/Darkness with darkvision
+- BUT VisibilityEngine is NEVER CALLED during combat — completely dead code
+- Darkvision chain is fully broken: race data exists (Elf=60ft etc.) but never flows to combat
+  - PlayerCharacterSchema has no darkvision field
+  - CharacterFactory doesn't copy race.darkvision to character
+  - CombatantSchema has no darkvision field
+  - CombatFactory doesn't carry darkvision to combat
+  - CombatResolutionEngine never checks lighting/visibility
+- No grid-based light propagation or shadow casting
+- **To implement:** Fix darkvision chain (5 schema/factory fixes), wire VisibilityEngine into CombatResolutionEngine for attack advantage/disadvantage
+
+### Sub-Location / Dungeon Navigation — NOT IMPLEMENTED
+- Currently the game only has hex-based movement on the world map
+- No room-by-room navigation within a location (caves, dungeons, buildings)
+- SubLocationSchema exists in WorldEnrichmentSchema but is not wired to gameplay
+- **Critical dependency:** Systems like darkvision, torch illumination, trap detection,
+  and room-based encounters all depend on sub-location navigation existing
+- **To implement:** Room navigation state machine, room-based movement commands,
+  room descriptions via narrator, room-based encounters, integration with:
+  - Darkvision (darkness in rooms without light sources)
+  - Trap detection (Investigation/Perception T3 abilities)
+  - Environmental hazards (room-specific, not just combat grid)
+  - Stealth (moving between rooms undetected)
+  - Light sources (torch/lantern illumination radius)
+
+---
+
 ### Ability Score Improvements (ASI)
 - D&D 5e grants ASI at levels 4, 8, 12, 16, 19
 - Currently NOT implemented in LevelingEngine
