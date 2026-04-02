@@ -8,6 +8,7 @@ import { AbilityParser } from '../../../ruleset/combat/AbilityParser';
 import { MechanicsEngine } from '../../../ruleset/combat/MechanicsEngine';
 import XPBar from './XPBar';
 import Codex from '../codex/Codex';
+import { LevelingEngine } from '../../../ruleset/combat/LevelingEngine';
 
 const SKILLS = [
     { name: 'Acrobatics', ability: 'DEX' },
@@ -40,6 +41,9 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ onClose, isPage = false
     const { pushPage } = useBook();
     const [showFeatures, setShowFeatures] = useState(false);
     const [showPersonality, setShowPersonality] = useState(false);
+    // Pending ASI: tracks ability point increases before confirm
+    // Each ASI grants 2 distributable points
+    const [pendingASI, setPendingASI] = useState<Record<string, number>>({}); // e.g. { STR: 1, DEX: 1 }
 
     if (!state || !state.character) return null;
 
@@ -83,24 +87,75 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ onClose, isPage = false
             <div className={styles.content}>
                 {/* LEFT COLUMN */}
                 <aside className={styles.leftCol}>
-                    {/* ABILITIES */}
+                    {/* ABILITIES with inline ASI +/- */}
                     <section className={styles.section}>
-                        <h2 className={styles.sectionTitle} onClick={() => openCodex('mechanics', 'general_abilities')} style={{ cursor: 'pointer' }}>
-                            Abilities
-                        </h2>
+                        {(() => {
+                            const totalASIPoints = ((char as any)._pendingASI || 0) * 2;
+                            const usedPoints = Object.values(pendingASI).reduce((s, v) => s + v, 0);
+                            const remainingPoints = totalASIPoints - usedPoints;
+                            const hasPendingASI = totalASIPoints > 0;
+                            return (
+                                <>
+                                    <h2 className={styles.sectionTitle}>
+                                        <span onClick={() => openCodex('mechanics', 'general_abilities')} style={{ cursor: 'pointer' }}>Abilities</span>
+                                        {hasPendingASI && (
+                                            <span className={styles.asiPointsLabel}>
+                                                {remainingPoints} point{remainingPoints !== 1 ? 's' : ''} to assign
+                                            </span>
+                                        )}
+                                    </h2>
+                                    {/* Pending ASI confirm/revert */}
+                                    {usedPoints > 0 && (
+                                        <div className={styles.asiPendingBar}>
+                                            <span>{usedPoints} point{usedPoints > 1 ? 's' : ''} assigned</span>
+                                            <button className={styles.asiConfirmBtn} onClick={() => {
+                                                // Apply: convert pending points to ASI calls
+                                                const entries = Object.entries(pendingASI).filter(([, v]) => v > 0);
+                                                if (entries.length === 1 && entries[0][1] === 2) {
+                                                    LevelingEngine.applyASISingle(char, entries[0][0]);
+                                                } else if (entries.length === 2 && entries[0][1] === 1 && entries[1][1] === 1) {
+                                                    LevelingEngine.applyASISplit(char, entries[0][0], entries[1][0]);
+                                                } else if (entries.length === 1 && entries[0][1] === 1) {
+                                                    // Only 1 point used out of 2 — treat as +1 to one ability
+                                                    // D&D doesn't allow this, but we'll apply what's there
+                                                    LevelingEngine.applyASISingle(char, entries[0][0]);
+                                                }
+                                                setPendingASI({});
+                                                updateState();
+                                            }}>Confirm</button>
+                                            <button className={styles.asiRevertBtn} onClick={() => setPendingASI({})}>Revert</button>
+                                        </div>
+                                    )}
+                                </>
+                            );
+                        })()}
                         <div className={styles.abilityGrid}>
                             {Object.entries(stats).map(([name, score]) => {
-                                const val = Number(score);
+                                const val = Number(score) + (pendingASI[name] || 0);
+                                const baseVal = Number(score);
+                                const hasPending = (pendingASI[name] || 0) > 0;
+                                const totalASIPoints = ((char as any)._pendingASI || 0) * 2;
+                                const usedPoints = Object.values(pendingASI).reduce((s, v) => s + v, 0);
+                                const canAdd = totalASIPoints > 0 && usedPoints < totalASIPoints && val < 20;
                                 return (
-                                    <div
-                                        key={name}
-                                        className={styles.abilityRow}
-                                        onClick={() => openCodex('mechanics', `ability_${name.toLowerCase()}`)}
-                                        style={{ cursor: 'pointer' }}
-                                    >
+                                    <div key={name} className={`${styles.abilityRow} ${hasPending ? styles.abilityPending : ''}`}>
                                         <span className={styles.statName}>{name}</span>
                                         <span className={styles.statScore}>{val}</span>
                                         <span className={styles.statMod}>{formatMod(getMod(val))}</span>
+                                        {canAdd && (
+                                            <button
+                                                className={styles.asiPlusBtn}
+                                                onClick={(e) => { e.stopPropagation(); setPendingASI(prev => ({ ...prev, [name]: (prev[name] || 0) + 1 })); }}
+                                                title={`+1 to ${name}`}
+                                            >+</button>
+                                        )}
+                                        {hasPending && (
+                                            <button
+                                                className={styles.asiMinusBtn}
+                                                onClick={(e) => { e.stopPropagation(); setPendingASI(prev => { const n = { ...prev }; n[name] = (n[name] || 0) - 1; if (n[name] <= 0) delete n[name]; return n; }); }}
+                                                title={`-1 from ${name}`}
+                                            >-</button>
+                                        )}
                                     </div>
                                 );
                             })}
