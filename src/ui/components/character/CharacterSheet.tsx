@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './CharacterSheet.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
-import { X, Shield, Zap, Heart, Footprints, CheckCircle2 as Check } from 'lucide-react';
+import { X, Shield, Zap, Heart, Footprints, CheckCircle2 as Check, ChevronDown, ChevronUp, Info, Award, BookOpen, Users } from 'lucide-react';
 import { useGameState } from '../../hooks/useGameState';
 import { useBook } from '../../context/BookContext';
 import { AbilityParser } from '../../../ruleset/combat/AbilityParser';
@@ -36,8 +36,10 @@ interface CharacterSheetProps {
 }
 
 const CharacterSheet: React.FC<CharacterSheetProps> = ({ onClose, isPage = false }) => {
-    const { state } = useGameState();
+    const { state, updateState } = useGameState();
     const { pushPage } = useBook();
+    const [showFeatures, setShowFeatures] = useState(false);
+    const [showPersonality, setShowPersonality] = useState(false);
 
     if (!state || !state.character) return null;
 
@@ -207,73 +209,103 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ onClose, isPage = false
                         </div>
                     </section>
 
-                    {/* CLASS FEATURES */}
-                    <section className={styles.section}>
-                        <h2 className={styles.sectionTitle}>Class Features</h2>
-                        <div className={styles.featuresGrid}>
-                            {AbilityParser.getCombatAbilities(char).map((ability, i) => (
-                                <div key={i} className={styles.featureCard}>
-                                    <div className={styles.featureHeader}>
-                                        <h3 className={styles.featureName}>{ability.name}</h3>
-                                        {ability.actionCost !== 'NONE' && (
-                                            <span className={styles.featureTag}>{ability.actionCost.replace('_', ' ')}</span>
+                    {/* FEATS */}
+                    {(char.feats?.length || 0) > 0 && (
+                        <section className={styles.section}>
+                            <h2 className={styles.sectionTitle}><Award size={14} /> Feats</h2>
+                            <div className={styles.featsList}>
+                                {char.feats?.map((featName: string) => {
+                                    const featData = (globalThis as any).__featRegistry?.[featName];
+                                    return (
+                                        <div key={featName} className={styles.featItem}>
+                                            <span className={styles.featItemName}>{featName}</span>
+                                            {featData && <span className={styles.featItemDesc}>{featData.description}</span>}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </section>
+                    )}
+
+                    {/* CLASS FEATURES — collapsible */}
+                    <button className={styles.popoverButton} onClick={() => setShowFeatures(!showFeatures)}>
+                        <BookOpen size={14} />
+                        <span>Class Features ({AbilityParser.getCombatAbilities(char).length})</span>
+                        {showFeatures ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                    </button>
+                    {showFeatures && (
+                        <section className={styles.popoverPanel}>
+                            <div className={styles.featuresGrid}>
+                                {AbilityParser.getCombatAbilities(char).map((ability, i) => (
+                                    <div key={i} className={styles.featureCard}>
+                                        <div className={styles.featureHeader}>
+                                            <h3 className={styles.featureName}>{ability.name}</h3>
+                                            {ability.actionCost !== 'NONE' && (
+                                                <span className={styles.featureTag}>{ability.actionCost.replace('_', ' ')}</span>
+                                            )}
+                                        </div>
+                                        <p className={styles.featureDesc}>{ability.description}</p>
+                                        {ability.usage && (
+                                            <div className={styles.usageTracker}>
+                                                <span className={styles.usageText}>
+                                                    Uses ({ability.usage.usageType.replace('_', ' ')}): {ability.usage.current} / {ability.usage.max}
+                                                </span>
+                                                <div className={styles.usageDots}>
+                                                    {Array.from({ length: ability.usage.max }).map((_, dotIdx) => (
+                                                        <div
+                                                            key={dotIdx}
+                                                            className={`${styles.dot} ${dotIdx < (ability.usage?.current || 0) ? styles.dotFilled : ''}`}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
                                         )}
                                     </div>
-                                    <p className={styles.featureDesc}>{ability.description}</p>
-                                    {ability.usage && (
-                                        <div className={styles.usageTracker}>
-                                            <span className={styles.usageText}>
-                                                Uses ({ability.usage.usageType.replace('_', ' ')}): {ability.usage.current} / {ability.usage.max}
-                                            </span>
-                                            <div className={styles.usageDots}>
-                                                {Array.from({ length: ability.usage.max }).map((_, dotIdx) => (
-                                                    <div
-                                                        key={dotIdx}
-                                                        className={`${styles.dot} ${dotIdx < (ability.usage?.current || 0) ? styles.dotFilled : ''}`}
-                                                    />
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                            {AbilityParser.getCombatAbilities(char).length === 0 && (
-                                <p style={{ opacity: 0.5 }}>No class features unlocked yet.</p>
-                            )}
-                        </div>
-                    </section>
+                                ))}
+                                {AbilityParser.getCombatAbilities(char).length === 0 && (
+                                    <p style={{ opacity: 0.5 }}>No class features unlocked yet.</p>
+                                )}
+                            </div>
+                        </section>
+                    )}
 
-                    {/* BACKGROUND & TRAITS */}
-                    <section className={styles.section}>
-                        <h2 className={styles.sectionTitle}>Personality & Traits</h2>
-                        <div className={styles.featuresGrid}>
-                            {bio.traits?.map((trait: string, i: number) => (
-                                <div key={i} className={styles.featureCard}>
-                                    <h3 className={styles.featureName}>Trait {i + 1}</h3>
-                                    <p className={styles.featureDesc}>{trait}</p>
-                                </div>
-                            ))}
-                            {bio.ideals?.map((ideal: string, i: number) => (
-                                <div key={`ideal-${i}`} className={styles.featureCard} style={{ borderLeftColor: '#d4a017' }}>
-                                    <h3 className={styles.featureName}>Ideal</h3>
-                                    <p className={styles.featureDesc}>{ideal}</p>
-                                </div>
-                            ))}
-                            {bio.bonds?.map((bond: string, i: number) => (
-                                <div key={`bond-${i}`} className={styles.featureCard} style={{ borderLeftColor: '#a855f7' }}>
-                                    <h3 className={styles.featureName}>Bond</h3>
-                                    <p className={styles.featureDesc}>{bond}</p>
-                                </div>
-                            ))}
-                            {bio.flaws?.map((flaw: string, i: number) => (
-                                <div key={`flaw-${i}`} className={styles.featureCard} style={{ borderLeftColor: '#ff4d4d' }}>
-                                    <h3 className={styles.featureName}>Flaw</h3>
-                                    <p className={styles.featureDesc}>{flaw}</p>
-                                </div>
-                            ))}
-                            {(!bio.traits?.length && !bio.ideals?.length) && <p style={{ opacity: 0.5 }}>No personality traits defined.</p>}
-                        </div>
-                    </section>
+                    {/* PERSONALITY & TRAITS — collapsible */}
+                    <button className={styles.popoverButton} onClick={() => setShowPersonality(!showPersonality)}>
+                        <Users size={14} />
+                        <span>Personality & Traits</span>
+                        {showPersonality ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                    </button>
+                    {showPersonality && (
+                        <section className={styles.popoverPanel}>
+                            <div className={styles.featuresGrid}>
+                                {bio.traits?.map((trait: string, i: number) => (
+                                    <div key={i} className={styles.featureCard}>
+                                        <h3 className={styles.featureName}>Trait {i + 1}</h3>
+                                        <p className={styles.featureDesc}>{trait}</p>
+                                    </div>
+                                ))}
+                                {bio.ideals?.map((ideal: string, i: number) => (
+                                    <div key={`ideal-${i}`} className={styles.featureCard} style={{ borderLeftColor: '#d4a017' }}>
+                                        <h3 className={styles.featureName}>Ideal</h3>
+                                        <p className={styles.featureDesc}>{ideal}</p>
+                                    </div>
+                                ))}
+                                {bio.bonds?.map((bond: string, i: number) => (
+                                    <div key={`bond-${i}`} className={styles.featureCard} style={{ borderLeftColor: '#a855f7' }}>
+                                        <h3 className={styles.featureName}>Bond</h3>
+                                        <p className={styles.featureDesc}>{bond}</p>
+                                    </div>
+                                ))}
+                                {bio.flaws?.map((flaw: string, i: number) => (
+                                    <div key={`flaw-${i}`} className={styles.featureCard} style={{ borderLeftColor: '#ff4d4d' }}>
+                                        <h3 className={styles.featureName}>Flaw</h3>
+                                        <p className={styles.featureDesc}>{flaw}</p>
+                                    </div>
+                                ))}
+                                {(!bio.traits?.length && !bio.ideals?.length) && <p style={{ opacity: 0.5 }}>No personality traits defined.</p>}
+                            </div>
+                        </section>
+                    )}
                 </main>
             </div>
         </div>

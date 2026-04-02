@@ -363,3 +363,72 @@
     font-size: 0.75rem;
     font-weight: 600;
 }
+
+/* Popover buttons for Class Features / Personality */
+.popoverButton {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-top: var(--spacing-sm);
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(139, 115, 85, 0.2);
+    border-radius: var(--radius-sm);
+    color: var(--parchment-text);
+    font-family: var(--font-narrative);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.popoverButton:hover {
+    background: rgba(139, 115, 85, 0.08);
+}
+
+.popoverButton span {
+    flex: 1;
+    text-align: left;
+}
+
+.popoverPanel {
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-top: 2px;
+    border: 1px solid rgba(139, 115, 85, 0.15);
+    border-top: none;
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    background: rgba(244, 228, 188, 0.3);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Feats display */
+.featsList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.featItem {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--spacing-xs) 0;
+    border-bottom: 1px solid rgba(139, 115, 85, 0.1);
+}
+
+.featItem:last-child {
+    border-bottom: none;
+}
+
+.featItemName {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #2980b9;
+}
+
+.featItemDesc {
+    font-size: 0.72rem;
+    opacity: 0.65;
+}

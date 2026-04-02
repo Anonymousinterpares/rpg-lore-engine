@@ -189,12 +189,13 @@ const App: React.FC = () => {
             content: <CharacterSheet onClose={() => setBookOpen(false)} isPage={true} />,
             permanent: true
         },
-        {
-            id: 'skills',
-            label: 'Skills',
-            content: <SkillTreePage />,
-            permanent: true
-        },
+        // Skills tab unplugged — merged into Character tab
+        // {
+        //     id: 'skills',
+        //     label: 'Skills',
+        //     content: <SkillTreePage />,
+        //     permanent: true
+        // },
         {
             id: 'world_map',
             label: 'World Map',
@@ -259,7 +260,7 @@ const App: React.FC = () => {
     };
 
     const openSkillsPage = () => {
-        setActiveBookPageId('skills');
+        setActiveBookPageId('character');
         setBookOpen(true);
     };
 
