@@ -299,3 +299,7 @@ However, most active abilities only deduct a use — the mechanical EFFECT is no
 | Survival | T4 | Tracker (reveal hex enemies) | Enemy reveal on hex |
 | Unarmed Combat | T3 | Stunning Strike (stun 1 round) | Stunned condition on hit |
 | Unarmed Combat | T4 | Pressure Point (paralyze on crit) | Paralyzed condition on crit |
+
+
+# ADDTIONAL HOLE DISCOVERED:
+on level up for spellcaster, there is no new spell addition! verify & analyse!

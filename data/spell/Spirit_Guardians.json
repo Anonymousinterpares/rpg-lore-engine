@@ -38,6 +38,10 @@
   },
   "damage": {
     "dice": "3d8",
-    "type": "Radiant"
+    "type": "Radiant",
+    "scaling": {
+      "levels": [4, 5, 6, 7, 8, 9],
+      "values": ["4d8", "5d8", "6d8", "7d8", "8d8", "9d8"]
+    }
   }
 }

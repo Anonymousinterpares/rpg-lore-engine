@@ -1,19 +1,14 @@
 {
-  "saveId": "0efbfdc8-8a14-4507-84a8-e29ab51b02b5",
+  "saveId": "df4cab25-f31e-4a64-94bf-52ed6866c561",
   "saveVersion": 1,
   "worldSeed": 25275,
   "createdAt": "2026-04-02T10:11:28.007Z",
   "lastSavedAt": "2026-04-02T10:11:28.007Z",
   "playTimeSeconds": 0,
-  "explorationBlindnessUntil": 0,
-  "findThePathActiveUntil": 0,
-  "debugLog": [
-    "[12:11:37] [NPC] Processing turn 50 for 0 NPCs"
-  ],
   "character": {
     "name": "test 2",
     "sex": "male",
-    "level": 1,
+    "level": 5,
     "race": "Half-Elf",
     "darkvision": 60,
     "class": "Wizard",
@@ -42,9 +37,9 @@
     ],
     "skills": {
       "Insight": {
-        "tier": 1,
+        "tier": 2,
         "baseTier": 1,
-        "pointsInvested": 0,
+        "pointsInvested": 3,
         "chosenAbility": {}
       },
       "Religion": {
@@ -60,9 +55,9 @@
         "chosenAbility": {}
       },
       "Arcana": {
-        "tier": 1,
+        "tier": 2,
         "baseTier": 1,
-        "pointsInvested": 0,
+        "pointsInvested": 3,
         "chosenAbility": {}
       },
       "Investigation": {
@@ -82,16 +77,22 @@
         "baseTier": 1,
         "pointsInvested": 0,
         "chosenAbility": {}
+      },
+      "Intimidation": {
+        "tier": 1,
+        "pointsInvested": 2,
+        "chosenAbility": {}
       }
     },
     "skillPoints": {
       "available": 0,
-      "totalEarned": 0
+      "totalEarned": 8
     },
+    "feats": [],
     "weaponProficiencies": [],
     "hp": {
-      "current": 6,
-      "max": 6,
+      "current": 22,
+      "max": 22,
       "temp": 0
     },
     "deathSaves": {
@@ -99,21 +100,22 @@
       "failures": 0
     },
     "hitDice": {
-      "current": 1,
-      "max": 1,
+      "current": 5,
+      "max": 5,
       "dieType": "1d6"
     },
     "spellSlots": {
       "1": {
+        "current": 4,
+        "max": 4
+      },
+      "2": {
+        "current": 3,
+        "max": 3
+      },
+      "3": {
         "current": 2,
         "max": 2
-      }
-    },
-    "featureUsages": {
-      "Arcane Recovery": {
-        "current": 1,
-        "max": 1,
-        "usageType": "SHORT_REST"
       }
     },
     "cantripsKnown": [
@@ -122,7 +124,14 @@
       "Poison Spray"
     ],
     "knownSpells": [],
-    "preparedSpells": [],
+    "preparedSpells": [
+      "Magic Missile",
+      "Mage Armor",
+      "Shield",
+      "Thunderwave",
+      "Color Spray",
+      "Burning Hands"
+    ],
     "spellbook": [
       "Magic Missile",
       "Mage Armor",
@@ -174,19 +183,31 @@
       "True Strike",
       "Unseen Servant"
     ],
-    "ac": 10,
+    "ac": 13,
+    "featureUsages": {
+      "Arcane Recovery": {
+        "current": 1,
+        "max": 1,
+        "usageType": "SHORT_REST"
+      }
+    },
     "inventory": {
       "gold": {
         "cp": 0,
         "sp": 0,
         "ep": 0,
         "gp": 15,
-        "pp": 0
+        "pp": 110
       },
       "items": [
         {
+          "id": "Amulet",
+          "instanceId": "9f2e8c69-d483-4608-bae7-e5317328a087",
           "name": "Amulet",
           "type": "Adventuring Gear",
+          "weight": 1,
+          "quantity": 1,
+          "equipped": false,
           "cost": {
             "cp": 0,
             "sp": 0,
@@ -194,16 +215,16 @@
             "gp": 5,
             "pp": 0
           },
-          "weight": 1,
-          "description": "A holy symbol is a representation of a god or pantheon. It might be an amulet depicting a symbol representing a deity, the same symbol carefully engraved or inlaid as an emblem on a shield, or a tiny box holding a fragment of a sacred relic.\nAppendix B lists the symbols commonly associated with many gods in the multiverse. A cleric or paladin can use a holy symbol as a spellcasting focus. To use the symbol in this way, the caster must hold it in hand, wear it visibly, or bear it on a shield.",
-          "id": "Amulet",
-          "quantity": 1,
-          "equipped": false,
-          "instanceId": "9f2e8c69-d483-4608-bae7-e5317328a087"
+          "description": "A holy symbol is a representation of a god or pantheon. It might be an amulet depicting a symbol representing a deity, the same symbol carefully engraved or inlaid as an emblem on a shield, or a tiny box holding a fragment of a sacred relic.\nAppendix B lists the symbols commonly associated with many gods in the multiverse. A cleric or paladin can use a holy symbol as a spellcasting focus. To use the symbol in this way, the caster must hold it in hand, wear it visibly, or bear it on a shield."
         },
         {
+          "id": "Book",
+          "instanceId": "80268b16-aa81-49f3-9ddb-a9a31d4ccbab",
           "name": "Book",
           "type": "Adventuring Gear",
+          "weight": 5,
+          "quantity": 1,
+          "equipped": false,
           "cost": {
             "cp": 0,
             "sp": 0,
@@ -211,64 +232,64 @@
             "gp": 25,
             "pp": 0
           },
-          "weight": 5,
-          "description": "A book might contain poetry, historical accounts, information pertaining to a particular field of lore, diagrams and notes on gnomish contraptions, or just about anything else that can be represented using text or pictures. A book of spells is a spellbook (described later in this section).",
-          "id": "Book",
-          "quantity": 1,
-          "equipped": false,
-          "instanceId": "80268b16-aa81-49f3-9ddb-a9a31d4ccbab"
+          "description": "A book might contain poetry, historical accounts, information pertaining to a particular field of lore, diagrams and notes on gnomish contraptions, or just about anything else that can be represented using text or pictures. A book of spells is a spellbook (described later in this section)."
         },
         {
+          "id": "Incense",
+          "instanceId": "938147a6-340f-4eaf-ac5a-4cb26c4225bb",
           "name": "Incense",
           "type": "Adventuring Gear",
-          "cost": {
-            "cp": 0,
-            "sp": 0,
-            "ep": 0,
-            "gp": 1,
-            "pp": 0
-          },
           "weight": 0,
-          "id": "Incense",
           "quantity": 5,
           "equipped": false,
-          "instanceId": "938147a6-340f-4eaf-ac5a-4cb26c4225bb"
-        },
-        {
-          "name": "Vestments",
-          "type": "Adventuring Gear",
           "cost": {
             "cp": 0,
             "sp": 0,
             "ep": 0,
             "gp": 1,
             "pp": 0
-          },
-          "weight": 4,
-          "id": "Vestments",
-          "quantity": 1,
-          "equipped": false,
-          "instanceId": "2357ffc6-e8ee-4628-b8da-abfebc406861"
+          }
         },
         {
+          "id": "Vestments",
+          "instanceId": "2357ffc6-e8ee-4628-b8da-abfebc406861",
+          "name": "Vestments",
+          "type": "Adventuring Gear",
+          "weight": 4,
+          "quantity": 1,
+          "equipped": false,
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 1,
+            "pp": 0
+          }
+        },
+        {
+          "id": "Clothes, common",
+          "instanceId": "71f569a8-fe61-4e8e-91eb-fb66dc114762",
           "name": "Clothes, common",
           "type": "Adventuring Gear",
+          "weight": 3,
+          "quantity": 1,
+          "equipped": false,
           "cost": {
             "cp": 0,
             "sp": 5,
             "ep": 0,
             "gp": 0,
             "pp": 0
-          },
-          "weight": 3,
-          "id": "Clothes, common",
-          "quantity": 1,
-          "equipped": false,
-          "instanceId": "71f569a8-fe61-4e8e-91eb-fb66dc114762"
+          }
         },
         {
+          "id": "Pouch",
+          "instanceId": "5bf27b61-3c49-4f10-a3ee-c018373f8748",
           "name": "Pouch",
           "type": "Adventuring Gear",
+          "weight": 1,
+          "quantity": 1,
+          "equipped": false,
           "cost": {
             "cp": 0,
             "sp": 5,
@@ -276,23 +297,214 @@
             "gp": 0,
             "pp": 0
           },
-          "weight": 1,
-          "description": "A cloth or leather pouch can hold up to 20 sling bullets or 50 blowgun needles, among other things. A compartmentalized pouch for holding spell components is called a component pouch (described earlier in this section).",
-          "id": "Pouch",
+          "description": "A cloth or leather pouch can hold up to 20 sling bullets or 50 blowgun needles, among other things. A compartmentalized pouch for holding spell components is called a component pouch (described earlier in this section)."
+        },
+        {
+          "id": "Uncommon Dagger +1",
+          "name": "Uncommon Dagger +1",
+          "type": "Weapon",
           "quantity": 1,
-          "equipped": false,
-          "instanceId": "5bf27b61-3c49-4f10-a3ee-c018373f8748"
+          "weight": 1,
+          "instanceId": "forge_1775134176100_qkjjsj",
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 10,
+            "pp": 0
+          },
+          "damage": {
+            "dice": "1d4",
+            "type": "Piercing"
+          },
+          "properties": [
+            "Finesse",
+            "Light",
+            "Thrown",
+            "Monk"
+          ],
+          "range": {
+            "normal": 20,
+            "long": 60
+          },
+          "rarity": "Uncommon",
+          "itemLevel": 12,
+          "isMagic": false,
+          "isForged": true,
+          "forgeSource": "Archmage CR 12 Plains",
+          "modifiers": [
+            {
+              "type": "HitBonus",
+              "target": "Attack",
+              "value": 1
+            }
+          ],
+          "magicalProperties": [],
+          "equipped": true
+        },
+        {
+          "id": "Rare padded Armor +3",
+          "name": "Rare padded Armor +3",
+          "type": "Armor",
+          "quantity": 1,
+          "weight": 8,
+          "instanceId": "forge_1775134176100_f7hcxt",
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 250,
+            "pp": 0
+          },
+          "acCalculated": "11",
+          "stealthDisadvantage": true,
+          "rarity": "Rare",
+          "itemLevel": 12,
+          "isMagic": true,
+          "isForged": true,
+          "forgeSource": "Archmage CR 12 Plains",
+          "modifiers": [
+            {
+              "type": "ACBonus",
+              "target": "AC",
+              "value": 3
+            },
+            {
+              "type": "DamageResistance",
+              "target": "Fire",
+              "value": 1
+            }
+          ],
+          "magicalProperties": [
+            {
+              "type": "Resistance",
+              "element": "Fire",
+              "description": "Resistance to Fire damage"
+            }
+          ],
+          "trueRarity": "Very Rare",
+          "trueName": "Searing Silkwrap of the Scorched Plains",
+          "_trueCostGp": 2500,
+          "identified": false,
+          "perceivedRarity": "Rare",
+          "perceivedName": "Rare padded Armor +3",
+          "equipped": true,
+          "lore": "This padded coat is woven with ash‑colored threads that smolder faintly, granting the wearer resistance to fire damage. Legends say it was forged from the lingering heat of the archmage's own spellfire on the endless grasslands."
+        },
+        {
+          "id": "Spell Scroll: mage armor",
+          "name": "Spell Scroll: mage armor",
+          "type": "Spell Scroll",
+          "quantity": 1,
+          "weight": 0,
+          "instanceId": "scroll_1775134176100_0.8592836816673365",
+          "spellName": "mage armor",
+          "spellLevel": 1,
+          "rarity": "Common",
+          "isMagic": true,
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 100,
+            "pp": 0
+          },
+          "description": "A magic scroll containing the spell mage armor.",
+          "equipped": false
+        },
+        {
+          "id": "Spell Scroll: magic missile",
+          "name": "Spell Scroll: magic missile",
+          "type": "Spell Scroll",
+          "quantity": 1,
+          "weight": 0,
+          "instanceId": "scroll_1775134176100_0.6576573293954521",
+          "spellName": "magic missile",
+          "spellLevel": 1,
+          "rarity": "Common",
+          "isMagic": true,
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 100,
+            "pp": 0
+          },
+          "description": "A magic scroll containing the spell magic missile.",
+          "equipped": false
+        },
+        {
+          "id": "Spell Scroll: misty step",
+          "name": "Spell Scroll: misty step",
+          "type": "Spell Scroll",
+          "quantity": 1,
+          "weight": 0,
+          "instanceId": "scroll_1775134176100_0.6588462327967495",
+          "spellName": "misty step",
+          "spellLevel": 2,
+          "rarity": "Uncommon",
+          "isMagic": true,
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 250,
+            "pp": 0
+          },
+          "description": "A magic scroll containing the spell misty step.",
+          "equipped": false
+        },
+        {
+          "id": "Spell Scroll: banishment",
+          "name": "Spell Scroll: banishment",
+          "type": "Spell Scroll",
+          "quantity": 1,
+          "weight": 0,
+          "instanceId": "scroll_1775134176100_0.5041340808983423",
+          "spellName": "banishment",
+          "spellLevel": 4,
+          "rarity": "Rare",
+          "isMagic": true,
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 2500,
+            "pp": 0
+          },
+          "description": "A magic scroll containing the spell banishment.",
+          "equipped": false
+        },
+        {
+          "id": "Spell Scroll: cone of cold",
+          "name": "Spell Scroll: cone of cold",
+          "type": "Spell Scroll",
+          "quantity": 1,
+          "weight": 0,
+          "instanceId": "scroll_1775134176100_0.2365815655179062",
+          "spellName": "cone of cold",
+          "spellLevel": 5,
+          "rarity": "Rare",
+          "isMagic": true,
+          "cost": {
+            "cp": 0,
+            "sp": 0,
+            "ep": 0,
+            "gp": 5000,
+            "pp": 0
+          },
+          "description": "A magic scroll containing the spell cone of cold.",
+          "equipped": false
         }
       ]
     },
-    "equipmentSlots": {},
-    "attunedItems": [],
-    "xp": 0,
-    "inspiration": false,
-    "knownEntities": {
-      "monsters": [],
-      "items": []
+    "equipmentSlots": {
+      "mainHand": "forge_1775134176100_qkjjsj",
+      "armor": "forge_1775134176100_f7hcxt"
     },
+    "attunedItems": [],
+    "xp": 9000,
+    "inspiration": false,
     "biography": {
       "background": "Acolyte",
       "traits": [
@@ -336,7 +548,12 @@
         }
       ]
     },
-    "feats": []
+    "knownEntities": {
+      "monsters": [
+        "archmage"
+      ],
+      "items": []
+    }
   },
   "companions": [],
   "mode": "EXPLORATION",
@@ -351,11 +568,11 @@
   },
   "worldTime": {
     "hour": 9,
-    "minute": 5,
+    "minute": 11,
     "day": 1,
     "month": 1,
     "year": 1489,
-    "totalTurns": 50
+    "totalTurns": 110
   },
   "worldMap": {
     "grid_id": "0efbfdc8-8a14-4507-84a8-e29ab51b02b5",
@@ -365,9 +582,10 @@
           0,
           0
         ],
-        "name": "Initial Landing Site",
         "generated": true,
+        "isQuestReserved": false,
         "biome": "Plains",
+        "name": "Initial Landing Site",
         "description": "A vast expanse of plains.",
         "traversable_sides": {
           "N": true,
@@ -398,16 +616,19 @@
         "visualVariant": 1,
         "npcs": [
           "f87623be-4137-4a0d-847a-a3deea6aa719"
-        ]
+        ],
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN"
       },
       "0,1": {
         "coordinates": [
           0,
           1
         ],
-        "name": "Jungle (Uncharted Territory)",
         "generated": true,
+        "isQuestReserved": false,
         "biome": "Jungle",
+        "name": "Jungle (Uncharted Territory)",
         "description": "A vast expanse of jungle.",
         "traversable_sides": {
           "N": true,
@@ -437,16 +658,19 @@
         "namingSource": "engine",
         "visualVariant": 5,
         "npcs": [],
-        "connections": "5:P:0"
+        "connections": "5:P:0",
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN"
       },
       "0,-1": {
         "coordinates": [
           0,
           -1
         ],
-        "name": "Plains (Uncharted Territory)",
         "generated": true,
+        "isQuestReserved": false,
         "biome": "Plains",
+        "name": "Plains (Uncharted Territory)",
         "description": "A vast expanse of plains.",
         "traversable_sides": {
           "N": true,
@@ -476,16 +700,19 @@
         "namingSource": "engine",
         "visualVariant": 4,
         "npcs": [],
-        "connections": "4:R:1"
+        "connections": "4:R:1",
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN"
       },
       "1,0": {
         "coordinates": [
           1,
           0
         ],
-        "name": "Hills (Uncharted Territory)",
         "generated": true,
+        "isQuestReserved": false,
         "biome": "Hills",
+        "name": "Hills (Uncharted Territory)",
         "description": "A vast expanse of hills.",
         "traversable_sides": {
           "N": true,
@@ -503,16 +730,19 @@
         "namingSource": "engine",
         "visualVariant": 5,
         "npcs": [],
-        "connections": "1:P:1"
+        "connections": "1:P:1",
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN"
       },
       "-1,1": {
         "coordinates": [
           -1,
           1
         ],
-        "name": "Jungle (Uncharted Territory)",
         "generated": true,
+        "isQuestReserved": false,
         "biome": "Jungle",
+        "name": "Jungle (Uncharted Territory)",
         "description": "A vast expanse of jungle.",
         "traversable_sides": {
           "N": true,
@@ -532,16 +762,19 @@
         "npcs": [
           "be112528-ba95-43fa-90df-e62e4425c5fe"
         ],
-        "connections": "0:P:0,5:P:0,4:P:0"
+        "connections": "0:P:0,5:P:0,4:P:0",
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN"
       },
       "1,-1": {
         "coordinates": [
           1,
           -1
         ],
-        "name": "Desert (Uncharted Territory)",
         "generated": true,
+        "isQuestReserved": false,
         "biome": "Desert",
+        "name": "Desert (Uncharted Territory)",
         "description": "A vast expanse of desert.",
         "traversable_sides": {
           "N": true,
@@ -558,16 +791,19 @@
         "inLineOfSight": true,
         "namingSource": "engine",
         "visualVariant": 5,
-        "npcs": []
+        "npcs": [],
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN"
       },
       "-1,0": {
         "coordinates": [
           -1,
           0
         ],
-        "name": "Jungle (Uncharted Territory)",
         "generated": true,
+        "isQuestReserved": false,
         "biome": "Jungle",
+        "name": "Jungle (Uncharted Territory)",
         "description": "A vast expanse of jungle.",
         "traversable_sides": {
           "N": true,
@@ -597,7 +833,9 @@
         "namingSource": "engine",
         "visualVariant": 3,
         "npcs": [],
-        "connections": "4:P:1"
+        "connections": "4:P:1",
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN"
       },
       "0,2": {
         "coordinates": [
@@ -605,20 +843,10 @@
           2
         ],
         "generated": true,
-        "visited": false,
+        "isQuestReserved": false,
         "biome": "Jungle",
         "name": "Uncharted Territory",
         "description": "The mists of the unknown cling to this place.",
-        "inLineOfSight": false,
-        "interest_points": [],
-        "resourceNodes": [],
-        "openedContainers": {},
-        "namingSource": "engine",
-        "visualVariant": 4,
-        "npcs": [],
-        "isQuestReserved": false,
-        "isNpcNamed": false,
-        "fogOfWarLevel": "HIDDEN",
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -627,7 +855,17 @@
           "SE": true,
           "SW": true
         },
-        "connections": "2:P:0,4:P:0"
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": false,
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [],
+        "connections": "2:P:0,4:P:0",
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN"
       },
       "1,1": {
         "coordinates": [
@@ -635,11 +873,18 @@
           1
         ],
         "generated": true,
-        "visited": false,
+        "isQuestReserved": false,
         "biome": "Jungle",
         "name": "Uncharted Territory",
         "description": "The mists of the unknown cling to this place.",
-        "inLineOfSight": false,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
         "interest_points": [],
         "resourceNodes": [
           {
@@ -655,21 +900,14 @@
           }
         ],
         "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": false,
         "namingSource": "engine",
         "visualVariant": 3,
         "npcs": [],
-        "isQuestReserved": false,
+        "connections": "5:P:0,2:P:1",
         "isNpcNamed": false,
-        "fogOfWarLevel": "HIDDEN",
-        "traversable_sides": {
-          "N": true,
-          "S": true,
-          "NE": true,
-          "NW": true,
-          "SE": true,
-          "SW": true
-        },
-        "connections": "5:P:0,2:P:1"
+        "fogOfWarLevel": "HIDDEN"
       },
       "-1,2": {
         "coordinates": [
@@ -677,20 +915,10 @@
           2
         ],
         "generated": true,
-        "visited": false,
+        "isQuestReserved": false,
         "biome": "Jungle",
         "name": "Uncharted Territory",
         "description": "The mists of the unknown cling to this place.",
-        "inLineOfSight": false,
-        "interest_points": [],
-        "resourceNodes": [],
-        "openedContainers": {},
-        "namingSource": "engine",
-        "visualVariant": 2,
-        "npcs": [],
-        "isQuestReserved": false,
-        "isNpcNamed": false,
-        "fogOfWarLevel": "HIDDEN",
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -699,7 +927,17 @@
           "SE": true,
           "SW": true
         },
-        "connections": "3:P:0,1:P:0,2:P:0,4:P:0"
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": false,
+        "namingSource": "engine",
+        "visualVariant": 2,
+        "npcs": [],
+        "connections": "3:P:0,1:P:0,2:P:0,4:P:0",
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN"
       },
       "0,-2": {
         "coordinates": [
@@ -707,11 +945,18 @@
           -2
         ],
         "generated": true,
-        "visited": false,
+        "isQuestReserved": false,
         "biome": "Mountains",
         "name": "Uncharted Territory",
         "description": "The mists of the unknown cling to this place.",
-        "inLineOfSight": false,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
         "interest_points": [],
         "resourceNodes": [
           {
@@ -727,20 +972,13 @@
           }
         ],
         "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": false,
         "namingSource": "engine",
         "visualVariant": 5,
         "npcs": [],
-        "isQuestReserved": false,
         "isNpcNamed": false,
-        "fogOfWarLevel": "HIDDEN",
-        "traversable_sides": {
-          "N": true,
-          "S": true,
-          "NE": true,
-          "NW": true,
-          "SE": true,
-          "SW": true
-        }
+        "fogOfWarLevel": "HIDDEN"
       },
       "1,-2": {
         "coordinates": [
@@ -748,49 +986,10 @@
           -2
         ],
         "generated": true,
-        "visited": false,
+        "isQuestReserved": false,
         "biome": "Mountains",
         "name": "Uncharted Territory",
         "description": "The mists of the unknown cling to this place.",
-        "inLineOfSight": false,
-        "interest_points": [],
-        "resourceNodes": [],
-        "openedContainers": {},
-        "namingSource": "engine",
-        "visualVariant": 3,
-        "npcs": [],
-        "isQuestReserved": false,
-        "isNpcNamed": false,
-        "fogOfWarLevel": "HIDDEN",
-        "traversable_sides": {
-          "N": true,
-          "S": true,
-          "NE": true,
-          "NW": true,
-          "SE": true,
-          "SW": true
-        }
-      },
-      "-1,-1": {
-        "coordinates": [
-          -1,
-          -1
-        ],
-        "generated": true,
-        "visited": false,
-        "biome": "Hills",
-        "name": "Uncharted Territory",
-        "description": "The mists of the unknown cling to this place.",
-        "inLineOfSight": false,
-        "interest_points": [],
-        "resourceNodes": [],
-        "openedContainers": {},
-        "namingSource": "engine",
-        "visualVariant": 5,
-        "npcs": [],
-        "isQuestReserved": false,
-        "isNpcNamed": false,
-        "fogOfWarLevel": "HIDDEN",
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -799,7 +998,46 @@
           "SE": true,
           "SW": true
         },
-        "connections": "1:P:1,5:P:1"
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": false,
+        "namingSource": "engine",
+        "visualVariant": 3,
+        "npcs": [],
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN"
+      },
+      "-1,-1": {
+        "coordinates": [
+          -1,
+          -1
+        ],
+        "generated": true,
+        "isQuestReserved": false,
+        "biome": "Hills",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": false,
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": [],
+        "connections": "1:P:1,5:P:1",
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN"
       },
       "2,0": {
         "coordinates": [
@@ -807,11 +1045,18 @@
           0
         ],
         "generated": true,
-        "visited": false,
+        "isQuestReserved": false,
         "biome": "Plains",
         "name": "Uncharted Territory",
         "description": "The mists of the unknown cling to this place.",
-        "inLineOfSight": false,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
         "interest_points": [],
         "resourceNodes": [
           {
@@ -827,21 +1072,14 @@
           }
         ],
         "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": false,
         "namingSource": "engine",
         "visualVariant": 4,
         "npcs": [],
-        "isQuestReserved": false,
+        "connections": "5:R:1,4:R:1,3:R:1",
         "isNpcNamed": false,
-        "fogOfWarLevel": "HIDDEN",
-        "traversable_sides": {
-          "N": true,
-          "S": true,
-          "NE": true,
-          "NW": true,
-          "SE": true,
-          "SW": true
-        },
-        "connections": "5:R:1,4:R:1,3:R:1"
+        "fogOfWarLevel": "HIDDEN"
       },
       "2,-1": {
         "coordinates": [
@@ -849,20 +1087,10 @@
           -1
         ],
         "generated": true,
-        "visited": false,
+        "isQuestReserved": false,
         "biome": "Hills",
         "name": "Uncharted Territory",
         "description": "The mists of the unknown cling to this place.",
-        "inLineOfSight": false,
-        "interest_points": [],
-        "resourceNodes": [],
-        "openedContainers": {},
-        "namingSource": "engine",
-        "visualVariant": 4,
-        "npcs": [],
-        "isQuestReserved": false,
-        "isNpcNamed": false,
-        "fogOfWarLevel": "HIDDEN",
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -871,7 +1099,17 @@
           "SE": true,
           "SW": true
         },
-        "connections": "0:P:1"
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": false,
+        "namingSource": "engine",
+        "visualVariant": 4,
+        "npcs": [],
+        "connections": "0:P:1",
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN"
       },
       "-2,2": {
         "coordinates": [
@@ -879,20 +1117,10 @@
           2
         ],
         "generated": true,
-        "visited": false,
+        "isQuestReserved": false,
         "biome": "Jungle",
         "name": "Uncharted Territory",
         "description": "The mists of the unknown cling to this place.",
-        "inLineOfSight": false,
-        "interest_points": [],
-        "resourceNodes": [],
-        "openedContainers": {},
-        "namingSource": "engine",
-        "visualVariant": 5,
-        "npcs": [],
-        "isQuestReserved": false,
-        "isNpcNamed": false,
-        "fogOfWarLevel": "HIDDEN",
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -901,7 +1129,17 @@
           "SE": true,
           "SW": true
         },
-        "connections": "1:P:0,2:P:0,3:P:0"
+        "interest_points": [],
+        "resourceNodes": [],
+        "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": false,
+        "namingSource": "engine",
+        "visualVariant": 5,
+        "npcs": [],
+        "connections": "1:P:0,2:P:0,3:P:0",
+        "isNpcNamed": false,
+        "fogOfWarLevel": "HIDDEN"
       },
       "-2,1": {
         "coordinates": [
@@ -909,11 +1147,18 @@
           1
         ],
         "generated": true,
-        "visited": false,
+        "isQuestReserved": false,
         "biome": "Jungle",
         "name": "Uncharted Territory",
         "description": "The mists of the unknown cling to this place.",
-        "inLineOfSight": false,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
         "interest_points": [],
         "resourceNodes": [
           {
@@ -929,12 +1174,25 @@
           }
         ],
         "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": false,
         "namingSource": "engine",
         "visualVariant": 1,
         "npcs": [],
-        "isQuestReserved": false,
+        "connections": "0:P:0,1:P:0,3:P:1",
         "isNpcNamed": false,
-        "fogOfWarLevel": "HIDDEN",
+        "fogOfWarLevel": "HIDDEN"
+      },
+      "2,-2": {
+        "coordinates": [
+          2,
+          -2
+        ],
+        "generated": true,
+        "isQuestReserved": false,
+        "biome": "Mountains",
+        "name": "Uncharted Territory",
+        "description": "The mists of the unknown cling to this place.",
         "traversable_sides": {
           "N": true,
           "S": true,
@@ -943,36 +1201,16 @@
           "SE": true,
           "SW": true
         },
-        "connections": "0:P:0,1:P:0,3:P:1"
-      },
-      "2,-2": {
-        "coordinates": [
-          2,
-          -2
-        ],
-        "generated": true,
-        "visited": false,
-        "biome": "Mountains",
-        "name": "Uncharted Territory",
-        "description": "The mists of the unknown cling to this place.",
-        "inLineOfSight": false,
         "interest_points": [],
         "resourceNodes": [],
         "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": false,
         "namingSource": "engine",
         "visualVariant": 4,
         "npcs": [],
-        "isQuestReserved": false,
         "isNpcNamed": false,
-        "fogOfWarLevel": "HIDDEN",
-        "traversable_sides": {
-          "N": true,
-          "S": true,
-          "NE": true,
-          "NW": true,
-          "SE": true,
-          "SW": true
-        }
+        "fogOfWarLevel": "HIDDEN"
       },
       "-2,0": {
         "coordinates": [
@@ -980,11 +1218,18 @@
           0
         ],
         "generated": true,
-        "visited": false,
+        "isQuestReserved": false,
         "biome": "Plains",
         "name": "Uncharted Territory",
         "description": "The mists of the unknown cling to this place.",
-        "inLineOfSight": false,
+        "traversable_sides": {
+          "N": true,
+          "S": true,
+          "NE": true,
+          "NW": true,
+          "SE": true,
+          "SW": true
+        },
         "interest_points": [],
         "resourceNodes": [
           {
@@ -1000,27 +1245,16 @@
           }
         ],
         "openedContainers": {},
+        "visited": false,
+        "inLineOfSight": false,
         "namingSource": "engine",
         "visualVariant": 3,
         "npcs": [],
-        "isQuestReserved": false,
+        "connections": "0:R:1,1:R:1,2:R:1",
         "isNpcNamed": false,
-        "fogOfWarLevel": "HIDDEN",
-        "traversable_sides": {
-          "N": true,
-          "S": true,
-          "NE": true,
-          "NW": true,
-          "SE": true,
-          "SW": true
-        },
-        "connections": "0:R:1,1:R:1,2:R:1"
+        "fogOfWarLevel": "HIDDEN"
       }
     },
-    "discoveredHexIds": [
-      "0,0"
-    ],
-    "lastGeneratedTurn": 0,
     "coastlines": []
   },
   "subLocations": [],
@@ -1030,57 +1264,64 @@
       "id": "tutorial_01",
       "title": "The First Step",
       "description": "You awake in a strange clearing. The air is fresh, but the silence is heavy. You must get your bearings.",
-      "status": "ACTIVE",
       "turnAccepted": 0,
-      "isNew": true,
+      "status": "ACTIVE",
       "objectives": [
         {
           "id": "obj_master_booklet",
+          "description": "Master the Booklet: View all pages (Character, Map, Quests, Equipment, Codex)",
           "type": "EXPLORE",
           "targetId": "tutorial",
-          "isHidden": false,
-          "description": "Master the Booklet: View all pages (Character, Map, Quests, Equipment, Codex)",
+          "currentProgress": 3,
+          "maxProgress": 5,
           "isCompleted": false,
-          "currentProgress": 1,
-          "maxProgress": 5
+          "isHidden": false
         },
         {
           "id": "obj_study_gear",
+          "description": "Study Your Gear: Examine an item in your inventory",
           "type": "EXPLORE",
           "targetId": "tutorial",
-          "isHidden": false,
-          "description": "Study Your Gear: Examine an item in your inventory",
-          "isCompleted": false,
           "currentProgress": 0,
-          "maxProgress": 1
+          "maxProgress": 1,
+          "isCompleted": false,
+          "isHidden": false
         },
         {
           "id": "obj_begin_journey",
+          "description": "Begin the Journey: Move to a neighboring hex",
           "type": "EXPLORE",
           "targetId": "tutorial",
-          "isHidden": false,
-          "description": "Begin the Journey: Move to a neighboring hex",
-          "isCompleted": false,
           "currentProgress": 0,
-          "maxProgress": 1
+          "maxProgress": 1,
+          "isCompleted": false,
+          "isHidden": false
         }
       ],
       "rewards": {
         "xp": 50,
         "gold": {
-          "gp": 10,
-          "sp": 0,
           "cp": 0,
+          "sp": 0,
           "ep": 0,
+          "gp": 10,
           "pp": 0
         },
         "items": []
-      }
+      },
+      "isNew": true
     }
   ],
   "factions": [],
   "storySummary": "started their journey as a Half-Elf Wizard with the Acolyte background.",
-  "lastNarrative": "Dawn spills a pale gold across the endless plains, the grass whispering under a gentle breeze that carries the faint scent of wild herbs. You lie on the soft earth, the cool dew soaking your cloak, and the world feels both new and strangely familiar. In the distance, the low, mournful howl of an unseen creature rolls over the hills to the southeast, a sound that prickles the hair on the back of your neck. A lone, shadowy figure stands motionless near a lone oak at the edge of the plain, its features indistinct but unmistakably watching you. To the north, the plains stretch into a hazy line where the horizon blurs into mist; southward, the jungle looms, dense and dark, while the distant hills rise like silent sentinels. An uneasy curiosity tugs at you – how did you come to this place, and what calls from those far hills?\n\nYou might:\n1. Scan the immediate area, perhaps using a spell like *detect magic* or simply looking for clues about your arrival.\n2. Approach the unknown figure to see if it offers any answers or aid.\n3. Follow the direction of the howl toward the hills, hoping to uncover the source before night falls.\n\nThe morning air is crisp, the world alive with possibility, yet the distant howl reminds you that unknown dangers may already be stirring.",
+  "lastNarrative": "She runs her fingertips over the faint sigils of the Rare padded Armor +3, but the arcane symbols blur like mist, offering no clue. A second, more desperate probing of the enchantments only summons a faint hum that fades before any meaning can be grasped. Perhaps a",
+  "_examineCooldowns": {
+    "examine_attempts": [
+      110
+    ]
+  },
+  "_pendingASI": 0,
+  "_abilityUses": {},
   "conversationHistory": [
     {
       "role": "player",
@@ -1091,12 +1332,78 @@
       "role": "narrator",
       "content": "Dawn spills a pale gold across the endless plains, the grass whispering under a gentle breeze that carries the faint scent of wild herbs. You lie on the soft earth, the cool dew soaking your cloak, and the world feels both new and strangely familiar. In the distance, the low, mournful howl of an unseen creature rolls over the hills to the southeast, a sound that prickles the hair on the back of your neck. A lone, shadowy figure stands motionless near a lone oak at the edge of the plain, its features indistinct but unmistakably watching you. To the north, the plains stretch into a hazy line where the horizon blurs into mist; southward, the jungle looms, dense and dark, while the distant hills rise like silent sentinels. An uneasy curiosity tugs at you – how did you come to this place, and what calls from those far hills?\n\nYou might:\n1. Scan the immediate area, perhaps using a spell like *detect magic* or simply looking for clues about your arrival.\n2. Approach the unknown figure to see if it offers any answers or aid.\n3. Follow the direction of the howl toward the hills, hoping to uncover the source before night falls.\n\nThe morning air is crisp, the world alive with possibility, yet the distant howl reminds you that unknown dangers may already be stirring.",
       "turnNumber": 0
+    },
+    {
+      "role": "narrator",
+      "content": "On the wind‑swept plains, the Archmage lingered, eyes flicking for a crack in the enemy’s shield. At the strike of the first round, test 2 seized the moment, channeling a torrent of arcane fire that ripped through the ranks. The foes crumbled in a blaze of light, the final scream echoing as the last adversary fell. Victory roared across the battlefield, and the hero surged upward, leveling anew as the plains fell silent.",
+      "turnNumber": 110
+    },
+    {
+      "role": "narrator",
+      "content": "Picked up Uncommon Dagger +1.",
+      "turnNumber": 110
+    },
+    {
+      "role": "narrator",
+      "content": "Picked up Rare padded Armor +3.",
+      "turnNumber": 110
+    },
+    {
+      "role": "narrator",
+      "content": "Picked up Spell Scroll: mage armor.",
+      "turnNumber": 110
+    },
+    {
+      "role": "narrator",
+      "content": "Picked up Spell Scroll: magic missile.",
+      "turnNumber": 110
+    },
+    {
+      "role": "narrator",
+      "content": "Picked up Spell Scroll: misty step.",
+      "turnNumber": 110
+    },
+    {
+      "role": "narrator",
+      "content": "Picked up Spell Scroll: banishment.",
+      "turnNumber": 110
+    },
+    {
+      "role": "narrator",
+      "content": "Picked up Spell Scroll: cone of cold.",
+      "turnNumber": 110
     }
   ],
   "triggeredEvents": [
     "viewed_page:codex",
     "viewed_page:settings",
-    "viewed_page:spellbook"
+    "viewed_page:spellbook",
+    "viewed_page:character",
+    "viewed_page:equipment"
+  ],
+  "codexEntries": [
+    {
+      "id": "b390dcb6-fb07-4a69-b301-518667834396",
+      "category": "bestiary",
+      "entityId": "archmage",
+      "title": "The Archmage: Sovereign of the Arcane Loom",
+      "content": "**Physical Description**\nThe archmage is seldom encountered in a single, immutable form; rather, they are the embodiment of spellcraft itself. When manifested, they appear as a humanoid of indeterminate age, cloaked in robes woven from the very threads of mana. Their skin often shimmers with a faint phosphorescence, hinting at the ley‑lines that pulse beneath their flesh. Eyes glint like twin orbs of raw energy, capable of perceiving the subtle fluctuations of magical currents that ordinary mortals cannot sense. In combat, an archmage may surround themselves with a halo of levitating sigils, each humming with a different elemental resonance.\n\n**Potential Biology**\nScholars posit that the archmage is a rare convergence of flesh and arcane essence. Their circulatory system is believed to be infused with aetheric plasma, allowing spells to travel as quickly as blood through veins. This plasma is thought to be regenerated by the consumption of ambient magical energy—be it from ley‑node crystals, lingering spell remnants, or even the ambient mana of a forest. Their longevity is attributed to a self‑sustaining feedback loop: the more spells they cast, the more their bodies are rejuvenated, rendering them effectively ageless unless slain by anti‑magic forces.\n\n**Rumored Ecology**\nArchmages are said to dwell in places where the weave of magic is strongest: ancient tower‑ruins perched atop ley‑line intersections, deep within the crystalline caverns of the Veiled Mountains, or hidden sanctuaries beneath the roots of the World‑Tree. Their presence often reshapes local ecology; flora may blossom with iridescent petals that pulse in rhythm with spellcasting, and fauna—such as the silver‑scaled mana‑otters—flock to the mana‑rich environs, feeding off residual spellcraft. Some chroniclers claim that an archmage can command the very weather, coaxing storms to serve as both shield and conduit for their power.\n\n**Myths and Legends**\nLegends speak of the *Eternal Conclave*, a secret council of archmages who once bound the chaotic Wild Magic that threatened to unravel the world. Tales also tell of the *Sundered Staff*, a relic said to be the only instrument capable of severing an archmage’s connection to the weave, rendering them mortal. In many cultures, an archmage is revered as a living deity, a custodian of knowledge, while in others they are feared as a tyrant who could rewrite reality with a whisper.\n\n**Encounter Notes**\n- **Defensive Measures**: Archmages favor layers of magical wards; a simple breach often triggers cascading spells—firewalls, temporal stasis fields, or summoned elementals.\n- **Offensive Capabilities**: They wield high‑level evocations, conjurations, and reality‑bending effects such as *Time Dilation* or *Mana Drain*. Their signature spell, *Arcane Tempest*, can shred armor and unravel spell defenses alike.\n- **Weaknesses**: Anti‑magic fields, null‑stone weapons, or the disruption of their personal ley‑node (often a hidden crystal or rune) can temporarily mute their powers. Direct attacks on the aetheric plasma—such as a well‑placed *Dispel Magic* at the heart of their sigil halo—may cause severe backlash.\n\n**Survivor’s Tale**\n> *\"We thought the tower was abandoned, a relic of a forgotten age. The moment the doors opened, the air sang with a thousand unseen voices. The archmage stood—cloaked in shifting light, eyes like twin moons. He spoke in a tongue older than the stones, and the floor rose in a spiral of fire. I was struck by a bolt of pure mana; my skin sang, my heart stuttered. Yet, when I thrust the silvered dagger—etched with null‑stone—into the sigil hovering above his brow, the humming ceased. The world fell silent, and I fled, clutching the dagger that stole a fragment of his power. To this day, I hear the echo of his lament whenever the wind passes through the ruins.*",
+      "isNew": true,
+      "discoveredAt": 110
+    }
+  ],
+  "notifications": [
+    {
+      "id": "69595d00-b268-43ce-854f-3924fdf33736",
+      "type": "CODEX_ENTRY",
+      "message": "New codex entry created: The Archmage: Sovereign of the Arcane Loom",
+      "data": {
+        "category": "bestiary",
+        "entityId": "b390dcb6-fb07-4a69-b301-518667834396"
+      },
+      "isRead": true,
+      "createdAt": 1775134197843
+    }
   ],
   "weather": {
     "type": "Snow",
@@ -1104,7 +1411,11 @@
     "intensity": 1
   },
   "travelPace": "Normal",
-  "clearedHexes": {},
+  "explorationBlindnessUntil": 0,
+  "findThePathActiveUntil": 0,
+  "clearedHexes": {
+    "0,0": 50
+  },
   "settings": {
     "permadeath": false,
     "variantEncumbrance": false,
@@ -1117,7 +1428,8 @@
     "video": {
       "fullscreen": false,
       "vsync": true,
-      "resolutionScale": 1
+      "resolutionScale": 1,
+      "instantNarration": false
     },
     "audio": {
       "master": 0.8,
@@ -1138,11 +1450,17 @@
       }
     }
   },
-  "codexEntries": [],
-  "notifications": [],
-  "_examineCooldowns": {
-    "examine_attempts": []
-  },
-  "_pendingASI": 0,
-  "_abilityUses": {}
+  "debugLog": [
+    "[12:11:37] [NPC] Processing turn 50 for 0 NPCs"
+  ],
+  "lastSkillCheck": {
+    "id": "sk_1775166589949",
+    "dieValue": 2,
+    "modifier": 8,
+    "total": 10,
+    "dc": 15,
+    "success": false,
+    "skillName": "Arcana",
+    "label": "Arcana Check"
+  }
 }

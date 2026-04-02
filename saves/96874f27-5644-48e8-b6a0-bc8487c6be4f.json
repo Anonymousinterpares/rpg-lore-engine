@@ -99,7 +99,20 @@
       "max": 5,
       "dieType": "1d6"
     },
-    "spellSlots": {},
+    "spellSlots": {
+      "1": {
+        "current": 4,
+        "max": 4
+      },
+      "2": {
+        "current": 3,
+        "max": 3
+      },
+      "3": {
+        "current": 2,
+        "max": 2
+      }
+    },
     "cantripsKnown": [
       "Fire Bolt",
       "True Strike",

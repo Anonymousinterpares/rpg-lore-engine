@@ -45,7 +45,12 @@
       "max": 1,
       "dieType": "1d6"
     },
-    "spellSlots": {},
+    "spellSlots": {
+      "1": {
+        "current": 2,
+        "max": 2
+      }
+    },
     "featureUsages": {},
     "cantripsKnown": [
       "Fire Bolt",

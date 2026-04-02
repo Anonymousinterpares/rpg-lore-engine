@@ -3,6 +3,7 @@ import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
 import { CombatantState } from './types';
 import { CombatUtils } from './CombatUtils';
 import { DataManager } from '../data/DataManager';
+import { buildSpellSlotsFromProgression } from './LevelingEngine';
 
 export class CombatFactory {
     /**
@@ -141,7 +142,15 @@ export class CombatFactory {
                 reactionSpent: false
             },
             tactical,
-            spellSlots: JSON.parse(JSON.stringify(pc.spellSlots)),
+            spellSlots: (() => {
+                let slots = pc.spellSlots;
+                // Fix empty spellSlots for casters (legacy save migration)
+                if (!slots || Object.keys(slots).length === 0) {
+                    const classData = DataManager.getClass(pc.class);
+                    if (classData) slots = buildSpellSlotsFromProgression(classData, pc.level);
+                }
+                return JSON.parse(JSON.stringify(slots || {}));
+            })(),
             preparedSpells: [...pc.cantripsKnown, ...pc.preparedSpells],
 
             // Spatial Defaults

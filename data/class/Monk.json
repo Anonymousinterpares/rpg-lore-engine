@@ -84,29 +84,25 @@
     }
   ],
   "progression": [
-    {
-      "level": 1,
-      "proficiencyBonus": 2,
-      "features": [
-        "Unarmored Defense",
-        "Martial Arts"
-      ]
-    },
-    {
-      "level": 2,
-      "proficiencyBonus": 2,
-      "features": [
-        "Ki",
-        "Unarmored Movement"
-      ]
-    },
-    {
-      "level": 3,
-      "proficiencyBonus": 2,
-      "features": [
-        "Monastic Tradition",
-        "Deflect Missiles"
-      ]
-    }
+    { "level": 1, "proficiencyBonus": 2, "features": ["Unarmored Defense", "Martial Arts"] },
+    { "level": 2, "proficiencyBonus": 2, "features": ["Ki", "Unarmored Movement"] },
+    { "level": 3, "proficiencyBonus": 2, "features": ["Monastic Tradition", "Deflect Missiles"] },
+    { "level": 4, "proficiencyBonus": 2, "features": ["Ability Score Improvement", "Slow Fall"] },
+    { "level": 5, "proficiencyBonus": 3, "features": ["Extra Attack", "Stunning Strike"] },
+    { "level": 6, "proficiencyBonus": 3, "features": ["Ki-Empowered Strikes", "Monastic Tradition Feature"] },
+    { "level": 7, "proficiencyBonus": 3, "features": ["Evasion", "Stillness of Mind"] },
+    { "level": 8, "proficiencyBonus": 3, "features": ["Ability Score Improvement"] },
+    { "level": 9, "proficiencyBonus": 4, "features": ["Unarmored Movement Improvement"] },
+    { "level": 10, "proficiencyBonus": 4, "features": ["Purity of Body"] },
+    { "level": 11, "proficiencyBonus": 4, "features": ["Monastic Tradition Feature"] },
+    { "level": 12, "proficiencyBonus": 4, "features": ["Ability Score Improvement"] },
+    { "level": 13, "proficiencyBonus": 5, "features": ["Tongue of the Sun and Moon"] },
+    { "level": 14, "proficiencyBonus": 5, "features": ["Diamond Soul"] },
+    { "level": 15, "proficiencyBonus": 5, "features": ["Timeless Body"] },
+    { "level": 16, "proficiencyBonus": 5, "features": ["Ability Score Improvement"] },
+    { "level": 17, "proficiencyBonus": 6, "features": ["Monastic Tradition Feature"] },
+    { "level": 18, "proficiencyBonus": 6, "features": ["Empty Body"] },
+    { "level": 19, "proficiencyBonus": 6, "features": ["Ability Score Improvement"] },
+    { "level": 20, "proficiencyBonus": 6, "features": ["Perfect Self"] }
   ]
 }

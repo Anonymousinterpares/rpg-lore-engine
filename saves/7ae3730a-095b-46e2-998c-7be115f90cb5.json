@@ -50,7 +50,12 @@
       "max": 1,
       "dieType": "1d10"
     },
-    "spellSlots": {},
+    "spellSlots": {
+      "1": {
+        "current": 2,
+        "max": 2
+      }
+    },
     "cantripsKnown": [],
     "knownSpells": [],
     "preparedSpells": [],

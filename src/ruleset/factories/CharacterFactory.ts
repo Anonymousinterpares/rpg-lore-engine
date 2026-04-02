@@ -9,6 +9,7 @@ import { HexMapManager } from '../combat/HexMapManager';
 import { BiomePoolManager } from '../combat/BiomeRegistry';
 import { BiomeType } from '../schemas/BiomeSchema';
 import { SettingsManager } from '../combat/SettingsManager';
+import { buildSpellSlotsFromProgression } from '../combat/LevelingEngine';
 
 export interface CharacterCreationOptions {
     name: string;
@@ -172,7 +173,7 @@ export class CharacterFactory {
                 hp: { current: maxHp, max: maxHp, temp: 0 },
                 deathSaves: { successes: 0, failures: 0 },
                 hitDice: { current: 1, max: 1, dieType: characterClass.hitDie },
-                spellSlots: {},
+                spellSlots: buildSpellSlotsFromProgression(characterClass, 1),
                 featureUsages: (() => {
                     const usages: any = {};
                     characterClass.allFeatures.forEach(feat => {

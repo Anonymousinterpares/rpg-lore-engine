@@ -58,58 +58,25 @@
     }
   ],
   "progression": [
-    {
-      "level": 1,
-      "proficiencyBonus": 2,
-      "features": [
-        "Spellcasting",
-        "Divine Domain"
-      ],
-      "spellSlots": [
-        2,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
-      "level": 2,
-      "proficiencyBonus": 2,
-      "features": [
-        "Channel Divinity"
-      ],
-      "spellSlots": [
-        3,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
-      "level": 3,
-      "proficiencyBonus": 2,
-      "features": [],
-      "spellSlots": [
-        4,
-        2,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    }
+    { "level": 1,  "proficiencyBonus": 2, "features": ["Spellcasting", "Divine Domain"], "spellSlots": [2,0,0,0,0,0,0,0,0] },
+    { "level": 2,  "proficiencyBonus": 2, "features": ["Channel Divinity"], "spellSlots": [3,0,0,0,0,0,0,0,0] },
+    { "level": 3,  "proficiencyBonus": 2, "features": [], "spellSlots": [4,2,0,0,0,0,0,0,0] },
+    { "level": 4,  "proficiencyBonus": 2, "features": ["ASI"], "spellSlots": [4,3,0,0,0,0,0,0,0] },
+    { "level": 5,  "proficiencyBonus": 3, "features": ["Destroy Undead"], "spellSlots": [4,3,2,0,0,0,0,0,0] },
+    { "level": 6,  "proficiencyBonus": 3, "features": [], "spellSlots": [4,3,3,0,0,0,0,0,0] },
+    { "level": 7,  "proficiencyBonus": 3, "features": [], "spellSlots": [4,3,3,1,0,0,0,0,0] },
+    { "level": 8,  "proficiencyBonus": 3, "features": ["ASI"], "spellSlots": [4,3,3,2,0,0,0,0,0] },
+    { "level": 9,  "proficiencyBonus": 4, "features": [], "spellSlots": [4,3,3,3,1,0,0,0,0] },
+    { "level": 10, "proficiencyBonus": 4, "features": ["Divine Intervention"], "spellSlots": [5,3,3,3,2,0,0,0,0] },
+    { "level": 11, "proficiencyBonus": 4, "features": [], "spellSlots": [5,3,3,3,2,1,0,0,0] },
+    { "level": 12, "proficiencyBonus": 4, "features": ["ASI"], "spellSlots": [5,3,3,3,2,1,0,0,0] },
+    { "level": 13, "proficiencyBonus": 5, "features": [], "spellSlots": [5,3,3,3,2,1,1,0,0] },
+    { "level": 14, "proficiencyBonus": 5, "features": [], "spellSlots": [5,3,3,3,2,1,1,0,0] },
+    { "level": 15, "proficiencyBonus": 5, "features": [], "spellSlots": [5,3,3,3,2,1,1,1,0] },
+    { "level": 16, "proficiencyBonus": 5, "features": ["ASI"], "spellSlots": [5,3,3,3,2,1,1,1,0] },
+    { "level": 17, "proficiencyBonus": 6, "features": [], "spellSlots": [5,3,3,3,2,1,1,1,1] },
+    { "level": 18, "proficiencyBonus": 6, "features": [], "spellSlots": [5,3,3,3,3,1,1,1,1] },
+    { "level": 19, "proficiencyBonus": 6, "features": ["ASI"], "spellSlots": [5,3,3,3,3,2,1,1,1] },
+    { "level": 20, "proficiencyBonus": 6, "features": [], "spellSlots": [5,3,3,3,3,2,2,1,1] }
   ]
 }

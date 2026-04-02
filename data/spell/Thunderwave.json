@@ -36,6 +36,10 @@
   },
   "damage": {
     "dice": "2d8",
-    "type": "Thunder"
+    "type": "Thunder",
+    "scaling": {
+      "levels": [2, 3, 4, 5, 6, 7, 8, 9],
+      "values": ["3d8", "4d8", "5d8", "6d8", "7d8", "8d8", "9d8", "10d8"]
+    }
   }
 }

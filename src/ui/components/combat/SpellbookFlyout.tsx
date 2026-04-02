@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import styles from './SpellbookFlyout.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
-import { X, Sparkles, Info, ChevronDown, ChevronUp } from 'lucide-react';
-import { useBook } from '../../context/BookContext';
+import { X, Sparkles, Info } from 'lucide-react';
 import { Spell } from '../../../ruleset/schemas/SpellSchema';
-import Codex from '../codex/Codex';
-
-type UpcastMode = 'inline' | 'expand' | 'tooltip';
 
 interface SpellbookFlyoutProps {
     spells: Spell[];
     spellSlots?: Record<string, { current: number; max: number }>;
+    distanceToTarget?: number; // distance in feet to nearest/selected enemy
     onCast: (spell: Spell, slotLevel?: number) => void;
     onClose: () => void;
 }
@@ -42,104 +40,74 @@ function getAvailableSlotLevels(spell: Spell, spellSlots: Record<string, { curre
 
 /** Get upcast damage dice for a given slot level */
 function getUpcastDice(spell: Spell, slotLevel: number): string | null {
-    if (slotLevel <= spell.level) return null;
-    const scaling = (spell as any).damage?.scaling;
+    const dmg = (spell as any).damage;
+    if (!dmg) return null;
+    if (slotLevel === spell.level) return dmg.dice || null;
+    const scaling = dmg.scaling;
     if (!scaling) return null;
     const idx = scaling.levels.indexOf(slotLevel);
     return idx !== -1 ? scaling.values[idx] : null;
 }
 
+/** Parse spell range to feet. Returns Infinity for "Self", 5 for "Touch". */
+function parseRange(range: string): number {
+    if (!range) return Infinity;
+    const lower = range.toLowerCase();
+    if (lower === 'self' || lower.startsWith('self')) return Infinity; // Self spells always in range
+    if (lower === 'touch') return 5;
+    const match = range.match(/(\d+)\s*(feet|ft)/i);
+    return match ? parseInt(match[1]) : Infinity;
+}
+
+/** Get the CSS tier class for a level rectangle */
+function getLevelTierClass(lv: number): string {
+    if (lv <= 1) return styles.lvlTier1;
+    if (lv <= 2) return styles.lvlTier2;
+    return styles.lvlTier3;
+}
+
 export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
-    spells, spellSlots = {}, onCast, onClose
+    spells, spellSlots = {}, distanceToTarget, onCast, onClose
 }) => {
-    const { pushPage } = useBook();
-    const [selectedLevel, setSelectedLevel] = useState<number | 'all'>('all');
-    const [upcastMode, setUpcastMode] = useState<UpcastMode>('inline');
-    const [expandedSpell, setExpandedSpell] = useState<string | null>(null);
-    const [hoverSpell, setHoverSpell] = useState<string | null>(null);
-
-    const filteredSpells = selectedLevel === 'all'
-        ? spells
-        : spells.filter(s => s.level === selectedLevel);
-
     const levels = Array.from(new Set(spells.map(s => s.level))).sort((a, b) => a - b);
+    // Default to first non-cantrip level, or cantrips if that's all there is
+    const defaultLevel = levels.find(l => l > 0) ?? levels[0] ?? 0;
+    const [selectedLevel, setSelectedLevel] = useState<number>(defaultLevel);
+    const [selectedSlot, setSelectedSlot] = useState<Record<string, number | null>>({});
+    const [infoTooltip, setInfoTooltip] = useState<{ spell: Spell; rect: DOMRect } | null>(null);
 
-    const cycleMode = () => {
-        const modes: UpcastMode[] = ['inline', 'expand', 'tooltip'];
-        const idx = modes.indexOf(upcastMode);
-        setUpcastMode(modes[(idx + 1) % modes.length]);
-        setExpandedSpell(null);
+    const filteredSpells = spells.filter(s => s.level === selectedLevel);
+
+    // Slot summary: all non-zero slot levels
+    const slotLevelKeys = Object.keys(spellSlots)
+        .map(Number)
+        .filter(k => k > 0 && spellSlots[k.toString()])
+        .sort((a, b) => a - b);
+
+    const handleSlotClick = (e: React.MouseEvent, spellName: string, lv: number) => {
+        e.stopPropagation();
+        setSelectedSlot(prev => ({
+            ...prev,
+            [spellName]: prev[spellName] === lv ? null : lv
+        }));
     };
 
-    const renderUpcastInline = (spell: Spell, slotLevels: number[]) => {
-        if (slotLevels.length <= 1) return null;
-        const baseDice = (spell as any).damage?.dice;
-        return (
-            <div className={styles.upcastInline}>
-                <span className={styles.upcastLabel}>Cast at:</span>
-                {slotLevels.map(lv => {
-                    const dice = lv === spell.level ? baseDice : getUpcastDice(spell, lv);
-                    return (
-                        <button
-                            key={lv}
-                            className={`${styles.slotBtn} ${lv === spell.level ? styles.slotBtnBase : styles.slotBtnUp}`}
-                            onClick={(e) => { e.stopPropagation(); onCast(spell, lv); }}
-                            title={dice ? `${dice} damage` : `Level ${lv}`}
-                        >
-                            {lv}
-                            {dice && <span className={styles.slotDice}>{dice}</span>}
-                        </button>
-                    );
-                })}
-            </div>
-        );
-    };
+    const handleCardClick = (spell: Spell, slotLevels: number[], canCast: boolean) => {
+        if (!canCast) return;
+        const chosenLv = selectedSlot[spell.name];
 
-    const renderUpcastExpand = (spell: Spell, slotLevels: number[]) => {
-        if (slotLevels.length <= 1 || expandedSpell !== spell.name) return null;
-        const baseDice = (spell as any).damage?.dice;
-        return (
-            <div className={styles.upcastExpand}>
-                <div className={styles.expandTitle}>Cast at level:</div>
-                {slotLevels.map(lv => {
-                    const dice = lv === spell.level ? baseDice : getUpcastDice(spell, lv);
-                    const slot = spellSlots[lv.toString()];
-                    return (
-                        <button
-                            key={lv}
-                            className={styles.expandOption}
-                            onClick={(e) => { e.stopPropagation(); onCast(spell, lv); }}
-                        >
-                            <span className={styles.expandLv}>Lvl {lv}</span>
-                            {dice && <span className={styles.expandDice}>{dice}</span>}
-                            <span className={styles.expandSlots}>({slot?.current}/{slot?.max})</span>
-                            {lv === spell.level && <span className={styles.expandBase}>★</span>}
-                        </button>
-                    );
-                })}
-            </div>
-        );
-    };
-
-    const renderUpcastTooltip = (spell: Spell, slotLevels: number[]) => {
-        if (slotLevels.length <= 1 || hoverSpell !== spell.name) return null;
-        const baseDice = (spell as any).damage?.dice;
-        return (
-            <div className={styles.upcastTooltip}>
-                {slotLevels.map(lv => {
-                    const dice = lv === spell.level ? baseDice : getUpcastDice(spell, lv);
-                    return (
-                        <button
-                            key={lv}
-                            className={styles.tooltipOption}
-                            onClick={(e) => { e.stopPropagation(); onCast(spell, lv); }}
-                        >
-                            Lvl {lv}: {dice || '—'}
-                        </button>
-                    );
-                })}
-            </div>
-        );
+        if (chosenLv != null) {
+            // Level selected — cast at that level
+            onCast(spell, chosenLv);
+            setSelectedSlot(prev => ({ ...prev, [spell.name]: null }));
+        } else if (slotLevels.length === 1) {
+            // Only one slot available — auto-cast
+            onCast(spell, slotLevels[0]);
+        } else if (spell.level === 0) {
+            // Cantrip — no slot needed
+            onCast(spell);
+        }
+        // Multi-slot with no selection: do nothing (user must pick a level first)
     };
 
     return (
@@ -149,19 +117,29 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
                     <Sparkles size={18} className={styles.titleIcon} />
                     <h3>Spellbook</h3>
                 </div>
-                <button className={styles.modeToggle} onClick={cycleMode} title={`Upcast mode: ${upcastMode}`}>
-                    {upcastMode}
-                </button>
                 <button className={styles.closeButton} onClick={onClose}>
                     <X size={20} />
                 </button>
             </div>
 
+            {/* Slot Summary */}
+            {slotLevelKeys.length > 0 && (
+                <div className={styles.slotSummary}>
+                    <span className={styles.slotSummaryLabel}>Remaining Slots:</span>
+                    {slotLevelKeys.map(lv => {
+                        const slot = spellSlots[lv.toString()];
+                        const isEmpty = slot.current <= 0;
+                        return (
+                            <span key={lv} className={`${styles.slotSummaryItem} ${isEmpty ? styles.slotSummaryEmpty : ''}`}>
+                                L{lv} (<span className={styles.slotSummaryCount}>{slot.current}</span>)
+                            </span>
+                        );
+                    })}
+                </div>
+            )}
+
+            {/* Level Tabs (no "All" tab) */}
             <div className={styles.tabs}>
-                <button
-                    className={`${styles.tab} ${selectedLevel === 'all' ? styles.activeTab : ''}`}
-                    onClick={() => setSelectedLevel('all')}
-                >All</button>
                 {levels.map(lv => (
                     <button
                         key={lv}
@@ -176,28 +154,34 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
                 ))}
             </div>
 
+            {/* Spell Grid */}
             <div className={styles.spellGrid}>
                 {filteredSpells.map((spell, index) => {
                     const slotLevels = getAvailableSlotLevels(spell, spellSlots);
-                    const canCast = spell.level === 0 || slotLevels.length > 0;
-                    const hasUpcast = slotLevels.length > 1;
+                    const spellRange = parseRange(spell.range);
+                    const outOfRange = distanceToTarget != null && distanceToTarget > spellRange;
+                    const canCast = !outOfRange && (spell.level === 0 || slotLevels.length > 0);
+                    const chosenLv = selectedSlot[spell.name];
+                    const isCastReady = canCast && chosenLv != null;
+                    const hasScaling = !!(spell as any).damage?.scaling;
+                    const hasDamage = !!(spell as any).damage?.dice;
+                    const showNoScaling = spell.level > 0 && slotLevels.length > 1 && hasDamage && !hasScaling;
+
+                    // Disabled reason
+                    let disabledReason = '';
+                    if (outOfRange) {
+                        disabledReason = `Out of range (${distanceToTarget}ft, need ${spellRange}ft)`;
+                    } else if (!canCast && spell.level > 0) {
+                        const baseSlot = spellSlots[spell.level.toString()];
+                        if (!baseSlot) disabledReason = `No level ${spell.level} spell slots`;
+                        else if (baseSlot.current <= 0) disabledReason = `Level ${spell.level} slots exhausted`;
+                    }
 
                     return (
                         <div
                             key={`${spell.name}-${index}`}
-                            className={`${styles.spellItem} ${parchmentStyles.button} ${!canCast ? styles.disabled : ''} ${hasUpcast ? styles.hasUpcast : ''}`}
-                            onClick={() => {
-                                if (!canCast) return;
-                                if (upcastMode === 'expand' && hasUpcast) {
-                                    setExpandedSpell(expandedSpell === spell.name ? null : spell.name);
-                                    return;
-                                }
-                                // Default: cast at base (or lowest available) level
-                                onCast(spell, slotLevels[0]);
-                            }}
-                            onMouseEnter={() => upcastMode === 'tooltip' && setHoverSpell(spell.name)}
-                            onMouseLeave={() => upcastMode === 'tooltip' && setHoverSpell(null)}
-                            title={spell.description}
+                            className={`${styles.spellItem} ${parchmentStyles.button} ${!canCast ? styles.disabled : ''} ${isCastReady ? styles.castReady : ''}`}
+                            onClick={() => handleCardClick(spell, slotLevels, canCast)}
                             style={{ position: 'relative' }}
                         >
                             <div className={styles.spellMain}>
@@ -209,13 +193,9 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
                                             className={styles.infoBtn}
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                pushPage({
-                                                    id: 'codex',
-                                                    label: 'Codex',
-                                                    content: <Codex isOpen={true} onClose={() => { }} initialDeepLink={{ category: 'magic', entryId: spell.name }} isPage={true} />
-                                                });
+                                                const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                                                setInfoTooltip(prev => prev?.spell.name === spell.name ? null : { spell, rect });
                                             }}
-                                            title="View in Codex"
                                         >
                                             <Info size={14} />
                                         </button>
@@ -228,18 +208,36 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
                                             <span className={styles.spellDamage}>{(spell as any).damage.dice}</span>
                                         )}
                                     </div>
-                                    {upcastMode === 'expand' && hasUpcast && (
-                                        <span className={styles.expandIndicator}>
-                                            {expandedSpell === spell.name ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-                                        </span>
+                                    {disabledReason && (
+                                        <span className={styles.outOfRange}>{disabledReason}</span>
                                     )}
                                 </div>
                             </div>
 
-                            {/* Upcast UI based on mode */}
-                            {upcastMode === 'inline' && canCast && renderUpcastInline(spell, slotLevels)}
-                            {upcastMode === 'expand' && renderUpcastExpand(spell, slotLevels)}
-                            {upcastMode === 'tooltip' && renderUpcastTooltip(spell, slotLevels)}
+                            {/* Level selector row — only for leveled spells with available slots */}
+                            {spell.level > 0 && canCast && slotLevels.length > 0 && (
+                                <div className={styles.levelRow}>
+                                    <span className={styles.levelLabel}>Cast at:</span>
+                                    {slotLevels.map(lv => {
+                                        const dice = getUpcastDice(spell, lv);
+                                        const isSelected = chosenLv === lv;
+                                        const tierClass = getLevelTierClass(lv);
+                                        return (
+                                            <button
+                                                key={lv}
+                                                className={`${styles.lvlBtn} ${tierClass} ${isSelected ? styles.lvlSelected : ''}`}
+                                                onClick={(e) => handleSlotClick(e, spell.name, lv)}
+                                            >
+                                                {lv}
+                                                {dice && <span className={styles.lvlDice}>{dice}</span>}
+                                            </button>
+                                        );
+                                    })}
+                                    {showNoScaling && (
+                                        <span className={styles.noScaling}>No scaling</span>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     );
                 })}
@@ -247,6 +245,53 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
                     <div className={styles.emptyState}>No spells available in this category.</div>
                 )}
             </div>
+
+            {/* Spell Info Tooltip — portal with click-anywhere-to-close backdrop */}
+            {infoTooltip && ReactDOM.createPortal(
+                <>
+                    <div className={styles.tooltipBackdrop} onClick={() => setInfoTooltip(null)} />
+                    <div
+                        className={styles.spellInfoTooltip}
+                        ref={(el) => {
+                            if (!el) return;
+                            // Position after render: measure actual height, shift up if overflowing
+                            const tipH = el.offsetHeight;
+                            const tipW = el.offsetWidth;
+                            let top = infoTooltip.rect.bottom + 6;
+                            let left = infoTooltip.rect.right + 8;
+                            if (top + tipH > window.innerHeight - 10) {
+                                top = Math.max(10, window.innerHeight - tipH - 10);
+                            }
+                            if (left + tipW > window.innerWidth - 10) {
+                                left = Math.max(10, infoTooltip.rect.left - tipW - 8);
+                            }
+                            el.style.top = `${top}px`;
+                            el.style.left = `${left}px`;
+                        }}
+                    >
+                        <div className={styles.tipHeader}>
+                            <span className={styles.tipName}>{infoTooltip.spell.name}</span>
+                            <span className={styles.tipSchool}>{infoTooltip.spell.school} — Level {infoTooltip.spell.level}</span>
+                        </div>
+                        <div className={styles.tipRow}>
+                            <span>Range: {infoTooltip.spell.range}</span>
+                            <span>Time: {infoTooltip.spell.time}</span>
+                        </div>
+                        {(infoTooltip.spell as any).duration && (
+                            <div className={styles.tipRow}>
+                                <span>Duration: {(infoTooltip.spell as any).duration}</span>
+                            </div>
+                        )}
+                        {(infoTooltip.spell as any).damage?.dice && (
+                            <div className={styles.tipDamage}>
+                                Damage: {(infoTooltip.spell as any).damage.dice} {(infoTooltip.spell as any).damage.type || ''}
+                            </div>
+                        )}
+                        <div className={styles.tipDesc}>{infoTooltip.spell.description}</div>
+                    </div>
+                </>,
+                document.body
+            )}
         </div>
     );
 };

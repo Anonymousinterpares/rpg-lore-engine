@@ -6,6 +6,36 @@ import { DataManager } from '../data/DataManager';
 /** Levels at which ASI (Ability Score Improvement) is granted. */
 const ASI_LEVELS = [4, 8, 12, 16, 19];
 
+/**
+ * Build the spellSlots Record from class progression data for a given level.
+ * Progression spellSlots is a 9-element array: index 0 = 1st-level slots, index 8 = 9th-level.
+ * Returns Record<string, { current, max }> keyed by spell level ("1"–"9").
+ */
+export function buildSpellSlotsFromProgression(
+    classData: any,
+    level: number
+): Record<string, { current: number; max: number }> {
+    const progression = classData?.progression;
+    if (!progression || !Array.isArray(progression)) return {};
+
+    // Find the highest progression entry at or below this level
+    const entry = progression
+        .filter((p: any) => p.level <= level)
+        .sort((a: any, b: any) => b.level - a.level)[0];
+
+    if (!entry?.spellSlots) return {};
+
+    const slots: Record<string, { current: number; max: number }> = {};
+    entry.spellSlots.forEach((count: number, index: number) => {
+        if (count > 0) {
+            const spellLevel = (index + 1).toString();
+            slots[spellLevel] = { current: count, max: count };
+        }
+    });
+
+    return slots;
+}
+
 export class LevelingEngine {
     private static readonly XP_THRESHOLDS: Record<number, number> = {
         1: 0,
@@ -89,6 +119,27 @@ export class LevelingEngine {
         // Grant Skill Points from the leveling class's config
         const spGrant = (classData as any)?.skillPointsPerLevel || 2;
         SkillEngine.grantSkillPoints(pc, spGrant);
+
+        // Update spell slots from class progression
+        if (classData?.progression) {
+            const newSlots = buildSpellSlotsFromProgression(classData, pc.level);
+            if (Object.keys(newSlots).length > 0) {
+                // Preserve current usage: only reset max and add new slot levels
+                const oldSlots = pc.spellSlots || {};
+                for (const [lvl, slot] of Object.entries(newSlots)) {
+                    const old = (oldSlots as any)[lvl];
+                    if (old) {
+                        // Existing slot level: update max, add any gained slots to current
+                        const gained = slot.max - (old.max || 0);
+                        (oldSlots as any)[lvl] = { current: old.current + Math.max(0, gained), max: slot.max };
+                    } else {
+                        // New slot level unlocked
+                        (oldSlots as any)[lvl] = { current: slot.max, max: slot.max };
+                    }
+                }
+                pc.spellSlots = oldSlots;
+            }
+        }
 
         const classLabel = isMulticlass ? ` (${levelingClass})` : '';
         let summary = `${pc.name} reached Level ${pc.level}${classLabel}! HP +${hpIncrease} (max ${pc.hp.max}). Gained ${spGrant} SP.`;

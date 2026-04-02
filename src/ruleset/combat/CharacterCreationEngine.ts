@@ -4,6 +4,7 @@ import { Background } from '../schemas/BackgroundSchema';
 import { AbilityScore, SkillName } from '../schemas/BaseSchemas';
 import { MechanicsEngine } from './MechanicsEngine';
 import { DataManager } from '../data/DataManager';
+import { buildSpellSlotsFromProgression } from './LevelingEngine';
 
 export interface CreationRequest {
     name: string;
@@ -138,7 +139,7 @@ export class CharacterCreationEngine {
                 max: 1,
                 dieType: request.classData.hitDie
             },
-            spellSlots: {}, // To be populated if caster
+            spellSlots: buildSpellSlotsFromProgression(request.classData, 1),
             cantripsKnown: [],
             knownSpells: [],
             preparedSpells: [],

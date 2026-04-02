@@ -48,7 +48,12 @@
       "max": 1,
       "dieType": "1d6"
     },
-    "spellSlots": {},
+    "spellSlots": {
+      "1": {
+        "current": 3,
+        "max": 3
+      }
+    },
     "cantripsKnown": [
       "Fire Bolt",
       "Acid Splash",

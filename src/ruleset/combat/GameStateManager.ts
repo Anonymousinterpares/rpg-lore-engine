@@ -2,6 +2,8 @@ import { FullSaveStateSchema, GameState } from '../schemas/FullSaveStateSchema';
 import { SaveRegistrySchema, SaveRegistry } from '../schemas/SaveRegistrySchema';
 import { IStorageProvider } from './IStorageProvider';
 import { FileStorageProvider } from './FileStorageProvider';
+import { buildSpellSlotsFromProgression } from './LevelingEngine';
+import { DataManager } from '../data/DataManager';
 import * as path from 'path';
 
 export type { GameState };
@@ -84,7 +86,29 @@ export class GameStateManager {
         if (!(await this.storage.exists(filePath))) return null;
 
         const data = await this.storage.read(filePath) as string;
-        return FullSaveStateSchema.parse(JSON.parse(data));
+        const state = FullSaveStateSchema.parse(JSON.parse(data));
+
+        // Migration: rebuild empty spellSlots from class progression data
+        this.migrateSpellSlots(state);
+
+        return state;
+    }
+
+    /** Patch spellSlots for casters whose save was created before progression was wired. */
+    private migrateSpellSlots(state: GameState): void {
+        const char = state.character;
+        if (!char?.class || !char?.level) return;
+        const slots = char.spellSlots;
+        if (slots && Object.keys(slots).length > 0) return; // already populated
+
+        try {
+            const classData = DataManager.getClass(char.class);
+            if (classData?.progression) {
+                char.spellSlots = buildSpellSlotsFromProgression(classData, char.level);
+            }
+        } catch {
+            // DataManager may not be initialized yet — CombatFactory has a fallback too
+        }
     }
 
     public async getSaveRegistry(): Promise<SaveRegistry> {

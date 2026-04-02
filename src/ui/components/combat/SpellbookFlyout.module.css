@@ -3,8 +3,8 @@
     bottom: 100px;
     left: 50%;
     transform: translateX(-50%);
-    width: min(550px, 90vw);
-    max-height: 450px;
+    width: min(850px, 94vw);
+    max-height: 520px;
     overflow: hidden;
     z-index: 1000;
     animation: slideUp 0.2s ease-out;
@@ -36,7 +36,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
     border-bottom: 1px solid var(--parchment-border);
     padding-bottom: var(--spacing-xs);
 }
@@ -69,11 +69,44 @@
     color: var(--parchment-text);
 }
 
+/* ===== SLOT SUMMARY BAR ===== */
+.slotSummary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 0;
+    margin-bottom: var(--spacing-xs);
+    font-size: 0.78rem;
+    color: var(--parchment-border);
+}
+
+.slotSummaryLabel {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.6;
+}
+
+.slotSummaryItem {
+    font-weight: 600;
+    color: var(--parchment-text);
+}
+
+.slotSummaryCount {
+    color: var(--parchment-accent);
+    font-weight: 700;
+}
+
+.slotSummaryEmpty {
+    opacity: 0.3;
+}
+
+/* ===== TABS ===== */
 .tabs {
     display: flex;
     gap: var(--spacing-xs);
     overflow-x: auto;
-    margin-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
     padding-bottom: 4px;
 }
 
@@ -81,7 +114,7 @@
     padding: 4px var(--spacing-sm);
     background: rgba(0, 0, 0, 0.05);
     border: 1px solid var(--parchment-border);
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-family: var(--font-narrative);
     cursor: pointer;
     white-space: nowrap;
@@ -96,11 +129,12 @@
 }
 
 .slotInfo {
-    font-size: 0.7rem;
+    font-size: 0.72rem;
     margin-left: 4px;
     opacity: 0.8;
 }
 
+/* ===== SPELL GRID ===== */
 .spellGrid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -112,16 +146,16 @@
 .spellItem {
     display: flex;
     flex-direction: column;
-    padding: var(--spacing-sm);
-    min-height: 60px;
+    padding: 10px;
+    min-height: 72px;
     overflow: hidden;
     background: rgba(0, 0, 0, 0.03);
-    border: 1px solid var(--parchment-border);
+    border: 2px solid var(--parchment-border);
     transition: all 0.2s;
     cursor: pointer;
 }
 
-.spellItem:hover:not(.disabled) {
+.spellItem:hover:not(.disabled):not(.castReady) {
     background: rgba(201, 162, 39, 0.1);
     border-color: var(--parchment-accent);
 }
@@ -132,6 +166,20 @@
     cursor: not-allowed;
 }
 
+/* Glowing orange border when a level is selected — ready to cast */
+.castReady {
+    border-color: #e67e22 !important;
+    box-shadow: 0 0 8px 2px rgba(230, 126, 34, 0.5);
+    animation: castGlow 1.2s ease-in-out infinite;
+    cursor: pointer;
+}
+
+@keyframes castGlow {
+    0%, 100% { box-shadow: 0 0 6px 1px rgba(230, 126, 34, 0.4); }
+    50% { box-shadow: 0 0 14px 4px rgba(230, 126, 34, 0.7); }
+}
+
+/* ===== SPELL LAYOUT ===== */
 .spellMain {
     display: flex;
     align-items: center;
@@ -147,8 +195,8 @@
 }
 
 .spellIconContainer {
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     border-radius: 4px;
     background: rgba(0, 0, 0, 0.1);
     display: flex;
@@ -166,8 +214,8 @@
 }
 
 .iconPlaceholder {
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     border-radius: 4px;
     background: rgba(0, 0, 0, 0.05);
     display: flex;
@@ -216,7 +264,7 @@
 }
 
 .spellSchool {
-    font-size: 0.55rem;
+    font-size: 0.6rem;
     text-transform: uppercase;
     color: var(--parchment-accent);
     opacity: 0.8;
@@ -226,8 +274,13 @@
 .spellMeta {
     display: flex;
     justify-content: space-between;
-    font-size: 0.65rem;
+    font-size: 0.72rem;
     color: var(--parchment-border);
+}
+
+.spellDamage {
+    font-weight: 600;
+    color: var(--parchment-accent);
 }
 
 .emptyState {
@@ -238,179 +291,173 @@
     font-style: italic;
 }
 
-/* Mode toggle button */
-.modeToggle {
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05rem;
-    padding: 2px 8px;
-    border: 1px solid var(--parchment-border);
-    border-radius: var(--radius-sm);
-    background: transparent;
-    color: var(--parchment-border);
-    cursor: pointer;
-    opacity: 0.5;
-}
-
-.modeToggle:hover {
-    opacity: 1;
-}
-
-.hasUpcast {
-    border-left: 2px solid var(--parchment-accent);
-}
-
-.spellDamage {
-    font-weight: 600;
-    color: var(--parchment-accent);
-}
-
-.expandIndicator {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    opacity: 0.4;
-}
-
-/* ===== MODE: INLINE ===== */
-.upcastInline {
+/* ===== LEVEL SELECTOR ROW ===== */
+.levelRow {
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding-top: 4px;
-    margin-top: 4px;
+    gap: 6px;
+    padding-top: 6px;
+    margin-top: 5px;
     border-top: 1px solid rgba(139, 115, 85, 0.15);
     flex-wrap: wrap;
 }
 
-.upcastLabel {
-    font-size: 0.6rem;
+.levelLabel {
+    font-size: 0.67rem;
     opacity: 0.5;
     margin-right: 2px;
 }
 
-.slotBtn {
-    font-size: 0.65rem;
+.lvlBtn {
+    font-size: 0.72rem;
     font-weight: 700;
-    padding: 2px 6px;
+    width: 33px;
+    height: 33px;
+    flex-shrink: 0;
     border-radius: 3px;
-    border: 1px solid rgba(139, 115, 85, 0.3);
+    border: 1px solid;
     background: transparent;
     cursor: pointer;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 1px;
     transition: all 0.15s ease;
+    box-sizing: border-box;
 }
 
-.slotBtn:hover {
-    background: rgba(201, 162, 39, 0.15);
-    border-color: var(--parchment-accent);
+.lvlBtn:hover {
+    opacity: 0.85;
 }
 
-.slotBtnBase {
+/* Color tiers for level rectangles */
+.lvlTier1 {
+    color: var(--parchment-text);
+    border-color: var(--parchment-text);
+}
+
+.lvlTier2 {
     color: var(--parchment-accent);
     border-color: var(--parchment-accent);
 }
 
-.slotBtnUp {
-    color: #2980b9;
-    border-color: rgba(41, 128, 185, 0.4);
+.lvlTier3 {
+    color: #c0392b;
+    border-color: #c0392b;
 }
 
-.slotBtnUp:hover {
-    background: rgba(41, 128, 185, 0.1);
-    border-color: #2980b9;
+/* Selected state: filled background, white text */
+.lvlSelected.lvlTier1 {
+    background: #6b5a3e;
+    color: white;
 }
 
-.slotDice {
-    font-size: 0.55rem;
+.lvlSelected.lvlTier2 {
+    background: var(--parchment-accent);
+    color: white;
+}
+
+.lvlSelected.lvlTier3 {
+    background: #c0392b;
+    color: white;
+}
+
+.lvlDice {
+    font-size: 0.6rem;
     font-weight: 400;
     opacity: 0.7;
 }
 
-/* ===== MODE: EXPAND ===== */
-.upcastExpand {
-    padding: 6px 0 2px;
-    margin-top: 4px;
-    border-top: 1px solid rgba(139, 115, 85, 0.15);
+.lvlSelected .lvlDice {
+    opacity: 1;
 }
 
-.expandTitle {
-    font-size: 0.6rem;
-    opacity: 0.5;
-    margin-bottom: 4px;
-}
-
-.expandOption {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    padding: 3px 8px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    font-size: 0.72rem;
-    border-radius: 3px;
-    transition: background 0.1s;
-}
-
-.expandOption:hover {
-    background: rgba(201, 162, 39, 0.1);
-}
-
-.expandLv {
-    font-weight: 600;
-    min-width: 36px;
-}
-
-.expandDice {
-    color: var(--parchment-accent);
-    font-weight: 600;
-}
-
-.expandSlots {
-    opacity: 0.4;
+/* No scaling warning */
+.noScaling {
     font-size: 0.65rem;
+    color: #8b2020;
+    font-style: italic;
+    white-space: nowrap;
+    margin-left: auto;
 }
 
-.expandBase {
-    color: var(--parchment-accent);
-    font-size: 0.6rem;
+/* Out of range indicator */
+.outOfRange {
+    font-size: 0.62rem;
+    color: #8b2020;
+    opacity: 0.7;
 }
 
-/* ===== MODE: TOOLTIP ===== */
-.upcastTooltip {
-    position: absolute;
-    right: -140px;
-    top: 0;
-    background: rgba(30, 25, 20, 0.95);
-    border: 1px solid var(--parchment-border);
-    border-radius: var(--radius-sm);
-    padding: 4px;
-    z-index: 10;
+/* ===== SPELL INFO TOOLTIP (portal to body) ===== */
+.tooltipBackdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 24999;
+}
+
+.spellInfoTooltip {
+    position: fixed;
+    z-index: 25000;
+    width: 320px;
+    background: rgba(20, 16, 10, 0.96);
+    border: 1px solid var(--parchment-border, #8b7355);
+    border-radius: 4px;
+    padding: 10px 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+    font-size: 0.75rem;
+    color: #e8d5b5;
+    pointer-events: none;
+    animation: tooltipFadeIn 0.12s ease-out;
+}
+
+@keyframes tooltipFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.tipHeader {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    min-width: 120px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    margin-bottom: 4px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(139, 115, 85, 0.3);
 }
 
-.tooltipOption {
-    font-size: 0.72rem;
-    padding: 4px 8px;
-    border: none;
-    background: transparent;
-    color: #f0f0f0;
-    cursor: pointer;
-    text-align: left;
-    border-radius: 2px;
-    transition: background 0.1s;
+.tipName {
+    font-family: var(--font-narrative, serif);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #c9a84c;
 }
 
-.tooltipOption:hover {
-    background: rgba(201, 162, 39, 0.2);
+.tipSchool {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    color: #8b7355;
+    letter-spacing: 0.5px;
+}
+
+.tipRow {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    opacity: 0.8;
+    margin-bottom: 2px;
+}
+
+.tipDamage {
+    font-weight: 600;
+    color: #c9a227;
+    font-size: 0.75rem;
+    margin: 4px 0;
+}
+
+.tipDesc {
+    font-size: 0.7rem;
+    line-height: 1.35;
+    opacity: 0.85;
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(139, 115, 85, 0.2);
 }

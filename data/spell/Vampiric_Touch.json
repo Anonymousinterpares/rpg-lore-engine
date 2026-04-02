@@ -32,6 +32,10 @@
   },
   "damage": {
     "dice": "3d6",
-    "type": "Necrotic"
+    "type": "Necrotic",
+    "scaling": {
+      "levels": [4, 5, 6, 7, 8, 9],
+      "values": ["4d6", "5d6", "6d6", "7d6", "8d6", "9d6"]
+    }
   }
 }

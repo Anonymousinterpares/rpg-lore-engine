@@ -275,6 +275,19 @@ export const CombatActionBar: React.FC = () => {
                 <SpellbookFlyout
                     spells={availableSpells}
                     spellSlots={state?.character?.spellSlots}
+                    distanceToTarget={(() => {
+                        if (!player || !gridManager) return undefined;
+                        // Use selected target, or nearest enemy
+                        const target = state.combat?.selectedTargetId
+                            ? state.combat.combatants.find(c => c.id === state.combat?.selectedTargetId)
+                            : null;
+                        const enemies = state.combat!.combatants.filter(c => c.type === 'enemy' && c.hp.current > 0);
+                        const ref = target || enemies[0];
+                        if (!ref) return undefined;
+                        const dq = ref.position.x - player.position.x;
+                        const dr = ref.position.y - player.position.y;
+                        return Math.max(Math.abs(dq), Math.abs(dr), Math.abs(dq + dr)) * 5;
+                    })()}
                     onCast={handleCastSpell}
                     onClose={() => setShowSpells(false)}
                 />

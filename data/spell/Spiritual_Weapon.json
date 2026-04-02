@@ -31,6 +31,10 @@
   },
   "damage": {
     "dice": "1d8",
-    "type": "Force"
+    "type": "Force",
+    "scaling": {
+      "levels": [4, 6, 8],
+      "values": ["2d8", "3d8", "4d8"]
+    }
   }
 }
