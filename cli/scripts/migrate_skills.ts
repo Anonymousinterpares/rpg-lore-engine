@@ -43,6 +43,10 @@ function migrateSave(filePath: string): boolean {
                 char.multiclassLevels = {};
                 patched = true;
             }
+            if (char.feats === undefined) {
+                char.feats = [];
+                patched = true;
+            }
             if (data._examineCooldowns === undefined) {
                 data._examineCooldowns = { examine_attempts: [] };
                 patched = true;

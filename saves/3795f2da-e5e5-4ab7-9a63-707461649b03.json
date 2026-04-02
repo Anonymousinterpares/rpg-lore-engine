@@ -199,7 +199,8 @@
       "totalEarned": 0
     },
     "darkvision": 0,
-    "multiclassLevels": {}
+    "multiclassLevels": {},
+    "feats": []
   },
   "companions": [],
   "mode": "EXPLORATION",

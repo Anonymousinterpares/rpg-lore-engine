@@ -155,15 +155,13 @@ export class SpellManager {
         const spellSaveDC = 8 + spellAttackBonus;
 
         for (const target of targets) {
-            // Compute cover save bonus (D&D 5e: half cover +2, three-quarters +5)
+            // Cover save bonus: D&D 5e grants cover bonus ONLY to DEX saves
             let coverSaveBonus = 0;
-            if (combo.grid && effectiveSpell.save) {
+            if (combo.grid && effectiveSpell.save && (effectiveSpell.save as any).ability === 'DEX') {
                 const gm = new CombatGridManager(combo.grid);
                 const cover = gm.getCover(caster.position, target.position);
                 if (cover === 'Half') coverSaveBonus = 2;
                 else if (cover === 'Three-Quarters') coverSaveBonus = 5;
-                // Sharpshooter feat: ignore half and three-quarters cover
-                if (this.state.character.feats?.includes('Sharpshooter') && !effectiveSpell.save) coverSaveBonus = 0;
             }
             const result = CombatResolutionEngine.resolveSpell(caster, target, effectiveSpell, spellAttackBonus, spellSaveDC, coverSaveBonus);
 
@@ -478,7 +476,14 @@ export class SpellManager {
 
         let msg = `${caster.name} reads the scroll of ${spell.name}! `;
         for (const target of targets) {
-            const result = CombatResolutionEngine.resolveSpell(caster, target, effectiveSpell, spellAttackBonus, spellSaveDC);
+            let scrollCoverBonus = 0;
+            if (combat.grid && spell.save && (spell.save as any).ability === 'DEX') {
+                const gm = new CombatGridManager(combat.grid);
+                const cover = gm.getCover(caster.position, target.position);
+                if (cover === 'Half') scrollCoverBonus = 2;
+                else if (cover === 'Three-Quarters') scrollCoverBonus = 5;
+            }
+            const result = CombatResolutionEngine.resolveSpell(caster, target, effectiveSpell, spellAttackBonus, spellSaveDC, scrollCoverBonus);
             if (result.damage > 0) {
                 await this.applyCombatDamage(target, result.damage);
                 this.emitCombatEvent(result.type, target.id, result.damage);

@@ -78,6 +78,8 @@ export class LevelingEngine {
         const hpIncrease = Math.max(1, Math.floor(hitDieValue / 2) + 1 + conMod);
 
         pc.hp.max += hpIncrease;
+        // Tough feat: +2 HP per level (applied on each level-up)
+        if (pc.feats?.includes('Tough')) pc.hp.max += 2;
         pc.hp.current = pc.hp.max;
 
         // Increase Hit Dice

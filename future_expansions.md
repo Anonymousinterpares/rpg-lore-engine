@@ -57,12 +57,23 @@ but have NO gameplay effect beyond the proficiency bonus on generic skill checks
 
 Items from the original implementation_plan.md that are incomplete or missing.
 
-### Feat System — MISSING
-- ASI at levels 4/8/12/16/19 only offers ability score increases (+2/+1+1)
-- D&D 5e allows choosing a Feat instead of ASI — not implemented
-- No FeatSchema, no feat data directory, no feat selection UI
-- Human Variant feat at level 1 also not implemented
-- **To implement:** FeatSchema + data/feats/*.json + ASI choice UI (feat or ability increase)
+### Feat System — PARTIALLY IMPLEMENTED (April 2026)
+- 12 feats defined in data/feats/feats.json with effects schema
+- /feat command, LevelingEngine.selectFeat(), feats array on PlayerCharacterSchema
+- Alert +5 initiative wired, Tough retroactive + per-level HP wired
+- **Unwired feat mechanical effects (need combat integration):**
+  - Alert: "can't be surprised" needs surprise system check; "unseen don't gain advantage" needs CombatResolutionEngine
+  - Great Weapon Master: -5/+10 power attack needs player toggle in combat UI
+  - Sharpshooter: -5/+10 power attack + ignore cover for ranged weapons (NOT spell saves)
+  - Lucky: 3 luck points per long rest, reroll d20 — needs UI for spending points mid-roll
+  - Mobile: +10 speed needs movementSpeed modification; no-OA-after-melee needs CombatOrchestrator
+  - Polearm Master: bonus action butt-end attack + reach OA — needs CombatOrchestrator
+  - Sentinel: OA stops movement + ignore disengage + ally protection — needs CombatOrchestrator
+  - War Caster: concentration advantage + spell-as-OA — needs CombatOrchestrator + SpellManager
+  - Actor: advantage on Deception/Performance impersonation — needs dialogue system check
+  - Resilient: saving throw proficiency for chosen ability — needs ability choice UI + savingThrowProficiencies update
+  - Athlete: STR/DEX choice — needs ability choice UI
+- **No feat selection UI** — players use /feat command only; should be added to LevelUpOverlay
 
 ### Exhaustion System (6 Levels) — DEFERRED TO SURVIVAL EXPANSION
 - D&D 5e has graduated exhaustion: level 1 = disadvantage on ability checks, up to level 6 = death

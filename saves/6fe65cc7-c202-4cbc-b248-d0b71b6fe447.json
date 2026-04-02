@@ -383,7 +383,8 @@
       "totalEarned": 0
     },
     "darkvision": 60,
-    "multiclassLevels": {}
+    "multiclassLevels": {},
+    "feats": []
   },
   "companions": [],
   "mode": "COMBAT",

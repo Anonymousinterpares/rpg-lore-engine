@@ -330,7 +330,8 @@
           "event": "The adventure begins."
         }
       ]
-    }
+    },
+    "feats": []
   },
   "companions": [],
   "mode": "EXPLORATION",
