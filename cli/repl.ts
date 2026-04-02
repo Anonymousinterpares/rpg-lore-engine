@@ -81,6 +81,8 @@ function showHelp() {
 ║  /invest <skill>— Spend SP to advance a skill ║
 ║  /resetskills   — Respec: reset all skills    ║
 ║  /asi <+2 STR>  — Apply ASI (+2 one or +1/+1) ║
+║  /ability [skill]— Use active skill ability   ║
+║  /chooseability — Choose passive/active T3/T4 ║
 ║  /prepare <s>   — Prepare spells for the day  ║
 ║  /export [type] — Export sheet or chronicle    ║
 ║  /multiclass <c>— Check multiclass prereqs    ║

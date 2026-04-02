@@ -86,3 +86,107 @@ but have NO gameplay effect beyond the proficiency bonus on generic skill checks
   - Quest NPCs: History/Arcana/Religion tier → quality of shared lore; Medicine tier → healing effectiveness
 - **Recommendation:** Add when NPC AI is more sophisticated. Current binary proficiency sufficient for now.
 - **Future:** Full NPC tier system with per-NPC skill configurations
+
+---
+
+## Skill Ability Wiring Status (Phase 10C)
+
+### Wired (mechanically active)
+| Skill | Tier | Ability | Where |
+|---|---|---|---|
+| Arcana | T3 passive | Auto-succeed identify Rare | GameLoop.ts examine handler |
+| Arcana | T4 passive | Auto-identify on pickup (Rare-) | GameLoop.ts examine handler |
+| Perception | T3 passive | +5 passive Perception | MechanicsEngine.getPassivePerception |
+| Medicine | T3 passive | +50% short rest HP (from 10B) | RestingEngine.applyProportionalRest |
+| Medicine | T4 passive | Temp HP after long rest | RestingEngine.applyProportionalRest |
+| Persuasion | T3 passive | +10% sell price | ShopEngine.getSellPrice |
+| Deception | T3 passive | No standing penalty on fail | ShopEngine.deceive |
+| History | T4 passive | +25% XP | CombatOrchestrator.endCombat |
+| Nature | T3 passive | +50% gathering yield | GatheringEngine.gather |
+| Nature | T4 passive | Max yield from nodes | GatheringEngine.gather |
+| Survival | T3 passive | Always discover hidden paths | GameLoop path discovery |
+
+### NOT Wired — Missing Systems Required
+| Skill | Tier | Ability | Missing System |
+|---|---|---|---|
+| Perception | T4 | Blindsight / can't be surprised | Surprise system rework (CombatOrchestrator ambush) |
+| Persuasion | T4 | Exclusive merchant stock tier | Merchant stock tier system |
+| Deception | T4 | Disguise identity | NPC recognition / disguise system |
+| History | T3 | Codex reveals monster resistances | Codex auto-enrichment with resistance data |
+| Intimidation | T3 | Enemies <25% HP disadvantage | Condition application in CombatOrchestrator per-attack |
+| Intimidation | T4 | Enemies flee on ally 0 HP | Enemy morale / flee AI system |
+| Survival | T4 | No random encounters while resting | RestingEngine encounter suppression |
+| Stealth | T3 | Advantage on surprise attacks | Surprise round advantage system |
+| Stealth | T4 | Double damage from stealth | First-strike damage multiplier in CombatResolutionEngine |
+| Acrobatics | T3 | +2 AC vs opportunity attacks | Opportunity attack detection in CombatOrchestrator |
+| Acrobatics | T4 | Evasion (half dmg DEX saves) | DEX save damage reduction in CombatResolutionEngine |
+| Athletics | T3 | Advantage on grapple/shove | StandardActions grapple/shove advantage flag |
+| Athletics | T4 | Climb/swim speed | Movement speed system (walk/climb/swim) |
+| Animal Handling | T3 | Beasts won't attack | NPC AI hostility by type |
+| Animal Handling | T4 | Beast companion | Full companion/pet system |
+| Insight | T3 | Auto-detect lies | Dialogue lie detection system |
+| Insight | T4 | NPC disposition revealed | NPC disposition display UI |
+| Investigation | T3 | Trap sense | Trap detection system |
+| Investigation | T4 | Reveal hidden item properties | Item property reveal on DataManager lookup |
+| Performance | T3 | Merchant stock refresh on perform | Performance action + merchant restock |
+| Performance | T4 | 20% better prices after performance | Performance-to-trade bonus tracking |
+| Religion | T3 | Sense undead/fiend 60ft | Entity type detection system |
+| Religion | T4 | Undead disadvantage on attacks | Per-creature-type condition in combat |
+| Sleight of Hand | T3 | Auto-disarm non-magical traps | Trap disarm system |
+| Sleight of Hand | T4 | Disarm weapons on crits | Critical hit disarm effect |
+| Cartography | T3 | Reveal adjacent hex biomes | HexMapManager auto-reveal on move |
+| Cartography | T4 | 3 hex radius map reveal | HexMapManager bulk reveal |
+| Unarmed Combat | T3 | +1 damage die size | Unarmed damage die override in CombatResolutionEngine |
+| Unarmed Combat | T4 | Magical unarmed attacks | Damage type bypass in resistance checks |
+
+### Active Abilities — Wiring Status
+
+All active abilities are invokable via `/ability <skill>` and `/chooseability <skill> <tier> <passive|active>`.
+The SkillAbilityEngine tracks usage counts and resets per-rest/per-encounter.
+However, most active abilities only deduct a use — the mechanical EFFECT is not yet implemented.
+
+**Wired (effect implemented):** None yet — all active abilities currently just consume a use and return a message.
+
+**NOT Wired — Missing Systems for Active Effects:**
+| Skill | Tier | Active Ability | Missing System |
+|---|---|---|---|
+| Acrobatics | T3 | Tumble (free disengage) | Disengage action system in CombatOrchestrator |
+| Acrobatics | T4 | Redirect (deflect attack) | Attack redirect in CombatResolutionEngine |
+| Animal Handling | T3 | Calm Beast (pacify) | NPC AI hostility override |
+| Animal Handling | T4 | Command Beast (control enemy) | Enemy control system |
+| Arcana | T3 | Deep Analysis (3 ID attempts) | Already partially handled by tier-based attempt count |
+| Arcana | T4 | Dispel (remove magic effect) | Spell/magic effect dispel system |
+| Athletics | T3 | Power Shove (damage shove) | Shove damage in StandardActions |
+| Athletics | T4 | Titan Grip (auto-grapple) | Auto-succeed grapple in StandardActions |
+| Cartography | T3 | Chart Course (0-time move) | Time cost override in ExplorationManager |
+| Cartography | T4 | Dimensional Anchor (anti-teleport) | Teleportation system |
+| Deception | T3 | Feint (advantage next attack) | Next-attack advantage flag in CombatOrchestrator |
+| Deception | T4 | Perfect Lie (auto-convince) | Dialogue auto-succeed system |
+| History | T3 | Recall Weakness (+2 dmg) | Damage bonus by creature type |
+| History | T4 | Exploit (auto-crit) | Forced critical in CombatResolutionEngine |
+| Insight | T3 | Read Intent (learn NPC motive) | NPC motivation reveal system |
+| Insight | T4 | Predict Action (enemy next action) | Enemy action preview |
+| Intimidation | T3 | Frighten (2 round fear) | Frightened condition application |
+| Intimidation | T4 | War Cry (AoE fear) | AoE condition application |
+| Investigation | T3 | Thorough Search (3 ID attempts) | Already handled by tier-based count |
+| Investigation | T4 | Deduce (enemy next action) | Same as Insight T4 |
+| Medicine | T3 | Cure Condition | Condition removal system |
+| Medicine | T4 | Emergency Surgery (revive) | Revive from 0 HP mechanic |
+| Nature | T3 | Herbalist (identify potions) | Potion identification system |
+| Nature | T4 | Commune with Nature (yes/no) | Area query LLM integration |
+| Perception | T3 | True Sight (30ft, 1min) | True Sight vision mode |
+| Perception | T4 | Eagle Eye (see through walls) | Wall vision system |
+| Performance | T3 | Inspire (+1d4) | Inspiration die buff system |
+| Performance | T4 | Masterpiece (+2 all checks) | Party-wide temporary buff system |
+| Persuasion | T3 | Charm (auto-haggle) | Auto-succeed haggle in ShopEngine |
+| Persuasion | T4 | Parley (hostile→neutral) | NPC hostility conversion |
+| Religion | T3 | Turn Undead (AoE fear undead) | Undead-specific AoE frighten |
+| Religion | T4 | Divine Rebuke (reflect damage) | Damage reflection in CombatOrchestrator |
+| Sleight of Hand | T3 | Pickpocket (steal in dialogue) | Dialogue steal system |
+| Sleight of Hand | T4 | Plant Evidence (frame NPC) | NPC framing social system |
+| Stealth | T3 | Vanish (invisible 1 round) | Invisible condition in combat |
+| Stealth | T4 | Shadow Step (teleport 30ft) | Combat teleportation system |
+| Survival | T3 | Scout Ahead (encounter preview) | Encounter prediction system |
+| Survival | T4 | Tracker (reveal hex enemies) | Enemy reveal on hex |
+| Unarmed Combat | T3 | Stunning Strike (stun 1 round) | Stunned condition on hit |
+| Unarmed Combat | T4 | Pressure Point (paralyze on crit) | Paralyzed condition on crit |

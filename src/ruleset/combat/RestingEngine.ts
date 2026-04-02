@@ -2,6 +2,7 @@ import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
 import { Dice } from './Dice';
 import { MechanicsEngine } from './MechanicsEngine';
 import { SkillEngine } from './SkillEngine';
+import { SkillAbilityEngine } from './SkillAbilityEngine';
 
 export interface RestResult {
     message: string;
@@ -82,6 +83,16 @@ export class RestingEngine {
         if (actualHpHealed === 0 && actualDiceRegained === 0 && actualSlotsRegained === 0) {
             message += `The rest was too short to provide significant recovery.`;
         }
+
+        // Medicine T4 passive: party gains temp HP equal to WIS mod after long rest (8h)
+        if (durationMinutes >= 480 && SkillAbilityEngine.hasPassiveAbility(pc, 'Medicine', 4)) {
+            const wisMod = Math.max(1, MechanicsEngine.getModifier(pc.stats['WIS'] || 10));
+            pc.hp.temp = (pc.hp.temp || 0) + wisMod;
+            message += `Vital Ward: +${wisMod} temp HP. `;
+        }
+
+        // Reset ability uses on rest
+        SkillAbilityEngine.resetAbilityUses(pc, durationMinutes >= 480 ? 'long' : 'short');
 
         return {
             message: message.trim(),

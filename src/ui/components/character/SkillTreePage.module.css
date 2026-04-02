@@ -477,9 +477,76 @@
     background: rgba(41, 128, 185, 0.06);
     border-left: 2px solid #2980b9;
     border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    font-size: 0.72rem;
-    color: #2980b9;
+    font-size: 0.75rem;
+}
+
+.abilityTierLabel {
     display: flex;
     align-items: center;
-    gap: var(--spacing-xs);
+    gap: 4px;
+    color: #2980b9;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.abilityChosen {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.abilityChosenName {
+    font-weight: 600;
+    color: var(--parchment-text);
+}
+
+.abilityChosenType {
+    font-size: 0.65rem;
+    opacity: 0.5;
+    font-style: italic;
+}
+
+.abilityChosenDesc {
+    font-size: 0.7rem;
+    opacity: 0.6;
+    width: 100%;
+}
+
+.abilityOptions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.abilityBtn {
+    font-size: 0.68rem;
+    padding: 2px 8px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.abilityPassive {
+    color: #27ae60;
+    border-color: #27ae60;
+}
+
+.abilityPassive:hover {
+    background: rgba(39, 174, 96, 0.1);
+}
+
+.abilityActive {
+    color: #e67e22;
+    border-color: #e67e22;
+}
+
+.abilityActive:hover {
+    background: rgba(230, 126, 34, 0.1);
+}
+
+.abilityOr {
+    font-size: 0.65rem;
+    opacity: 0.4;
+    font-style: italic;
 }

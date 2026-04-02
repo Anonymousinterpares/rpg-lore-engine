@@ -5,6 +5,7 @@ import { Item } from '../schemas/ItemSchema';
 import { Combatant } from '../schemas/CombatSchema';
 import { AbilityScore, SkillName } from '../schemas/BaseSchemas';
 import { SkillEngine } from './SkillEngine';
+import { SkillAbilityEngine } from './SkillAbilityEngine';
 
 export interface RollResult {
     roll: number;
@@ -155,7 +156,6 @@ export class MechanicsEngine {
 
         if ('level' in actor) {
             const pc = actor as PlayerCharacter;
-            const { SkillEngine } = require('./SkillEngine');
             const tier = SkillEngine.getSkillTier(pc, 'Perception');
             if (tier > 0) {
                 const baseProfBonus = this.getProficiencyBonus(pc.level);
@@ -166,7 +166,12 @@ export class MechanicsEngine {
             // Monsters: use their explicit passive perception if available
         }
 
-        return 10 + wisMod + profBonus;
+        let base = 10 + wisMod + profBonus;
+        // Perception T3 passive: +5 to passive Perception
+        if ('level' in actor) {
+            if (SkillAbilityEngine.hasPassiveAbility(actor as any, 'Perception', 3)) base += 5;
+        }
+        return base;
     }
 
     /**
@@ -317,7 +322,6 @@ export class MechanicsEngine {
         let skillMitigation = 0;
         if ('level' in attacker) {
             const pc = attacker as PlayerCharacter;
-            const { SkillEngine } = require('./SkillEngine');
             const tier = SkillEngine.getSkillTier(pc, 'Perception');
             if (tier > 0) {
                 skillMitigation = this.getProficiencyBonus(pc.level) * SkillEngine.getTierMultiplier('Perception', tier);

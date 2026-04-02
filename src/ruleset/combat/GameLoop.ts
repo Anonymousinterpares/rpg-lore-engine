@@ -31,6 +31,7 @@ import { TimeManager } from './managers/TimeManager';
 import { CombatOrchestrator } from './managers/CombatOrchestrator';
 import { MERCHANT_POOLS, BIOME_COMMERCE, COMMON_ITEMS, DEFAULT_COMMERCE, getForgedItemsForMerchant } from '../data/MerchantInventoryPool';
 import { SkillEngine } from './SkillEngine';
+import { SkillAbilityEngine } from './SkillAbilityEngine';
 import { WorldNPC } from '../schemas/WorldEnrichmentSchema';
 import { NPCMovementEngine } from './managers/NPCMovementEngine';
 import { QuestEngine } from './managers/QuestEngine';
@@ -265,7 +266,8 @@ export class GameLoop {
             systemResponse = await this.handleCommand(intent);
 
             // Trade and examination commands are fully deterministic — bypass the LLM narrator pipeline entirely.
-            const tradeCommands = ['trade', 'buy', 'sell', 'haggle', 'intimidate', 'deceive', 'buyback', 'closetrade', 'examine', 'identify', 'merchantidentify'];
+            const tradeCommands = ['trade', 'buy', 'sell', 'haggle', 'intimidate', 'deceive', 'buyback', 'closetrade', 'examine', 'identify', 'merchantidentify',
+                'levelup', 'level', 'invest', 'resetskills', 'asi', 'multiclass', 'skillability', 'ability', 'chooseability'];
             if (tradeCommands.includes(intent.command || '')) {
                 this.state.lastNarrative = systemResponse;
                 await this.emitStateUpdate();
@@ -517,7 +519,9 @@ export class GameLoop {
                 // Survival Passive Discovery (Phase 3) — tier-based
                 const survivalTier = SkillEngine.getSkillTier(this.state.character, 'Survival');
                 if (currentHex && currentHex.connections && survivalTier > 0) {
-                    const roll = Math.floor(Math.random() * 20) + 1;
+                    // Survival T3 passive: always discover hidden paths (auto-succeed)
+                    const autoSucceed = SkillAbilityEngine.hasPassiveAbility(this.state.character, 'Survival', 3);
+                    const roll = autoSucceed ? 20 : Math.floor(Math.random() * 20) + 1;
                     const wisScore = this.state.character.stats['WIS'] || 10;
                     const wisMod = Math.floor((wisScore - 10) / 2);
                     const baseProfBonus = MechanicsEngine.getProficiencyBonus(this.state.character.level);
@@ -920,8 +924,30 @@ export class GameLoop {
                 }
 
                 const dc = ItemForgeEngine.getIdentifyDC(examineItem);
-                const intMod = MechanicsEngine.getModifier(this.state.character.stats.INT || 10);
                 const bestSkill = arcanaTier >= investigationTier ? 'Arcana' : 'Investigation';
+
+                // Arcana T3 passive: auto-succeed on Rare items
+                const trueRarity = (examineItem as any).trueRarity || (examineItem as any).rarity;
+                if (trueRarity === 'Rare' && SkillAbilityEngine.hasPassiveAbility(this.state.character, 'Arcana', 3)) {
+                    ItemForgeEngine.identifyItem(examineItem, 'skill');
+                    recentAttempts.push(currentTurn);
+                    this.state._examineCooldowns.examine_attempts = recentAttempts;
+                    await this.emitStateUpdate();
+                    const narrative = `Your arcane intuition reveals the item's true nature instantly: ${examineItem.name} (${(examineItem as any).rarity}).`;
+                    this.state.lastNarrative = narrative;
+                    return narrative;
+                }
+
+                // Arcana T4 passive: auto-identify on examine (Rare and below)
+                if (['Common', 'Uncommon', 'Rare'].includes(trueRarity) && SkillAbilityEngine.hasPassiveAbility(this.state.character, 'Arcana', 4)) {
+                    ItemForgeEngine.identifyItem(examineItem, 'skill');
+                    await this.emitStateUpdate();
+                    const narrative = `Your mastery of the arcane instantly reveals: ${examineItem.name} (${(examineItem as any).rarity}).`;
+                    this.state.lastNarrative = narrative;
+                    return narrative;
+                }
+
+                const intMod = MechanicsEngine.getModifier(this.state.character.stats.INT || 10);
                 const prof = MechanicsEngine.getProficiencyBonus(this.state.character.level) * SkillEngine.getTierMultiplier(bestSkill, bestTier);
                 const roll = Dice.d20();
                 const total = roll + intMod + prof;
@@ -1192,6 +1218,82 @@ export class GameLoop {
 
                 await this.emitStateUpdate();
                 return `Multiclassed into ${targetClass}! On your next level up, use /levelup <class> to choose which class gains the level.`;
+            }
+
+            // ===== SKILL INVESTMENT =====
+            case 'invest': {
+                if (!args[0]) return 'Usage: /invest <skill name>';
+                const skillToInvest = args.join(' ');
+                const investResult = SkillEngine.invest(this.state.character, skillToInvest);
+                await this.emitStateUpdate();
+                return investResult;
+            }
+
+            case 'resetskills': {
+                const resetResult = SkillEngine.resetAll(this.state.character);
+                await this.emitStateUpdate();
+                return resetResult;
+            }
+
+            case 'asi': {
+                const asiArgs = args.join(' ').toUpperCase().split(/\s+/);
+                if (!LevelingEngine.hasPendingASI(this.state.character)) {
+                    return 'No pending ASI. ASI is granted at levels 4, 8, 12, 16, 19.';
+                }
+                if (asiArgs.length === 2 && asiArgs[0] === '+2') {
+                    const result = LevelingEngine.applyASISingle(this.state.character, asiArgs[1]);
+                    await this.emitStateUpdate();
+                    return result;
+                } else if (asiArgs.length === 4 && asiArgs[0] === '+1' && asiArgs[2] === '+1') {
+                    const result = LevelingEngine.applyASISplit(this.state.character, asiArgs[1], asiArgs[3]);
+                    await this.emitStateUpdate();
+                    return result;
+                }
+                return 'Usage: /asi +2 STR  or  /asi +1 STR +1 DEX';
+            }
+
+            // ===== SKILL ABILITY (use active ability) =====
+            case 'skillability':
+            case 'ability': {
+                if (!args[0]) {
+                    // List available active abilities
+                    const abilities = SkillAbilityEngine.getAvailableAbilities(this.state.character);
+                    if (abilities.length === 0) return 'No active abilities available. Reach Tier 3+ and choose an active ability.';
+                    const lines = abilities.map(a => `  ${a.skillName} T${a.tier}: ${a.ability.name} (${a.remaining} uses) — ${a.ability.description}`);
+                    return `Active Abilities:\n${lines.join('\n')}\n\nUsage: /ability <skill name>`;
+                }
+                const abilitySkill = args.join(' ');
+                // Find which tier has an active ability for this skill
+                const pc = this.state.character;
+                let used = false;
+                for (const tier of [4, 3] as const) {
+                    if (SkillAbilityEngine.hasActiveAbility(pc, abilitySkill, tier)) {
+                        const result = SkillAbilityEngine.useAbility(pc, abilitySkill, tier);
+                        if (result.success) {
+                            await this.emitStateUpdate();
+                            return result.message;
+                        }
+                        return result.message;
+                    }
+                }
+                return `No active ability found for "${abilitySkill}". Use /ability to list available abilities.`;
+            }
+
+            // ===== CHOOSE SKILL ABILITY (passive/active) =====
+            case 'chooseability': {
+                // Usage: /chooseability <skill> <tier> <passive|active>
+                if (args.length < 3) return 'Usage: /chooseability <skill name> <3|4> <passive|active>';
+                const lastTwo = args.slice(-2);
+                const tierArg = parseInt(lastTwo[0]);
+                const choiceArg = lastTwo[1].toLowerCase();
+                const skillArg = args.slice(0, -2).join(' ');
+
+                if (tierArg !== 3 && tierArg !== 4) return 'Tier must be 3 or 4.';
+                if (choiceArg !== 'passive' && choiceArg !== 'active') return 'Choice must be "passive" or "active".';
+
+                const result = SkillAbilityEngine.chooseAbility(this.state.character, skillArg, tierArg as 3 | 4, choiceArg);
+                await this.emitStateUpdate();
+                return result;
             }
 
             // ===== STABILIZE (in-combat companion action) =====

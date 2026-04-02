@@ -4,6 +4,7 @@ import { CurrencyEngine, Currency } from './CurrencyEngine';
 import { Dice } from './Dice';
 import { WorldNPC } from '../schemas/WorldEnrichmentSchema';
 import { SkillEngine } from './SkillEngine';
+import { SkillAbilityEngine } from './SkillAbilityEngine';
 import { MechanicsEngine } from './MechanicsEngine';
 import { DataManager } from '../data/DataManager';
 import { BiomeType } from '../schemas/BiomeSchema';
@@ -135,14 +136,19 @@ export class ShopEngine {
         const result = MechanicsEngine.resolveCheck(pc as any, 'CHA', 'Deception', dc);
 
         if (result.success) {
-            npc.shopState.discount += 0.20; // Massive bonus to next interaction
-            this.updateRelationship(npc, "Deceived merchant", -2); // Small hidden penalty or none if unseen
+            npc.shopState.discount += 0.20;
+            this.updateRelationship(npc, "Deceived merchant", -2);
             return { success: true, message: `Success! You rolled ${result.total} vs DC ${dc}. You spin a convincing yarn about your goods.` };
         } else {
-            this.updateRelationship(npc, "Caught in a lie", -20);
-            npc.shopState.isOpen = false;
-            if (!npc.traits.includes('Suspicious')) npc.traits.push('Suspicious');
-            return { success: false, message: `The merchant catches your lie! "Trying to swindle me? We're done here!" (${result.total} vs ${dc})` };
+            // Deception T3 passive: no standing penalty on failed deceive
+            const noStandingPenalty = SkillAbilityEngine.hasPassiveAbility(pc, 'Deception', 3);
+            if (!noStandingPenalty) {
+                this.updateRelationship(npc, "Caught in a lie", -20);
+                npc.shopState.isOpen = false;
+                if (!npc.traits.includes('Suspicious')) npc.traits.push('Suspicious');
+            }
+            const extra = noStandingPenalty ? ' Your silver mask hides the attempt — no reputation loss.' : '';
+            return { success: false, message: `The merchant sees through your story. (${result.total} vs ${dc})${extra}` };
         }
     }
 
@@ -197,6 +203,11 @@ export class ShopEngine {
 
             if (passivePersuasion >= 20) persuasionBonus = 0.10;
             else if (passivePersuasion >= 15) persuasionBonus = 0.05;
+
+            // Persuasion T3 passive: +10% sell price
+            if (SkillAbilityEngine.hasPassiveAbility(pc, 'Persuasion', 3)) {
+                persuasionBonus += 0.10;
+            }
         }
 
         const shopDiscount = npc.shopState?.discount || 0.0;

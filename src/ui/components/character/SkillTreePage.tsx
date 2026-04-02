@@ -7,6 +7,7 @@ import { MechanicsEngine } from '../../../ruleset/combat/MechanicsEngine';
 import { ChevronDown, ChevronRight, Zap, Shield, Star, Lock, RotateCcw, TrendingUp, Check, X, Plus, Swords } from 'lucide-react';
 import { DataManager } from '../../../ruleset/data/DataManager';
 import { MulticlassingEngine } from '../../../ruleset/combat/MulticlassingEngine';
+import { SkillAbilityEngine } from '../../../ruleset/combat/SkillAbilityEngine';
 
 const TIER_NAMES = ['Untrained', 'Proficient', 'Expert', 'Master', 'Grandmaster'];
 const TIER_COLORS = ['#888', '#c8c8c8', '#1eff00', '#0070dd', '#ff8000'];
@@ -214,12 +215,57 @@ const SkillTreePage: React.FC = () => {
                     </div>
                 </div>
 
-                {effectiveTier >= 3 && (
-                    <div className={styles.abilityChoice}>
-                        <Zap size={12} />
-                        <span>Tier {effectiveTier} ability: <em>Coming soon</em></span>
-                    </div>
-                )}
+                {/* Tier 3/4 ability choices */}
+                {[3, 4].map(t => {
+                    if (realTier < t) return null; // Not reached yet
+                    const choices = SkillAbilityEngine.getAbilityChoices(skillName, t as 3 | 4);
+                    if (!choices) return null;
+                    const skillData = (pc as any).skills?.[skillName];
+                    const chosen = t === 3 ? skillData?.chosenAbility?.tier3 : skillData?.chosenAbility?.tier4;
+
+                    return (
+                        <div key={t} className={styles.abilityChoice}>
+                            <div className={styles.abilityTierLabel}>
+                                <Zap size={12} /> Tier {t} Ability
+                            </div>
+                            {chosen ? (
+                                <div className={styles.abilityChosen}>
+                                    <span className={styles.abilityChosenName}>
+                                        {chosen === 'passive' ? choices.passive.name : choices.active.name}
+                                    </span>
+                                    <span className={styles.abilityChosenType}>({chosen})</span>
+                                    <span className={styles.abilityChosenDesc}>
+                                        {chosen === 'passive' ? choices.passive.description : choices.active.description}
+                                    </span>
+                                </div>
+                            ) : (
+                                <div className={styles.abilityOptions}>
+                                    <button
+                                        className={`${parchmentStyles.button} ${styles.abilityBtn} ${styles.abilityPassive}`}
+                                        onClick={() => {
+                                            SkillAbilityEngine.chooseAbility(pc, skillName, t as 3 | 4, 'passive');
+                                            updateState();
+                                        }}
+                                        title={choices.passive.description}
+                                    >
+                                        <Shield size={10} /> {choices.passive.name}
+                                    </button>
+                                    <span className={styles.abilityOr}>or</span>
+                                    <button
+                                        className={`${parchmentStyles.button} ${styles.abilityBtn} ${styles.abilityActive}`}
+                                        onClick={() => {
+                                            SkillAbilityEngine.chooseAbility(pc, skillName, t as 3 | 4, 'active');
+                                            updateState();
+                                        }}
+                                        title={choices.active.description}
+                                    >
+                                        <Zap size={10} /> {choices.active.name}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
             </div>
         );
     };

@@ -23,6 +23,7 @@ import { DeathEngine } from '../DeathEngine';
 import { LoreService } from '../../agents/LoreService';
 import { tryPersistForgedItem } from '../../data/ForgedItemCatalog';
 import { DifficultyEngine, DifficultyLevel } from '../DifficultyEngine';
+import { SkillAbilityEngine } from '../SkillAbilityEngine';
 
 
 /**
@@ -760,6 +761,16 @@ export class CombatOrchestrator {
             if (difficulty !== 'normal') {
                 this.addCombatLog(`${difficulty === 'hard' ? 'Bonus' : 'Reduced'} XP for ${difficulty} difficulty.`);
             }
+
+            // History T4 passive: +25% XP from all encounters
+            if (SkillAbilityEngine.hasPassiveAbility(this.state.character, 'History', 4)) {
+                const bonus = Math.floor(totalXP * 0.25);
+                totalXP += bonus;
+                this.addCombatLog(`Sage's Blessing: +${bonus} bonus XP!`);
+            }
+
+            // Reset per-encounter ability uses
+            SkillAbilityEngine.resetEncounterUses(this.state.character);
 
             const char = this.state.character;
             char.xp += totalXP;
