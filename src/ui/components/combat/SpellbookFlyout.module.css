@@ -3,8 +3,9 @@
     bottom: 100px;
     left: 50%;
     transform: translateX(-50%);
-    width: 550px;
+    width: min(550px, 90vw);
     max-height: 450px;
+    overflow: hidden;
     z-index: 1000;
     animation: slideUp 0.2s ease-out;
 
@@ -111,8 +112,9 @@
 .spellItem {
     display: flex;
     flex-direction: column;
-    padding: var(--spacing-md);
-    min-height: 80px;
+    padding: var(--spacing-sm);
+    min-height: 60px;
+    overflow: hidden;
     background: rgba(0, 0, 0, 0.03);
     border: 1px solid var(--parchment-border);
     transition: all 0.2s;

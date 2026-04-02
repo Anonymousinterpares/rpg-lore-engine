@@ -21,6 +21,33 @@
     font-style: italic;
     color: var(--parchment-text);
     opacity: 0.8;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.levelGlow {
+    color: #ffd700;
+    opacity: 1;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+    -webkit-text-stroke: 0.3px rgba(0, 0, 0, 0.3);
+    animation: levelGlowPulse 2s ease-in-out infinite;
+}
+
+.spBadge {
+    font-size: 0.65rem;
+    font-style: normal;
+    font-weight: 700;
+    background: rgba(255, 215, 0, 0.15);
+    color: #ffd700;
+    padding: 1px 6px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+@keyframes levelGlowPulse {
+    0%, 100% { text-shadow: 0 0 8px rgba(255, 215, 0, 0.5); }
+    50% { text-shadow: 0 0 16px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.3); }
 }
 
 .statsRow {

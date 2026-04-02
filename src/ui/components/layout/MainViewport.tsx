@@ -14,6 +14,7 @@ import GameOverScreen from '../menu/GameOverScreen';
 import SaveLoadModal from '../menu/SaveLoadModal';
 import RestWaitModal from '../exploration/RestWaitModal';
 import ExamineOverlay from '../combat/ExamineOverlay';
+import LevelUpOverlay from '../combat/LevelUpOverlay';
 import { useGameState } from '../../hooks/useGameState';
 import { useCallback, useEffect } from 'react';
 
@@ -33,8 +34,12 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
     // Examine overlay orchestration
     const [examineOverlay, setExamineOverlay] = useState<any>(null);
     const [narrativePaused, setNarrativePaused] = useState(false);
-    const [isTyping, setIsTyping] = useState(false); // true while NarrativeBox typewriter is active
+    const [isTyping, setIsTyping] = useState(false);
     const lastSkillCheckIdRef = useRef<string | null>(null);
+
+    // Level up overlay
+    const [levelUpOverlay, setLevelUpOverlay] = useState<{ level: number; className: string; spGained: number; hasASI: boolean } | null>(null);
+    const lastLevelRef = useRef<number>(state?.character?.level || 0);
 
     // Detect new skill check from engine state → show dice overlay
     // This does NOT stop any running typewriter — it only gates future narrative text
@@ -46,6 +51,21 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
             setNarrativePaused(true);
         }
     }, [state?.lastSkillCheck]);
+
+    // Detect level up → show overlay
+    useEffect(() => {
+        const currentLevel = state?.character?.level || 0;
+        if (currentLevel > lastLevelRef.current && lastLevelRef.current > 0) {
+            const ASI_LEVELS = [4, 8, 12, 16, 19];
+            setLevelUpOverlay({
+                level: currentLevel,
+                className: state?.character?.class || '',
+                spGained: 2, // Default; actual value already applied by engine
+                hasASI: ASI_LEVELS.includes(currentLevel),
+            });
+        }
+        lastLevelRef.current = currentLevel;
+    }, [state?.character?.level]);
 
     const handleExamineOverlayComplete = useCallback(() => {
         setExamineOverlay(null);
@@ -192,6 +212,17 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
                 <ExamineOverlay
                     skillCheck={examineOverlay}
                     onComplete={handleExamineOverlayComplete}
+                />
+            )}
+
+            {/* Level Up Overlay */}
+            {levelUpOverlay && (
+                <LevelUpOverlay
+                    level={levelUpOverlay.level}
+                    className={levelUpOverlay.className}
+                    spGained={levelUpOverlay.spGained}
+                    hasASI={levelUpOverlay.hasASI}
+                    onComplete={() => setLevelUpOverlay(null)}
                 />
             )}
 

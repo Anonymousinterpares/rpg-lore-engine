@@ -1,0 +1,40 @@
+{
+  "name": "Siltwoven Padding of Acid Ward",
+  "type": "Armor",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 2500,
+    "pp": 0
+  },
+  "weight": 8,
+  "isMagic": true,
+  "modifiers": [
+    {
+      "type": "ACBonus",
+      "target": "AC",
+      "value": 2
+    },
+    {
+      "type": "DamageResistance",
+      "target": "Acid",
+      "value": 1
+    }
+  ],
+  "tags": [],
+  "quantity": 1,
+  "rarity": "Very Rare",
+  "itemLevel": 12,
+  "isForged": true,
+  "forgeSource": "Archmage CR 12 Plains",
+  "magicalProperties": [
+    {
+      "type": "Resistance",
+      "element": "Acid",
+      "description": "Resistance to Acid damage"
+    }
+  ],
+  "acCalculated": "11",
+  "stealthDisadvantage": true
+}

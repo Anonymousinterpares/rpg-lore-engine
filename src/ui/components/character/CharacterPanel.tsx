@@ -32,7 +32,10 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({ onCharacter }) => {
         <div className={styles.panel}>
             <div className={styles.header} onClick={onCharacter} style={{ cursor: 'pointer' }} title="Open Character Sheet">
                 <h2 className={styles.name}>{char.name}</h2>
-                <div className={styles.level}>Level {char.level} {char.class}</div>
+                <div className={`${styles.level} ${(char as any).skillPoints?.available > 0 ? styles.levelGlow : ''}`}>
+                    Level {char.level} {char.class}
+                    {(char as any).skillPoints?.available > 0 && <span className={styles.spBadge}>{(char as any).skillPoints.available} SP</span>}
+                </div>
             </div>
 
             <div className={styles.statsRow}>

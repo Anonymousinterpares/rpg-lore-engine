@@ -24,6 +24,7 @@ import { LoreService } from '../../agents/LoreService';
 import { tryPersistForgedItem } from '../../data/ForgedItemCatalog';
 import { DifficultyEngine, DifficultyLevel } from '../DifficultyEngine';
 import { SkillAbilityEngine } from '../SkillAbilityEngine';
+import { LevelingEngine } from '../LevelingEngine';
 
 
 /**
@@ -812,13 +813,12 @@ export class CombatOrchestrator {
                 }
             }
 
-            const nextThreshold = MechanicsEngine.getNextLevelXP(char.level);
-            if (char.xp >= nextThreshold && char.level < 20) {
-                char.level++;
-                char.hp.max += 10;
-                char.hp.current = char.hp.max;
+            // Check for level up using LevelingEngine (grants SP, ASI, class-appropriate HP)
+            if (LevelingEngine.canLevelUp(char)) {
+                const levelMsg = LevelingEngine.levelUp(char);
+                // Restore spell slots on level up
                 Object.values(char.spellSlots).forEach(s => s.current = s.max);
-                this.addCombatLog(`LEVEL UP! You are now level ${char.level}. HP and Spell Slots restored.`);
+                this.addCombatLog(`LEVEL UP! ${levelMsg} Spell Slots restored.`);
             }
         }
 
