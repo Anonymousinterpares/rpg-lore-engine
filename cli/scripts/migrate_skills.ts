@@ -33,12 +33,20 @@ function migrateSave(filePath: string): boolean {
                     patched = true;
                 }
             }
+            // Also patch darkvision if missing
+            if (char.darkvision === undefined) {
+                // Look up race darkvision from data files
+                const racesWithDarkvision = ['Elf', 'High_Elf', 'High Elf', 'Dwarf', 'Hill_Dwarf', 'Hill Dwarf', 'Gnome', 'Rock_Gnome', 'Rock Gnome', 'Half-Elf', 'Half-Orc', 'Tiefling'];
+                char.darkvision = racesWithDarkvision.some(r => char.race?.includes(r)) ? 60 : 0;
+                patched = true;
+            }
+
             if (patched) {
                 fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
-                console.log(`  [PATCH] ${filePath} — added baseTier to existing skills`);
+                console.log(`  [PATCH] ${filePath} — patched (baseTier/darkvision)`);
                 return true;
             }
-            console.log(`  [SKIP] ${filePath} — already has skills + baseTier`);
+            console.log(`  [SKIP] ${filePath} — already up to date`);
             return false;
         }
 

@@ -157,12 +157,19 @@ export class LootEngine {
     }
 
     public static generateSpellScroll(spellName: string, level: number): any {
+        const rarityByLevel: Record<number, string> = {
+            0: 'Common', 1: 'Common', 2: 'Uncommon', 3: 'Uncommon',
+            4: 'Rare', 5: 'Rare', 6: 'Very Rare', 7: 'Very Rare',
+            8: 'Legendary', 9: 'Legendary'
+        };
         return {
             id: `scroll_${Math.random().toString(36).substr(2, 9)}`,
             name: `Spell Scroll: ${spellName}`,
             type: 'Spell Scroll',
             spellName: spellName,
             spellLevel: level,
+            rarity: rarityByLevel[level] || 'Common',
+            isMagic: true,
             weight: 0,
             cost: this.getScrollCost(level),
             description: `A magic scroll containing the spell ${spellName}.`,

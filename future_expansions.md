@@ -127,7 +127,11 @@ Items from the original implementation_plan.md that are incomplete or missing.
   - CombatFactory doesn't carry darkvision to combat
   - CombatResolutionEngine never checks lighting/visibility
 - No grid-based light propagation or shadow casting
-- **To implement:** Fix darkvision chain (5 schema/factory fixes), wire VisibilityEngine into CombatResolutionEngine for attack advantage/disadvantage
+- **Data chain FIXED** (April 2026): PlayerCharacterSchema, CombatantSchema, CharacterFactory, CharacterCreationEngine, CombatFactory all carry darkvision. VisibilityEngine simplified.
+- **Still missing:** VisibilityEngine not wired into CombatResolutionEngine (combat doesn't check lighting)
+- **Monster darkvision data:** Only 11/325 monsters have a darkvision field. Need bulk migration script to add
+  darkvision based on creature type (dragons=120ft, undead/fiends/aberrations=60ft, humanoids=0, etc.)
+  using D&D 5e SRD senses data as reference. ~200 monsters need the field added.
 
 ### Sub-Location / Dungeon Navigation — NOT IMPLEMENTED
 - Currently the game only has hex-based movement on the world map

@@ -1274,7 +1274,20 @@ export class GameLoop {
                     if (this.state.mode === 'COMBAT' && this.state.combat) {
                         castResult = await this.spells.castSpellFromScroll(spell, scrollLevel);
                     } else {
-                        castResult = `You read the scroll aloud. ${spell.name} (level ${scrollLevel}) takes effect!`;
+                        // Exploration: apply healing/buff effects from scroll
+                        const category = spell.effect?.category || 'UTILITY';
+                        if (category === 'HEAL' && spell.damage) {
+                            let healDice = spell.damage.dice as string;
+                            if (scrollLevel > spell.level && spell.damage.scaling) {
+                                const si = spell.damage.scaling.levels.indexOf(scrollLevel);
+                                if (si !== -1) healDice = String(spell.damage.scaling.values[si]);
+                            }
+                            const heal = Dice.roll(healDice) + MechanicsEngine.getModifier(this.state.character.stats.WIS || this.state.character.stats.CHA || 10);
+                            this.state.character.hp.current = Math.min(this.state.character.hp.max, this.state.character.hp.current + heal);
+                            castResult = `You read the scroll of ${spell.name}, healing ${heal} HP. HP: ${this.state.character.hp.current}/${this.state.character.hp.max}`;
+                        } else {
+                            castResult = `You read the scroll aloud. ${spell.name} (level ${scrollLevel}) takes effect!`;
+                        }
                     }
 
                     // Consume scroll

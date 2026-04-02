@@ -117,17 +117,23 @@ export class SpellManager {
 
         // Apply upcasting: create a spell copy with scaled damage if casting at higher level
         let effectiveSpell = spell;
-        if (castSlotLevel > spell.level && spell.damage?.scaling) {
-            const scalingIndex = spell.damage.scaling.levels.indexOf(castSlotLevel);
-            if (scalingIndex !== -1) {
-                effectiveSpell = {
-                    ...spell,
-                    damage: { ...spell.damage, dice: spell.damage.scaling.values[scalingIndex] }
-                } as any;
+        let upcastLabel = '';
+        if (castSlotLevel > spell.level) {
+            if (spell.damage?.scaling) {
+                const scalingIndex = spell.damage.scaling.levels.indexOf(castSlotLevel);
+                if (scalingIndex !== -1) {
+                    effectiveSpell = {
+                        ...spell,
+                        damage: { ...spell.damage, dice: spell.damage.scaling.values[scalingIndex] }
+                    } as any;
+                    upcastLabel = ` (upcast at level ${castSlotLevel}: ${spell.damage.scaling.values[scalingIndex]})`;
+                } else {
+                    upcastLabel = ` (upcast at level ${castSlotLevel} — no additional effect)`;
+                }
+            } else {
+                upcastLabel = ` (upcast at level ${castSlotLevel} — this spell does not scale at higher levels)`;
             }
         }
-
-        const upcastLabel = castSlotLevel > spell.level ? ` (upcast at level ${castSlotLevel})` : '';
         let fullMessage = `${caster.name} casts ${spell.name}${upcastLabel}! `;
         const spellAttackBonus = MechanicsEngine.getModifier(caster.stats['INT'] || caster.stats['WIS'] || caster.stats['CHA'] || 10) + MechanicsEngine.getProficiencyBonus(pc.level);
         const spellSaveDC = 8 + spellAttackBonus;
@@ -274,10 +280,12 @@ export class SpellManager {
 
         const pc = this.state.character;
 
+        // Find available slot (with fallback to higher slots)
+        let castSlotLevel = spell.level;
         if (spell.level > 0) {
-            const slotData = pc.spellSlots[spell.level.toString()];
-            if (!slotData || slotData.current <= 0) {
-                return `You have no ${spell.level}${this.getOrdinal(spell.level)} level spell slots remaining!`;
+            castSlotLevel = this.findAvailableSlot(pc, spell.level);
+            if (castSlotLevel === -1) {
+                return `No spell slots available to cast ${spell.name} (level ${spell.level}+)!`;
             }
         }
 
@@ -313,11 +321,18 @@ export class SpellManager {
         }
 
         if (category === 'HEAL') {
-            const heal = Dice.roll(spell.damage?.dice || '1d8') + MechanicsEngine.getModifier(pc.stats['WIS'] || pc.stats['CHA'] || pc.stats['INT'] || 10);
+            // Apply upcast scaling for healing spells
+            let healDice: string = String(spell.damage?.dice || '1d8');
+            if (castSlotLevel > spell.level && spell.damage?.scaling) {
+                const idx = spell.damage.scaling.levels.indexOf(castSlotLevel);
+                if (idx !== -1) healDice = String(spell.damage.scaling.values[idx]);
+            }
+            const heal = Dice.roll(healDice) + MechanicsEngine.getModifier(pc.stats['WIS'] || pc.stats['CHA'] || pc.stats['INT'] || 10);
             pc.hp.current = Math.min(pc.hp.max, pc.hp.current + heal);
-            if (spell.level > 0) pc.spellSlots[spell.level.toString()].current--;
+            if (spell.level > 0) pc.spellSlots[castSlotLevel.toString()].current--;
             await this.emitStateUpdate();
-            return `You cast ${spell.name}, healing ${heal} HP. Current HP: ${pc.hp.current}/${pc.hp.max}`;
+            const upcastNote = castSlotLevel > spell.level ? ` (upcast at level ${castSlotLevel}: ${healDice})` : '';
+            return `You cast ${spell.name}${upcastNote}, healing ${heal} HP. Current HP: ${pc.hp.current}/${pc.hp.max}`;
         }
 
         if (spell.name === 'Find the Path') {
