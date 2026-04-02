@@ -30,7 +30,8 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ onClose, isPage = false
     const [showFeatures, setShowFeatures] = useState(false);
     const [showPersonality, setShowPersonality] = useState(false);
     const [pendingASI, setPendingASI] = useState<Record<string, number>>({});
-    const [pendingSP, setPendingSP] = useState<Record<string, number>>({}); // skillName → tiers invested
+    const [pendingSP, setPendingSP] = useState<Record<string, number>>({});
+    const [showFeatPicker, setShowFeatPicker] = useState(false);
 
     if (!state || !state.character) return null;
 
@@ -91,6 +92,36 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ onClose, isPage = false
                                             </span>
                                         )}
                                     </h2>
+                                    {/* Feat option when ASI pending and no points distributed */}
+                                    {hasPendingASI && usedPoints === 0 && !showFeatPicker && (
+                                        <button className={styles.featChoiceBtn} onClick={() => setShowFeatPicker(true)}>
+                                            <Award size={14} /> Or choose a Feat instead
+                                        </button>
+                                    )}
+                                    {/* Feat picker */}
+                                    {showFeatPicker && (
+                                        <div className={styles.featPickerPanel}>
+                                            <div className={styles.featPickerHeader}>
+                                                <span>Choose a Feat (uses 1 ASI)</span>
+                                                <button className={styles.asiBackBtn} onClick={() => setShowFeatPicker(false)}>← Back to abilities</button>
+                                            </div>
+                                            <div className={styles.featPickerList}>
+                                                {LevelingEngine.getAvailableFeats(char).map((feat: any) => (
+                                                    <div key={feat.name} className={styles.featPickerItem}>
+                                                        <div>
+                                                            <div className={styles.featItemName}>{feat.name}</div>
+                                                            <div className={styles.featItemDesc}>{feat.description}</div>
+                                                        </div>
+                                                        <button className={`${parchmentStyles.button} ${styles.featPickBtn}`} onClick={() => {
+                                                            LevelingEngine.selectFeat(char, feat.name);
+                                                            setShowFeatPicker(false);
+                                                            updateState();
+                                                        }}>Select</button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                     {/* Pending ASI confirm/revert */}
                                     {usedPoints > 0 && (
                                         <div className={styles.asiPendingBar}>
@@ -110,7 +141,6 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ onClose, isPage = false
                                                 setPendingASI({});
                                                 updateState();
                                             }}>Confirm</button>
-                                            <button className={styles.asiRevertBtn} onClick={() => setPendingASI({})}>Revert</button>
                                         </div>
                                     )}
                                 </>
@@ -124,25 +154,20 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ onClose, isPage = false
                                 const totalASIPoints = ((char as any)._pendingASI || 0) * 2;
                                 const usedPoints = Object.values(pendingASI).reduce((s, v) => s + v, 0);
                                 const canAdd = totalASIPoints > 0 && usedPoints < totalASIPoints && val < 20;
+                                const showButtons = totalASIPoints > 0;
                                 return (
                                     <div key={name} className={`${styles.abilityRow} ${hasPending ? styles.abilityPending : ''}`}>
                                         <span className={styles.statName}>{name}</span>
                                         <span className={styles.statScore}>{val}</span>
                                         <span className={styles.statMod}>{formatMod(getMod(val))}</span>
-                                        {canAdd && (
-                                            <button
-                                                className={styles.asiPlusBtn}
-                                                onClick={(e) => { e.stopPropagation(); setPendingASI(prev => ({ ...prev, [name]: (prev[name] || 0) + 1 })); }}
-                                                title={`+1 to ${name}`}
-                                            >+</button>
-                                        )}
-                                        {hasPending && (
-                                            <button
-                                                className={styles.asiMinusBtn}
+                                        <div className={styles.pmSlot} style={{ visibility: showButtons ? 'visible' : 'hidden' }}>
+                                            <button className={styles.asiMinusBtn} style={{ visibility: hasPending ? 'visible' : 'hidden' }}
                                                 onClick={(e) => { e.stopPropagation(); setPendingASI(prev => { const n = { ...prev }; n[name] = (n[name] || 0) - 1; if (n[name] <= 0) delete n[name]; return n; }); }}
-                                                title={`-1 from ${name}`}
                                             >-</button>
-                                        )}
+                                            <button className={styles.asiPlusBtn} style={{ visibility: canAdd ? 'visible' : 'hidden' }}
+                                                onClick={(e) => { e.stopPropagation(); setPendingASI(prev => ({ ...prev, [name]: (prev[name] || 0) + 1 })); }}
+                                            >+</button>
+                                        </div>
                                     </div>
                                 );
                             })}
@@ -217,7 +242,6 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ onClose, isPage = false
                                                 setPendingSP({});
                                                 updateState();
                                             }}>Confirm</button>
-                                            <button className={styles.asiRevertBtn} onClick={() => setPendingSP({})}>Revert</button>
                                         </div>
                                     )}
                                     {SKILL_GROUPS.map(group => (
@@ -232,7 +256,12 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ onClose, isPage = false
                                                 const mult = effectiveTier > 0 ? [0, 1, 2, 2, 3][effectiveTier] : 0;
                                                 const abilityScore = (stats as any)[group.ability] || 10;
                                                 const mod = getMod(abilityScore) + (profBonus * mult);
-                                                const stars = '●'.repeat(effectiveTier) + '○'.repeat(Math.max(0, 4 - effectiveTier));
+                                                // Build pips: base tiers are solid, pending tiers glow orange
+                                                const pips = Array.from({ length: 4 }, (_, i) => {
+                                                    if (i < baseTier) return 'filled';
+                                                    if (i < effectiveTier) return 'pending';
+                                                    return 'empty';
+                                                });
 
                                                 const def = SkillEngine.getSkillDef(skillName);
                                                 const nextCost = def?.tierCosts?.[effectiveTier];
@@ -242,27 +271,29 @@ const CharacterSheet: React.FC<CharacterSheetProps> = ({ onClose, isPage = false
                                                 return (
                                                     <div key={skillName} className={`${styles.skillRow} ${pendingAdv > 0 ? styles.abilityPending : ''}`}>
                                                         <div className={styles.skillInfo}>
-                                                            <span style={{ fontSize: '0.55rem', letterSpacing: 2, color: tierColors[effectiveTier], minWidth: 32 }}>{stars}</span>
+                                                            <span className={styles.skillPips}>
+                                                                {pips.map((p, i) => (
+                                                                    <span key={i} className={`${styles.skillPip} ${p === 'filled' ? styles.pipFilled : p === 'pending' ? styles.pipPending : styles.pipEmpty}`}
+                                                                        style={p === 'filled' ? { backgroundColor: tierColors[baseTier] } : undefined} />
+                                                                ))}
+                                                            </span>
                                                             <span className={styles.skillNameText}>{skillName}</span>
                                                             {effectiveTier > 0 && <small style={{ color: tierColors[effectiveTier], fontSize: '0.6rem' }}>{tierNames[effectiveTier]}</small>}
                                                         </div>
                                                         <span className={styles.skillBonus}>{formatMod(mod)}</span>
-                                                        <button
-                                                            className={styles.skillInfoBtn}
+                                                        <button className={styles.skillInfoBtn}
                                                             onClick={(e) => { e.stopPropagation(); openCodex('skills', skillName); }}
                                                             title={`View ${skillName} in Codex`}
                                                         ><Info size={11} /></button>
-                                                        {canInvest && (
-                                                            <button className={styles.asiPlusBtn} style={{ width: 18, height: 18, fontSize: '0.75rem' }}
-                                                                onClick={(e) => { e.stopPropagation(); setPendingSP(prev => ({ ...prev, [skillName]: (prev[skillName] || 0) + 1 })); }}
-                                                                title={`Invest ${nextCost} SP → ${tierNames[effectiveTier + 1]}`}
-                                                            >+</button>
-                                                        )}
-                                                        {pendingAdv > 0 && (
-                                                            <button className={styles.asiMinusBtn} style={{ width: 18, height: 18, fontSize: '0.75rem' }}
+                                                        <div className={styles.pmSlotSm} style={{ visibility: (spAvail > 0 || pendingAdv > 0) ? 'visible' : 'hidden' }}>
+                                                            <button className={styles.asiMinusBtn} style={{ width: 18, height: 18, fontSize: '0.7rem', visibility: pendingAdv > 0 ? 'visible' : 'hidden' }}
                                                                 onClick={(e) => { e.stopPropagation(); setPendingSP(prev => { const n = { ...prev }; n[skillName] = (n[skillName] || 0) - 1; if (n[skillName] <= 0) delete n[skillName]; return n; }); }}
                                                             >-</button>
-                                                        )}
+                                                            <button className={styles.asiPlusBtn} style={{ width: 18, height: 18, fontSize: '0.7rem', visibility: canInvest ? 'visible' : 'hidden' }}
+                                                                onClick={(e) => { e.stopPropagation(); setPendingSP(prev => ({ ...prev, [skillName]: (prev[skillName] || 0) + 1 })); }}
+                                                                title={canInvest ? `Invest ${nextCost} SP → ${tierNames[effectiveTier + 1]}` : ''}
+                                                            >+</button>
+                                                        </div>
                                                     </div>
                                                 );
                                             })}

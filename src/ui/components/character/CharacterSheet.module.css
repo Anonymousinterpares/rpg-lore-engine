@@ -199,16 +199,16 @@
 
 .skillRow {
     display: flex;
-    justify-content: space-between;
-    padding: 6px 4px;
-    font-size: 0.95rem;
-    border-bottom: 1px dotted rgba(93, 64, 55, 0.1);
-    transition: all 0.2s ease;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 4px;
+    font-size: 0.85rem;
+    border-bottom: 1px dotted rgba(93, 64, 55, 0.08);
+    transition: all 0.15s ease;
 }
 
 .skillRow:hover {
-    background: rgba(93, 64, 55, 0.05);
-    transform: translateX(4px);
+    background: rgba(93, 64, 55, 0.04);
 }
 
 .skillRow:last-child {
@@ -218,7 +218,9 @@
 .skillInfo {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
 }
 
 .profMarker {
@@ -230,6 +232,9 @@
 .skillBonus {
     font-weight: 700;
     font-family: var(--font-mono);
+    min-width: 28px;
+    text-align: right;
+    flex-shrink: 0;
 }
 
 /* Combat Metrics Box */
@@ -455,6 +460,90 @@
     50% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.6); }
 }
 
+/* Fixed-width horizontal button slot: [-][+] always same position */
+.pmSlot {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+    width: 52px;
+}
+
+.pmSlotSm {
+    display: flex;
+    gap: 3px;
+    flex-shrink: 0;
+    width: 42px;
+}
+
+/* Feat choice option */
+.featChoiceBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 6px 10px;
+    margin-bottom: 6px;
+    background: rgba(41, 128, 185, 0.06);
+    border: 1px dashed rgba(41, 128, 185, 0.3);
+    border-radius: 4px;
+    color: #2980b9;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.featChoiceBtn:hover {
+    background: rgba(41, 128, 185, 0.12);
+}
+
+.featPickerPanel {
+    padding: 8px;
+    margin-bottom: 8px;
+    background: rgba(41, 128, 185, 0.04);
+    border: 1px solid rgba(41, 128, 185, 0.2);
+    border-radius: 4px;
+}
+
+.featPickerHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #2980b9;
+}
+
+.featPickerList {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.featPickerItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    border: 1px solid rgba(139, 115, 85, 0.1);
+    border-radius: 3px;
+}
+
+.featPickerItem:hover {
+    background: rgba(41, 128, 185, 0.05);
+}
+
+.featPickBtn {
+    font-size: 0.68rem;
+    padding: 2px 8px;
+    white-space: nowrap;
+    color: #2980b9;
+    border-color: #2980b9;
+    flex-shrink: 0;
+}
+
 /* Popover buttons for Class Features / Personality */
 .popoverButton {
     display: flex;
@@ -524,6 +613,46 @@
     opacity: 0.65;
 }
 
+/* Skill pips */
+.skillPips {
+    display: flex;
+    gap: 3px;
+    min-width: 36px;
+    flex-shrink: 0;
+}
+
+.skillPip {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    border: 1px solid rgba(139, 115, 85, 0.3);
+}
+
+.pipFilled {
+    border-color: transparent;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+.pipEmpty {
+    background: transparent;
+}
+
+.pipPending {
+    background-color: #ff8c00 !important;
+    border-color: transparent;
+    box-shadow: 0 0 6px 2px rgba(255, 140, 0, 0.8), 0 0 12px 4px rgba(255, 140, 0, 0.4);
+    animation: pipGlowPulse 1s ease-in-out infinite;
+}
+
+@keyframes pipGlowPulse {
+    0%, 100% {
+        box-shadow: 0 0 6px 2px rgba(255, 140, 0, 0.8), 0 0 12px 4px rgba(255, 140, 0, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 10px 4px rgba(255, 140, 0, 1), 0 0 20px 8px rgba(255, 140, 0, 0.6);
+    }
+}
+
 /* Skill groups */
 .skillGroupSection {
     margin-bottom: var(--spacing-sm);
@@ -541,8 +670,11 @@
 }
 
 .skillNameText {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .skillInfoBtn {
