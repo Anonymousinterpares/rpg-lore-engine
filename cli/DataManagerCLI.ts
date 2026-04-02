@@ -102,12 +102,14 @@ export async function patchDataManagerForNode(projectRoot: string): Promise<{
     // --- Load Forged Items from catalog ---
     const forgedCount = await loadForgedItems(projectRoot);
 
-    // --- Load Skill Registry ---
+    // --- Load Skill Registry + Abilities ---
     const { SkillEngine } = await import('../src/ruleset/combat/SkillEngine');
+    const { SkillAbilityEngine } = await import('../src/ruleset/combat/SkillAbilityEngine');
     const skillsPath = path.join(dataDir, 'skills', 'skills.json');
     if (fs.existsSync(skillsPath)) {
         const skillData = JSON.parse(fs.readFileSync(skillsPath, 'utf-8'));
         SkillEngine.loadRegistry(skillData);
+        SkillAbilityEngine.loadAbilities(skillData);
     }
 
     // --- Load Difficulty Config ---

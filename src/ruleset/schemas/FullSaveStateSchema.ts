@@ -108,6 +108,7 @@ export const FullSaveStateSchema = z.object({
         examine_attempts: z.array(z.number()).default([]),
     }).default({}),
     _pendingASI: z.number().default(0),
+    _abilityUses: z.record(z.string(), z.number()).default({}), // Tracks active skill ability usage counts
     conversationHistory: z.array(ConversationTurnSchema).default([]),
     triggeredEvents: z.array(z.string()).default([]),
     codexEntries: z.array(z.object({

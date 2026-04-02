@@ -284,6 +284,7 @@ export class CharacterFactory {
             notifications: [],
             _examineCooldowns: { examine_attempts: [] },
             _pendingASI: 0,
+            _abilityUses: {},
         };
     }
 }

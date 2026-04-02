@@ -112,8 +112,11 @@ export class DataManager {
         // Load Skill Registry
         try {
             const { SkillEngine } = await import('../combat/SkillEngine');
+            const { SkillAbilityEngine } = await import('../combat/SkillAbilityEngine');
             const skillModule = await import('../../../data/skills/skills.json');
-            SkillEngine.loadRegistry(skillModule.default || skillModule);
+            const skillData = skillModule.default || skillModule;
+            SkillEngine.loadRegistry(skillData);
+            SkillAbilityEngine.loadAbilities(skillData);
         } catch (e) {
             console.warn('[DataManager] Failed to load skill registry:', e);
         }

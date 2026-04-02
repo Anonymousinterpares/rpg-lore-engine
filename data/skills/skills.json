@@ -11,139 +11,339 @@
     "description": "Balance, tumbling, and aerial maneuvers.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "acrobatics_t3_p", "name": "Nimble Dodge", "type": "passive", "description": "+2 AC against opportunity attacks." },
+        "active": { "id": "acrobatics_t3_a", "name": "Tumble", "type": "active", "description": "Disengage as a free action.", "usesPerEncounter": 2 }
+      },
+      "tier4": {
+        "passive": { "id": "acrobatics_t4_p", "name": "Evasion", "type": "passive", "description": "Half damage on failed DEX saves, 0 on success." },
+        "active": { "id": "acrobatics_t4_a", "name": "Redirect", "type": "active", "description": "Deflect one attack to an adjacent enemy.", "usesPerEncounter": 1 }
+      }
+    }
   },
   "Animal Handling": {
     "ability": "WIS",
     "description": "Calm, control, or communicate with beasts.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "animal_t3_p", "name": "Beast Friend", "type": "passive", "description": "Beasts won't attack unless provoked." },
+        "active": { "id": "animal_t3_a", "name": "Calm Beast", "type": "active", "description": "Pacify one beast in combat.", "usesPerEncounter": 1 }
+      },
+      "tier4": {
+        "passive": { "id": "animal_t4_p", "name": "Beast Companion", "type": "passive", "description": "Tame one beast as a permanent companion." },
+        "active": { "id": "animal_t4_a", "name": "Command Beast", "type": "active", "description": "Control an enemy beast for 1 round.", "usesPerEncounter": 1 }
+      }
+    }
   },
   "Arcana": {
     "ability": "INT",
     "description": "Knowledge of magic, spells, magical items, and arcane traditions.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "arcana_t3_p", "name": "Arcane Intuition", "type": "passive", "description": "Auto-succeed identification on Rare items." },
+        "active": { "id": "arcana_t3_a", "name": "Deep Analysis", "type": "active", "description": "3 identification attempts per 24h instead of tier-based limit.", "usesPerRest": 3 }
+      },
+      "tier4": {
+        "passive": { "id": "arcana_t4_p", "name": "Arcane Mastery", "type": "passive", "description": "Auto-identify all items on pickup (Rare and below)." },
+        "active": { "id": "arcana_t4_a", "name": "Dispel", "type": "active", "description": "Dispel one magical effect.", "usesPerRest": 1 }
+      }
+    }
   },
   "Athletics": {
     "ability": "STR",
     "description": "Climbing, jumping, swimming, and feats of physical power.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "athletics_t3_p", "name": "Iron Grip", "type": "passive", "description": "Grapple and shove checks always have advantage." },
+        "active": { "id": "athletics_t3_a", "name": "Power Shove", "type": "active", "description": "Shove deals STR modifier damage.", "usesPerEncounter": 3 }
+      },
+      "tier4": {
+        "passive": { "id": "athletics_t4_p", "name": "Unstoppable", "type": "passive", "description": "Climb and swim speed equal to walk speed." },
+        "active": { "id": "athletics_t4_a", "name": "Titan Grip", "type": "active", "description": "Auto-succeed grapple and deal damage.", "usesPerEncounter": 1 }
+      }
+    }
   },
   "Cartography": {
     "ability": "INT",
     "description": "Map-making, navigation, and terrain analysis.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "carto_t3_p", "name": "Keen Navigator", "type": "passive", "description": "Auto-reveal adjacent hex biomes on map." },
+        "active": { "id": "carto_t3_a", "name": "Chart Course", "type": "active", "description": "Next hex movement costs 0 time.", "usesPerRest": 1 }
+      },
+      "tier4": {
+        "passive": { "id": "carto_t4_p", "name": "Master Cartographer", "type": "passive", "description": "Full map reveal within 3 hex radius." },
+        "active": { "id": "carto_t4_a", "name": "Dimensional Anchor", "type": "active", "description": "Prevent enemy teleportation in combat.", "usesPerEncounter": 1 }
+      }
+    }
   },
   "Deception": {
     "ability": "CHA",
     "description": "Misleading others through words, disguise, or misdirection.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "deception_t3_p", "name": "Silver Mask", "type": "passive", "description": "No standing penalty on failed Deceive checks." },
+        "active": { "id": "deception_t3_a", "name": "Feint", "type": "active", "description": "Gain advantage on next attack.", "usesPerEncounter": 1 }
+      },
+      "tier4": {
+        "passive": { "id": "deception_t4_p", "name": "Master of Disguise", "type": "passive", "description": "Disguise identity from all NPCs permanently." },
+        "active": { "id": "deception_t4_a", "name": "Perfect Lie", "type": "active", "description": "Convince NPC of any single statement.", "usesPerRest": 1 }
+      }
+    }
   },
   "History": {
     "ability": "INT",
     "description": "Knowledge of historical events, legends, and civilizations.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "history_t3_p", "name": "Lorekeeper", "type": "passive", "description": "Codex entries auto-reveal monster resistances." },
+        "active": { "id": "history_t3_a", "name": "Recall Weakness", "type": "active", "description": "+2 damage vs identified creature type.", "usesPerEncounter": 1 }
+      },
+      "tier4": {
+        "passive": { "id": "history_t4_p", "name": "Sage's Blessing", "type": "passive", "description": "+25% XP from all encounters." },
+        "active": { "id": "history_t4_a", "name": "Exploit", "type": "active", "description": "Auto-crit on identified creature type.", "usesPerRest": 1 }
+      }
+    }
   },
   "Insight": {
     "ability": "WIS",
     "description": "Reading body language, detecting lies, and understanding motives.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "insight_t3_p", "name": "Truth Seeker", "type": "passive", "description": "Automatically detect lies in dialogue." },
+        "active": { "id": "insight_t3_a", "name": "Read Intent", "type": "active", "description": "Learn one NPC's true motivation.", "usesPerRest": 2 }
+      },
+      "tier4": {
+        "passive": { "id": "insight_t4_p", "name": "Empathic Bond", "type": "passive", "description": "NPC disposition revealed on first meeting." },
+        "active": { "id": "insight_t4_a", "name": "Predict Action", "type": "active", "description": "Learn one enemy's next action in combat.", "usesPerEncounter": 1 }
+      }
+    }
   },
   "Intimidation": {
     "ability": "CHA",
     "description": "Influencing others through threats, hostile actions, or physical presence.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "intimidation_t3_p", "name": "Menacing Presence", "type": "passive", "description": "Enemies below 25% HP have disadvantage on attacks." },
+        "active": { "id": "intimidation_t3_a", "name": "Frighten", "type": "active", "description": "Frighten one enemy for 2 rounds.", "usesPerEncounter": 1 }
+      },
+      "tier4": {
+        "passive": { "id": "intimidation_t4_p", "name": "Terror Aura", "type": "passive", "description": "Enemies may flee when any ally drops to 0 HP." },
+        "active": { "id": "intimidation_t4_a", "name": "War Cry", "type": "active", "description": "All enemies frightened for 1 round.", "usesPerRest": 1 }
+      }
+    }
   },
   "Investigation": {
     "ability": "INT",
     "description": "Searching for clues, making deductions, and analyzing evidence.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "investigation_t3_p", "name": "Trap Sense", "type": "passive", "description": "Reveal trap presence passively when entering room." },
+        "active": { "id": "investigation_t3_a", "name": "Thorough Search", "type": "active", "description": "3 identification attempts per 24h.", "usesPerRest": 3 }
+      },
+      "tier4": {
+        "passive": { "id": "investigation_t4_p", "name": "Sherlock's Eye", "type": "passive", "description": "Reveal ALL hidden properties of items passively." },
+        "active": { "id": "investigation_t4_a", "name": "Deduce", "type": "active", "description": "Learn one enemy's next action.", "usesPerEncounter": 1 }
+      }
+    }
   },
   "Medicine": {
     "ability": "WIS",
     "description": "Diagnosing illness, stabilizing the dying, and tending wounds.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "medicine_t3_p", "name": "Field Medic", "type": "passive", "description": "+50% HP from short rests (party-wide)." },
+        "active": { "id": "medicine_t3_a", "name": "Cure Condition", "type": "active", "description": "Cure one condition (poison, disease, bleed).", "usesPerRest": 3 }
+      },
+      "tier4": {
+        "passive": { "id": "medicine_t4_p", "name": "Vital Ward", "type": "passive", "description": "Party gains temp HP equal to WIS mod after long rest." },
+        "active": { "id": "medicine_t4_a", "name": "Emergency Surgery", "type": "active", "description": "Revive ally from 0 HP to 1.", "usesPerRest": 1 }
+      }
+    }
   },
   "Nature": {
     "ability": "INT",
     "description": "Knowledge of terrain, plants, animals, and natural phenomena.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "nature_t3_p", "name": "Bountiful Harvest", "type": "passive", "description": "+50% gathering yields." },
+        "active": { "id": "nature_t3_a", "name": "Herbalist", "type": "active", "description": "Identify unknown potions and plants for free.", "usesPerRest": 3 }
+      },
+      "tier4": {
+        "passive": { "id": "nature_t4_p", "name": "Nature's Bounty", "type": "passive", "description": "Auto-gather max yield from any node." },
+        "active": { "id": "nature_t4_a", "name": "Commune with Nature", "type": "active", "description": "Ask one yes/no question about current area.", "usesPerRest": 1 }
+      }
+    }
   },
   "Perception": {
     "ability": "WIS",
     "description": "Spotting, hearing, or detecting the presence of something.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "perception_t3_p", "name": "Keen Senses", "type": "passive", "description": "+5 to passive Perception permanently." },
+        "active": { "id": "perception_t3_a", "name": "True Sight", "type": "active", "description": "True Sight 30ft for 1 minute.", "usesPerRest": 1 }
+      },
+      "tier4": {
+        "passive": { "id": "perception_t4_p", "name": "Blindsight", "type": "passive", "description": "Blindsight 10ft in combat. Can't be surprised." },
+        "active": { "id": "perception_t4_a", "name": "Eagle Eye", "type": "active", "description": "See through walls 30ft.", "usesPerRest": 1 }
+      }
+    }
   },
   "Performance": {
     "ability": "CHA",
     "description": "Entertaining through music, dance, acting, or storytelling.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "performance_t3_p", "name": "Entertainer", "type": "passive", "description": "Merchant stock refreshes when you perform for them." },
+        "active": { "id": "performance_t3_a", "name": "Inspire", "type": "active", "description": "Ally gains +1d4 to next check.", "usesPerRest": 2 }
+      },
+      "tier4": {
+        "passive": { "id": "performance_t4_p", "name": "Star Performer", "type": "passive", "description": "Merchants offer 20% better prices after performance." },
+        "active": { "id": "performance_t4_a", "name": "Masterpiece", "type": "active", "description": "All allies gain +2 to all checks for 1 hour.", "usesPerRest": 1 }
+      }
+    }
   },
   "Persuasion": {
     "ability": "CHA",
     "description": "Influencing others through tact, social graces, or good nature.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "persuasion_t3_p", "name": "Silver Tongue", "type": "passive", "description": "Permanent +10% sell price at all merchants." },
+        "active": { "id": "persuasion_t3_a", "name": "Charm", "type": "active", "description": "Auto-succeed one haggle.", "usesPerRest": 1 }
+      },
+      "tier4": {
+        "passive": { "id": "persuasion_t4_p", "name": "Diplomat", "type": "passive", "description": "Unlock exclusive merchant stock tier." },
+        "active": { "id": "persuasion_t4_a", "name": "Parley", "type": "active", "description": "Convert hostile NPC to neutral.", "usesPerRest": 1 }
+      }
+    }
   },
   "Religion": {
     "ability": "INT",
     "description": "Knowledge of deities, rites, prayers, and religious hierarchies.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "religion_t3_p", "name": "Divine Sense", "type": "passive", "description": "Sense undead/fiend within 60ft passively." },
+        "active": { "id": "religion_t3_a", "name": "Turn Undead", "type": "active", "description": "Frighten undead in 30ft.", "usesPerRest": 1 }
+      },
+      "tier4": {
+        "passive": { "id": "religion_t4_p", "name": "Holy Ward", "type": "passive", "description": "Undead/fiends have disadvantage on attacks against you." },
+        "active": { "id": "religion_t4_a", "name": "Divine Rebuke", "type": "active", "description": "Reflect damage back to attacker.", "usesPerEncounter": 1 }
+      }
+    }
   },
   "Sleight of Hand": {
     "ability": "DEX",
     "description": "Legerdemain, pickpocketing, and concealing objects.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "sleight_t3_p", "name": "Nimble Fingers", "type": "passive", "description": "Auto-succeed on disarming non-magical traps." },
+        "active": { "id": "sleight_t3_a", "name": "Pickpocket", "type": "active", "description": "Steal one item during dialogue.", "usesPerRest": 1 }
+      },
+      "tier4": {
+        "passive": { "id": "sleight_t4_p", "name": "Master Thief", "type": "passive", "description": "Disarm enemy weapons on critical hits automatically." },
+        "active": { "id": "sleight_t4_a", "name": "Plant Evidence", "type": "active", "description": "Frame NPC in social encounter.", "usesPerRest": 1 }
+      }
+    }
   },
   "Stealth": {
     "ability": "DEX",
     "description": "Moving silently, hiding, and avoiding detection.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "stealth_t3_p", "name": "Shadow Strike", "type": "passive", "description": "Advantage on all surprise round attacks." },
+        "active": { "id": "stealth_t3_a", "name": "Vanish", "type": "active", "description": "Become invisible for 1 round.", "usesPerEncounter": 1 }
+      },
+      "tier4": {
+        "passive": { "id": "stealth_t4_p", "name": "Assassin", "type": "passive", "description": "First attack from stealth deals double damage." },
+        "active": { "id": "stealth_t4_a", "name": "Shadow Step", "type": "active", "description": "Teleport 30ft to unoccupied shadow.", "usesPerEncounter": 1 }
+      }
+    }
   },
   "Survival": {
     "ability": "WIS",
     "description": "Tracking, foraging, navigating wilderness, and predicting weather.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "survival_t3_p", "name": "Pathfinder", "type": "passive", "description": "Always discover hidden paths on hex move." },
+        "active": { "id": "survival_t3_a", "name": "Scout Ahead", "type": "active", "description": "Predict next 3 encounters' difficulty.", "usesPerRest": 1 }
+      },
+      "tier4": {
+        "passive": { "id": "survival_t4_p", "name": "Wilderness Master", "type": "passive", "description": "Immune to getting lost. No random encounters while resting." },
+        "active": { "id": "survival_t4_a", "name": "Tracker", "type": "active", "description": "Reveal all enemies on current hex.", "usesPerRest": 1 }
+      }
+    }
   },
   "Unarmed Combat": {
     "ability": "STR",
     "description": "Fighting without weapons using fists, grapples, and martial techniques.",
     "tierCosts": [2, 3, 5, 8],
     "levelGates": [1, 1, 8, 15],
-    "tierMultipliers": [1, 2, 2, 3]
+    "tierMultipliers": [1, 2, 2, 3],
+    "abilities": {
+      "tier3": {
+        "passive": { "id": "unarmed_t3_p", "name": "Iron Fists", "type": "passive", "description": "Unarmed damage die increases by one size." },
+        "active": { "id": "unarmed_t3_a", "name": "Stunning Strike", "type": "active", "description": "Stun target on hit for 1 round.", "usesPerEncounter": 1 }
+      },
+      "tier4": {
+        "passive": { "id": "unarmed_t4_p", "name": "Ki Strike", "type": "passive", "description": "Unarmed attacks count as magical for resistance bypass." },
+        "active": { "id": "unarmed_t4_a", "name": "Pressure Point", "type": "active", "description": "Paralyze target for 1 round on crit.", "usesPerEncounter": 1 }
+      }
+    }
   }
 }
