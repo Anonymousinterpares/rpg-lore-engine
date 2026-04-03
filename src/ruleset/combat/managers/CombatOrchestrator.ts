@@ -596,6 +596,24 @@ export class CombatOrchestrator {
                         usedSneakAttack = true;
                     }
 
+                    // Divine Smite: auto-apply on melee hit if queued
+                    if (result.damage > 0 && !isRanged && pc.class === 'Paladin') {
+                        const smiteIdx = currentCombatant.statusEffects.findIndex(e => e.id === 'divine_smite_queued');
+                        if (smiteIdx !== -1) {
+                            const smiteEffect = currentCombatant.statusEffects[smiteIdx] as any;
+                            const slotLevel = smiteEffect.slotLevel || 1;
+                            const smiteResult = FeatureEffectEngine.resolveActivatedFeature(pc, 'Divine Smite', { spellSlotLevel: slotLevel });
+                            if (smiteResult.success && smiteResult.healAmount) {
+                                const smiteDmg = Math.abs(smiteResult.healAmount);
+                                result.damage += smiteDmg;
+                                result.message += ` ${smiteResult.message}`;
+                                await this.applyCombatDamage(target!, smiteDmg);
+                            }
+                            // Remove the queued smite
+                            currentCombatant.statusEffects.splice(smiteIdx, 1);
+                        }
+                    }
+
                     // Ammo consumption (only on first ranged attack — others are assumed to have ammo)
                     if (isRanged && atkIdx === 0) {
                         if (ammoItem) {
@@ -1210,23 +1228,49 @@ export class CombatOrchestrator {
                 return "Arcane Recovery can only be used during a short rest (outside of combat).";
             }
             result += "You focus your mind to recover some of your spent magical energy.";
-        } else if (ability.name === 'Second Wind') {
-            const rollVal = Dice.roll("1d10");
-            const heal = rollVal + char.level;
-
-            if (this.state.combat) {
-                this.state.combat.lastRoll = {
-                    value: rollVal,
-                    modifier: 0,
-                    total: rollVal + char.level, // Technicality: The heal is d10 + level, but the roll is d10.
-                    label: 'Heal'
-                };
+        } else {
+            // Delegate to FeatureEffectEngine for all other activated features
+            const feResult = FeatureEffectEngine.resolveActivatedFeature(char, ability.name);
+            if (feResult.success) {
+                result += feResult.message;
+                // Apply healing
+                if (feResult.healAmount && feResult.healAmount > 0) {
+                    char.hp.current = Math.min(char.hp.max, char.hp.current + feResult.healAmount);
+                }
+                // Apply status effect (Rage, etc.)
+                if (feResult.statusEffect) {
+                    if (this.state.combat) {
+                        const pcCombatant = this.state.combat.combatants.find(c => c.isPlayer);
+                        if (pcCombatant) {
+                            pcCombatant.statusEffects.push({
+                                ...feResult.statusEffect,
+                                sourceId: pcCombatant.id,
+                            } as any);
+                        }
+                    }
+                    // Also add to character for UI visibility
+                    if (!(char as any).statusEffects) (char as any).statusEffects = [];
+                    (char as any).statusEffects.push({
+                        ...feResult.statusEffect,
+                        sourceId: 'player',
+                    });
+                }
+                // For Divine Smite queuing (use before attack)
+                if (ability.name === 'Divine Smite' && this.state.combat) {
+                    const pcCombatant = this.state.combat.combatants.find(c => c.isPlayer);
+                    if (pcCombatant) {
+                        pcCombatant.statusEffects.push({
+                            id: 'divine_smite_queued',
+                            name: 'Divine Smite (Queued)',
+                            type: 'BUFF',
+                            duration: 1,
+                            sourceId: pcCombatant.id,
+                        } as any);
+                    }
+                }
+            } else {
+                result += feResult.message;
             }
-
-            char.hp.current = Math.min(char.hp.max, char.hp.current + heal);
-            result += `Recovering ${heal} HP.`;
-        } else if (ability.name === 'Action Surge') {
-            result += "You push yourself beyond your normal limits for a moment.";
         }
 
         // Consume usage

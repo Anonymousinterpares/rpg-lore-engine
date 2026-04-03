@@ -189,6 +189,12 @@ export class EquipmentEngine {
             }
         }
 
-        pc.ac = baseAC + shieldBonus + itemACBonus;
+        // Defense Fighting Style: +1 AC when wearing armor
+        let fightingStyleBonus = 0;
+        if (pc.fightingStyle === 'Defense' && armorSlotValue) {
+            fightingStyleBonus = 1;
+        }
+
+        pc.ac = baseAC + shieldBonus + itemACBonus + fightingStyleBonus;
     }
 }

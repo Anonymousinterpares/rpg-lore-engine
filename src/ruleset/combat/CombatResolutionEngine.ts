@@ -144,6 +144,16 @@ export class CombatResolutionEngine {
 
             if (damage < 1) damage = 1;
 
+            // Rage damage resistance: half bludgeoning/piercing/slashing
+            if (target.statusEffects?.some(e => e.id === 'rage')) {
+                // Physical damage types that Rage resists (simplified: weapon attacks are physical)
+                const preDmg = damage;
+                damage = Math.floor(damage / 2);
+                if (damage < preDmg) {
+                    message += ` (Rage halves to ${damage})`;
+                }
+            }
+
             message += ` Dealing ${damage} damage.`;
         } else {
             message = `${attacker.name} misses ${target.name}.`;
