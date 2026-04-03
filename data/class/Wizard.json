@@ -59,6 +59,131 @@
       }
     }
   ],
+  "subclasses": [
+    {
+      "name": "School of Evocation",
+      "description": "You focus your study on magic that creates powerful elemental effects such as bitter cold, searing flame, rolling thunder, crackling lightning, and burning acid.",
+      "features": [
+        {
+          "level": 2,
+          "name": "Evocation Savant",
+          "description": "The gold and time you must spend to copy an evocation spell into your spellbook is halved.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 2,
+          "name": "Sculpt Spells",
+          "description": "When you cast an evocation spell that affects other creatures you can see, you can choose a number of them equal to 1 + the spell's level. The chosen creatures automatically succeed on their saving throws against the spell and take no damage if they would normally take half damage on a successful save.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 6,
+          "name": "Potent Cantrip",
+          "description": "When a creature succeeds on a saving throw against your cantrip, the creature takes half the cantrip's damage but suffers no additional effect from the cantrip.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 10,
+          "name": "Empowered Evocation",
+          "description": "You can add your Intelligence modifier to one damage roll of any wizard evocation spell you cast.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 14,
+          "name": "Overchannel",
+          "description": "When you cast a wizard spell of 1st through 5th level that deals damage, you can deal maximum damage with that spell. The first time you do so, you suffer no adverse effect. Each additional use before a long rest causes 2d12 necrotic damage per spell level immediately after casting.",
+          "actionCost": "NONE",
+          "usage": { "type": "LONG_REST", "limit": 1 }
+        }
+      ]
+    },
+    {
+      "name": "School of Divination",
+      "description": "The counsel of a diviner is sought by royalty and commoners alike, for all seek a clearer understanding of the past, present, and future.",
+      "features": [
+        {
+          "level": 2,
+          "name": "Divination Savant",
+          "description": "The gold and time you must spend to copy a divination spell into your spellbook is halved.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 2,
+          "name": "Portent",
+          "description": "When you finish a long rest, roll two d20s and record the numbers rolled. You can replace any attack roll, saving throw, or ability check made by you or a creature that you can see with one of these foretelling rolls. Each foretelling roll can be used only once.",
+          "actionCost": "NONE",
+          "usage": { "type": "LONG_REST", "limit": 2 }
+        },
+        {
+          "level": 6,
+          "name": "Expert Divination",
+          "description": "When you cast a divination spell of 2nd level or higher using a spell slot, you regain one expended spell slot of a level lower than the spell you cast (max 5th level).",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 10,
+          "name": "The Third Eye",
+          "description": "You can use your action to increase your powers of perception. Choose one benefit: darkvision 60ft, ethereal sight 60ft, the ability to read any language, or the ability to see invisible creatures and objects within 10ft. The effect lasts until you are incapacitated or take a short or long rest.",
+          "actionCost": "ACTION",
+          "usage": { "type": "SHORT_REST", "limit": 1 }
+        },
+        {
+          "level": 14,
+          "name": "Greater Portent",
+          "description": "The visions in your dreams intensify and paint a more accurate picture in your mind of what is to come. You roll three d20s for your Portent feature, rather than two.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        }
+      ]
+    },
+    {
+      "name": "School of Abjuration",
+      "description": "The School of Abjuration emphasizes magic that blocks, banishes, or protects. Abjurers are sought when baleful spirits require exorcism or important locations must be guarded against magical spying.",
+      "features": [
+        {
+          "level": 2,
+          "name": "Abjuration Savant",
+          "description": "The gold and time you must spend to copy an abjuration spell into your spellbook is halved.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 2,
+          "name": "Arcane Ward",
+          "description": "When you cast an abjuration spell of 1st level or higher, you can simultaneously use a strand of the spell's magic to create a magical ward on yourself. The ward has hit points equal to twice your wizard level + your Intelligence modifier. Whenever you take damage, the ward takes the damage instead.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 6,
+          "name": "Projected Ward",
+          "description": "When a creature that you can see within 30 feet of you takes damage, you can use your reaction to cause your Arcane Ward to absorb that damage instead.",
+          "actionCost": "REACTION",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 10,
+          "name": "Improved Abjuration",
+          "description": "When you cast an abjuration spell that requires you to make an ability check as part of casting that spell (as in counterspell and dispel magic), you add your proficiency bonus to that ability check.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 14,
+          "name": "Spell Resistance",
+          "description": "You have advantage on saving throws against spells. Furthermore, you have resistance against the damage of spells.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        }
+      ]
+    }
+  ],
   "progression": [
     { "level": 1,  "proficiencyBonus": 2, "features": ["Spellcasting", "Arcane Recovery"], "spellSlots": [2,0,0,0,0,0,0,0,0] },
     { "level": 2,  "proficiencyBonus": 2, "features": ["Arcane Tradition"],                "spellSlots": [3,0,0,0,0,0,0,0,0] },

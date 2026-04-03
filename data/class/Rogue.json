@@ -84,6 +84,131 @@
       }
     }
   ],
+  "subclasses": [
+    {
+      "name": "Thief",
+      "description": "You hone your skills in the larcenous arts. Burglars, bandits, cutpurses, and other criminals typically follow this archetype, as do rogues who prefer to think of themselves as professional treasure seekers.",
+      "features": [
+        {
+          "level": 3,
+          "name": "Fast Hands",
+          "description": "You can use the bonus action granted by your Cunning Action to make a Dexterity (Sleight of Hand) check, use your thieves' tools to disarm a trap or open a lock, or take the Use an Object action.",
+          "actionCost": "BONUS_ACTION",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 3,
+          "name": "Second-Story Work",
+          "description": "Climbing no longer costs you extra movement. In addition, when you make a running jump, the distance you cover increases by a number of feet equal to your Dexterity modifier.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 9,
+          "name": "Supreme Sneak",
+          "description": "You have advantage on a Dexterity (Stealth) check if you move no more than half your speed on the same turn.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 13,
+          "name": "Use Magic Device",
+          "description": "You ignore all class, race, and level requirements on the use of magic items.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 17,
+          "name": "Thief's Reflexes",
+          "description": "You can take two turns during the first round of any combat. You take your first turn at your normal initiative and your second turn at your initiative minus 10. You can't use this feature when you are surprised.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        }
+      ]
+    },
+    {
+      "name": "Assassin",
+      "description": "You focus your training on the grim art of death. Those who adhere to this archetype are diverse: hired killers, spies, bounty hunters, and even specially anointed priests trained to exterminate the enemies of their deity.",
+      "features": [
+        {
+          "level": 3,
+          "name": "Bonus Proficiencies",
+          "description": "You gain proficiency with the disguise kit and the poisoner's kit.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 3,
+          "name": "Assassinate",
+          "description": "You have advantage on attack rolls against any creature that hasn't taken a turn in the combat yet. In addition, any hit you score against a creature that is surprised is a critical hit.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 9,
+          "name": "Infiltration Expertise",
+          "description": "You can unfailingly create false identities for yourself. You must spend seven days and 25 gp to establish the history, profession, and affiliations for an identity.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 13,
+          "name": "Impostor",
+          "description": "You gain the ability to unerringly mimic another person's speech, writing, and behavior. You must spend at least three hours studying these three components of the person's behavior, listening to speech, examining handwriting, and observing mannerisms.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 17,
+          "name": "Death Strike",
+          "description": "When you attack and hit a creature that is surprised, it must make a Constitution saving throw (DC 8 + your Dexterity modifier + your proficiency bonus). On a failed save, double the damage of your attack against the creature.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        }
+      ]
+    },
+    {
+      "name": "Arcane Trickster",
+      "description": "Some rogues enhance their fine-honed skills of stealth and agility with magic, learning spells from the enchantment and illusion schools of magic.",
+      "features": [
+        {
+          "level": 3,
+          "name": "Spellcasting",
+          "description": "You gain the ability to cast wizard spells, drawing primarily from the enchantment and illusion schools. You learn three 1st-level wizard spells and the mage hand cantrip.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 3,
+          "name": "Mage Hand Legerdemain",
+          "description": "When you cast mage hand, you can make the spectral hand invisible. You can use it to stow or retrieve objects in containers, pick locks, disarm traps, or perform sleight of hand at range. You can use Cunning Action to control the hand.",
+          "actionCost": "BONUS_ACTION",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 9,
+          "name": "Magical Ambush",
+          "description": "If you are hidden from a creature when you cast a spell on it, the creature has disadvantage on any saving throw it makes against the spell this turn.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 13,
+          "name": "Versatile Trickster",
+          "description": "You gain the ability to distract targets with your mage hand. As a bonus action on your turn, you can designate a creature within 5 feet of the spectral hand. You have advantage on attack rolls against that creature until the end of the turn.",
+          "actionCost": "BONUS_ACTION",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 17,
+          "name": "Spell Thief",
+          "description": "When a creature casts a spell that targets you or includes you in its area of effect, if you succeed on the saving throw, you can steal knowledge of the spell. For 8 hours, you know the spell and can cast it using your spell slots. The creature can't cast that spell until the 8 hours have passed.",
+          "actionCost": "NONE",
+          "usage": { "type": "LONG_REST", "limit": 1 }
+        }
+      ]
+    }
+  ],
   "progression": [
     { "level": 1, "proficiencyBonus": 2, "features": ["Expertise", "Sneak Attack", "Thieves' Cant"] },
     { "level": 2, "proficiencyBonus": 2, "features": ["Cunning Action"] },

@@ -1749,6 +1749,13 @@ export class GameLoop {
         return `Learned ${spellNames.length} spell(s): ${spellNames.join(', ')}.`;
     }
 
+    /** Apply subclass selection. */
+    public async selectSubclass(subclassName: string): Promise<string> {
+        const msg = LevelingEngine.selectSubclass(this.state.character, subclassName);
+        await this.emitStateUpdate();
+        return msg;
+    }
+
     public async generateAmbushNarration(encounter: Encounter, restType: 'rest' | 'wait'): Promise<string> {
         return NarratorService.narrateAmbush(this.state, encounter, restType);
     }

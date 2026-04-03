@@ -1,0 +1,207 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.panel {
+    background: rgba(20, 16, 10, 0.97);
+    border: 2px solid var(--parchment-border, #8b7355);
+    border-radius: 8px;
+    padding: 20px 24px;
+    width: 560px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    color: #e8d5b5;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(139, 115, 85, 0.3);
+}
+
+.header h2 {
+    margin: 0;
+    font-family: var(--font-narrative, serif);
+    color: var(--parchment-accent, #c9a84c);
+    font-size: 20px;
+    flex: 1;
+}
+
+.icon { color: var(--parchment-accent, #c9a84c); }
+
+.closeBtn {
+    background: none;
+    border: none;
+    color: #8b7355;
+    cursor: pointer;
+    padding: 2px;
+}
+.closeBtn:hover { color: #e8d5b5; }
+
+.desc {
+    font-size: 13px;
+    opacity: 0.7;
+    margin: 0 0 14px;
+    line-height: 1.4;
+}
+
+.list {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 500px;
+    padding-right: 4px;
+}
+
+.list::-webkit-scrollbar { width: 4px; }
+.list::-webkit-scrollbar-thumb { background: rgba(139, 115, 85, 0.3); border-radius: 2px; }
+
+.card {
+    padding: 12px 14px;
+    border: 2px solid rgba(139, 115, 85, 0.2);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: rgba(139, 115, 85, 0.03);
+}
+
+.card:hover {
+    background: rgba(201, 162, 39, 0.06);
+    border-color: rgba(139, 115, 85, 0.4);
+}
+
+.cardSelected {
+    border-color: #2563eb !important;
+    background: rgba(37, 99, 235, 0.08) !important;
+    box-shadow: 0 0 10px 2px rgba(37, 99, 235, 0.4);
+}
+
+.cardSelected .cardName {
+    color: #ffd700;
+}
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.cardName {
+    font-family: var(--font-narrative, serif);
+    font-size: 16px;
+    color: var(--parchment-accent, #c9a84c);
+}
+
+.cardDesc {
+    font-size: 12px;
+    opacity: 0.7;
+    margin: 0 0 8px;
+    line-height: 1.4;
+}
+
+.featurePreview {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(139, 115, 85, 0.15);
+}
+
+.featureLabel {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--parchment-accent, #c9a84c);
+    opacity: 0.7;
+    margin-bottom: 2px;
+}
+
+.featureItem {
+    display: flex;
+    flex-direction: column;
+    padding: 3px 0;
+}
+
+.featureName {
+    font-size: 12px;
+    font-weight: 600;
+    color: #e8d5b5;
+}
+
+.featureDesc {
+    font-size: 11px;
+    opacity: 0.6;
+    line-height: 1.3;
+}
+
+.spellPreview {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 6px;
+    margin-top: 4px;
+    border-top: 1px solid rgba(139, 115, 85, 0.1);
+}
+
+.spellEntry {
+    font-size: 11px;
+    opacity: 0.6;
+}
+
+.footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 12px;
+    margin-top: 10px;
+    border-top: 1px solid rgba(139, 115, 85, 0.2);
+}
+
+.cancelBtn {
+    padding: 8px 16px;
+    border: 1px solid rgba(139, 115, 85, 0.3);
+    border-radius: 4px;
+    background: transparent;
+    color: #8b7355;
+    cursor: pointer;
+    font-size: 13px;
+}
+.cancelBtn:hover { color: #e8d5b5; border-color: #e8d5b5; }
+
+.confirmBtn {
+    padding: 8px 18px;
+    border: 1px solid var(--parchment-accent, #c9a84c);
+    border-radius: 4px;
+    background: rgba(201, 162, 39, 0.15);
+    color: var(--parchment-accent, #c9a84c);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.confirmBtn:hover:not(:disabled) { background: rgba(201, 162, 39, 0.3); }
+.confirmBtn:disabled { opacity: 0.3; cursor: not-allowed; }

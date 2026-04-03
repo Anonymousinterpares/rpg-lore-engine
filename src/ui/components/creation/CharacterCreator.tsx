@@ -17,7 +17,8 @@ interface CharacterCreatorProps {
     campaignSettings?: any;
 }
 
-const STEPS = ['Identity', 'Race', 'Class', 'Background', 'Abilities', 'Skills', 'Spells', 'Review'];
+const STEPS = ['Identity', 'Race', 'Class', 'Subclass', 'Background', 'Abilities', 'Skills', 'Spells', 'Review'];
+const L1_SUBCLASS_CLASSES = ['Cleric', 'Sorcerer', 'Warlock'];
 
 const ALL_SKILLS = [
     "Acrobatics", "Animal Handling", "Arcana", "Athletics", "Deception", "History",
@@ -45,6 +46,7 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
     const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
     const [selectedCantrips, setSelectedCantrips] = useState<string[]>([]);
     const [selectedSpells, setSelectedSpells] = useState<string[]>([]);
+    const [selectedSubclass, setSelectedSubclass] = useState<string>('');
 
     useEffect(() => {
         const init = async () => {
@@ -84,25 +86,32 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
         }
     }, [selectedRace, selectedClass, selectedBackground]);
 
+    // Clear subclass when class changes
+    useEffect(() => {
+        setSelectedSubclass('');
+    }, [selectedClass]);
+
+    const hasL1Subclass = L1_SUBCLASS_CLASSES.includes(selectedClass?.name || '');
+
     const handleNext = () => {
         if (step < STEPS.length - 1) {
-            // Skip Spells step if class doesn't have at level 1
-            if (step === 5 && !hasSpellsAtLevel1(selectedClass?.name || '')) {
-                setStep(step + 2);
-            } else {
-                setStep(step + 1);
-            }
+            let next = step + 1;
+            // Skip Subclass step (index 3) if class doesn't choose at level 1
+            if (next === 3 && !hasL1Subclass) next++;
+            // Skip Spells step (index 7) if class doesn't have spells at level 1
+            if (next === 7 && !hasSpellsAtLevel1(selectedClass?.name || '')) next++;
+            setStep(next);
         }
     };
 
     const handleBack = () => {
         if (step > 0) {
-            // Skip Spells step backwards
-            if (step === 7 && !hasSpellsAtLevel1(selectedClass?.name || '')) {
-                setStep(step - 2);
-            } else {
-                setStep(step - 1);
-            }
+            let prev = step - 1;
+            // Skip Spells step backwards (index 7)
+            if (prev === 7 && !hasSpellsAtLevel1(selectedClass?.name || '')) prev--;
+            // Skip Subclass step backwards (index 3) if not L1 subclass class
+            if (prev === 3 && !hasL1Subclass) prev--;
+            setStep(prev);
         }
     };
 
@@ -119,7 +128,8 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
             skillProficiencies: getFinalSkills(),
             selectedCantrips,
             selectedSpells,
-            campaignSettings
+            campaignSettings,
+            subclass: selectedSubclass || undefined
         });
 
         onComplete(newState);
@@ -345,7 +355,48 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                         )}
                     </div>
                 );
-            case 3: // Background
+            case 3: { // Subclass (only for L1 subclass classes)
+                const activeSubclass = (selectedClass?.subclasses || []).find((s: any) => s.name === selectedSubclass) as any;
+                return (
+                    <div className={styles.selectionLayout}>
+                        <div className={styles.gridContainer}>
+                            {(selectedClass?.subclasses || []).map((sc: any) => (
+                                <div
+                                    key={sc.name}
+                                    className={`${styles.card} ${selectedSubclass === sc.name ? styles.selected : ''}`}
+                                    onClick={() => setSelectedSubclass(sc.name)}
+                                >
+                                    <h4>{sc.name}</h4>
+                                    <p className={styles.smallInfo}>{sc.description || ''}</p>
+                                </div>
+                            ))}
+                        </div>
+                        {activeSubclass && (
+                            <div className={styles.detailsPanel}>
+                                <h3>{activeSubclass.name}</h3>
+                                <div className={styles.detailsContent}>
+                                    <div className={styles.detailItem}>
+                                        <div className={styles.detailDesc}>{activeSubclass.description}</div>
+                                    </div>
+                                    {activeSubclass.features?.filter((f: any) => f.level <= 1).map((f: any, i: number) => (
+                                        <div key={i} className={styles.detailItem}>
+                                            <div className={styles.detailName}>{f.name}</div>
+                                            <div className={styles.detailDesc}>{f.description}</div>
+                                        </div>
+                                    ))}
+                                    {activeSubclass.spells && Object.entries(activeSubclass.spells).filter(([lv]) => parseInt(lv) <= 1).map(([lv, spells]) => (
+                                        <div key={lv} className={styles.detailItem}>
+                                            <div className={styles.detailName}>Domain Spells</div>
+                                            <div className={styles.detailDesc} style={{ color: '#c9a227' }}>{(spells as string[]).join(', ')}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+            case 4: // Background
                 return (
                     <div className={styles.selectionLayout}>
                         <div className={styles.gridContainer}>
@@ -394,7 +445,7 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                         )}
                     </div>
                 );
-            case 4: // Abilities
+            case 5: // Abilities
                 const pointsSpent = calculatePointsSpent(abilities);
                 return (
                     <div className={styles.stepContainer}>
@@ -440,7 +491,7 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                         </div>
                     </div>
                 );
-            case 5: // Skills
+            case 6: // Skills
                 const autoSkills = getAutoSkills();
                 const classOptions = getClassSkillOptions();
                 const classCount = selectedClass?.skillChoices.count || 0;
@@ -521,7 +572,7 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                         </div>
                     </div>
                 );
-            case 6: // Spells
+            case 7: // Spells
                 return (
                     <SpellSelectionStep
                         characterClass={selectedClass?.name || ''}
@@ -545,7 +596,7 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                         }}
                     />
                 );
-            case 7: // Review
+            case 8: // Review
                 const finalSkills = getFinalSkills();
                 return (
                     <div className={styles.selectionLayout}>
@@ -642,13 +693,14 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
         if (step === 0 && name.trim().length === 0) return true;
         if (step === 1 && !selectedRace) return true;
         if (step === 2 && !selectedClass) return true;
-        if (step === 3 && !selectedBackground) return true;
-        if (step === 5) { // Skills
+        if (step === 3 && hasL1Subclass && !selectedSubclass) return true; // Subclass
+        if (step === 4 && !selectedBackground) return true; // Background
+        if (step === 6) { // Skills
             const classCount = selectedClass?.skillChoices.count || 0;
             const raceCount = getRaceSkillChoiceCount();
             return selectedSkills.length < (classCount + raceCount);
         }
-        if (step === 6) { // Spells
+        if (step === 7) { // Spells
             const limits = getSpellLimits(selectedClass?.name || '');
             return selectedCantrips.length < limits.cantrips || selectedSpells.length < limits.spells;
         }

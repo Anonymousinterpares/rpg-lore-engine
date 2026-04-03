@@ -78,6 +78,97 @@
       }
     }
   ],
+  "subclasses": [
+    {
+      "name": "Circle of the Land",
+      "description": "The Circle of the Land is made up of mystics and sages who safeguard ancient knowledge and rites through a vast oral tradition. These druids meet within sacred circles of trees or standing stones to whisper primal secrets in Druidic.",
+      "features": [
+        {
+          "level": 2,
+          "name": "Bonus Cantrip",
+          "description": "When you choose this circle at 2nd level, you learn one additional druid cantrip of your choice.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 2,
+          "name": "Natural Recovery",
+          "description": "During a short rest, you can recover expended spell slots. The spell slots can have a combined level that is equal to or less than half your druid level (rounded up), and none of the slots can be 6th level or higher. You can't use this feature again until you finish a long rest.",
+          "actionCost": "NONE",
+          "usage": { "type": "LONG_REST", "limit": 1 }
+        },
+        {
+          "level": 2,
+          "name": "Circle Spells",
+          "description": "Your mystical connection to the land infuses you with the ability to cast certain spells. Choose a land type: Arctic, Coast, Desert, Forest, Grassland, Mountain, Swamp, or Underdark. You gain access to circle spells connected to that land, which are always prepared and don't count against your number of prepared spells. You gain circle spells at druid levels 3, 5, 7, and 9.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 6,
+          "name": "Land's Stride",
+          "description": "Moving through nonmagical difficult terrain costs you no extra movement. You can also pass through nonmagical plants without being slowed by them and without taking damage from them if they have thorns, spines, or a similar hazard. In addition, you have advantage on saving throws against plants that are magically created or manipulated to impede movement.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 10,
+          "name": "Nature's Ward",
+          "description": "You can't be charmed or frightened by elementals or fey, and you are immune to poison and disease.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 14,
+          "name": "Nature's Sanctuary",
+          "description": "Creatures of the natural world sense your connection to nature and become hesitant to attack you. When a beast or plant creature attacks you, that creature must make a Wisdom saving throw against your druid spell save DC. On a failed save, the creature must choose a different target, or the attack automatically misses. On a successful save, the creature is immune to this effect for 24 hours.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        }
+      ]
+    },
+    {
+      "name": "Circle of the Moon",
+      "description": "Druids of the Circle of the Moon are fierce guardians of the wilds. Their order gathers under the full moon to share news and trade warnings. They haunt the deepest parts of the wilderness, where they might go for weeks on end before crossing paths with another humanoid creature.",
+      "features": [
+        {
+          "level": 2,
+          "name": "Combat Wild Shape",
+          "description": "You gain the ability to use Wild Shape as a bonus action on your turn, rather than as an action. Additionally, while you are transformed by Wild Shape, you can use a bonus action to expend one spell slot to regain 1d8 hit points per level of the spell slot expended.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 2,
+          "name": "Circle Forms",
+          "description": "The rites of your circle grant you the ability to transform into more dangerous animal forms. You can use your Wild Shape to transform into a beast with a challenge rating as high as 1 (you ignore the Max. CR column of the Beast Shapes table). Starting at 6th level, you can transform into a beast with a challenge rating as high as your druid level divided by 3, rounded down.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 6,
+          "name": "Primal Strike",
+          "description": "Your attacks in beast form count as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 10,
+          "name": "Elemental Wild Shape",
+          "description": "You can expend two uses of Wild Shape at the same time to transform into an air elemental, an earth elemental, a fire elemental, or a water elemental.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 14,
+          "name": "Thousand Forms",
+          "description": "You have learned to use magic to alter your physical form in more subtle ways. You can cast the Alter Self spell at will.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        }
+      ]
+    }
+  ],
   "progression": [
     { "level": 1,  "proficiencyBonus": 2, "features": ["Druidic", "Spellcasting"], "spellSlots": [2,0,0,0,0,0,0,0,0] },
     { "level": 2,  "proficiencyBonus": 2, "features": ["Wild Shape", "Druid Circle"], "spellSlots": [3,0,0,0,0,0,0,0,0] },

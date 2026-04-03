@@ -89,6 +89,76 @@
       }
     }
   ],
+  "subclasses": [
+    {
+      "name": "Hunter",
+      "description": "Emulating the Hunter archetype means accepting your place as a bulwark between civilization and the terrors of the wilderness. You learn specialized techniques for fighting the threats you face.",
+      "features": [
+        {
+          "level": 3,
+          "name": "Hunter's Prey",
+          "description": "You gain one of the following features of your choice. Colossus Slayer: once per turn, deal an extra 1d8 damage to a creature that is below its hit point maximum. Giant Killer: when a Large or larger creature within 5 feet of you hits or misses you with an attack, you can use your reaction to attack that creature. Horde Breaker: once per turn, you can make another attack with the same weapon against a different creature that is within 5 feet of the original target and within range of your weapon. Choose one.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 7,
+          "name": "Defensive Tactics",
+          "description": "You gain one of the following features of your choice. Escape the Horde: opportunity attacks against you are made with disadvantage. Multiattack Defense: when a creature hits you with an attack, you gain a +4 bonus to AC against all subsequent attacks made by that creature for the rest of the turn. Steel Will: you have advantage on saving throws against being frightened. Choose one.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 11,
+          "name": "Multiattack",
+          "description": "You gain one of the following features of your choice. Volley: you can use your action to make a ranged attack against any number of creatures within 10 feet of a point you can see within your weapon's range, making a separate attack roll for each target. Whirlwind Attack: you can use your action to make a melee attack against any number of creatures within 5 feet of you, with a separate attack roll for each target. Choose one.",
+          "actionCost": "ACTION",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 15,
+          "name": "Superior Hunter's Defense",
+          "description": "You gain one of the following features of your choice. Evasion: when subjected to an effect that allows a Dexterity saving throw for half damage, you take no damage on a success and half on a failure. Stand Against the Tide: when a hostile creature misses you with a melee attack, you can use your reaction to force that creature to repeat the same attack against another creature of your choice. Uncanny Dodge: when an attacker you can see hits you, you can use your reaction to halve the attack's damage. Choose one.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        }
+      ]
+    },
+    {
+      "name": "Beast Master",
+      "description": "The Beast Master archetype embodies a friendship between the civilized races and the beasts of the world. A ranger who follows this path gains a loyal beast companion.",
+      "features": [
+        {
+          "level": 3,
+          "name": "Ranger's Companion",
+          "description": "You gain a beast companion that accompanies you on your adventures and is trained to fight alongside you. Choose a beast that is no larger than Medium and that has a challenge rating of 1/4 or lower. The beast obeys your commands as best as it can and takes its turn on your initiative. On your turn, you can verbally command the beast where to move (no action required by you). You can use your action to verbally command it to take the Attack, Dash, Disengage, Dodge, or Help action. The beast uses your proficiency bonus for its AC, attack rolls, damage rolls, and saving throw proficiencies.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 7,
+          "name": "Exceptional Training",
+          "description": "Your companion can take the Dash, Disengage, Dodge, or Help action as a bonus action on your turn.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 11,
+          "name": "Bestial Fury",
+          "description": "Your companion can make two attacks when you command it to use the Attack action.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 15,
+          "name": "Share Spells",
+          "description": "When you cast a spell targeting yourself, you can also affect your beast companion with the spell if the beast is within 30 feet of you.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        }
+      ]
+    }
+  ],
   "progression": [
     { "level": 1,  "proficiencyBonus": 2, "features": ["Favored Enemy", "Natural Explorer"], "spellSlots": [0,0,0,0,0,0,0,0,0] },
     { "level": 2,  "proficiencyBonus": 2, "features": ["Fighting Style", "Spellcasting"], "spellSlots": [2,0,0,0,0,0,0,0,0] },

@@ -77,6 +77,76 @@
       }
     }
   ],
+  "subclasses": [
+    {
+      "name": "Path of the Berserker",
+      "description": "For some barbarians, rage is a means to an end — that end being violence. The Path of the Berserker is a path of untrammeled fury, slick with blood.",
+      "features": [
+        {
+          "level": 3,
+          "name": "Frenzy",
+          "description": "While raging, you can make one melee weapon attack as a bonus action on each of your turns. When your rage ends, you gain one level of exhaustion.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 6,
+          "name": "Mindless Rage",
+          "description": "You can't be charmed or frightened while raging. If you are charmed or frightened when you enter your rage, the effect is suspended for the duration of the rage.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 10,
+          "name": "Intimidating Presence",
+          "description": "As an action, you can frighten one creature you can see within 30 feet (WIS save DC 8 + proficiency bonus + CHA modifier). The effect lasts until the end of your next turn.",
+          "actionCost": "ACTION",
+          "usage": { "type": "PER_ROUND" }
+        },
+        {
+          "level": 14,
+          "name": "Retaliation",
+          "description": "When you take damage from a creature that is within 5 feet of you, you can use your reaction to make a melee weapon attack against that creature.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        }
+      ]
+    },
+    {
+      "name": "Path of the Totem Warrior",
+      "description": "The Path of the Totem Warrior is a spiritual journey, as the barbarian accepts a spirit animal as guide, protector, and inspiration.",
+      "features": [
+        {
+          "level": 3,
+          "name": "Totem Spirit",
+          "description": "Choose a totem animal: Bear (while raging, you have resistance to all damage except psychic), Eagle (opportunity attacks against you have disadvantage, and you can Dash as a bonus action while raging), or Wolf (while raging, allies have advantage on melee attack rolls against hostile creatures within 5 feet of you).",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 6,
+          "name": "Aspect of the Beast",
+          "description": "Choose a totem animal: Bear (carrying capacity is doubled, and you have advantage on STR checks for pushing, pulling, lifting, or breaking), Eagle (you can see up to 1 mile away clearly, and dim light doesn't impose disadvantage on Perception checks), or Wolf (you can track creatures while traveling at a fast pace, and move stealthily at a normal pace).",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 10,
+          "name": "Spirit Walker",
+          "description": "You can cast the Commune with Nature spell as a ritual.",
+          "actionCost": "NONE",
+          "usage": { "type": "LONG_REST", "limit": 1 }
+        },
+        {
+          "level": 14,
+          "name": "Totemic Attunement",
+          "description": "Choose a totem animal: Bear (while raging, hostile creatures within 5 feet of you have disadvantage on attack rolls against targets other than you), Eagle (while raging, you gain a flying speed equal to your walking speed, but you fall if you end your turn in the air), or Wolf (while raging, you can use a bonus action to knock a Large or smaller creature prone when you hit it with a melee weapon attack).",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        }
+      ]
+    }
+  ],
   "progression": [
     { "level": 1, "proficiencyBonus": 2, "features": ["Rage", "Unarmored Defense"] },
     { "level": 2, "proficiencyBonus": 2, "features": ["Reckless Attack", "Danger Sense"] },

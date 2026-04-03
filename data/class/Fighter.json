@@ -71,6 +71,145 @@
       }
     }
   ],
+  "subclasses": [
+    {
+      "name": "Champion",
+      "description": "The archetypal Champion focuses on the development of raw physical power honed to deadly perfection.",
+      "features": [
+        {
+          "level": 3,
+          "name": "Improved Critical",
+          "description": "Your weapon attacks score a critical hit on a roll of 19 or 20.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 7,
+          "name": "Remarkable Athlete",
+          "description": "You can add half your proficiency bonus (round up) to any Strength, Dexterity, or Constitution check you make that doesn't already use your proficiency bonus. In addition, when you make a running long jump, the distance you can cover increases by a number of feet equal to your Strength modifier.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 10,
+          "name": "Additional Fighting Style",
+          "description": "You can choose a second option from the Fighting Style class feature.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 15,
+          "name": "Superior Critical",
+          "description": "Your weapon attacks score a critical hit on a roll of 18-20.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 18,
+          "name": "Survivor",
+          "description": "At the start of each of your turns, you regain hit points equal to 5 + your Constitution modifier if you have no more than half of your hit points left. You don't gain this benefit if you have 0 hit points.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        }
+      ]
+    },
+    {
+      "name": "Battle Master",
+      "description": "Those who emulate the Battle Master employ martial techniques passed down through generations. A Battle Master uses superiority dice to fuel powerful combat maneuvers.",
+      "features": [
+        {
+          "level": 3,
+          "name": "Combat Superiority",
+          "description": "You learn three maneuvers of your choice from: Trip Attack, Riposte, Precision Attack, Menacing Attack, Disarming Attack, Pushing Attack, Rally, Commander's Strike. You have four superiority dice, which are d8s. A superiority die is expended when you use it. You regain all expended superiority dice on a short or long rest.",
+          "actionCost": "NONE",
+          "usage": { "type": "SHORT_REST", "limit": 4 }
+        },
+        {
+          "level": 3,
+          "name": "Student of War",
+          "description": "You gain proficiency with one type of artisan's tools of your choice.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 7,
+          "name": "Know Your Enemy",
+          "description": "If you spend at least 1 minute observing or interacting with another creature outside combat, you can learn whether the creature is your equal, superior, or inferior in regard to two of the following characteristics: Strength, Dexterity, Constitution, Armor Class, current hit points, total class levels, or fighter class levels.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 10,
+          "name": "Improved Combat Superiority",
+          "description": "Your superiority dice turn into d10s.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 15,
+          "name": "Relentless",
+          "description": "When you roll initiative and have no superiority dice remaining, you regain 1 superiority die.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 18,
+          "name": "Improved Combat Superiority",
+          "description": "Your superiority dice turn into d12s.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        }
+      ]
+    },
+    {
+      "name": "Eldritch Knight",
+      "description": "The Eldritch Knight combines martial prowess with careful study of magic, learning to cast wizard spells focused on abjuration and evocation.",
+      "features": [
+        {
+          "level": 3,
+          "name": "Spellcasting",
+          "description": "You learn two wizard cantrips of your choice and gain the ability to cast wizard spells, drawing primarily from the abjuration and evocation schools.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 3,
+          "name": "Weapon Bond",
+          "description": "You learn a ritual that creates a magical bond between yourself and one weapon. You can bond with up to two weapons. You can't be disarmed of a bonded weapon unless you are incapacitated, and you can summon a bonded weapon to your hand as a bonus action.",
+          "actionCost": "BONUS_ACTION",
+          "usage": { "type": "LONG_REST", "limit": 2 }
+        },
+        {
+          "level": 7,
+          "name": "War Magic",
+          "description": "When you use your action to cast a cantrip, you can make one weapon attack as a bonus action.",
+          "actionCost": "BONUS_ACTION",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 10,
+          "name": "Eldritch Strike",
+          "description": "When you hit a creature with a weapon attack, that creature has disadvantage on the next saving throw it makes against a spell you cast before the end of your next turn.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 15,
+          "name": "Arcane Charge",
+          "description": "When you use Action Surge, you can teleport up to 30 feet to an unoccupied space you can see. You can teleport before or after the additional action.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 18,
+          "name": "Improved War Magic",
+          "description": "When you use your action to cast a spell, you can make one weapon attack as a bonus action.",
+          "actionCost": "BONUS_ACTION",
+          "usage": { "type": "PASSIVE" }
+        }
+      ]
+    }
+  ],
   "progression": [
     { "level": 1, "proficiencyBonus": 2, "features": ["Fighting Style", "Second Wind"] },
     { "level": 2, "proficiencyBonus": 2, "features": ["Action Surge"] },

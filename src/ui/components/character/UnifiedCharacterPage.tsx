@@ -139,7 +139,7 @@ const UnifiedCharacterPage: React.FC = () => {
                 <div className={styles.leftCol}>
                     <div className={styles.charHeader}>
                         <h1 className={styles.charName}>{pc.name}</h1>
-                        <div className={styles.charSub}>Level {pc.level} {pc.race} {pc.class} • {bio.background || ''}</div>
+                        <div className={styles.charSub}>Level {pc.level} {pc.race} {pc.class}{pc.subclass ? ` (${pc.subclass})` : ''} • {bio.background || ''}</div>
                         <div className={styles.barWrap}>
                             <HealthBar current={pc.hp.current} max={pc.hp.max} />
                         </div>

@@ -27,6 +27,14 @@ export class AbilityParser {
         // Filter features that the character has already unlocked by level
         const unlockedFeatures = charClass.allFeatures.filter(f => f.level <= pc.level);
 
+        // Include subclass features if subclass is chosen
+        if (pc.subclass && charClass.subclasses) {
+            const subclass = charClass.subclasses.find(sc => sc.name === pc.subclass);
+            if (subclass?.features) {
+                unlockedFeatures.push(...subclass.features.filter(f => f.level <= pc.level));
+            }
+        }
+
         unlockedFeatures.forEach(feature => {
             const isPassive = !feature.usage || feature.usage.type === 'PASSIVE';
             const usageState = pc.featureUsages ? pc.featureUsages[feature.name] : undefined;

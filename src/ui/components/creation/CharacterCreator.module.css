@@ -685,3 +685,111 @@
     font-family: var(--font-narrative);
     font-size: 24px;
 }
+
+/* ===== SUBCLASS STEP ===== */
+.subclassLayout {
+    display: flex;
+    gap: 16px;
+    height: 100%;
+}
+
+.subclassList {
+    width: 200px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.subclassCard {
+    padding: 10px 12px;
+    background: rgba(20, 16, 10, 0.7);
+    border: 1px solid var(--parchment-border, #8b7355);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.subclassCard:hover {
+    border-color: var(--parchment-accent, #c9a84c);
+    background: rgba(201, 162, 39, 0.08);
+}
+
+.subclassSelected {
+    border-color: #2563eb !important;
+    background: rgba(37, 99, 235, 0.1) !important;
+    box-shadow: 0 0 8px 2px rgba(37, 99, 235, 0.35);
+}
+
+.subclassSelected .subclassName {
+    color: #ffd700;
+}
+
+.subclassName {
+    font-family: var(--font-narrative, serif);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--parchment-accent, #c9a84c);
+}
+
+.subclassDesc {
+    font-size: 11px;
+    opacity: 0.6;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.subclassDetail {
+    flex: 1;
+    background: rgba(20, 16, 10, 0.6);
+    border: 1px solid var(--parchment-border, #8b7355);
+    border-radius: 4px;
+    padding: 14px 16px;
+    overflow-y: auto;
+}
+
+.subclassDetailTitle {
+    font-family: var(--font-narrative, serif);
+    font-size: 18px;
+    color: var(--parchment-accent, #c9a84c);
+    margin: 0 0 8px;
+}
+
+.subclassDetailDesc {
+    font-size: 12px;
+    opacity: 0.8;
+    line-height: 1.4;
+    margin: 0 0 12px;
+}
+
+.subclassFeature {
+    margin-bottom: 10px;
+    padding-left: 8px;
+    border-left: 2px solid rgba(139, 115, 85, 0.3);
+}
+
+.subclassFeature strong {
+    font-size: 13px;
+    color: #e8d5b5;
+}
+
+.subclassFeature p {
+    font-size: 11px;
+    opacity: 0.7;
+    line-height: 1.35;
+    margin: 4px 0 0;
+}
+
+.subclassSpells {
+    font-size: 11px;
+    color: #c9a227;
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(139, 115, 85, 0.2);
+}

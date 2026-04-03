@@ -67,6 +67,90 @@
       }
     }
   ],
+  "subclasses": [
+    {
+      "name": "Draconic Bloodline",
+      "description": "Your innate magic comes from draconic magic that was mingled with your blood or that of your ancestors. Most often, sorcerers with this origin trace their descent back to a mighty sorcerer of ancient times who made a bargain with a dragon or who might even have claimed a dragon parent.",
+      "features": [
+        {
+          "level": 1,
+          "name": "Dragon Ancestor",
+          "description": "You choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later. Black/Copper = acid, Blue/Bronze = lightning, Brass/Gold/Red = fire, Green = poison, Silver/White = cold. You can speak, read, and write Draconic. Whenever you make a Charisma check when interacting with dragons, your proficiency bonus is doubled if it applies to the check.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 1,
+          "name": "Draconic Resilience",
+          "description": "As magic flows through your body, it causes physical traits of your dragon ancestors to emerge. Your hit point maximum increases by 1 for each sorcerer level. Additionally, when you aren't wearing armor, your AC equals 13 + your Dexterity modifier.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 6,
+          "name": "Elemental Affinity",
+          "description": "When you cast a spell that deals damage of the type associated with your draconic ancestry, you can add your Charisma modifier to one damage roll of that spell. You can also spend 1 sorcery point to gain resistance to that damage type for 1 hour.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 14,
+          "name": "Dragon Wings",
+          "description": "You gain the ability to sprout a pair of dragon wings from your back as a bonus action, gaining a flying speed equal to your current walking speed. You can't manifest your wings while wearing armor unless the armor is made to accommodate them.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 18,
+          "name": "Draconic Presence",
+          "description": "You can spend 5 sorcery points to channel the dread presence of your dragon ancestor, causing those around you to become awestruck or frightened. As an action, you create a 60-foot aura of awe or fear (your choice) for 1 minute. Each hostile creature that starts its turn in this aura must succeed on a Wisdom saving throw or be charmed (awe) or frightened (fear) by you until the aura ends.",
+          "actionCost": "ACTION",
+          "usage": { "type": "LONG_REST", "limit": 1 }
+        }
+      ]
+    },
+    {
+      "name": "Wild Magic",
+      "description": "Your innate magic comes from the wild forces of chaos that underlie the order of creation. You might have endured exposure to some form of raw magic, perhaps through a planar portal leading to Limbo, the Elemental Planes, or the mysterious Far Realm.",
+      "features": [
+        {
+          "level": 1,
+          "name": "Wild Magic Surge",
+          "description": "Starting when you choose this origin at 1st level, your spellcasting can unleash surges of untamed magic. Once per turn, after you cast a sorcerer spell of 1st level or higher, the DM can have you roll a d20. If you roll a 1, roll on the Wild Magic Surge table to create a random magical effect.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 1,
+          "name": "Tides of Chaos",
+          "description": "You can manipulate the forces of chance and chaos to gain advantage on one attack roll, ability check, or saving throw. Once you do so, you must finish a long rest before you can use this feature again. The DM can have you roll on the Wild Magic Surge table, and if so, you regain the use of this feature.",
+          "actionCost": "NONE",
+          "usage": { "type": "LONG_REST", "limit": 1 }
+        },
+        {
+          "level": 6,
+          "name": "Bend Luck",
+          "description": "You have the ability to twist fate using your wild magic. When another creature you can see makes an attack roll, an ability check, or a saving throw, you can use your reaction and spend 2 sorcery points to roll 1d4 and apply the number rolled as a bonus or penalty (your choice) to the creature's roll.",
+          "actionCost": "REACTION",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 14,
+          "name": "Controlled Chaos",
+          "description": "You gain a modicum of control over the surges of your wild magic. Whenever you roll on the Wild Magic Surge table, you can roll twice and use either number.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 18,
+          "name": "Spell Bombardment",
+          "description": "When you roll damage for a spell and roll the highest number possible on any of the dice, you can reroll that die and add the result to the damage. You can use this feature only once per damage roll.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        }
+      ]
+    }
+  ],
   "progression": [
     { "level": 1,  "proficiencyBonus": 2, "features": ["Spellcasting", "Sorcerous Origin"], "spellSlots": [2,0,0,0,0,0,0,0,0] },
     { "level": 2,  "proficiencyBonus": 2, "features": ["Font of Magic"], "spellSlots": [3,0,0,0,0,0,0,0,0] },

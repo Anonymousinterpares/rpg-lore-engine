@@ -47,7 +47,7 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({ onCharacter, onSkills }
                     onClick={(e) => { if ((char as any).skillPoints?.available > 0 && onSkills) { e.stopPropagation(); onSkills(); } }}
                     style={(char as any).skillPoints?.available > 0 ? { cursor: 'pointer' } : undefined}
                 >
-                    Level {char.level} {char.class}
+                    Level {char.level} {char.class}{(char as any).subclass ? ` (${(char as any).subclass})` : ''}
                     {(char as any).skillPoints?.available > 0 && <span className={styles.spBadge}>{(char as any).skillPoints.available} SP</span>}
                     {(char as any)._pendingASI > 0 && <span className={styles.asiBadge}>ASI</span>}
                 </div>

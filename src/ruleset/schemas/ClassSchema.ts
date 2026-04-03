@@ -36,6 +36,8 @@ export const ClassSchema = z.object({
     allFeatures: z.array(ClassFeatureSchema).default([]),
     subclasses: z.array(z.object({
         name: z.string(),
+        description: z.string().optional(),
+        spells: z.record(z.string(), z.array(z.string())).optional(),
         features: z.array(ClassFeatureSchema)
     })).default([])
 });

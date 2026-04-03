@@ -6,6 +6,14 @@ import { DataManager } from '../data/DataManager';
 /** Levels at which ASI (Ability Score Improvement) is granted. */
 const ASI_LEVELS = [4, 8, 12, 16, 19];
 
+/** Level at which each class chooses their subclass. */
+const SUBCLASS_LEVELS: Record<string, number> = {
+    Cleric: 1, Sorcerer: 1, Warlock: 1,
+    Wizard: 2, Druid: 2,
+    Barbarian: 3, Bard: 3, Fighter: 3, Monk: 3,
+    Paladin: 3, Ranger: 3, Rogue: 3
+};
+
 /**
  * Build the spellSlots Record from class progression data for a given level.
  * Progression spellSlots is a 9-element array: index 0 = 1st-level slots, index 8 = 9th-level.
@@ -184,10 +192,54 @@ export class LevelingEngine {
             pc.unseenSpells = allClassSpells.filter(s => !known.has(s.name)).map(s => s.name);
         }
 
+        // Subclass selection or subclass feature activation
+        const subclassLevel = SUBCLASS_LEVELS[levelingClass];
+        if (subclassLevel && pc.level >= subclassLevel && !pc.subclass) {
+            // Trigger subclass selection UI (also catches retroactive cases)
+            (pc as any)._pendingSubclass = true;
+        } else if (pc.subclass && classData?.subclasses) {
+            // Activate subclass features at this level
+            const subclassData = classData.subclasses.find((sc: any) => sc.name === pc.subclass);
+            if (subclassData?.features) {
+                for (const feat of subclassData.features) {
+                    if (feat.level === pc.level) {
+                        newFeatures.push(feat.name);
+                        if (feat.usage && feat.usage.type !== 'PASSIVE') {
+                            if (!pc.featureUsages) (pc as any).featureUsages = {};
+                            if (!pc.featureUsages[feat.name]) {
+                                pc.featureUsages[feat.name] = {
+                                    current: feat.usage.limit || 0,
+                                    max: feat.usage.limit || 0,
+                                    usageType: feat.usage.type
+                                };
+                            }
+                        }
+                    }
+                }
+                // Auto-prepare subclass domain/oath spells at this level
+                if (subclassData.spells) {
+                    const spellLevel = pc.level.toString();
+                    const domainSpells = subclassData.spells[spellLevel];
+                    if (domainSpells && Array.isArray(domainSpells)) {
+                        for (const spellName of domainSpells) {
+                            if (!pc.preparedSpells.includes(spellName)) {
+                                pc.preparedSpells.push(spellName);
+                            }
+                        }
+                    }
+                }
+            }
+            // Update _newFeatures if subclass added features
+            if (newFeatures.length > 0) {
+                (pc as any)._newFeatures = newFeatures;
+            }
+        }
+
         const classLabel = isMulticlass ? ` (${levelingClass})` : '';
         let summary = `${pc.name} reached Level ${pc.level}${classLabel}! HP +${hpIncrease} (max ${pc.hp.max}). Gained ${spGrant} SP.`;
         if (newFeatures.length > 0) summary += ` New features: ${newFeatures.join(', ')}.`;
         if (spellsToLearn > 0 && pc.level > 1) summary += ` Choose ${spellsToLearn} new spell(s)!`;
+        if ((pc as any)._pendingSubclass) summary += ` Choose your subclass!`;
 
         if (isMulticlass && pc.multiclassLevels) {
             const levels = Object.entries(pc.multiclassLevels).map(([c, l]) => `${c} ${l}`).join(' / ');
@@ -333,6 +385,77 @@ export class LevelingEngine {
         const registry = (globalThis as any).__featRegistry || {};
         const taken = new Set(pc.feats || []);
         return Object.values(registry).filter((f: any) => f.name && !taken.has(f.name));
+    }
+
+    /**
+     * Select a subclass. Applies initial subclass features and domain spells.
+     */
+    public static selectSubclass(pc: PlayerCharacter, subclassName: string): string {
+        if (pc.subclass) return `Already has subclass: ${pc.subclass}.`;
+
+        const classData = DataManager.getClass(pc.class);
+        if (!classData?.subclasses) return `No subclass data for ${pc.class}.`;
+
+        const subclass = classData.subclasses.find((sc: any) => sc.name === subclassName);
+        if (!subclass) return `Unknown subclass: ${subclassName}.`;
+
+        pc.subclass = subclassName;
+        delete (pc as any)._pendingSubclass;
+
+        const results: string[] = [`Subclass chosen: ${subclassName}!`];
+        const newFeatures: string[] = [];
+
+        // Apply all subclass features at or below current level
+        for (const feat of (subclass.features || [])) {
+            if (feat.level <= pc.level) {
+                newFeatures.push(feat.name);
+                if (feat.usage && feat.usage.type !== 'PASSIVE') {
+                    if (!pc.featureUsages) (pc as any).featureUsages = {};
+                    if (!pc.featureUsages[feat.name]) {
+                        pc.featureUsages[feat.name] = {
+                            current: feat.usage.limit || 0,
+                            max: feat.usage.limit || 0,
+                            usageType: feat.usage.type
+                        };
+                    }
+                }
+            }
+        }
+
+        // Apply domain/oath spells up to current level
+        if (subclass.spells) {
+            for (const [lvStr, spells] of Object.entries(subclass.spells)) {
+                if (parseInt(lvStr) <= pc.level && Array.isArray(spells)) {
+                    for (const spellName of spells as string[]) {
+                        if (!pc.preparedSpells.includes(spellName)) {
+                            pc.preparedSpells.push(spellName);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (newFeatures.length > 0) {
+            results.push(`Features: ${newFeatures.join(', ')}.`);
+            (pc as any)._newFeatures = newFeatures;
+        }
+
+        return results.join(' ');
+    }
+
+    /**
+     * Get available subclasses for a class.
+     */
+    public static getAvailableSubclasses(className: string): any[] {
+        const classData = DataManager.getClass(className);
+        return classData?.subclasses || [];
+    }
+
+    /**
+     * Get the level at which a class chooses their subclass.
+     */
+    public static getSubclassLevel(className: string): number {
+        return SUBCLASS_LEVELS[className] || 3;
     }
 
     /**

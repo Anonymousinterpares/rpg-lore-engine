@@ -140,20 +140,33 @@ export class SpellbookEngine {
      */
     public static prepareSpells(pc: PlayerCharacter, spellNames: string[]): { success: boolean, message: string } {
         const max = this.getMaxPreparedCount(pc);
+
+        // Domain/oath spells are always prepared and don't count against the limit
+        const domainSpells = this.getDomainSpells(pc);
+        const domainSet = new Set(domainSpells);
+
         const l1PlusSpells = spellNames.filter(name => {
+            if (domainSet.has(name)) return false; // Don't count domain spells
             const s = DataManager.getSpell(name);
             return s && s.level > 0;
         });
 
         if (l1PlusSpells.length > max) {
-            return { success: false, message: `Too many spells! You can only prepare ${max}.` };
+            return { success: false, message: `Too many spells! You can only prepare ${max} (domain spells don't count).` };
         }
 
-        // Validate all spells are known, in spellbook, or are cantrips
+        // Validate spells are accessible to this character
+        const isSource = this.isSourceCaster(pc.class); // Cleric/Druid/Paladin/Wizard prepare from class list
+        const classSpellNames = isSource
+            ? new Set(DataManager.getSpellsByClass(pc.class, this.getMaxSpellLevel(pc)).map(s => s.name))
+            : null;
+
         const invalid = spellNames.filter(name =>
             !pc.knownSpells.includes(name) &&
             !pc.spellbook.includes(name) &&
-            !pc.cantripsKnown.includes(name)
+            !pc.cantripsKnown.includes(name) &&
+            !domainSet.has(name) &&
+            !(classSpellNames?.has(name))
         );
 
         if (invalid.length > 0) {
@@ -162,5 +175,21 @@ export class SpellbookEngine {
 
         pc.preparedSpells = [...spellNames];
         return { success: true, message: `Prepared ${pc.preparedSpells.length} spells.` };
+    }
+
+    /** Get domain/oath spells that are always prepared for this character's subclass. */
+    public static getDomainSpells(pc: PlayerCharacter): string[] {
+        if (!pc.subclass) return [];
+        const classData = DataManager.getClass(pc.class);
+        if (!classData?.subclasses) return [];
+        const subclass = classData.subclasses.find(sc => sc.name === pc.subclass);
+        if (!subclass || !(subclass as any).spells) return [];
+        const result: string[] = [];
+        for (const [lv, spells] of Object.entries((subclass as any).spells)) {
+            if (parseInt(lv) <= pc.level && Array.isArray(spells)) {
+                result.push(...spells);
+            }
+        }
+        return result;
     }
 }

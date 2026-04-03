@@ -65,6 +65,131 @@
       }
     }
   ],
+  "subclasses": [
+    {
+      "name": "The Fiend",
+      "description": "You have made a pact with a fiend from the lower planes of existence, a being whose aims are evil, even if you strive against those aims. Such beings desire the corruption or destruction of all things, ultimately including you.",
+      "spells": {
+        "1": ["Burning Hands", "Command"],
+        "3": ["Blindness/Deafness", "Scorching Ray"],
+        "5": ["Fireball", "Stinking Cloud"],
+        "7": ["Fire Shield", "Wall of Fire"],
+        "9": ["Flame Strike", "Hallow"]
+      },
+      "features": [
+        {
+          "level": 1,
+          "name": "Dark One's Blessing",
+          "description": "When you reduce a hostile creature to 0 hit points, you gain temporary hit points equal to your Charisma modifier + your warlock level (minimum of 1).",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 6,
+          "name": "Dark One's Own Luck",
+          "description": "You can call on your patron to alter fate in your favor. When you make an ability check or a saving throw, you can use this feature to add a d10 to your roll. You can do so after seeing the initial roll but before any of the roll's effects occur. Once you use this feature, you can't use it again until you finish a short or long rest.",
+          "actionCost": "NONE",
+          "usage": { "type": "SHORT_REST", "limit": 1 }
+        },
+        {
+          "level": 10,
+          "name": "Fiendish Resilience",
+          "description": "You can choose one damage type when you finish a short or long rest. You gain resistance to that damage type until you choose a different one with this feature. Damage from magical weapons or silver weapons ignores this resistance.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 14,
+          "name": "Hurl Through Hell",
+          "description": "When you hit a creature with an attack, you can use this feature to instantly transport the target through the lower planes. The creature disappears and hurtles through a nightmare landscape. At the end of your next turn, the target returns to the space it previously occupied, or the nearest unoccupied space. If the target is not a fiend, it takes 10d10 psychic damage as it reels from its horrific experience.",
+          "actionCost": "NONE",
+          "usage": { "type": "LONG_REST", "limit": 1 }
+        }
+      ]
+    },
+    {
+      "name": "The Archfey",
+      "description": "Your patron is a lord or lady of the fey, a creature of legend who holds secrets that were forgotten before the mortal races were born. Your patron's motivations are often inscrutable, and sometimes whimsical.",
+      "spells": {
+        "1": ["Faerie Fire", "Sleep"],
+        "3": ["Calm Emotions", "Phantasmal Force"],
+        "5": ["Blink", "Plant Growth"],
+        "7": ["Dominate Beast", "Greater Invisibility"],
+        "9": ["Dominate Person", "Seeming"]
+      },
+      "features": [
+        {
+          "level": 1,
+          "name": "Fey Presence",
+          "description": "As an action, you can cause each creature in a 10-foot cube originating from you to make a Wisdom saving throw against your warlock spell save DC. The creatures that fail their saving throws are all charmed or frightened by you (your choice) until the end of your next turn. Once you use this feature, you can't use it again until you finish a short or long rest.",
+          "actionCost": "ACTION",
+          "usage": { "type": "SHORT_REST", "limit": 1 }
+        },
+        {
+          "level": 6,
+          "name": "Misty Escape",
+          "description": "When you take damage, you can use your reaction to turn invisible and teleport up to 60 feet to an unoccupied space you can see. You remain invisible until the start of your next turn or until you attack or cast a spell. Once you use this feature, you can't use it again until you finish a short or long rest.",
+          "actionCost": "REACTION",
+          "usage": { "type": "SHORT_REST", "limit": 1 }
+        },
+        {
+          "level": 10,
+          "name": "Beguiling Defenses",
+          "description": "You are immune to being charmed. When another creature attempts to charm you, you can use your reaction to attempt to turn the charm back on that creature. The creature must succeed on a Wisdom saving throw against your warlock spell save DC or be charmed by you for 1 minute or until the creature takes any damage.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 14,
+          "name": "Dark Delirium",
+          "description": "As an action, you can choose a creature that you can see within 60 feet of you. It must make a Wisdom saving throw against your warlock spell save DC. On a failed save, it is charmed or frightened by you (your choice) for 1 minute. The creature thinks it is lost in a misty realm, seeing and hearing only itself, you, and the illusion. The effect ends early if the creature takes any damage.",
+          "actionCost": "ACTION",
+          "usage": { "type": "LONG_REST", "limit": 1 }
+        }
+      ]
+    },
+    {
+      "name": "The Great Old One",
+      "description": "Your patron is a mysterious entity whose nature is utterly foreign to the fabric of reality. It might come from the Far Realm, the space beyond reality, or it could be one of the elder gods known only in legends. Its motives are incomprehensible to mortals, and its knowledge so immense and ancient that even the greatest libraries pale in comparison.",
+      "spells": {
+        "1": ["Dissonant Whispers", "Tasha's Hideous Laughter"],
+        "3": ["Detect Thoughts", "Phantasmal Force"],
+        "5": ["Clairvoyance", "Sending"],
+        "7": ["Dominate Beast", "Evard's Black Tentacles"],
+        "9": ["Dominate Person", "Telekinesis"]
+      },
+      "features": [
+        {
+          "level": 1,
+          "name": "Awakened Mind",
+          "description": "You can telepathically speak to any creature you can see within 30 feet of you. You don't need to share a language with the creature for it to understand your telepathic utterances, but the creature must be able to understand at least one language.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 6,
+          "name": "Entropic Ward",
+          "description": "When a creature makes an attack roll against you, you can use your reaction to impose disadvantage on that roll. If the attack misses you, your next attack roll against the creature has advantage if you make it before the end of your next turn. Once you use this feature, you can't use it again until you finish a short or long rest.",
+          "actionCost": "REACTION",
+          "usage": { "type": "SHORT_REST", "limit": 1 }
+        },
+        {
+          "level": 10,
+          "name": "Thought Shield",
+          "description": "Your thoughts can't be read by telepathy or other means unless you allow it. You also have resistance to psychic damage, and whenever a creature deals psychic damage to you, that creature takes the same amount of damage.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 14,
+          "name": "Create Thrall",
+          "description": "You gain the ability to infect a humanoid's mind with the alien magic of your patron. You can use your action to touch an incapacitated humanoid. That creature is then charmed by you until a Remove Curse spell is cast on it, the charmed condition is removed from it, or you use this feature again. You can communicate telepathically with the charmed creature as long as the two of you are on the same plane of existence.",
+          "actionCost": "ACTION",
+          "usage": { "type": "PASSIVE" }
+        }
+      ]
+    }
+  ],
   "progression": [
     { "level": 1,  "proficiencyBonus": 2, "features": ["Otherworldly Patron", "Pact Magic"], "spellSlots": [1,0,0,0,0,0,0,0,0] },
     { "level": 2,  "proficiencyBonus": 2, "features": ["Eldritch Invocations"], "spellSlots": [2,0,0,0,0,0,0,0,0] },

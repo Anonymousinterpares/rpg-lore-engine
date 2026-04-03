@@ -96,6 +96,152 @@
       }
     }
   ],
+  "subclasses": [
+    {
+      "name": "Oath of Devotion",
+      "description": "The Oath of Devotion binds a paladin to the loftiest ideals of justice, virtue, and order, holding angels as the perfect servants of good and as ideals for aspiration.",
+      "spells": {
+        "3": ["Protection from Evil and Good", "Sanctuary"],
+        "5": ["Lesser Restoration", "Zone of Truth"],
+        "9": ["Beacon of Hope", "Dispel Magic"],
+        "13": ["Freedom of Movement", "Guardian of Faith"],
+        "17": ["Commune", "Flame Strike"]
+      },
+      "features": [
+        {
+          "level": 3,
+          "name": "Channel Divinity: Sacred Weapon",
+          "description": "As an action, you can imbue one weapon that you are holding with positive energy. For 1 minute, you add your Charisma modifier to attack rolls made with that weapon (with a minimum bonus of +1). The weapon also emits bright light in a 20-foot radius and dim light 20 feet beyond that. The effect ends if you drop the weapon, fall unconscious, or dismiss it (no action required).",
+          "actionCost": "ACTION",
+          "usage": { "type": "SHORT_REST", "limit": 1 }
+        },
+        {
+          "level": 3,
+          "name": "Channel Divinity: Turn the Unholy",
+          "description": "As an action, you present your holy symbol and speak a prayer censuring fiends and undead. Each fiend or undead that can see or hear you within 30 feet must make a Wisdom saving throw. If the creature fails its saving throw, it is turned for 1 minute or until it takes damage.",
+          "actionCost": "ACTION",
+          "usage": { "type": "SHORT_REST", "limit": 1 }
+        },
+        {
+          "level": 7,
+          "name": "Aura of Devotion",
+          "description": "You and friendly creatures within 10 feet of you can't be charmed while you are conscious. At 18th level, the range of this aura increases to 30 feet.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 15,
+          "name": "Purity of Spirit",
+          "description": "You are always under the effects of a Protection from Evil and Good spell.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 20,
+          "name": "Holy Nimbus",
+          "description": "As an action, you can emanate an aura of sunlight. For 1 minute, bright light shines from you in a 30-foot radius, and dim light shines 30 feet beyond that. Whenever an enemy creature starts its turn in the bright light, the creature takes 10 radiant damage. In addition, for the duration, you have advantage on saving throws against spells cast by fiends or undead.",
+          "actionCost": "ACTION",
+          "usage": { "type": "LONG_REST", "limit": 1 }
+        }
+      ]
+    },
+    {
+      "name": "Oath of Vengeance",
+      "description": "The Oath of Vengeance is a solemn commitment to punish those who have committed a grievous sin. These paladins are willing to sacrifice even their own righteousness to mete out justice upon evildoers.",
+      "spells": {
+        "3": ["Bane", "Hunter's Mark"],
+        "5": ["Hold Person", "Misty Step"],
+        "9": ["Haste", "Protection from Energy"],
+        "13": ["Banishment", "Dimension Door"],
+        "17": ["Hold Monster", "Scrying"]
+      },
+      "features": [
+        {
+          "level": 3,
+          "name": "Channel Divinity: Abjure Enemy",
+          "description": "As an action, you present your holy symbol and speak a prayer of denunciation. Choose one creature within 60 feet of you that you can see. That creature must make a Wisdom saving throw, unless it is immune to being frightened. Fiends and undead have disadvantage on this saving throw. On a failed save, the creature is frightened for 1 minute or until it takes any damage. While frightened, the creature's speed is 0.",
+          "actionCost": "ACTION",
+          "usage": { "type": "SHORT_REST", "limit": 1 }
+        },
+        {
+          "level": 3,
+          "name": "Channel Divinity: Vow of Enmity",
+          "description": "As a bonus action, you can utter a vow of enmity against a creature you can see within 10 feet of you. You gain advantage on attack rolls against the creature for 1 minute or until it drops to 0 hit points or falls unconscious.",
+          "actionCost": "BONUS_ACTION",
+          "usage": { "type": "SHORT_REST", "limit": 1 }
+        },
+        {
+          "level": 7,
+          "name": "Relentless Avenger",
+          "description": "When you hit a creature with an opportunity attack, you can move up to half your speed immediately after the attack and as part of the same reaction. This movement doesn't provoke opportunity attacks.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 15,
+          "name": "Soul of Vengeance",
+          "description": "When a creature under the effect of your Vow of Enmity makes an attack, you can use your reaction to make a melee weapon attack against that creature if it is within range.",
+          "actionCost": "REACTION",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 20,
+          "name": "Avenging Angel",
+          "description": "As an action, you can assume the form of an angelic avenger for 1 hour. You sprout wings that grant you a flying speed of 60 feet. You emanate a menacing aura in a 30-foot radius. The first time any enemy creature enters the aura or starts its turn there, the creature must succeed on a Wisdom saving throw or become frightened of you for 1 minute or until it takes damage.",
+          "actionCost": "ACTION",
+          "usage": { "type": "LONG_REST", "limit": 1 }
+        }
+      ]
+    },
+    {
+      "name": "Oath of the Ancients",
+      "description": "The Oath of the Ancients is as old as the race of elves and the rituals of the druids. Paladins who swear this oath cast their lot with the side of the light in the cosmic struggle against darkness because they love the beautiful and life-giving things of the world.",
+      "spells": {
+        "3": ["Ensnaring Strike", "Speak with Animals"],
+        "5": ["Moonbeam", "Misty Step"],
+        "9": ["Plant Growth", "Protection from Energy"],
+        "13": ["Ice Storm", "Stoneskin"],
+        "17": ["Commune with Nature", "Tree Stride"]
+      },
+      "features": [
+        {
+          "level": 3,
+          "name": "Channel Divinity: Nature's Wrath",
+          "description": "You can use your Channel Divinity to invoke primeval forces to ensnare a foe. As an action, you can cause spectral vines to spring up and reach for a creature within 10 feet of you that you can see. The creature must succeed on a Strength or Dexterity saving throw (its choice) or be restrained. While restrained, the creature repeats the saving throw at the end of each of its turns, ending the effect on a success.",
+          "actionCost": "ACTION",
+          "usage": { "type": "SHORT_REST", "limit": 1 }
+        },
+        {
+          "level": 3,
+          "name": "Channel Divinity: Turn the Faithless",
+          "description": "You can use your Channel Divinity to utter ancient words that are painful for fey and fiends to hear. As an action, you present your holy symbol, and each fey or fiend within 30 feet of you that can hear you must make a Wisdom saving throw. On a failed save, the creature is turned for 1 minute or until it takes damage.",
+          "actionCost": "ACTION",
+          "usage": { "type": "SHORT_REST", "limit": 1 }
+        },
+        {
+          "level": 7,
+          "name": "Aura of Warding",
+          "description": "You and friendly creatures within 10 feet of you have resistance to damage from spells. At 18th level, the range of this aura increases to 30 feet.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 15,
+          "name": "Undying Sentinel",
+          "description": "When you are reduced to 0 hit points and are not killed outright, you can choose to drop to 1 hit point instead. Once you use this ability, you can't use it again until you finish a long rest. Additionally, you suffer none of the drawbacks of old age, and you can't be aged magically.",
+          "actionCost": "NONE",
+          "usage": { "type": "LONG_REST", "limit": 1 }
+        },
+        {
+          "level": 20,
+          "name": "Elder Champion",
+          "description": "You can assume the form of an ancient force of nature for 1 minute. You regain 10 hit points at the start of each of your turns. You can cast paladin spells that have a casting time of 1 action as a bonus action instead. Enemy creatures within 10 feet of you have disadvantage on saving throws against your paladin spells and Channel Divinity options.",
+          "actionCost": "ACTION",
+          "usage": { "type": "LONG_REST", "limit": 1 }
+        }
+      ]
+    }
+  ],
   "progression": [
     { "level": 1,  "proficiencyBonus": 2, "features": ["Divine Sense", "Lay on Hands"], "spellSlots": [0,0,0,0,0,0,0,0,0] },
     { "level": 2,  "proficiencyBonus": 2, "features": ["Fighting Style", "Spellcasting", "Divine Smite"], "spellSlots": [2,0,0,0,0,0,0,0,0] },

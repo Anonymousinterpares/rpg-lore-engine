@@ -17,6 +17,8 @@ import ArcaneRecoveryFlyout from '../exploration/ArcaneRecoveryFlyout';
 import SpellLearningFlyout from '../exploration/SpellLearningFlyout';
 import ExamineOverlay from '../combat/ExamineOverlay';
 import LevelUpOverlay from '../combat/LevelUpOverlay';
+import SubclassPickerOverlay from '../character/SubclassPickerOverlay';
+import { LevelingEngine } from '../../../ruleset/combat/LevelingEngine';
 import { useGameState } from '../../hooks/useGameState';
 import { useCallback, useEffect } from 'react';
 
@@ -34,7 +36,7 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex, onChara
     const [saveSlots, setSaveSlots] = useState<any[]>([]);
     const [pendingCombat, setPendingCombat] = useState<any>(null);
     const [arcaneRecovery, setArcaneRecovery] = useState<{ budget: number } | null>(null);
-    const [levelUpStage, setLevelUpStage] = useState<'none' | 'overlay' | 'spells' | 'done'>('none');
+    const [levelUpStage, setLevelUpStage] = useState<'none' | 'overlay' | 'subclass' | 'spells' | 'done'>('none');
 
     // Examine overlay orchestration
     const [examineOverlay, setExamineOverlay] = useState<any>(null);
@@ -245,11 +247,12 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex, onChara
                     hasASI={levelUpOverlay.hasASI}
                     onComplete={() => {
                         setLevelUpOverlay(null);
-                        // Check if spell learning is pending
-                        if ((state?.character as any)?._pendingSpellChoices > 0) {
+                        // Chain: subclass selection → spell learning → character sheet
+                        if ((state?.character as any)?._pendingSubclass) {
+                            setLevelUpStage('subclass');
+                        } else if ((state?.character as any)?._pendingSpellChoices > 0) {
                             setLevelUpStage('spells');
                         } else {
-                            // No spells to learn — go straight to character sheet
                             setLevelUpStage('done');
                         }
                     }}
@@ -295,7 +298,27 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex, onChara
                 />
             )}
 
-            {state?.character && (state.character as any)._pendingSpellChoices > 0 && levelUpStage !== 'overlay' && (
+            {levelUpStage === 'subclass' && state?.character && (
+                <SubclassPickerOverlay
+                    className={state.character.class}
+                    currentLevel={state.character.level}
+                    subclasses={LevelingEngine.getAvailableSubclasses(state.character.class)}
+                    onConfirm={async (name) => {
+                        if (engine) await engine.selectSubclass(name);
+                        // Continue chain: spells → character sheet
+                        if ((state?.character as any)?._pendingSpellChoices > 0) {
+                            setLevelUpStage('spells');
+                        } else {
+                            setLevelUpStage('done');
+                        }
+                    }}
+                    onClose={() => {
+                        // Can't skip subclass — just keep it open
+                    }}
+                />
+            )}
+
+            {state?.character && (state.character as any)._pendingSpellChoices > 0 && levelUpStage !== 'overlay' && levelUpStage !== 'subclass' && (
                 <SpellLearningFlyout
                     className={state.character.class}
                     maxLevel={Math.min(9, Math.ceil(state.character.level / 2))}

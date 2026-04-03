@@ -21,6 +21,7 @@ export interface CharacterCreationOptions {
     skillProficiencies: string[];
     selectedCantrips?: string[];
     selectedSpells?: string[];
+    subclass?: string;
     campaignSettings?: any; // Allow injecting fully loaded settings
 }
 
@@ -128,6 +129,20 @@ export class CharacterFactory {
             preparedSpells.push(...spells);
         }
 
+        // Add domain/oath spells from subclass at level 1
+        if (options.subclass && characterClass.subclasses) {
+            const subclass = characterClass.subclasses.find(sc => sc.name === options.subclass);
+            if (subclass && (subclass as any).spells) {
+                for (const [lv, spellList] of Object.entries((subclass as any).spells)) {
+                    if (parseInt(lv) <= 1 && Array.isArray(spellList)) {
+                        for (const spellName of spellList) {
+                            if (!preparedSpells.includes(spellName)) preparedSpells.push(spellName);
+                        }
+                    }
+                }
+            }
+        }
+
         const now = new Date().toISOString();
         const newSaveId = uuidv4();
         const worldSeed = Math.floor(Math.random() * 99999) + 1;
@@ -149,6 +164,7 @@ export class CharacterFactory {
                 race: race.name,
                 darkvision: (race as any).darkvision || 0,
                 class: characterClass.name,
+                subclass: options.subclass,
                 multiclassLevels: {},
                 conditions: [],
                 statusEffects: [],

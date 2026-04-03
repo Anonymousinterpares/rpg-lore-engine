@@ -79,7 +79,9 @@ const SpellPreparationPanel: React.FC = () => {
     if (!state?.character) return null;
     const pc = state.character;
     const maxPrepared = SpellbookEngine.getMaxPreparedCount(pc);
+    const domainSpellSet = new Set(SpellbookEngine.getDomainSpells(pc));
     const preparedCount = pc.preparedSpells.filter(name => {
+        if (domainSpellSet.has(name)) return false; // Domain spells don't count against limit
         const s = DataManager.getSpell(name);
         return s && s.level > 0;
     }).length;

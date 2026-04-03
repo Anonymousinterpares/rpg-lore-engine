@@ -83,6 +83,76 @@
       }
     }
   ],
+  "subclasses": [
+    {
+      "name": "Way of the Open Hand",
+      "description": "Monks of the Way of the Open Hand are the ultimate masters of martial arts combat, whether armed or unarmed.",
+      "features": [
+        {
+          "level": 3,
+          "name": "Open Hand Technique",
+          "description": "Whenever you hit a creature with one of the attacks granted by your Flurry of Blows, you can choose one effect: the target must succeed on a DEX save or be knocked prone; the target must make a STR save or be pushed up to 15 feet away; or the target can't take reactions until the end of your next turn.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 6,
+          "name": "Wholeness of Body",
+          "description": "As an action, you can regain hit points equal to three times your monk level.",
+          "actionCost": "NONE",
+          "usage": { "type": "LONG_REST", "limit": 1 }
+        },
+        {
+          "level": 11,
+          "name": "Tranquility",
+          "description": "At the end of a long rest, you gain the effect of a Sanctuary spell (WIS save) that lasts until the start of your next long rest. The effect ends early if you make an attack or cast a spell that affects an enemy creature.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 17,
+          "name": "Quivering Palm",
+          "description": "When you hit a creature with an unarmed strike, you can spend 3 ki points to start imperceptible vibrations. As an action later, the creature must make a CON save. On a failure, the creature is reduced to 0 hit points. On a success, the creature takes 10d10 necrotic damage.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        }
+      ]
+    },
+    {
+      "name": "Way of Shadow",
+      "description": "Monks of the Way of Shadow follow a tradition that values stealth and subterfuge, sometimes called ninjas or shadowdancers.",
+      "features": [
+        {
+          "level": 3,
+          "name": "Shadow Arts",
+          "description": "You can spend 2 ki points to cast Darkness, Darkvision, Pass without Trace, or Silence. You also learn the Minor Illusion cantrip if you don't already know it.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 6,
+          "name": "Shadow Step",
+          "description": "When you are in dim light or darkness, as a bonus action you can teleport up to 60 feet to an unoccupied space you can see that is also in dim light or darkness. You have advantage on the first melee attack you make before the end of the turn.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 11,
+          "name": "Cloak of Shadows",
+          "description": "When you are in an area of dim light or darkness, you can use your action to become invisible. You remain invisible until you make an attack, cast a spell, or are in an area of bright light.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        },
+        {
+          "level": 17,
+          "name": "Opportunist",
+          "description": "When a creature within 5 feet of you is hit by an attack made by a creature other than you, you can use your reaction to make a melee attack against that creature.",
+          "actionCost": "NONE",
+          "usage": { "type": "PASSIVE" }
+        }
+      ]
+    }
+  ],
   "progression": [
     { "level": 1, "proficiencyBonus": 2, "features": ["Unarmored Defense", "Martial Arts"] },
     { "level": 2, "proficiencyBonus": 2, "features": ["Ki", "Unarmored Movement"] },
