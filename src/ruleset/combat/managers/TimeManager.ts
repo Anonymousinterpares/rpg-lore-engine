@@ -3,7 +3,7 @@ import { WorldClockEngine } from '../WorldClockEngine';
 import { WeatherEngine } from '../WeatherEngine';
 import { EncounterDirector, Encounter } from '../EncounterDirector';
 import { HexMapManager } from '../HexMapManager';
-import { RestingEngine } from '../RestingEngine';
+import { RestingEngine, RestResult } from '../RestingEngine';
 
 /**
  * Manages game world time, weather intervals, resting benefits, and event tracking.
@@ -56,10 +56,10 @@ export class TimeManager {
     /**
      * Applies the mechanical benefits of resting after time has passed.
      */
-    public async completeRest(durationMinutes: number, type: 'rest' | 'wait' = 'rest'): Promise<string> {
+    public async completeRest(durationMinutes: number, type: 'rest' | 'wait' = 'rest'): Promise<RestResult> {
         const restResult = RestingEngine.applyProportionalRest(this.state.character, durationMinutes, type);
         await this.emitStateUpdate();
-        return restResult.message;
+        return restResult;
     }
 
     /**

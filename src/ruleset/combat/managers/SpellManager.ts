@@ -32,13 +32,33 @@ export class SpellManager {
         if (this.state.mode === 'COMBAT' && combat) {
             const currentCombatant = combat.combatants[combat.currentTurnIndex];
             if (!currentCombatant.isPlayer) return "It is not your turn.";
-            if (currentCombatant.resources.actionSpent) return "You have already used your action this turn.";
+
+            // Check casting time: reaction vs action vs bonus action
+            const spellData = DataManager.getSpell(spellName);
+            const castTime = spellData?.time?.toLowerCase() || '1 action';
+            const isReaction = castTime.includes('reaction');
+            const isBonusAction = castTime.includes('bonus');
+
+            if (isReaction) {
+                if (currentCombatant.resources.reactionSpent) return "You have already used your reaction this turn.";
+            } else if (isBonusAction) {
+                if (currentCombatant.resources.bonusActionSpent) return "You have already used your bonus action this turn.";
+            } else {
+                if (currentCombatant.resources.actionSpent) return "You have already used your action this turn.";
+            }
 
             if (targetId) combat.selectedTargetId = targetId;
 
             const result = await this.handleCast(currentCombatant, spellName, slotLevel);
             this.addCombatLog(result);
-            currentCombatant.resources.actionSpent = true;
+
+            if (isReaction) {
+                currentCombatant.resources.reactionSpent = true;
+            } else if (isBonusAction) {
+                currentCombatant.resources.bonusActionSpent = true;
+            } else {
+                currentCombatant.resources.actionSpent = true;
+            }
             await this.emitStateUpdate();
             return result;
         } else {
@@ -51,6 +71,9 @@ export class SpellManager {
         if (!spell) return `Unknown spell: ${spellName}`;
 
         const pc = this.state.character;
+        // Use combatant's slots during combat (UI reads from these)
+        const activeSlots = caster.spellSlots && Object.keys(caster.spellSlots).length > 0
+            ? caster.spellSlots : pc.spellSlots;
 
         // Determine which slot level to use
         let castSlotLevel = spell.level;
@@ -58,17 +81,22 @@ export class SpellManager {
             if (requestedSlotLevel !== undefined) {
                 // Player requested specific slot level
                 if (requestedSlotLevel < spell.level) return `Cannot cast ${spell.name} below level ${spell.level}.`;
-                const slotData = pc.spellSlots[requestedSlotLevel.toString()];
+                const slotData = activeSlots[requestedSlotLevel.toString()];
                 if (!slotData || slotData.current <= 0) {
                     return `No level ${requestedSlotLevel} spell slots remaining!`;
                 }
                 castSlotLevel = requestedSlotLevel;
             } else {
                 // Auto-find lowest available slot (base level first, then higher)
-                castSlotLevel = this.findAvailableSlot(pc, spell.level);
-                if (castSlotLevel === -1) {
+                let foundSlot = -1;
+                for (let lv = spell.level; lv <= 9; lv++) {
+                    const slot = activeSlots[lv.toString()];
+                    if (slot && slot.current > 0) { foundSlot = lv; break; }
+                }
+                if (foundSlot === -1) {
                     return `No spell slots available to cast ${spell.name} (level ${spell.level}+)!`;
                 }
+                castSlotLevel = foundSlot;
             }
         }
 
@@ -197,6 +225,48 @@ export class SpellManager {
             fullMessage += result.message + " ";
         }
 
+        // Self-buff / Reaction spells (Shield, Mage Armor, etc.)
+        if (spell.effect?.category === 'REACTION' || (spell.effect?.area?.shape === 'SELF' && !spell.damage)) {
+            const duration = spell.effect?.duration?.unit === 'ROUND' ? spell.effect.duration.value : 1;
+            // Shield: +5 AC
+            if (spell.name === 'Shield') {
+                caster.statusEffects.push({
+                    id: 'shield',
+                    name: 'Shield',
+                    type: 'BUFF',
+                    stat: 'ac',
+                    modifier: 5,
+                    duration,
+                    sourceId: caster.id
+                });
+                fullMessage += `+5 AC until start of next turn. `;
+            }
+            // Mage Armor: +3 AC (base 10 → 13 + DEX)
+            else if (spell.name === 'Mage Armor') {
+                caster.statusEffects.push({
+                    id: 'mage_armor',
+                    name: 'Mage Armor',
+                    type: 'BUFF',
+                    stat: 'ac',
+                    modifier: 3,
+                    duration: 480,
+                    sourceId: caster.id
+                });
+                fullMessage += `AC bolstered by magical force. `;
+            }
+            // Generic self-buff
+            else {
+                caster.statusEffects.push({
+                    id: spell.name.toLowerCase().replace(/ /g, '_'),
+                    name: spell.name,
+                    type: 'BUFF',
+                    duration,
+                    sourceId: caster.id
+                });
+                fullMessage += `${spell.name} active. `;
+            }
+        }
+
         if (spell.effect?.category === 'SUMMON') {
             await this.executeSummon(caster, spell);
             fullMessage += `Allies have arrived!`;
@@ -214,7 +284,14 @@ export class SpellManager {
         }
 
         if (spell.level > 0) {
-            pc.spellSlots[castSlotLevel.toString()].current--;
+            // Deduct from combatant slots (UI reads these during combat)
+            if (caster.spellSlots?.[castSlotLevel.toString()]) {
+                caster.spellSlots[castSlotLevel.toString()].current--;
+            }
+            // Also deduct from character slots (persisted state)
+            if (pc.spellSlots[castSlotLevel.toString()]) {
+                pc.spellSlots[castSlotLevel.toString()].current--;
+            }
         }
 
         return fullMessage;

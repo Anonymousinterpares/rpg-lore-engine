@@ -7,6 +7,8 @@ import { SkillAbilityEngine } from './SkillAbilityEngine';
 export interface RestResult {
     message: string;
     timeCost: number; // In minutes
+    arcaneRecoveryAvailable?: boolean; // Wizard-only: can recover spell slots after short rest
+    arcaneRecoveryBudget?: number;     // Max total spell levels to recover
 }
 
 export class RestingEngine {
@@ -94,9 +96,40 @@ export class RestingEngine {
         // Reset ability uses on rest
         SkillAbilityEngine.resetAbilityUses(pc, durationMinutes >= 480 ? 'long' : 'short');
 
+        // Reset class feature usages (featureUsages) based on rest type
+        const isLongRest = durationMinutes >= 480;
+        if (pc.featureUsages) {
+            for (const [name, usage] of Object.entries(pc.featureUsages)) {
+                if (isLongRest) {
+                    // Long rest resets everything
+                    usage.current = usage.max;
+                } else if (usage.usageType === 'SHORT_REST') {
+                    // Short rest only resets SHORT_REST features
+                    usage.current = usage.max;
+                }
+            }
+        }
+
+        // Arcane Recovery: Wizard feature, available once per short rest
+        let arcaneRecoveryAvailable = false;
+        let arcaneRecoveryBudget = 0;
+        if (!isLongRest && pc.class === 'Wizard') {
+            const arUsage = pc.featureUsages?.['Arcane Recovery'];
+            if (arUsage && arUsage.current > 0) {
+                // Check if any spell slots are missing
+                const hasMissingSlots = Object.values(pc.spellSlots).some(s => s.current < s.max);
+                if (hasMissingSlots) {
+                    arcaneRecoveryAvailable = true;
+                    arcaneRecoveryBudget = Math.ceil(pc.level / 2); // Up to half wizard level, rounded up
+                }
+            }
+        }
+
         return {
             message: message.trim(),
-            timeCost: durationMinutes
+            timeCost: durationMinutes,
+            arcaneRecoveryAvailable,
+            arcaneRecoveryBudget
         };
     }
 
@@ -140,6 +173,38 @@ export class RestingEngine {
      */
     public static longRest(pc: PlayerCharacter): RestResult {
         return this.applyProportionalRest(pc, 480, 'rest');
+    }
+
+    /**
+     * Apply Arcane Recovery choices. Consumes the feature usage.
+     * @param choices Map of spell level → number of slots to recover
+     */
+    public static applyArcaneRecovery(pc: PlayerCharacter, choices: Record<number, number>): string {
+        const arUsage = pc.featureUsages?.['Arcane Recovery'];
+        if (!arUsage || arUsage.current <= 0) return 'Arcane Recovery is not available.';
+
+        const budget = Math.ceil(pc.level / 2);
+        let totalLevels = 0;
+        const recovered: string[] = [];
+
+        for (const [lvStr, count] of Object.entries(choices)) {
+            const lv = Number(lvStr);
+            if (lv >= 6) continue; // Cannot recover 6th level or higher
+            const slot = pc.spellSlots[lv.toString()];
+            if (!slot) continue;
+            const space = slot.max - slot.current;
+            const actual = Math.min(count, space);
+            if (actual <= 0) continue;
+            if (totalLevels + lv * actual > budget) continue; // Would exceed budget
+            slot.current += actual;
+            totalLevels += lv * actual;
+            recovered.push(`${actual}x L${lv}`);
+        }
+
+        if (recovered.length === 0) return 'No spell slots recovered.';
+
+        arUsage.current--;
+        return `Arcane Recovery: Restored ${recovered.join(', ')} (${totalLevels}/${budget} levels used).`;
     }
 
     /**

@@ -274,7 +274,7 @@ export const CombatActionBar: React.FC = () => {
             {showSpells && (
                 <SpellbookFlyout
                     spells={availableSpells}
-                    spellSlots={state?.character?.spellSlots}
+                    spellSlots={player?.spellSlots || state?.character?.spellSlots}
                     distanceToTarget={(() => {
                         if (!player || !gridManager) return undefined;
                         // Use selected target, or nearest enemy

@@ -1,10 +1,95 @@
+/* ===================== SPELLBOOK CONFIG ===================== */
+/* Edit these values to adjust colors and styles from one place  */
+:root {
+    /* --- FLYOUT --- */
+    --sb-flyout-width: 850px;
+    --sb-flyout-max-height: 520px;
+    --sb-flyout-border-color: var(--parchment-border);
+    --sb-flyout-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+
+    /* --- SLOT SUMMARY BAR --- */
+    --sb-summary-label-color: var(--parchment-border);
+    --sb-summary-text-color: var(--parchment-text);
+    --sb-summary-count-color: var(--parchment-accent);
+    --sb-summary-empty-opacity: 0.3;
+
+    /* --- TABS --- */
+    --sb-tab-bg: rgba(0, 0, 0, 0.05);
+    --sb-tab-border: var(--parchment-border);
+    --sb-tab-text: var(--parchment-text);
+    --sb-tab-active-bg: var(--parchment-accent);
+    --sb-tab-active-text: white;
+
+    /* --- SPELL CARD (normal state) --- */
+    --sb-card-bg: rgba(0, 0, 0, 0.03);
+    --sb-card-border: var(--parchment-border);
+    --sb-card-hover-bg: rgba(201, 162, 39, 0.1);
+    --sb-card-hover-border: var(--parchment-accent);
+    --sb-card-disabled-opacity: 0.5;
+
+    /* --- SPELL CARD FONTS (normal state) --- */
+    --sb-spell-name-color: var(--parchment-text);
+    --sb-spell-school-color: var(--parchment-accent);
+    --sb-spell-meta-color: var(--parchment-border);
+    --sb-spell-damage-color: var(--parchment-accent);
+
+    /* --- SPELL CARD (cast-ready: level selected) --- */
+    --sb-cast-border-color: #e67e22;
+    --sb-cast-bg: rgba(230, 126, 34, 0.06);
+    --sb-cast-hover-bg: rgba(230, 126, 34, 0.18);
+    --sb-cast-glow-color: rgba(230, 126, 34, 0.5);
+    --sb-cast-glow-min: 0 0 6px 1px rgba(230, 126, 34, 0.4);
+    --sb-cast-glow-max: 0 0 14px 4px rgba(230, 126, 34, 0.7);
+    --sb-cast-glow-speed: 1.2s;
+
+    /* --- SPELL CARD FONTS (cast-ready state) --- */
+    --sb-cast-spell-name-color: #fff3e0;
+    --sb-cast-spell-school-color: #e67e22;
+    --sb-cast-spell-meta-color: #d4a574;
+    --sb-cast-spell-damage-color: #e67e22;
+
+    /* --- LEVEL RECTANGLES --- */
+    --sb-lvl-size-w: 33px;
+    --sb-lvl-size-h: 33px;
+
+    /* Tier 1 (L1): neutral parchment */
+    --sb-lvl1-color: var(--parchment-text);
+    --sb-lvl1-border: var(--parchment-text);
+    --sb-lvl1-selected-bg: #6b5a3e;
+    --sb-lvl1-selected-text: white;
+
+    /* Tier 2 (L2): gold accent */
+    --sb-lvl2-color: var(--parchment-accent);
+    --sb-lvl2-border: var(--parchment-accent);
+    --sb-lvl2-selected-bg: var(--parchment-accent);
+    --sb-lvl2-selected-text: white;
+
+    /* Tier 3 (L3+): red */
+    --sb-lvl3-color: #c0392b;
+    --sb-lvl3-border: #c0392b;
+    --sb-lvl3-selected-bg: #c0392b;
+    --sb-lvl3-selected-text: white;
+
+    /* --- NO SCALING / OUT OF RANGE WARNINGS --- */
+    --sb-warning-color: #8b2020;
+
+    /* --- INFO TOOLTIP --- */
+    --sb-tip-bg: rgba(20, 16, 10, 0.96);
+    --sb-tip-border: var(--parchment-border, #8b7355);
+    --sb-tip-text: #e8d5b5;
+    --sb-tip-name-color: #c9a84c;
+    --sb-tip-school-color: #8b7355;
+    --sb-tip-damage-color: #c9a227;
+    --sb-tip-width: 320px;
+}
+
 .flyout {
     position: absolute;
     bottom: 100px;
     left: 50%;
     transform: translateX(-50%);
-    width: min(850px, 94vw);
-    max-height: 520px;
+    width: min(var(--sb-flyout-width), 94vw);
+    max-height: var(--sb-flyout-max-height);
     overflow: hidden;
     z-index: 1000;
     animation: slideUp 0.2s ease-out;
@@ -12,9 +97,9 @@
     /* Fantasy RPG Parchment Style */
     background-color: var(--parchment-bg);
     background-image: var(--parchment-bg-image);
-    border: 2px solid var(--parchment-border);
+    border: 2px solid var(--sb-flyout-border-color);
     border-style: double;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    box-shadow: var(--sb-flyout-shadow);
     display: flex;
     flex-direction: column;
     padding: var(--spacing-md);
@@ -112,19 +197,19 @@
 
 .tab {
     padding: 4px var(--spacing-sm);
-    background: rgba(0, 0, 0, 0.05);
-    border: 1px solid var(--parchment-border);
+    background: var(--sb-tab-bg);
+    border: 1px solid var(--sb-tab-border);
     font-size: 0.82rem;
     font-family: var(--font-narrative);
     cursor: pointer;
     white-space: nowrap;
-    color: var(--parchment-text);
+    color: var(--sb-tab-text);
 }
 
 .activeTab {
-    background: var(--parchment-accent);
-    border-color: var(--parchment-accent);
-    color: white;
+    background: var(--sb-tab-active-bg);
+    border-color: var(--sb-tab-active-bg);
+    color: var(--sb-tab-active-text);
     font-weight: bold;
 }
 
@@ -149,34 +234,45 @@
     padding: 10px;
     min-height: 72px;
     overflow: hidden;
-    background: rgba(0, 0, 0, 0.03);
-    border: 2px solid var(--parchment-border);
+    background: var(--sb-card-bg);
+    border: 2px solid var(--sb-card-border);
     transition: all 0.2s;
     cursor: pointer;
 }
 
 .spellItem:hover:not(.disabled):not(.castReady) {
-    background: rgba(201, 162, 39, 0.1);
-    border-color: var(--parchment-accent);
+    background: var(--sb-card-hover-bg);
+    border-color: var(--sb-card-hover-border);
 }
 
 .spellItem.disabled {
-    opacity: 0.5;
+    opacity: var(--sb-card-disabled-opacity);
     filter: grayscale(1);
     cursor: not-allowed;
 }
 
-/* Glowing orange border when a level is selected — ready to cast */
+/* Glowing border when a level is selected — ready to cast */
 .castReady {
-    border-color: #e67e22 !important;
-    box-shadow: 0 0 8px 2px rgba(230, 126, 34, 0.5);
-    animation: castGlow 1.2s ease-in-out infinite;
+    border-color: var(--sb-cast-border-color) !important;
+    background: var(--sb-cast-bg);
+    box-shadow: var(--sb-cast-glow-color);
+    animation: castGlow var(--sb-cast-glow-speed) ease-in-out infinite;
     cursor: pointer;
 }
 
+.castReady:hover {
+    background: var(--sb-cast-hover-bg);
+}
+
+/* Cast-ready font overrides */
+.castReady .spellName { color: var(--sb-cast-spell-name-color); }
+.castReady .spellSchool { color: var(--sb-cast-spell-school-color); }
+.castReady .spellMeta { color: var(--sb-cast-spell-meta-color); }
+.castReady .spellDamage { color: var(--sb-cast-spell-damage-color); }
+
 @keyframes castGlow {
-    0%, 100% { box-shadow: 0 0 6px 1px rgba(230, 126, 34, 0.4); }
-    50% { box-shadow: 0 0 14px 4px rgba(230, 126, 34, 0.7); }
+    0%, 100% { box-shadow: var(--sb-cast-glow-min); }
+    50% { box-shadow: var(--sb-cast-glow-max); }
 }
 
 /* ===== SPELL LAYOUT ===== */
@@ -257,7 +353,7 @@
     font-weight: bold;
     font-family: var(--font-narrative);
     font-size: 1.1rem;
-    color: var(--parchment-text);
+    color: var(--sb-spell-name-color);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -266,7 +362,7 @@
 .spellSchool {
     font-size: 0.6rem;
     text-transform: uppercase;
-    color: var(--parchment-accent);
+    color: var(--sb-spell-school-color);
     opacity: 0.8;
     white-space: nowrap;
 }
@@ -275,12 +371,12 @@
     display: flex;
     justify-content: space-between;
     font-size: 0.72rem;
-    color: var(--parchment-border);
+    color: var(--sb-spell-meta-color);
 }
 
 .spellDamage {
     font-weight: 600;
-    color: var(--parchment-accent);
+    color: var(--sb-spell-damage-color);
 }
 
 .emptyState {
@@ -311,8 +407,8 @@
 .lvlBtn {
     font-size: 0.72rem;
     font-weight: 700;
-    width: 33px;
-    height: 33px;
+    width: var(--sb-lvl-size-w);
+    height: var(--sb-lvl-size-h);
     flex-shrink: 0;
     border-radius: 3px;
     border: 1px solid;
@@ -333,34 +429,34 @@
 
 /* Color tiers for level rectangles */
 .lvlTier1 {
-    color: var(--parchment-text);
-    border-color: var(--parchment-text);
+    color: var(--sb-lvl1-color);
+    border-color: var(--sb-lvl1-border);
 }
 
 .lvlTier2 {
-    color: var(--parchment-accent);
-    border-color: var(--parchment-accent);
+    color: var(--sb-lvl2-color);
+    border-color: var(--sb-lvl2-border);
 }
 
 .lvlTier3 {
-    color: #c0392b;
-    border-color: #c0392b;
+    color: var(--sb-lvl3-color);
+    border-color: var(--sb-lvl3-border);
 }
 
-/* Selected state: filled background, white text */
+/* Selected state: filled background */
 .lvlSelected.lvlTier1 {
-    background: #6b5a3e;
-    color: white;
+    background: var(--sb-lvl1-selected-bg);
+    color: var(--sb-lvl1-selected-text);
 }
 
 .lvlSelected.lvlTier2 {
-    background: var(--parchment-accent);
-    color: white;
+    background: var(--sb-lvl2-selected-bg);
+    color: var(--sb-lvl2-selected-text);
 }
 
 .lvlSelected.lvlTier3 {
-    background: #c0392b;
-    color: white;
+    background: var(--sb-lvl3-selected-bg);
+    color: var(--sb-lvl3-selected-text);
 }
 
 .lvlDice {
@@ -376,7 +472,7 @@
 /* No scaling warning */
 .noScaling {
     font-size: 0.65rem;
-    color: #8b2020;
+    color: var(--sb-warning-color);
     font-style: italic;
     white-space: nowrap;
     margin-left: auto;
@@ -385,7 +481,7 @@
 /* Out of range indicator */
 .outOfRange {
     font-size: 0.62rem;
-    color: #8b2020;
+    color: var(--sb-warning-color);
     opacity: 0.7;
 }
 
@@ -399,14 +495,14 @@
 .spellInfoTooltip {
     position: fixed;
     z-index: 25000;
-    width: 320px;
-    background: rgba(20, 16, 10, 0.96);
-    border: 1px solid var(--parchment-border, #8b7355);
+    width: var(--sb-tip-width);
+    background: var(--sb-tip-bg);
+    border: 1px solid var(--sb-tip-border);
     border-radius: 4px;
     padding: 10px 12px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
     font-size: 0.75rem;
-    color: #e8d5b5;
+    color: var(--sb-tip-text);
     pointer-events: none;
     animation: tooltipFadeIn 0.12s ease-out;
 }
@@ -428,13 +524,13 @@
     font-family: var(--font-narrative, serif);
     font-size: 0.95rem;
     font-weight: 700;
-    color: #c9a84c;
+    color: var(--sb-tip-name-color);
 }
 
 .tipSchool {
     font-size: 0.65rem;
     text-transform: uppercase;
-    color: #8b7355;
+    color: var(--sb-tip-school-color);
     letter-spacing: 0.5px;
 }
 
@@ -448,7 +544,7 @@
 
 .tipDamage {
     font-weight: 600;
-    color: #c9a227;
+    color: var(--sb-tip-damage-color);
     font-size: 0.75rem;
     margin: 4px 0;
 }

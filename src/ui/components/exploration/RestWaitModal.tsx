@@ -5,9 +5,10 @@ interface RestWaitModalProps {
     engine: any;
     onCancel: () => void;
     onAmbush?: (encounter: any, narration: string) => void;
+    onArcaneRecovery?: (budget: number) => void;
 }
 
-const RestWaitModal: React.FC<RestWaitModalProps> = ({ engine, onCancel, onAmbush }) => {
+const RestWaitModal: React.FC<RestWaitModalProps> = ({ engine, onCancel, onAmbush, onArcaneRecovery }) => {
     const [activeTab, setActiveTab] = useState<'rest' | 'wait'>('wait');
     const [durationValues, setDurationValues] = useState<number>(60); // Selection value
     const [remainingMinutes, setRemainingMinutes] = useState<number>(0);
@@ -56,9 +57,13 @@ const RestWaitModal: React.FC<RestWaitModalProps> = ({ engine, onCancel, onAmbus
 
             if (!isCountingDown || remainingMinutes <= 0) {
                 if (isCountingDown && remainingMinutes <= 0 && !cancelledRef.current) {
-                    // Done! Close modal immediately, let narration arrive via state update
+                    // Done! Close modal, check for Arcane Recovery
                     onCancel();
-                    engine.completeRest(totalMinutesToPass, activeTab); // Fire-and-forget: narration arrives via state subscription
+                    engine.completeRest(totalMinutesToPass, activeTab).then((result: any) => {
+                        if (result?.arcaneRecoveryAvailable && onArcaneRecovery) {
+                            onArcaneRecovery(result.arcaneRecoveryBudget || 0);
+                        }
+                    });
                 }
                 return;
             }

@@ -719,7 +719,7 @@ export class GameLoop {
                     await this.initializeCombat(waitEnc, ambushNarration);
                     return ambushNarration;
                 }
-                return await this.completeRest(minutes, 'wait');
+                return (await this.completeRest(minutes, 'wait')).narration;
             }
 
             case 'rest': {
@@ -731,7 +731,12 @@ export class GameLoop {
                     await this.initializeCombat(restEnc, ambushNarration);
                     return ambushNarration;
                 }
-                return await this.completeRest(duration);
+                const restOut = await this.completeRest(duration);
+                let msg = restOut.narration;
+                if (restOut.arcaneRecoveryAvailable) {
+                    msg += `\n[Arcane Recovery available: recover up to ${restOut.arcaneRecoveryBudget} levels of spell slots (max 5th level). Use /arcanerecovery <level> <count> ...]`;
+                }
+                return msg;
             }
 
             case 'cast': {
@@ -1685,15 +1690,15 @@ export class GameLoop {
         return result;
     }
 
-    public async completeRest(durationMinutes: number, type: 'rest' | 'wait' = 'rest'): Promise<string> {
-        const mechanicalMessage = await this.time.completeRest(durationMinutes, type);
+    public async completeRest(durationMinutes: number, type: 'rest' | 'wait' = 'rest'): Promise<{ narration: string; arcaneRecoveryAvailable?: boolean; arcaneRecoveryBudget?: number }> {
+        const restResult = await this.time.completeRest(durationMinutes, type);
 
         try {
             const narration = await NarratorService.narrateRestCompletion(
                 this.state,
                 durationMinutes,
                 type,
-                mechanicalMessage
+                restResult.message
             );
 
             this.state.lastNarrative = narration;
@@ -1706,11 +1711,23 @@ export class GameLoop {
             this.contextManager.addEvent('narrator', narration);
             await this.emitStateUpdate();
 
-            return narration;
+            return {
+                narration,
+                arcaneRecoveryAvailable: restResult.arcaneRecoveryAvailable,
+                arcaneRecoveryBudget: restResult.arcaneRecoveryBudget
+            };
         } catch (e) {
             console.error('[GameLoop] Post-rest narration failed:', e);
-            return mechanicalMessage;
+            return { narration: restResult.message };
         }
+    }
+
+    /** Apply Arcane Recovery slot choices after a short rest. */
+    public async applyArcaneRecovery(choices: Record<number, number>): Promise<string> {
+        const { RestingEngine } = await import('./RestingEngine');
+        const msg = RestingEngine.applyArcaneRecovery(this.state.character, choices);
+        await this.emitStateUpdate();
+        return msg;
     }
 
     public async generateAmbushNarration(encounter: Encounter, restType: 'rest' | 'wait'): Promise<string> {

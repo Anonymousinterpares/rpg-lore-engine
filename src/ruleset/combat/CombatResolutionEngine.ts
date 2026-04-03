@@ -67,6 +67,14 @@ export class CombatResolutionEngine {
 
         // Calculate effective AC
         let effectiveAC = target.ac;
+        // Apply AC bonuses from status effects (Shield, Mage Armor, etc.)
+        if (target.statusEffects) {
+            for (const eff of target.statusEffects) {
+                if (eff.stat === 'ac' && typeof eff.modifier === 'number') {
+                    effectiveAC += eff.modifier;
+                }
+            }
+        }
         if (isSprinting) effectiveAC -= 2;
         if (isPhalanxTarget) effectiveAC += 1;
         if (isHunkered) {

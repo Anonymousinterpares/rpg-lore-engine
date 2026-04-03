@@ -1,0 +1,205 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.panel {
+    background: rgba(20, 16, 10, 0.96);
+    border: 2px solid var(--parchment-border, #8b7355);
+    border-radius: 6px;
+    padding: 16px 20px;
+    width: 340px;
+    color: #e8d5b5;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(139, 115, 85, 0.3);
+}
+
+.header h3 {
+    margin: 0;
+    font-family: var(--font-narrative, serif);
+    color: var(--parchment-accent, #c9a84c);
+    flex: 1;
+}
+
+.icon {
+    color: var(--parchment-accent, #c9a84c);
+}
+
+.closeBtn {
+    background: none;
+    border: none;
+    color: #8b7355;
+    cursor: pointer;
+    padding: 2px;
+}
+
+.closeBtn:hover {
+    color: #e8d5b5;
+}
+
+.desc {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin: 0 0 12px;
+    line-height: 1.4;
+}
+
+.budget {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    margin-bottom: 12px;
+    padding: 6px 8px;
+    background: rgba(139, 115, 85, 0.1);
+    border-radius: 4px;
+}
+
+.remaining {
+    color: var(--parchment-accent, #c9a84c);
+    font-weight: 600;
+}
+
+.spent {
+    color: #c0392b;
+    font-weight: 600;
+}
+
+.slotGrid {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.slotBtn {
+    width: 56px;
+    height: 56px;
+    border-radius: 4px;
+    border: 2px solid rgba(139, 115, 85, 0.4);
+    background: transparent;
+    color: #e8d5b5;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    transition: all 0.15s ease;
+    position: relative;
+}
+
+.slotBtn:hover:not(.slotDisabled) {
+    border-color: var(--parchment-accent, #c9a84c);
+    background: rgba(201, 162, 39, 0.1);
+}
+
+.slotSelected {
+    border-color: var(--parchment-accent, #c9a84c) !important;
+    background: rgba(201, 162, 39, 0.2) !important;
+    box-shadow: 0 0 8px rgba(201, 162, 39, 0.3);
+}
+
+.slotDisabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.slotLevel {
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.slotCount {
+    font-size: 0.65rem;
+    opacity: 0.6;
+}
+
+.slotChosen {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--parchment-accent, #c9a84c);
+    color: #1a1208;
+    font-size: 0.6rem;
+    font-weight: 700;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.empty {
+    font-size: 0.8rem;
+    opacity: 0.5;
+    font-style: italic;
+    text-align: center;
+    padding: 12px;
+}
+
+.footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(139, 115, 85, 0.2);
+}
+
+.skipBtn {
+    padding: 6px 14px;
+    border: 1px solid rgba(139, 115, 85, 0.3);
+    border-radius: 4px;
+    background: transparent;
+    color: #8b7355;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.skipBtn:hover {
+    color: #e8d5b5;
+    border-color: #e8d5b5;
+}
+
+.confirmBtn {
+    padding: 6px 14px;
+    border: 1px solid var(--parchment-accent, #c9a84c);
+    border-radius: 4px;
+    background: rgba(201, 162, 39, 0.15);
+    color: var(--parchment-accent, #c9a84c);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.confirmBtn:hover:not(:disabled) {
+    background: rgba(201, 162, 39, 0.3);
+}
+
+.confirmBtn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}

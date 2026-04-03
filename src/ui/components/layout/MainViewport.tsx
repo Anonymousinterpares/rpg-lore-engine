@@ -13,6 +13,7 @@ import CombatantStatusCard from '../combat/CombatantStatusCard';
 import GameOverScreen from '../menu/GameOverScreen';
 import SaveLoadModal from '../menu/SaveLoadModal';
 import RestWaitModal from '../exploration/RestWaitModal';
+import ArcaneRecoveryFlyout from '../exploration/ArcaneRecoveryFlyout';
 import ExamineOverlay from '../combat/ExamineOverlay';
 import LevelUpOverlay from '../combat/LevelUpOverlay';
 import { useGameState } from '../../hooks/useGameState';
@@ -30,6 +31,7 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
     const [inspectedCombatantId, setInspectedCombatantId] = useState<string | null>(null);
     const [saveSlots, setSaveSlots] = useState<any[]>([]);
     const [pendingCombat, setPendingCombat] = useState<any>(null);
+    const [arcaneRecovery, setArcaneRecovery] = useState<{ budget: number } | null>(null);
 
     // Examine overlay orchestration
     const [examineOverlay, setExamineOverlay] = useState<any>(null);
@@ -256,6 +258,19 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
                     engine={engine}
                     onCancel={handleRestCancel}
                     onAmbush={handleAmbush}
+                    onArcaneRecovery={(budget) => setArcaneRecovery({ budget })}
+                />
+            )}
+
+            {arcaneRecovery && state?.character?.spellSlots && (
+                <ArcaneRecoveryFlyout
+                    budget={arcaneRecovery.budget}
+                    spellSlots={state.character.spellSlots}
+                    onConfirm={async (choices) => {
+                        if (engine) await engine.applyArcaneRecovery(choices);
+                        setArcaneRecovery(null);
+                    }}
+                    onSkip={() => setArcaneRecovery(null)}
                 />
             )}
 
