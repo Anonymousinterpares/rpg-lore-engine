@@ -38,11 +38,16 @@ export class CombatResolutionEngine {
         forceDisadvantage: boolean = false,
         lightLevel: LightLevel = 'Bright',
         featureContext?: {
-            critRange?: number;         // Improved Critical: 19 or Superior: 18 (default 20)
-            sneakAttackDice?: number;   // Sneak Attack: number of d6s (0 = none)
-            hasAllyNearTarget?: boolean; // For Sneak Attack eligibility
-            isFinesseOrRanged?: boolean; // Sneak Attack requires finesse/ranged weapon
-            rerollDamageBelow?: number; // Great Weapon Fighting: reroll 1s and 2s
+            critRange?: number;
+            sneakAttackDice?: number;
+            hasAllyNearTarget?: boolean;
+            isFinesseOrRanged?: boolean;
+            rerollDamageBelow?: number;
+            forceAdvantage?: boolean;   // Reckless Attack, Assassinate
+            forceCrit?: boolean;        // Assassinate on surprised
+            ignoreCover?: boolean;      // Sharpshooter
+            evasion?: boolean;          // Target has Evasion
+            uncannyDodge?: boolean;     // Target has Uncanny Dodge (halve one attack)
         }
     ): CombatActionResult {
         // Darkvision/lighting checks
@@ -62,7 +67,8 @@ export class CombatResolutionEngine {
         const isUnseen = attacker.statusEffects.some(e => e.id === 'unseen');
         const isFlanking = attacker.statusEffects.some(e => e.id === 'flanking');
 
-        const attackAdvantage = (!isRanged && (hasPressAdvantage || isUnseen || isFlanking)) || darkAdvantage;
+        const featureAdvantage = featureContext?.forceAdvantage ?? false;
+        const attackAdvantage = featureAdvantage || (!isRanged && (hasPressAdvantage || isUnseen || isFlanking)) || darkAdvantage;
         const attackDisadvantage = hasDodgeDisadvantage || forceDisadvantage || darkDisadvantage;
         // Advantage and disadvantage cancel each other out (D&D 5e)
         const finalAdvantage = (attackAdvantage && !attackDisadvantage) ? 'advantage' : 'none';
@@ -71,7 +77,7 @@ export class CombatResolutionEngine {
         const d20 = (finalAdvantage === 'advantage') ? Dice.advantage() :
             (finalDisadvantage === 'disadvantage') ? Dice.disadvantage() : Dice.d20();
         const critThreshold = featureContext?.critRange ?? 20;
-        const isCrit = d20 >= critThreshold;
+        const isCrit = featureContext?.forceCrit || d20 >= critThreshold;
 
         // Calculate effective AC
         let effectiveAC = target.ac;
@@ -85,9 +91,9 @@ export class CombatResolutionEngine {
         }
         if (isSprinting) effectiveAC -= 2;
         if (isPhalanxTarget) effectiveAC += 1;
-        if (isHunkered) {
+        if (isHunkered && !featureContext?.ignoreCover) {
             const cover = target.tactical?.cover || 'None';
-            if (cover === 'Full') effectiveAC += 0; // Not targetable anyway
+            if (cover === 'Full') effectiveAC += 0;
             else if (cover === 'Three-Quarters') effectiveAC += 5;
             else if (cover === 'Half') effectiveAC += 2;
             else if (cover === 'Quarter') effectiveAC += 1;
@@ -269,6 +275,19 @@ export class CombatResolutionEngine {
                         damage = Math.floor(damage / 2);
                     } else if (type === 'SAVE_SUCCESS') {
                         damage = 0;
+                    }
+
+                    // Evasion (Rogue 7+, Monk 7+): DEX save success = 0 damage, fail = half
+                    if (spell.save && (spell.save.ability === 'DEX' || spell.save.ability === 'dexterity')) {
+                        const hasEvasion = target.statusEffects?.some(e => e.id === 'evasion') ||
+                            (target as any).evasion;
+                        if (hasEvasion) {
+                            if (type === 'SAVE_SUCCESS') {
+                                damage = 0;
+                            } else {
+                                damage = Math.floor(damage / 2);
+                            }
+                        }
                     }
                 }
                 if (damage > 0) message += `Dealing ${damage} damage.`;

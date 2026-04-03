@@ -88,24 +88,67 @@ CombatOrchestrator and CombatResolutionEngine consume the engine — no feature-
 - Rage/Smite/Lay on Hands activation via AbilitiesFlyout
 - Fighting Style codex entries
 
-### Feature Effects Not Yet in FeatureEffectEngine
-- **Action Surge** (Fighter) — grant extra action on turn
-- **Bardic Inspiration** (Bard) — d6-d12 to ally's roll
-- **Ki** (Monk) — Flurry of Blows, Patient Defense, Step of the Wind
-- **Cunning Action** (Rogue) — Dash/Disengage/Hide as bonus action
-- **Wild Shape** (Druid) — beast transformation system
-- **Channel Divinity** (Cleric/Paladin) — domain/oath-specific effects
-- **Font of Magic / Metamagic** (Sorcerer) — sorcery point system
-- **Reckless Attack** (Barbarian) — advantage with disadvantage trade
-- **All subclass-specific features** (Sculpt Spells, Assassinate, etc.)
+### Action Surge — ✅ IMPLEMENTED
+- Activated feature: resets actionSpent, grants extra action
+- Consumes featureUsages, validated per Fighter class
 
-### Feat Combat Effects (from future_expansions.md)
-- Great Weapon Master: -5/+10 power attack toggle
-- Sharpshooter: -5/+10 ranged + ignore cover
-- Lucky: 3 rerolls per long rest
-- Mobile: +10 speed, no OA after melee
-- Sentinel/Polearm Master: OA effects
-- War Caster: concentration advantage + spell-as-OA
+### Reckless Attack — ✅ IMPLEMENTED
+- Barbarian L2+: grants forceAdvantage on melee, enemies get advantage (status effect)
+- No resource cost, duration 1 turn
+
+### Cunning Action — ✅ IMPLEMENTED
+- Rogue L2+: confirms availability for Dash/Disengage/Hide as bonus action
+- Class and level validated
+
+### Unarmored Defense — ✅ IMPLEMENTED
+- Barbarian: AC = 10 + DEX + CON (when no armor)
+- Monk: AC = 10 + DEX + WIS (when no armor)
+- Wired in EquipmentEngine.recalculateAC()
+
+### Danger Sense — ✅ IMPLEMENTED
+- Barbarian L2+: advantage on DEX saves (exposed via getDefenseModifiers)
+
+### Evasion — ✅ IMPLEMENTED
+- Rogue/Monk L7+: DEX save success = 0 damage, fail = half
+- Wired in CombatResolutionEngine.resolveSpell()
+
+### Uncanny Dodge — ✅ IMPLEMENTED
+- Rogue L5+: reaction to halve one attack's damage
+- Exposed via getDefenseModifiers()
+
+### Assassinate — ✅ IMPLEMENTED
+- Assassin Rogue L3+: advantage vs not-acted targets, auto-crit on surprised
+- forceAdvantage + forceCrit in AttackModifiers, wired in CombatResolutionEngine
+
+### Remarkable Athlete — ✅ IMPLEMENTED
+- Champion Fighter L7+: half proficiency bonus on unproficient STR/DEX/CON checks
+
+### Great Weapon Master — ✅ IMPLEMENTED
+- Feat: -5 attack / +10 damage on two-handed melee (toggle via gwmEnabled context)
+
+### Sharpshooter — ✅ IMPLEMENTED
+- Feat: -5 attack / +10 damage ranged + ignore cover (toggle via sharpshooterEnabled context)
+
+### Mobile — ✅ IMPLEMENTED
+- Feat: +10 movement speed (stacks with class bonuses)
+- Barbarian L5+ fast movement also implemented
+- Monk unarmored movement scaling (L2-L18) also implemented
+
+### Resilient — ✅ IMPLEMENTED
+- Feat: save proficiency tracked via savingThrowProficiencies
+
+### Feature Effects Still Not in FeatureEffectEngine
+- **Bardic Inspiration** (Bard) — d6-d12 to ally's roll (needs target selection UI)
+- **Ki** (Monk) — Flurry of Blows, Patient Defense, Step of the Wind (needs sub-ability UI)
+- **Wild Shape** (Druid) — beast transformation system (major new system)
+- **Channel Divinity** (Cleric/Paladin) — domain/oath-specific effects (9+ implementations)
+- **Font of Magic / Metamagic** (Sorcerer) — sorcery point system (needs new resource)
+- **Sculpt Spells** (Evocation Wizard) — friendly fire exemption in AoE
+
+### Feat Effects Still Not Implemented
+- Lucky: 3 rerolls per long rest (needs mid-roll UI prompt)
+- Sentinel/Polearm Master: OA effects (needs opportunity attack rework)
+- War Caster: concentration advantage + spell-as-OA (needs OA rework)
 
 ---
 

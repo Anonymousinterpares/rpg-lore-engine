@@ -144,8 +144,17 @@ export class EquipmentEngine {
         let baseAC = 10 + dexMod;
         let shieldBonus = 0;
 
-        // 1. Check Armor Slot
+        // 0. Unarmored Defense (Barbarian: 10+DEX+CON, Monk: 10+DEX+WIS)
         const armorSlotValue = (pc.equipmentSlots as any).armor;
+        if (!armorSlotValue) {
+            if (pc.class === 'Barbarian') {
+                baseAC = 10 + dexMod + MechanicsEngine.getModifier(pc.stats.CON || 10);
+            } else if (pc.class === 'Monk') {
+                baseAC = 10 + dexMod + MechanicsEngine.getModifier(pc.stats.WIS || 10);
+            }
+        }
+
+        // 1. Check Armor Slot
         if (armorSlotValue) {
             // Resolve: slot may contain instanceId or item name
             const armorInInventory = pc.inventory.items.find(i => i.instanceId === armorSlotValue);

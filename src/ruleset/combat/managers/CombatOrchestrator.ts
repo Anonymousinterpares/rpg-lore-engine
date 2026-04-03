@@ -555,6 +555,9 @@ export class CombatOrchestrator {
                     hasAllyNearTarget: attackContext.hasAllyNearTarget,
                     isFinesseOrRanged: isFinesseWeapon || isRanged,
                     rerollDamageBelow: mods.rerollDamageBelow,
+                    forceAdvantage: mods.forceAdvantage,
+                    forceCrit: mods.forceCrit,
+                    ignoreCover: mods.ignoreCover,
                 };
 
                 const attackCount = 1 + mods.extraAttacks;
