@@ -734,6 +734,11 @@ export class CombatOrchestrator {
                         addCondition(char.conditions, id, effect.sourceId, effect.duration);
                     }
                 });
+                // Sync ALL active status effects (buffs/debuffs) with remaining duration
+                if (!char.statusEffects) (char as any).statusEffects = [];
+                char.statusEffects = pcCombatant.statusEffects
+                    .filter(e => (e.duration === undefined || e.duration > 0))
+                    .map(e => ({ ...e }));
             }
 
             // Sync Companions

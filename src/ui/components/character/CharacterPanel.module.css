@@ -117,3 +117,20 @@
     font-size: 1rem;
     font-weight: 600;
 }
+
+/* Buff/Debuff indicators */
+.buffIndicator {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #27ae60;
+    margin-left: 2px;
+    vertical-align: super;
+}
+
+.debuffIndicator {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #c0392b;
+    margin-left: 2px;
+    vertical-align: super;
+}

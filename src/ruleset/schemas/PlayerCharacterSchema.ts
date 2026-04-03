@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { AbilityScoreSchema, SkillNameSchema, CurrencySchema } from './BaseSchemas';
-import { CombatConditionSchema } from './CombatSchema';
+import { CombatConditionSchema, StatusEffectSchema } from './CombatSchema';
 
 export const EquipmentSlotsSchema = z.object({
     head: z.string().optional(),
@@ -43,6 +43,7 @@ export const PlayerCharacterSchema = z.object({
     secondaryClass: z.string().optional(), // Multiclass (max 2)
     multiclassLevels: z.record(z.string(), z.number()).default({}), // { "Fighter": 5, "Rogue": 3 }
     conditions: z.array(CombatConditionSchema).default([]),
+    statusEffects: z.array(StatusEffectSchema).default([]),
     stats: z.record(AbilityScoreSchema, z.number()),
     savingThrowProficiencies: z.array(AbilityScoreSchema).default([]),
     skillProficiencies: z.array(SkillNameSchema).default([]), // Legacy — kept for migration; new code uses `skills`

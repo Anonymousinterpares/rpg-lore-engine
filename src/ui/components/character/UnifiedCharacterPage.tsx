@@ -13,6 +13,7 @@ import HealthBar from './HealthBar';
 import Codex from '../codex/Codex';
 import { Shield, Zap, Heart, Footprints, Info, Award, BookOpen, Users, CheckCircle2 as Check, Lock } from 'lucide-react';
 import { PaperdollItem, SlotId } from '../paperdoll/types';
+import { getACBonus, getStatBonus } from '../../utils/effectiveStats';
 import { DataManager } from '../../../ruleset/data/DataManager';
 import ItemContextMenu from '../inventory/ItemContextMenu';
 import ItemDatasheet from '../inventory/ItemDatasheet';
@@ -43,6 +44,10 @@ const UnifiedCharacterPage: React.FC = () => {
     const pc = state.character;
     const stats = pc.stats as Record<string, number>;
     const bio = pc.biography;
+    // During combat, read effects from combatant (live); outside, from character (persisted)
+    const playerCombatant = state.combat?.combatants?.find((c: any) => c.isPlayer);
+    const activeEffects = (playerCombatant?.statusEffects || (pc as any).statusEffects || []);
+    const acBonusData = getACBonus(activeEffects);
     const profBonus = MechanicsEngine.getProficiencyBonus(pc.level);
     const sp = (pc as any).skillPoints || { available: 0, totalEarned: 0 };
 
@@ -159,15 +164,25 @@ const UnifiedCharacterPage: React.FC = () => {
                     )}
                     {['STR','DEX','CON','INT','WIS','CHA'].map(ab => {
                         const val = (stats[ab] || 10) + (pendingASI[ab] || 0);
+                        const statBuff = getStatBonus(activeEffects, ab);
+                        const effectiveVal = val + statBuff.value;
                         const hasPending = (pendingASI[ab] || 0) > 0;
                         const canAdd = totalASIPoints > 0 && usedASIPoints < totalASIPoints && val < 20;
                         return (
                             <div key={ab} className={`${styles.abilityRow} ${hasPending ? styles.rowPending : ''}`}
-                                onClick={() => openCodex('mechanics', `ability_${ab.toLowerCase()}`)}>
+                                onClick={() => openCodex('mechanics', `ability_${ab.toLowerCase()}`)}
+                                title={statBuff.value ? statBuff.sources.join(', ') : undefined}>
                                 <span className={styles.profEmpty} />{/* spacer to align with saving throw proficiency markers */}
                                 <span className={styles.abName}>{ab}</span>
-                                <span className={styles.abScore}>{val}</span>
-                                <span className={styles.abMod}>{fmtMod(getMod(val))}</span>
+                                <span className={styles.abScore}>
+                                    {effectiveVal}
+                                    {statBuff.value !== 0 && (
+                                        <span style={{ fontSize: '0.8rem', fontWeight: 700, marginLeft: 2, color: statBuff.value > 0 ? '#27ae60' : '#c0392b' }}>
+                                            {statBuff.value > 0 ? `+${statBuff.value}` : statBuff.value}
+                                        </span>
+                                    )}
+                                </span>
+                                <span className={styles.abMod}>{fmtMod(getMod(effectiveVal))}</span>
                                 <div className={styles.pmSlot}>
                                     <button className={styles.minusBtn} style={{ visibility: hasPending ? 'visible' : 'hidden' }}
                                         onClick={() => setPendingASI(prev => { const n={...prev}; n[ab]=(n[ab]||0)-1; if(n[ab]<=0) delete n[ab]; return n; })}>-</button>
@@ -230,8 +245,15 @@ const UnifiedCharacterPage: React.FC = () => {
                     />
 
                     <div className={styles.combatMetrics}>
-                        <div className={styles.metricBox} onClick={() => openCodex('mechanics', 'combat_ac')} style={{cursor:'pointer'}}>
-                            <div className={styles.metricVal}>{pc.ac}</div>
+                        <div className={styles.metricBox} onClick={() => openCodex('mechanics', 'combat_ac')} style={{cursor:'pointer'}} title={acBonusData.value ? acBonusData.sources.join(', ') : undefined}>
+                            <div className={styles.metricVal}>
+                                {pc.ac + acBonusData.value}
+                                {acBonusData.value !== 0 && (
+                                    <span className={acBonusData.value > 0 ? styles.buffIndicator : styles.debuffIndicator}>
+                                        {acBonusData.value > 0 ? `+${acBonusData.value}` : acBonusData.value}
+                                    </span>
+                                )}
+                            </div>
                             <div className={styles.metricLbl}><Shield size={12} /> AC <Info size={8} className={styles.metricInfo} /></div>
                         </div>
                         <div className={styles.metricBox} onClick={() => openCodex('mechanics', 'combat_initiative')} style={{cursor:'pointer'}}>

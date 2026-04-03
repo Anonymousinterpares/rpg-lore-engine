@@ -227,6 +227,8 @@
 }
 .metricVal { font-size: var(--uc-metric-val-size); font-weight: 700; }
 .metricLbl { font-size: var(--uc-metric-lbl-size); opacity: 0.5; display: flex; align-items: center; justify-content: center; gap: 3px; }
+.buffIndicator { font-size: 0.7em; font-weight: 700; color: #27ae60; margin-left: 2px; vertical-align: super; }
+.debuffIndicator { font-size: 0.7em; font-weight: 700; color: #c0392b; margin-left: 2px; vertical-align: super; }
 
 .panelBtn {
     display: flex; align-items: center; gap: 5px;

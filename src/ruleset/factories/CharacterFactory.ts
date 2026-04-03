@@ -151,6 +151,7 @@ export class CharacterFactory {
                 class: characterClass.name,
                 multiclassLevels: {},
                 conditions: [],
+                statusEffects: [],
                 stats: finalStats,
                 savingThrowProficiencies: characterClass.savingThrowProficiencies,
                 skillProficiencies: skillProficiencies as any,

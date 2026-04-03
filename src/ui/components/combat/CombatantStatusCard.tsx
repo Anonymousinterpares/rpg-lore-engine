@@ -44,7 +44,20 @@ const CombatantStatusCard: React.FC<CombatantStatusCardProps> = ({
 
                 <div className={styles.statItem}>
                     <span className={styles.label}>AC</span>
-                    <span className={styles.value}>{combatant.ac}</span>
+                    <span className={styles.value}>
+                        {(() => {
+                            let acBonus = 0;
+                            if (combatant.statusEffects) {
+                                for (const eff of combatant.statusEffects) {
+                                    if ((eff as any).stat === 'ac' && typeof (eff as any).modifier === 'number') acBonus += (eff as any).modifier;
+                                }
+                            }
+                            return <>
+                                {combatant.ac + acBonus}
+                                {acBonus !== 0 && <span style={{ fontSize: '0.65rem', fontWeight: 700, marginLeft: 2, color: acBonus > 0 ? '#27ae60' : '#c0392b' }}>{acBonus > 0 ? `+${acBonus}` : acBonus}</span>}
+                            </>;
+                        })()}
+                    </span>
                 </div>
 
                 <div className={styles.statItem}>
@@ -64,9 +77,10 @@ const CombatantStatusCard: React.FC<CombatantStatusCardProps> = ({
             </div>
 
             <div className={styles.conditions}>
-                {combatant.statusEffects.map((effect: { id: string }) => (
-                    <span key={effect.id} className={styles.conditionTag}>
-                        {effect.id}
+                {combatant.statusEffects.map((effect: any) => (
+                    <span key={effect.id} className={styles.conditionTag} title={effect.stat && effect.modifier ? `${effect.stat.toUpperCase()} ${effect.modifier > 0 ? '+' : ''}${effect.modifier}` : undefined}>
+                        {effect.name || effect.id}
+                        {effect.duration != null && ` (${effect.duration})`}
                     </span>
                 ))}
             </div>

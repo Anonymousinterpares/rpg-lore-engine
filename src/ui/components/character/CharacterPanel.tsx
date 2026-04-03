@@ -9,6 +9,7 @@ import { Sword, Shield, Zap } from 'lucide-react';
 
 import { useGameState } from '../../hooks/useGameState';
 import { MechanicsEngine } from '../../../ruleset/combat/MechanicsEngine';
+import { getACBonus, getStatBonus } from '../../utils/effectiveStats';
 
 interface CharacterPanelProps {
     onCharacter?: () => void;
@@ -29,6 +30,11 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({ onCharacter, onSkills }
     const initiative = Math.floor((dex - 10) / 2);
     const initiativeStr = (initiative >= 0 ? '+' : '') + initiative;
 
+    // Status effect bonuses — during combat, read from combatant (live); outside, from character (persisted)
+    const playerCombatant = state.combat?.combatants?.find((c: any) => c.isPlayer);
+    const effects = (playerCombatant?.statusEffects || (char as any).statusEffects || []);
+    const acBonus = getACBonus(effects);
+
     return (
         <div className={styles.panel}>
             <div className={styles.header} onClick={onCharacter} style={{ cursor: 'pointer' }} title="Open Character Sheet">
@@ -46,9 +52,16 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({ onCharacter, onSkills }
             </div>
 
             <div className={styles.statsRow}>
-                <div className={styles.statBox}>
+                <div className={styles.statBox} title={acBonus.value ? acBonus.sources.join(', ') : undefined}>
                     <Shield size={16} />
-                    <span className={styles.statValue}>{char.ac}</span>
+                    <span className={styles.statValue}>
+                        {char.ac + acBonus.value}
+                        {acBonus.value !== 0 && (
+                            <span className={acBonus.value > 0 ? styles.buffIndicator : styles.debuffIndicator}>
+                                {acBonus.value > 0 ? `+${acBonus.value}` : acBonus.value}
+                            </span>
+                        )}
+                    </span>
                     <span className={styles.statLabel}>AC</span>
                 </div>
                 <div className={styles.statBox}>
@@ -64,12 +77,22 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({ onCharacter, onSkills }
             <ConditionDisplay conditions={char.conditions} />
 
             <div className={styles.abilityGrid}>
-                {Object.entries(char.stats).map(([stat, val]) => (
-                    <div key={stat} className={styles.abilityBox}>
-                        <div className={styles.abilityLabel}>{stat}</div>
-                        <div className={styles.abilityValue}>{val}</div>
-                    </div>
-                ))}
+                {Object.entries(char.stats).map(([stat, val]) => {
+                    const bonus = getStatBonus(effects, stat);
+                    return (
+                        <div key={stat} className={styles.abilityBox} title={bonus.value ? bonus.sources.join(', ') : undefined}>
+                            <div className={styles.abilityLabel}>{stat}</div>
+                            <div className={styles.abilityValue}>
+                                {(val as number) + bonus.value}
+                                {bonus.value !== 0 && (
+                                    <span className={bonus.value > 0 ? styles.buffIndicator : styles.debuffIndicator}>
+                                        {bonus.value > 0 ? `+${bonus.value}` : bonus.value}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })}
             </div>
 
             {char.spellSlots && Object.keys(char.spellSlots).length > 0 && (
