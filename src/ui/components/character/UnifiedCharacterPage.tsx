@@ -38,6 +38,8 @@ const UnifiedCharacterPage: React.FC = () => {
     const [pendingSP, setPendingSP] = useState<Record<string, number>>({});
     const [showFeatures, setShowFeatures] = useState(false);
     const [showPersonality, setShowPersonality] = useState(false);
+    const [showFeatPicker, setShowFeatPicker] = useState(false);
+    const [selectedFeat, setSelectedFeat] = useState<string | null>(null);
     const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number; item: PaperdollItem; source: 'slot' | 'bag'; slotId?: string } | null>(null);
     const [datasheetItem, setDatasheetItem] = useState<any>(null);
 
@@ -198,7 +200,7 @@ const UnifiedCharacterPage: React.FC = () => {
 
                     {/* Feat option */}
                     {totalASIPoints > 0 && usedASIPoints === 0 && (
-                        <button className={styles.featChoiceBtn} onClick={() => openCodex('feats', 'list')}>
+                        <button className={styles.featChoiceBtn} onClick={() => setShowFeatPicker(true)}>
                             <Award size={12} /> Or choose a Feat
                         </button>
                     )}
@@ -273,7 +275,7 @@ const UnifiedCharacterPage: React.FC = () => {
 
 
                     <ParticleGlow
-                        active={!!((pc as any)._newFeatures?.length)}
+                        active={!!((pc as any)._newFeatures?.length) && !showFeatures && !showFeatPicker}
                         glowRange={12}
                         particleRange={20}
                         particleSpeed={0.33}
@@ -436,6 +438,63 @@ const UnifiedCharacterPage: React.FC = () => {
                         {bio.ideals?.map((t:string,i:number) => <div key={`i${i}`} className={styles.featureCard}><strong>Ideal</strong><p>{t}</p></div>)}
                         {bio.bonds?.map((t:string,i:number) => <div key={`b${i}`} className={styles.featureCard}><strong>Bond</strong><p>{t}</p></div>)}
                         {bio.flaws?.map((t:string,i:number) => <div key={`f${i}`} className={styles.featureCard}><strong>Flaw</strong><p>{t}</p></div>)}
+                    </div>
+                </div>
+            )}
+            {showFeatPicker && (
+                <div className={styles.overlay} style={{ zIndex: 10000 }} onClick={() => { setShowFeatPicker(false); setSelectedFeat(null); }}>
+                    <div className={styles.overlayPanel} onClick={e => e.stopPropagation()} style={{ maxWidth: 500 }}>
+                        <h2 className={styles.overlayTitle}>Choose a Feat</h2>
+                        <p className={styles.featPickerDesc}>
+                            Select a feat instead of an Ability Score Improvement. This consumes your ASI.
+                        </p>
+                        <div className={styles.featList}>
+                            {LevelingEngine.getAvailableFeats(pc).map((feat: any) => (
+                                <div
+                                    key={feat.name}
+                                    className={`${styles.featureCard} ${selectedFeat === feat.name ? styles.featSelected : styles.featSelectable}`}
+                                    onClick={() => setSelectedFeat(selectedFeat === feat.name ? null : feat.name)}
+                                >
+                                    <strong>{feat.name}</strong>
+                                    {feat.effects?.map((eff: any, i: number) => (
+                                        <span key={i} className={styles.featEffect}>
+                                            {eff.type === 'ability_increase' && `+${eff.value} ${eff.ability}`}
+                                            {eff.type === 'hp_per_level' && `+${eff.value} HP/level`}
+                                            {eff.type === 'initiative_bonus' && `+${eff.value} Initiative`}
+                                            {eff.type === 'speed_bonus' && `+${eff.value}ft Speed`}
+                                        </span>
+                                    ))}
+                                    <p>{feat.description}</p>
+                                    {feat.prerequisites && (
+                                        <p className={styles.featPrereq}>
+                                            Requires: {feat.prerequisites.spellcaster ? 'Spellcaster' : ''}
+                                            {feat.prerequisites.minAbility ? `${Object.entries(feat.prerequisites.minAbility).map(([k,v]) => `${k} ${v}+`).join(', ')}` : ''}
+                                        </p>
+                                    )}
+                                </div>
+                            ))}
+                            {LevelingEngine.getAvailableFeats(pc).length === 0 && (
+                                <p style={{ opacity: 0.5, fontStyle: 'italic', textAlign: 'center', padding: 20 }}>No feats available.</p>
+                            )}
+                        </div>
+                        <div className={styles.featFooter}>
+                            <button className={styles.featCancelBtn} onClick={() => { setShowFeatPicker(false); setSelectedFeat(null); }}>Cancel</button>
+                            <button
+                                className={styles.featConfirmBtn}
+                                disabled={!selectedFeat}
+                                onClick={() => {
+                                    if (selectedFeat) {
+                                        LevelingEngine.selectFeat(pc, selectedFeat);
+                                        setPendingASI({});
+                                        setSelectedFeat(null);
+                                        setShowFeatPicker(false);
+                                        updateState();
+                                    }
+                                }}
+                            >
+                                <Award size={14} /> Confirm Feat
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
