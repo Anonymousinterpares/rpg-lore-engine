@@ -120,7 +120,11 @@ export class CombatFactory {
     /**
      * Creates a CombatantState from a Player Character
      */
-    public static fromPlayer(pc: PlayerCharacter, idOverride?: string): CombatantState {
+    public static fromPlayer(
+        pc: PlayerCharacter,
+        idOverride?: string,
+        combatantType: 'player' | 'companion' = 'player'
+    ): CombatantState {
         const tactical = this.calculatePlayerTactics(pc);
 
         return {
@@ -130,11 +134,11 @@ export class CombatFactory {
             ac: pc.ac,
             initiative: 0,
             dexterityScore: pc.stats['DEX'] || 10,
-            type: 'player',
+            type: combatantType,
             stats: pc.stats as Record<string, number>,
             conditions: [],
             statusEffects: [],
-            isPlayer: true,
+            isPlayer: combatantType === 'player',
             darkvision: (pc as any).darkvision || 0,
             resources: {
                 actionSpent: false,

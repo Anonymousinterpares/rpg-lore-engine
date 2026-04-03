@@ -13,15 +13,26 @@ export class NPCService {
     public static async generateChatter(state: GameState, context: any, npc?: WorldNPC): Promise<string | null> {
         let targetNPC = npc;
 
-        // If no specific NPC provided, look for party companions
-        if (!targetNPC) {
-            const companions = state.character.biography?.chronicles?.filter(c => c.event.includes('Joined party'));
-            if (companions && companions.length > 0) {
-                // Pick a random/first companion for now
-                const companionName = companions[0].event.split(' ')[0]; // Very naive extraction
-                // Note: Real companion implementation would have a WorldNPC object in state.companions
-                // For now, if we don't have a real object, we return null to avoid crash
-                return null;
+        // If no specific NPC provided, pick a random following companion
+        if (!targetNPC && state.companions && state.companions.length > 0) {
+            const followingCompanions = state.companions.filter((c: any) => c.meta?.followState === 'following');
+            if (followingCompanions.length > 0) {
+                const picked = followingCompanions[Math.floor(Math.random() * followingCompanions.length)];
+                // Create a temporary WorldNPC-like object from companion data for the chatter system
+                targetNPC = {
+                    id: picked.meta.sourceNpcId,
+                    name: picked.character.name,
+                    traits: picked.meta.originalTraits || [],
+                    relationship: { standing: 30, interactionLog: [] },
+                    conversationHistory: [],
+                    isMerchant: false,
+                    dialogue_triggers: [],
+                    inventory: [],
+                    availableQuests: [],
+                    stats: picked.character.stats,
+                    role: picked.meta.originalRole,
+                    factionId: picked.meta.originalFactionId,
+                } as any;
             }
         }
 

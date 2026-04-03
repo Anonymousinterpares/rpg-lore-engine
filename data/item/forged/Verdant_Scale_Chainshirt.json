@@ -1,0 +1,39 @@
+{
+  "name": "Verdant Scale Chainshirt",
+  "type": "Armor",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 2500,
+    "pp": 0
+  },
+  "weight": 20,
+  "isMagic": true,
+  "modifiers": [
+    {
+      "type": "ACBonus",
+      "target": "AC",
+      "value": 1
+    },
+    {
+      "type": "DamageResistance",
+      "target": "Acid",
+      "value": 1
+    }
+  ],
+  "tags": [],
+  "quantity": 1,
+  "rarity": "Rare",
+  "itemLevel": 1,
+  "isForged": true,
+  "forgeSource": "Goblin CR 1 Plains",
+  "magicalProperties": [
+    {
+      "type": "Resistance",
+      "element": "Acid",
+      "description": "Resistance to Acid damage"
+    }
+  ],
+  "acCalculated": "13"
+}

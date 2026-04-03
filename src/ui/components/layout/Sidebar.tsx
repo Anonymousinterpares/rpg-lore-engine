@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './Sidebar.module.css';
 import { Package } from 'lucide-react';
 import CharacterPanel from '../character/CharacterPanel';
+import PartyPanel from '../character/PartyPanel';
 import InventoryGrid from '../inventory/InventoryGrid';
 import LocationPanel from '../exploration/LocationPanel';
 import parchmentStyles from '../../styles/parchment.module.css';
@@ -87,6 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className, onCharacter, onSkills, onC
                 />
             )}
             <CharacterPanel onCharacter={onCharacter} onSkills={onSkills} />
+            <PartyPanel />
             <InventoryGrid
                 items={items as any}
                 gold={gold as any}

@@ -1,0 +1,139 @@
+.panel {
+    margin-top: var(--spacing-sm, 8px);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs, 4px);
+    padding: 6px 10px;
+    cursor: pointer;
+    color: var(--color-parchment-text, #3a2a1a);
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(139, 119, 75, 0.2);
+    user-select: none;
+}
+
+.header:hover {
+    background: rgba(139, 119, 75, 0.08);
+}
+
+.headerTitle {
+    flex: 1;
+}
+
+.companionList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs, 4px);
+    padding: var(--spacing-xs, 4px);
+}
+
+.companionCard {
+    background: rgba(255, 248, 230, 0.08);
+    border: 1px solid rgba(139, 119, 75, 0.2);
+    border-radius: 6px;
+    padding: 8px 10px;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.companionCard:hover {
+    background: rgba(255, 248, 230, 0.12);
+    border-color: rgba(139, 119, 75, 0.4);
+}
+
+.companionHeader {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.companionName {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-parchment-text, #3a2a1a);
+}
+
+.companionMeta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2px;
+}
+
+.companionRole {
+    font-size: 12px;
+    color: #b8944f;
+    font-style: italic;
+}
+
+.companionStatus {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.hpBarContainer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.hpBarBg {
+    flex: 1;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.hpBarFill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.hpText {
+    font-size: 11px;
+    color: var(--color-parchment-text-secondary, #6a5a4a);
+    white-space: nowrap;
+    min-width: 60px;
+    text-align: right;
+}
+
+.companionActions {
+    display: flex;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.actionBtn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 4px 6px;
+    font-size: 11px;
+    font-family: 'Inter', sans-serif;
+    background: rgba(139, 119, 75, 0.1);
+    border: 1px solid rgba(139, 119, 75, 0.25);
+    border-radius: 4px;
+    color: var(--color-parchment-text, #3a2a1a);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.actionBtn:hover {
+    background: rgba(139, 119, 75, 0.2);
+    border-color: rgba(139, 119, 75, 0.5);
+}
+
+.dismissBtn:hover {
+    background: rgba(201, 64, 64, 0.15);
+    border-color: rgba(201, 64, 64, 0.4);
+    color: #c94040;
+}

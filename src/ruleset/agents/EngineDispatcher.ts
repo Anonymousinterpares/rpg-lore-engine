@@ -4,6 +4,7 @@ import { EngineCallSchema } from './ICPSchemas';
 import { DataManager } from '../data/DataManager';
 import { Dice } from '../combat/Dice';
 import { LoreService } from './LoreService';
+import { CompanionManager } from '../combat/CompanionManager';
 import { z } from 'zod';
 
 type EngineCall = z.infer<typeof EngineCallSchema>;
@@ -196,6 +197,55 @@ export class EngineDispatcher {
                         const skillResult = Dice.roll('1d20') + Math.floor(((state.character.stats[call.args.stat as keyof typeof state.character.stats] || 10) - 10) / 2);
                         console.log(`[EngineDispatcher] Manual Skill Check (${call.args.skill}): ${skillResult} vs DC ${call.args.dc}`);
                         break;
+
+                    case 'recruit_companion': {
+                        const npcIdOrName = call.args.npcId || call.args.npcName;
+                        const npc = state.worldNpcs.find(
+                            n => n.id === npcIdOrName || n.name === npcIdOrName
+                        );
+                        if (npc) {
+                            const hasFactionDiscount = npc.factionId
+                                ? (state.factions.find(f => f.id === npc.factionId)?.standing || 0) >= 20
+                                : false;
+                            const result = CompanionManager.recruit(state, npc.id, hasFactionDiscount);
+                            console.log(`[EngineDispatcher] recruit_companion: ${result.message}`);
+                        } else {
+                            console.warn(`[EngineDispatcher] recruit_companion: NPC "${npcIdOrName}" not found.`);
+                        }
+                        break;
+                    }
+
+                    case 'dismiss_companion': {
+                        const dismissName = call.args.companionName || call.args.name;
+                        const idx = typeof call.args.companionIndex === 'number'
+                            ? call.args.companionIndex
+                            : CompanionManager.findCompanionIndex(state, dismissName || '');
+                        if (idx >= 0) {
+                            const msg = CompanionManager.dismiss(state, idx, call.args.stayAtCurrentHex !== false);
+                            console.log(`[EngineDispatcher] dismiss_companion: ${msg}`);
+                        }
+                        break;
+                    }
+
+                    case 'companion_wait': {
+                        const waitName = call.args.companionName || call.args.name;
+                        const waitIdx = CompanionManager.findCompanionIndex(state, waitName || '');
+                        if (waitIdx >= 0) {
+                            const msg = CompanionManager.setWait(state, waitIdx);
+                            console.log(`[EngineDispatcher] companion_wait: ${msg}`);
+                        }
+                        break;
+                    }
+
+                    case 'companion_follow': {
+                        const followName = call.args.companionName || call.args.name;
+                        const followIdx = CompanionManager.findCompanionIndex(state, followName || '');
+                        if (followIdx >= 0) {
+                            const msg = CompanionManager.setFollow(state, followIdx);
+                            console.log(`[EngineDispatcher] companion_follow: ${msg}`);
+                        }
+                        break;
+                    }
 
                     case 'turn_end':
                         // Narrator sometimes emits this during combat transitions; benign no-op.

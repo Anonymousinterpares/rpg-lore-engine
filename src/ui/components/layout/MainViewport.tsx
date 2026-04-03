@@ -36,7 +36,7 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex, onChara
     const [saveSlots, setSaveSlots] = useState<any[]>([]);
     const [pendingCombat, setPendingCombat] = useState<any>(null);
     const [arcaneRecovery, setArcaneRecovery] = useState<{ budget: number } | null>(null);
-    const [levelUpStage, setLevelUpStage] = useState<'none' | 'overlay' | 'subclass' | 'spells' | 'done'>('none');
+    const [levelUpStage, setLevelUpStage] = useState<'none' | 'overlay' | 'subclass' | 'fightingStyle' | 'spells' | 'done'>('none');
 
     // Examine overlay orchestration
     const [examineOverlay, setExamineOverlay] = useState<any>(null);
@@ -66,11 +66,11 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex, onChara
     // Detect level up → show overlay (handles multi-level jumps)
     useEffect(() => {
         const currentLevel = state?.character?.level || 0;
-        if (currentLevel > lastLevelRef.current && lastLevelRef.current > 0) {
+        if (currentLevel > lastLevelRef.current && lastLevelRef.current > 0 && levelUpStage === 'none') {
             const levelsGained = currentLevel - lastLevelRef.current;
             const ASI_LEVELS = [4, 8, 12, 16, 19];
             const hasASI = ASI_LEVELS.some(l => l > lastLevelRef.current && l <= currentLevel);
-            const spPerLevel = (state?.character as any)?.skillPoints ? 2 : 0; // approximate
+            const spPerLevel = (state?.character as any)?.skillPoints ? 2 : 0;
             setLevelUpOverlay({
                 level: currentLevel,
                 className: state?.character?.class || '',
@@ -80,7 +80,7 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex, onChara
             setLevelUpStage('overlay');
         }
         lastLevelRef.current = currentLevel;
-    }, [state?.character?.level]);
+    }, [state?.character?.level, levelUpStage]);
 
     // Open character sheet after level-up sequence completes
     useEffect(() => {
@@ -247,9 +247,11 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex, onChara
                     hasASI={levelUpOverlay.hasASI}
                     onComplete={() => {
                         setLevelUpOverlay(null);
-                        // Chain: subclass selection → spell learning → character sheet
+                        // Chain: subclass → fighting style → spell learning → character sheet
                         if ((state?.character as any)?._pendingSubclass) {
                             setLevelUpStage('subclass');
+                        } else if ((state?.character as any)?._pendingFightingStyle) {
+                            setLevelUpStage('fightingStyle');
                         } else if ((state?.character as any)?._pendingSpellChoices > 0) {
                             setLevelUpStage('spells');
                         } else {
@@ -305,20 +307,45 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex, onChara
                     subclasses={LevelingEngine.getAvailableSubclasses(state.character.class)}
                     onConfirm={async (name) => {
                         if (engine) await engine.selectSubclass(name);
-                        // Continue chain: spells → character sheet
+                        if ((state?.character as any)?._pendingFightingStyle) {
+                            setLevelUpStage('fightingStyle');
+                        } else if ((state?.character as any)?._pendingSpellChoices > 0) {
+                            setLevelUpStage('spells');
+                        } else {
+                            setLevelUpStage('done');
+                        }
+                    }}
+                    onClose={() => {}}
+                />
+            )}
+
+            {levelUpStage === 'fightingStyle' && state?.character && (
+                <SubclassPickerOverlay
+                    className={state.character.class}
+                    currentLevel={state.character.level}
+                    subclasses={[
+                        { name: 'Archery', description: '+2 bonus to attack rolls with ranged weapons.', features: [] },
+                        { name: 'Defense', description: '+1 bonus to AC while wearing armor.', features: [] },
+                        { name: 'Dueling', description: '+2 damage with melee weapon in one hand, no offhand.', features: [] },
+                        { name: 'Great Weapon Fighting', description: 'Reroll 1s and 2s on two-handed weapon damage.', features: [] },
+                        { name: 'Two-Weapon Fighting', description: 'Add ability modifier to off-hand damage.', features: [] },
+                        { name: 'Protection', description: 'Impose disadvantage on attacks vs nearby allies (reaction, requires shield).', features: [] },
+                    ]}
+                    onConfirm={async (name) => {
+                        if (engine) {
+                            await engine.selectFightingStyle(name);
+                        }
                         if ((state?.character as any)?._pendingSpellChoices > 0) {
                             setLevelUpStage('spells');
                         } else {
                             setLevelUpStage('done');
                         }
                     }}
-                    onClose={() => {
-                        // Can't skip subclass — just keep it open
-                    }}
+                    onClose={() => {}}
                 />
             )}
 
-            {state?.character && (state.character as any)._pendingSpellChoices > 0 && levelUpStage !== 'overlay' && levelUpStage !== 'subclass' && (
+            {state?.character && (state.character as any)._pendingSpellChoices > 0 && levelUpStage !== 'overlay' && levelUpStage !== 'subclass' && levelUpStage !== 'fightingStyle' && (
                 <SpellLearningFlyout
                     className={state.character.class}
                     maxLevel={Math.min(9, Math.ceil(state.character.level / 2))}

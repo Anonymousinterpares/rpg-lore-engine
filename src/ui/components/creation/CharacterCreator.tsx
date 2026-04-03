@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './CharacterCreator.module.css';
 import tipStyles from '../../styles/tooltip.module.css';
+import { FeatureEffectEngine } from '../../../ruleset/combat/FeatureEffectEngine';
 import { DataManager } from '../../../ruleset/data/DataManager';
 import { CharacterFactory } from '../../../ruleset/factories/CharacterFactory';
 import { Race } from '../../../ruleset/schemas/RaceSchema';
@@ -17,8 +18,9 @@ interface CharacterCreatorProps {
     campaignSettings?: any;
 }
 
-const STEPS = ['Identity', 'Race', 'Class', 'Subclass', 'Background', 'Abilities', 'Skills', 'Spells', 'Review'];
+const STEPS = ['Identity', 'Race', 'Class', 'Subclass', 'Fighting Style', 'Background', 'Abilities', 'Skills', 'Spells', 'Review'];
 const L1_SUBCLASS_CLASSES = ['Cleric', 'Sorcerer', 'Warlock'];
+const L1_FIGHTING_STYLE_CLASSES = ['Fighter'];
 
 const ALL_SKILLS = [
     "Acrobatics", "Animal Handling", "Arcana", "Athletics", "Deception", "History",
@@ -47,6 +49,7 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
     const [selectedCantrips, setSelectedCantrips] = useState<string[]>([]);
     const [selectedSpells, setSelectedSpells] = useState<string[]>([]);
     const [selectedSubclass, setSelectedSubclass] = useState<string>('');
+    const [selectedFightingStyle, setSelectedFightingStyle] = useState<string>('');
 
     useEffect(() => {
         const init = async () => {
@@ -92,14 +95,15 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
     }, [selectedClass]);
 
     const hasL1Subclass = L1_SUBCLASS_CLASSES.includes(selectedClass?.name || '');
+    const hasL1FightingStyle = L1_FIGHTING_STYLE_CLASSES.includes(selectedClass?.name || '');
 
+    // Step indices: 0=Identity, 1=Race, 2=Class, 3=Subclass, 4=FightingStyle, 5=Background, 6=Abilities, 7=Skills, 8=Spells, 9=Review
     const handleNext = () => {
         if (step < STEPS.length - 1) {
             let next = step + 1;
-            // Skip Subclass step (index 3) if class doesn't choose at level 1
-            if (next === 3 && !hasL1Subclass) next++;
-            // Skip Spells step (index 7) if class doesn't have spells at level 1
-            if (next === 7 && !hasSpellsAtLevel1(selectedClass?.name || '')) next++;
+            if (next === 3 && !hasL1Subclass) next++; // Skip Subclass
+            if (next === 4 && !hasL1FightingStyle) next++; // Skip Fighting Style
+            if (next === 8 && !hasSpellsAtLevel1(selectedClass?.name || '')) next++; // Skip Spells
             setStep(next);
         }
     };
@@ -107,10 +111,9 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
     const handleBack = () => {
         if (step > 0) {
             let prev = step - 1;
-            // Skip Spells step backwards (index 7)
-            if (prev === 7 && !hasSpellsAtLevel1(selectedClass?.name || '')) prev--;
-            // Skip Subclass step backwards (index 3) if not L1 subclass class
-            if (prev === 3 && !hasL1Subclass) prev--;
+            if (prev === 8 && !hasSpellsAtLevel1(selectedClass?.name || '')) prev--; // Skip Spells
+            if (prev === 4 && !hasL1FightingStyle) prev--; // Skip Fighting Style
+            if (prev === 3 && !hasL1Subclass) prev--; // Skip Subclass
             setStep(prev);
         }
     };
@@ -129,7 +132,8 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
             selectedCantrips,
             selectedSpells,
             campaignSettings,
-            subclass: selectedSubclass || undefined
+            subclass: selectedSubclass || undefined,
+            fightingStyle: selectedFightingStyle || undefined
         });
 
         onComplete(newState);
@@ -396,7 +400,37 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                     </div>
                 );
             }
-            case 4: // Background
+            case 4: { // Fighting Style (Fighter at creation)
+                const fightingStylesData = FeatureEffectEngine.getFightingStyles();
+                const selectedStyleData = fightingStylesData.find(s => s.name === selectedFightingStyle);
+                return (
+                    <div className={styles.selectionLayout}>
+                        <div className={styles.gridContainer}>
+                            {fightingStylesData.map((style: any) => (
+                                <div
+                                    key={style.name}
+                                    className={`${styles.card} ${selectedFightingStyle === style.name ? styles.selected : ''}`}
+                                    onClick={() => setSelectedFightingStyle(style.name)}
+                                >
+                                    <h4>{style.name}</h4>
+                                    <p className={styles.smallInfo}>{style.description}</p>
+                                </div>
+                            ))}
+                        </div>
+                        {selectedStyleData && (
+                            <div className={styles.detailsPanel}>
+                                <h3>{selectedStyleData.name}</h3>
+                                <div className={styles.detailsContent}>
+                                    <div className={styles.detailItem}>
+                                        <div className={styles.detailDesc}>{selectedStyleData.description}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            }
+            case 5: // Background
                 return (
                     <div className={styles.selectionLayout}>
                         <div className={styles.gridContainer}>
@@ -445,7 +479,7 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                         )}
                     </div>
                 );
-            case 5: // Abilities
+            case 6: // Abilities
                 const pointsSpent = calculatePointsSpent(abilities);
                 return (
                     <div className={styles.stepContainer}>
@@ -491,7 +525,7 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                         </div>
                     </div>
                 );
-            case 6: // Skills
+            case 7: // Skills
                 const autoSkills = getAutoSkills();
                 const classOptions = getClassSkillOptions();
                 const classCount = selectedClass?.skillChoices.count || 0;
@@ -572,7 +606,7 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                         </div>
                     </div>
                 );
-            case 7: // Spells
+            case 8: // Spells
                 return (
                     <SpellSelectionStep
                         characterClass={selectedClass?.name || ''}
@@ -596,7 +630,7 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                         }}
                     />
                 );
-            case 8: // Review
+            case 9: // Review
                 const finalSkills = getFinalSkills();
                 return (
                     <div className={styles.selectionLayout}>
@@ -694,13 +728,14 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
         if (step === 1 && !selectedRace) return true;
         if (step === 2 && !selectedClass) return true;
         if (step === 3 && hasL1Subclass && !selectedSubclass) return true; // Subclass
-        if (step === 4 && !selectedBackground) return true; // Background
-        if (step === 6) { // Skills
+        if (step === 4 && hasL1FightingStyle && !selectedFightingStyle) return true; // Fighting Style
+        if (step === 5 && !selectedBackground) return true; // Background
+        if (step === 7) { // Skills
             const classCount = selectedClass?.skillChoices.count || 0;
             const raceCount = getRaceSkillChoiceCount();
             return selectedSkills.length < (classCount + raceCount);
         }
-        if (step === 7) { // Spells
+        if (step === 8) { // Spells
             const limits = getSpellLimits(selectedClass?.name || '');
             return selectedCantrips.length < limits.cantrips || selectedSpells.length < limits.spells;
         }

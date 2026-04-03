@@ -22,6 +22,7 @@ export interface CharacterCreationOptions {
     selectedCantrips?: string[];
     selectedSpells?: string[];
     subclass?: string;
+    fightingStyle?: string;
     campaignSettings?: any; // Allow injecting fully loaded settings
 }
 
@@ -165,6 +166,7 @@ export class CharacterFactory {
                 darkvision: (race as any).darkvision || 0,
                 class: characterClass.name,
                 subclass: options.subclass,
+                fightingStyle: options.fightingStyle,
                 multiclassLevels: {},
                 conditions: [],
                 statusEffects: [],

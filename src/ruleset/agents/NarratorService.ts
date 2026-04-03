@@ -313,6 +313,16 @@ ${profile.basePrompt || ''}
 
 `;
 
+        // Add party/companion info if present
+        if (context.party && context.party.length > 0) {
+            prompt += `## TRAVELING COMPANIONS
+${context.party.map((c: any) => `- ${c.name} (${c.role}, Level ${c.level} ${c.class}, ${c.hpStatus}) — Traits: ${c.traits}`).join('\n')}
+These companions travel with the player. Reference them naturally in narrative — they react, comment, assist.
+You may use engine_call "recruit_companion" or "dismiss_companion" if the narrative warrants it.
+
+`;
+        }
+
         if (directorDirective) {
             prompt += `
 ## DIRECTOR DIRECTIVE

@@ -682,7 +682,8 @@ export class CombatOrchestrator {
                 resultMsg = `${currentCombatant.name} attempts to hide! (Roll: ${stealth})`;
                 this.state.combat.turnActions.push(resultMsg);
             } else if (intent.command === 'use') {
-                const abilityName = intent.args?.[0] || intent.originalInput.replace(/^use /i, '').trim();
+                const abilityName = (intent.args && intent.args.length > 0 ? intent.args.join(' ') : null)
+                    || intent.originalInput.replace(/^\/?use\s+/i, '').trim();
                 resultMsg = await this.useAbility(abilityName);
                 this.state.combat.turnActions.push(resultMsg);
             } else if (intent.command === 'move') {
@@ -849,20 +850,33 @@ export class CombatOrchestrator {
                     .map(e => ({ ...e }));
             }
 
-            // Sync Companions
-            this.state.companions.forEach((companion, index) => {
+            // Sync Companions (using CompanionSchema — access .character)
+            const activeCompanions = this.state.companions.filter(c => c.meta.followState === 'following');
+            activeCompanions.forEach((companion, index) => {
                 const compId = `companion_${index}`;
                 const compCombatant = combatState.combatants.find(c => c.id === compId);
                 if (compCombatant) {
-                    companion.hp.current = compCombatant.hp.current;
-                    companion.hp.temp = compCombatant.hp.temp;
+                    companion.character.hp.current = compCombatant.hp.current;
+                    companion.character.hp.temp = compCombatant.hp.temp;
+                    // Check for companion death (failed all death saves)
+                    if (compCombatant.hp.current <= 0) {
+                        const deathSaves = (compCombatant as any).deathSaves;
+                        if (deathSaves && deathSaves.failures >= 3) {
+                            console.log(`[CombatOrchestrator] Companion ${companion.character.name} has died.`);
+                            // Mark as dead — remove from party after combat summary
+                            companion.character.hp.current = -1; // Signal: dead
+                        }
+                    }
                     if (compCombatant.spellSlots) {
                         Object.entries(compCombatant.spellSlots).forEach(([lv, data]) => {
-                            if (companion.spellSlots[lv]) companion.spellSlots[lv].current = data.current;
+                            if (companion.character.spellSlots[lv]) companion.character.spellSlots[lv].current = (data as any).current;
                         });
                     }
                 }
             });
+
+            // Remove dead companions after sync
+            this.state.companions = this.state.companions.filter(c => c.character.hp.current > -1);
 
             let totalXP = 0;
             const enemies = combatState.combatants.filter(c => c.type === 'enemy');
@@ -976,13 +990,14 @@ export class CombatOrchestrator {
             }
         }
 
-        // Sync companions
-        this.state.companions.forEach((companion, index) => {
+        // Sync companions (using CompanionSchema — access .character)
+        const fleeCompanions = this.state.companions.filter(c => c.meta.followState === 'following');
+        fleeCompanions.forEach((companion, index) => {
             const compId = `companion_${index}`;
             const compCombatant = combatState.combatants.find(c => c.id === compId);
             if (compCombatant) {
-                companion.hp.current = compCombatant.hp.current;
-                companion.hp.temp = compCombatant.hp.temp;
+                companion.character.hp.current = compCombatant.hp.current;
+                companion.character.hp.temp = compCombatant.hp.temp;
             }
         });
 
@@ -1005,6 +1020,59 @@ export class CombatOrchestrator {
             this.contextManager.addEvent('narrator', summary);
             await this.emitStateUpdate();
         } catch (e) { console.error('[Flee Narrative]', e); }
+    }
+
+    /** Ensure all unlocked class/subclass features have featureUsages entries. */
+    private ensureFeatureUsages(pc: any): void {
+        if (!pc.featureUsages) pc.featureUsages = {};
+        const classData = DataManager.getClass(pc.class);
+        if (!classData) return;
+
+        // Class features
+        for (const feat of classData.allFeatures) {
+            if (feat.level <= pc.level && feat.usage && feat.usage.type !== 'PASSIVE') {
+                if (!pc.featureUsages[feat.name]) {
+                    pc.featureUsages[feat.name] = {
+                        current: feat.usage.limit || 0,
+                        max: feat.usage.limit || 0,
+                        usageType: feat.usage.type
+                    };
+                }
+            }
+        }
+
+        // Subclass features
+        if (pc.subclass && classData.subclasses) {
+            const sub = classData.subclasses.find((sc: any) => sc.name === pc.subclass);
+            if (sub?.features) {
+                for (const feat of sub.features) {
+                    if (feat.level <= pc.level && feat.usage && feat.usage.type !== 'PASSIVE') {
+                        if (!pc.featureUsages[feat.name]) {
+                            pc.featureUsages[feat.name] = {
+                                current: feat.usage.limit || 0,
+                                max: feat.usage.limit || 0,
+                                usageType: feat.usage.type
+                            };
+                        }
+                    }
+                }
+            }
+        }
+
+        // Ki pool for Monk
+        if (pc.class === 'Monk' && pc.level >= 2 && !pc.featureUsages['Ki']) {
+            pc.featureUsages['Ki'] = { current: pc.level, max: pc.level, usageType: 'SHORT_REST' };
+        }
+
+        // Lay on Hands for Paladin
+        if (pc.class === 'Paladin' && !pc.featureUsages['Lay on Hands']) {
+            pc.featureUsages['Lay on Hands'] = { current: pc.level * 5, max: pc.level * 5, usageType: 'LONG_REST' };
+        }
+
+        // Lucky feat
+        if (pc.feats?.includes('Lucky') && !pc.featureUsages['Lucky']) {
+            pc.featureUsages['Lucky'] = { current: 3, max: 3, usageType: 'LONG_REST' };
+        }
     }
 
     private async performAITurn(actor: Combatant) {
@@ -1210,7 +1278,15 @@ export class CombatOrchestrator {
 
     public async useAbility(abilityName: string): Promise<string> {
         const char = this.state.character;
-        const ability = AbilityParser.getCombatAbilities(char).find(a => a.name.toLowerCase() === abilityName.toLowerCase());
+
+        // Defensive: ensure featureUsages is populated for all unlocked features
+        this.ensureFeatureUsages(char);
+
+        const allAbilities = AbilityParser.getCombatAbilities(char);
+        console.log('[useAbility] Looking for:', abilityName, '| Class:', char.class, '| Level:', char.level);
+        console.log('[useAbility] All abilities:', allAbilities.map(a => a.name));
+        console.log('[useAbility] DataManager.getClass:', !!DataManager.getClass(char.class));
+        const ability = allAbilities.find(a => a.name.toLowerCase() === abilityName.toLowerCase());
 
         if (!ability) return `You don't have an ability named "${abilityName}".`;
 

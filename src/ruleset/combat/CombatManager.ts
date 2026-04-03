@@ -50,9 +50,10 @@ export class CombatManager {
             pc.position = grid.playerStartZone[0] || { x: 10, y: 40 };
             combatants.push(pc);
 
-            // Add Companions
-            for (let i = 0; i < this.state.companions.length; i++) {
-                const companion = CombatFactory.fromPlayer(this.state.companions[i], `companion_${i}`);
+            // Add Companions (only those following, not waiting)
+            const activeCompanions = this.state.companions.filter(c => c.meta.followState === 'following');
+            for (let i = 0; i < activeCompanions.length; i++) {
+                const companion = CombatFactory.fromPlayer(activeCompanions[i].character, `companion_${i}`, 'companion');
                 companion.initiative = Dice.d20() + MechanicsEngine.getModifier(companion.stats.DEX || 10);
 
                 // Deployment: Pick unique positions from player zone

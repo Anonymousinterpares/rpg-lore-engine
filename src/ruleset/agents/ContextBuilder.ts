@@ -31,6 +31,16 @@ export interface BaseContext {
     recentHistory: any[];
 }
 
+export interface CompanionContext {
+    name: string;
+    role: string;
+    class: string;
+    level: number;
+    hpStatus: HPStatus;
+    traits: string;
+    followState: 'following' | 'waiting';
+}
+
 export interface ExplorationContext extends BaseContext {
     hex: {
         interestPoints: string[];
@@ -39,6 +49,7 @@ export interface ExplorationContext extends BaseContext {
         inhabitants: string[];
     };
     activeQuests: { title: string; currentObjective: string }[];
+    party: CompanionContext[];
 }
 
 export interface CombatContext extends BaseContext {
@@ -237,7 +248,18 @@ export class ContextBuilder {
                 neighbors: budget.neighbors,
                 inhabitants: finalInhabitants
             },
-            activeQuests: budget.quests
+            activeQuests: budget.quests,
+            party: (state.companions || [])
+                .filter((c: any) => c.meta?.followState === 'following')
+                .map((c: any) => ({
+                    name: c.character.name,
+                    role: c.meta.originalRole || 'Adventurer',
+                    class: c.character.class,
+                    level: c.character.level,
+                    hpStatus: this.getHpStatus(c.character.hp),
+                    traits: (c.meta.originalTraits || []).slice(0, 4).join(', '),
+                    followState: c.meta.followState
+                }))
         };
     }
 

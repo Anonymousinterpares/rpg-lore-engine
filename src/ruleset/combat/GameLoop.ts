@@ -11,6 +11,7 @@ import { NarratorService } from '../agents/NarratorService';
 import { NarratorOutput } from '../agents/ICPSchemas';
 import { LoreService } from '../agents/LoreService';
 import { NPCService } from '../agents/NPCService';
+import { CompanionManager } from './CompanionManager';
 import { MovementEngine } from './MovementEngine';
 import { GameStateManager } from './GameStateManager';
 import { StoryScribe } from './StoryScribe';
@@ -519,6 +520,10 @@ export class GameLoop {
                 this.state.location.coordinates = targetCoords;
                 this.state.location.hexId = `${targetCoords[0]},${targetCoords[1]}`;
                 this.state.location.travelAnimation = undefined;
+
+                // Companions with followState='following' travel with the player automatically.
+                // Waiting companions stay at their waitHexId. No explicit position tracking needed
+                // since following companions are always at the player's hex by definition.
 
                 // Step 2: Register encounter with NPCs in the arrived hex
                 const arrivedHex = this.hexMapManager.getHex(this.state.location.hexId);
@@ -1135,6 +1140,33 @@ export class GameLoop {
                 this.state.activeDialogueNpcId = null;
                 await this.emitStateUpdate();
                 return "You end the conversation.";
+
+            // ===== COMPANION MANAGEMENT =====
+            case 'companion_wait': {
+                const waitName = args.join(' ');
+                const waitIdx = CompanionManager.findCompanionIndex(this.state, waitName);
+                if (waitIdx < 0) return `No companion named "${waitName}" in your party.`;
+                const waitMsg = CompanionManager.setWait(this.state, waitIdx);
+                await this.emitStateUpdate();
+                return waitMsg;
+            }
+            case 'companion_follow': {
+                const followName = args.join(' ');
+                const followIdx = CompanionManager.findCompanionIndex(this.state, followName);
+                if (followIdx < 0) return `No companion named "${followName}" in your party.`;
+                const followMsg = CompanionManager.setFollow(this.state, followIdx);
+                await this.emitStateUpdate();
+                return followMsg;
+            }
+            case 'dismiss_companion': {
+                const dismissName = args.join(' ');
+                const dismissIdx = CompanionManager.findCompanionIndex(this.state, dismissName);
+                if (dismissIdx < 0) return `No companion named "${dismissName}" in your party.`;
+                const dismissMsg = CompanionManager.dismiss(this.state, dismissIdx, true);
+                await this.emitStateUpdate();
+                return dismissMsg;
+            }
+
             // ===== LEVELING =====
             case 'levelup':
             case 'level': {
@@ -1779,6 +1811,13 @@ export class GameLoop {
     /** Apply subclass selection. */
     public async selectSubclass(subclassName: string): Promise<string> {
         const msg = LevelingEngine.selectSubclass(this.state.character, subclassName);
+        await this.emitStateUpdate();
+        return msg;
+    }
+
+    /** Apply fighting style selection. */
+    public async selectFightingStyle(styleName: string): Promise<string> {
+        const msg = LevelingEngine.selectFightingStyle(this.state.character, styleName);
         await this.emitStateUpdate();
         return msg;
     }

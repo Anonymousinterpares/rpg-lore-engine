@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { WeatherSchema, TravelPaceSchema } from './BaseSchemas';
 import { PlayerCharacterSchema } from './PlayerCharacterSchema';
+import { CompanionSchema } from './CompanionSchema';
 import { WorldClockSchema } from './WorldClockSchema';
 import { MapRegistrySchema } from './HexMapSchema';
 import { SubLocationSchema, WorldNPCSchema } from './WorldEnrichmentSchema';
@@ -40,7 +41,7 @@ export const FullSaveStateSchema = z.object({
 
     // --- Player & Party ---
     character: PlayerCharacterSchema,
-    companions: z.array(PlayerCharacterSchema).default([]),
+    companions: z.array(CompanionSchema).default([]),
 
     // --- World State ---
     mode: z.string(), // Bridge to GameMode enum

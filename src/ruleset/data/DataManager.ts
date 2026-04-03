@@ -148,6 +148,15 @@ export class DataManager {
         const mappingModule = await import('../../../data/mappings/biome_monster_mapping.json');
         this.monsterMapping = mappingModule.default || mappingModule;
 
+        // Load Fighting Styles for FeatureEffectEngine
+        try {
+            const { FeatureEffectEngine } = await import('../combat/FeatureEffectEngine');
+            const fsModule = await import('../../../data/features/fighting-styles.json');
+            FeatureEffectEngine.loadFightingStyles(fsModule.default || fsModule);
+        } catch (e) {
+            console.warn('[DataManager] Failed to load fighting styles:', e);
+        }
+
         this.initialized = true;
         console.log(`[DataManager] Initialized with ${Object.keys(this.races).length} Races, ${Object.keys(this.classes).length} Classes, ${Object.keys(this.backgrounds).length} Backgrounds, ${Object.keys(this.items).length} Items (indexed).`);
     }

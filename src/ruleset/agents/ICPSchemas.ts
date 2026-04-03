@@ -24,6 +24,10 @@ export const EngineCallSchema = z.object({
         'advance_time',
         'spawn_npc',
         'set_npc_disposition',
+        'recruit_companion',
+        'dismiss_companion',
+        'companion_wait',
+        'companion_follow',
         'turn_end'
     ]),
     args: z.record(z.any())

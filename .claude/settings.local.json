@@ -22,7 +22,8 @@
       "Bash(for f:*)",
       "Bash(do echo:*)",
       "Read(//e/AI/AI/projects/RPG New/rpg-lore-engine/**)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(node -e ':*)"
     ]
   }
 }
