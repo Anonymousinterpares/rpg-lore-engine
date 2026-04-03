@@ -251,29 +251,7 @@
     cursor: not-allowed;
 }
 
-/* Glowing border when a level is selected — ready to cast */
-.castReady {
-    border-color: var(--sb-cast-border-color) !important;
-    background: var(--sb-cast-bg);
-    box-shadow: var(--sb-cast-glow-color);
-    animation: castGlow var(--sb-cast-glow-speed) ease-in-out infinite;
-    cursor: pointer;
-}
-
-.castReady:hover {
-    background: var(--sb-cast-hover-bg);
-}
-
-/* Cast-ready font overrides */
-.castReady .spellName { color: var(--sb-cast-spell-name-color); }
-.castReady .spellSchool { color: var(--sb-cast-spell-school-color); }
-.castReady .spellMeta { color: var(--sb-cast-spell-meta-color); }
-.castReady .spellDamage { color: var(--sb-cast-spell-damage-color); }
-
-@keyframes castGlow {
-    0%, 100% { box-shadow: var(--sb-cast-glow-min); }
-    50% { box-shadow: var(--sb-cast-glow-max); }
-}
+/* Cast-ready state is now indicated by the CAST button, not card glow */
 
 /* ===== SPELL LAYOUT ===== */
 .spellMain {
@@ -377,6 +355,41 @@
 .spellDamage {
     font-weight: 600;
     color: var(--sb-spell-damage-color);
+}
+
+.spellRange {
+    font-size: 0.6rem;
+    color: var(--sb-spell-meta-color);
+    opacity: 0.8;
+    white-space: nowrap;
+    margin-left: auto;
+}
+
+/* ===== CAST BUTTON ===== */
+.castBtn {
+    align-self: center;
+    margin-top: 4px;
+    padding: 3px 18px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: white;
+    background: #b91c1c;
+    border: 1px solid #dc2626;
+    border-radius: 3px;
+    cursor: pointer;
+    animation: castBtnGlow 2s ease-in-out infinite;
+    transition: background 0.15s;
+}
+
+.castBtn:hover {
+    background: #dc2626;
+}
+
+@keyframes castBtnGlow {
+    0%, 100% { box-shadow: 0 0 3px 1px rgba(220, 38, 38, 0.4); }
+    50% { box-shadow: 0 0 6px 3px rgba(220, 38, 38, 0.7); }
 }
 
 .emptyState {

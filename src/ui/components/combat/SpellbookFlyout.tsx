@@ -92,23 +92,6 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
         }));
     };
 
-    const handleCardClick = (spell: Spell, slotLevels: number[], canCast: boolean) => {
-        if (!canCast) return;
-        const chosenLv = selectedSlot[spell.name];
-
-        if (chosenLv != null) {
-            // Level selected — cast at that level
-            onCast(spell, chosenLv);
-            setSelectedSlot(prev => ({ ...prev, [spell.name]: null }));
-        } else if (slotLevels.length === 1) {
-            // Only one slot available — auto-cast
-            onCast(spell, slotLevels[0]);
-        } else if (spell.level === 0) {
-            // Cantrip — no slot needed
-            onCast(spell);
-        }
-        // Multi-slot with no selection: do nothing (user must pick a level first)
-    };
 
     return (
         <div className={`${styles.flyout} ${parchmentStyles.container}`}>
@@ -180,8 +163,12 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
                     return (
                         <div
                             key={`${spell.name}-${index}`}
-                            className={`${styles.spellItem} ${parchmentStyles.button} ${!canCast ? styles.disabled : ''} ${isCastReady ? styles.castReady : ''}`}
-                            onClick={() => handleCardClick(spell, slotLevels, canCast)}
+                            className={`${styles.spellItem} ${parchmentStyles.button} ${!canCast ? styles.disabled : ''}`}
+                            onClick={() => {
+                                if (!canCast) return;
+                                // Cantrips: cast immediately on card click
+                                if (spell.level === 0) onCast(spell);
+                            }}
                             style={{ position: 'relative' }}
                         >
                             <div className={styles.spellMain}>
@@ -200,16 +187,30 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
                                             <Info size={14} />
                                         </button>
                                         <span className={styles.spellSchool}>{spell.school}</span>
+                                        <span className={styles.spellRange}>{spell.range}</span>
                                     </div>
                                     <div className={styles.spellMeta}>
                                         <span>{spell.time}</span>
-                                        <span>{spell.range}</span>
                                         {(spell as any).damage?.dice && (
                                             <span className={styles.spellDamage}>{(spell as any).damage.dice}</span>
                                         )}
                                     </div>
                                     {disabledReason && (
                                         <span className={styles.outOfRange}>{disabledReason}</span>
+                                    )}
+
+                                    {/* CAST button — appears when a level is selected */}
+                                    {isCastReady && (
+                                        <button
+                                            className={styles.castBtn}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onCast(spell, chosenLv!);
+                                                setSelectedSlot(prev => ({ ...prev, [spell.name]: null }));
+                                            }}
+                                        >
+                                            CAST
+                                        </button>
                                     )}
                                 </div>
                             </div>
