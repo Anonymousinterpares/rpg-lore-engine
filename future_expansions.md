@@ -297,14 +297,24 @@ However, most active abilities only deduct a use — the mechanical EFFECT is no
 
 ## Additional Holes Discovered
 
-### Spellcaster Level-Up Spell Addition — NOT IMPLEMENTED
-- On level up for spellcasters, no new spells are added to known/spellbook
-- D&D 5e: Wizards learn 2 new spells per level (added to spellbook), prepared casters get access to full class list
-- LevelingEngine.levelUp() grants HP, SP, hit dice but never updates cantripsKnown, knownSpells, or spellbook
-- **To implement:** On level up, grant new spell selections based on class rules
+### Spellcaster Level-Up Spell Addition — ✅ IMPLEMENTED (April 2026)
+- LevelingEngine.levelUp() sets `_pendingSpellChoices` (2 for Wizard, 1 for Sorcerer/Bard/Ranger/Warlock)
+- SpellLearningFlyout shows available class spells for selection with search/level filter
+- GameLoop.learnSpells() adds to spellbook (Wizard) or knownSpells (others)
+- Sequenced: Level Up Overlay → Spell Learning → Character Sheet auto-opens
+- Prepared casters (Cleric/Druid/Paladin) use existing SpellPreparationPanel in booklet
 
-### Class Progression Features — NOT WIRED
-- All 12 class JSONs now have complete 1-20 progression with features listed
-- But LevelingEngine.levelUp() never reads progression[level].features to grant new class features
-- Features like Extra Attack (Fighter 5), Channel Divinity (Cleric 2), Wild Shape (Druid 2) exist in data but aren't activated
-- **To implement:** On level up, read class progression features and apply them (add to featureUsages, update capabilities)
+### Class Progression Features — ✅ IMPLEMENTED (April 2026)
+- LevelingEngine.levelUp() reads classData.allFeatures and adds new features to featureUsages
+- New features tracked in `_newFeatures` for UI highlighting (sapphire glow + golden particles on Class Features button)
+- Particle effect on button and feature cards, cleared on viewing
+- Feat picker overlay with selection + confirm for ASI-level feat choice
+
+### Remaining: Feature EFFECTS Not Wired
+- Features are activated (added to featureUsages, shown in UI) but most have NO mechanical effect:
+  - Extra Attack: no multi-attack implementation in combat
+  - Action Surge: featureUsages entry exists but no combat integration to grant extra action
+  - Channel Divinity: no effect implementation
+  - Wild Shape: no form transformation system
+  - Subclass selection (Arcane Tradition, Martial Archetype, etc.): no selection UI or effect
+- **To implement per feature** — each needs custom combat/exploration logic
