@@ -137,13 +137,22 @@ CombatOrchestrator and CombatResolutionEngine consume the engine — no feature-
 ### Resilient — ✅ IMPLEMENTED
 - Feat: save proficiency tracked via savingThrowProficiencies
 
+### Sculpt Spells — ✅ IMPLEMENTED
+- Evocation Wizard L2+: AoE evocation spells exempt 1+spell level friendly targets
+- Protected allies auto-succeed save and take 0 damage
+- Wired in SpellManager target loop
+
+### Reckless Attack Enemy Advantage — ✅ IMPLEMENTED
+- Enemies get forceAdvantage when attacking a reckless Barbarian
+- Wired in CombatOrchestrator.performAITurn()
+- Statistical test confirms ~63% more hits against reckless target
+
 ### Feature Effects Still Not in FeatureEffectEngine
 - **Bardic Inspiration** (Bard) — d6-d12 to ally's roll (needs target selection UI)
 - **Ki** (Monk) — Flurry of Blows, Patient Defense, Step of the Wind (needs sub-ability UI)
 - **Wild Shape** (Druid) — beast transformation system (major new system)
 - **Channel Divinity** (Cleric/Paladin) — domain/oath-specific effects (9+ implementations)
 - **Font of Magic / Metamagic** (Sorcerer) — sorcery point system (needs new resource)
-- **Sculpt Spells** (Evocation Wizard) — friendly fire exemption in AoE
 
 ### Feat Effects Still Not Implemented
 - Lucky: 3 rerolls per long rest (needs mid-roll UI prompt)
@@ -152,7 +161,73 @@ CombatOrchestrator and CombatResolutionEngine consume the engine — no feature-
 
 ---
 
+## ❌ Documentation & Codex — NOT YET IMPLEMENTED
+
+### Codex Entries (player-facing, in-game)
+Each feature needs a codex entry accessible from the game. Entries should be **locked/hidden until the player has the feature** (class, subclass, or feat that grants it).
+
+**Class Feature Codex Entries (unlock when feature is gained):**
+- Extra Attack, Action Surge, Second Wind, Indomitable (Fighter)
+- Rage, Reckless Attack, Danger Sense, Unarmored Defense (Barbarian)
+- Sneak Attack, Cunning Action, Uncanny Dodge, Evasion (Rogue)
+- Divine Smite, Lay on Hands, Aura of Protection (Paladin)
+- Ki, Unarmored Defense, Unarmored Movement (Monk)
+- Bardic Inspiration, Song of Rest (Bard)
+- Wild Shape, Natural Recovery (Druid)
+- Spellcasting, Arcane Recovery, Arcane Tradition overview (Wizard)
+- Font of Magic, Metamagic (Sorcerer)
+- Pact Magic, Eldritch Invocations (Warlock)
+- Channel Divinity, Divine Domain overview (Cleric)
+- Favored Enemy, Natural Explorer (Ranger)
+
+**Subclass Codex Entries (unlock when subclass is chosen):**
+- All 30 subclasses need individual entries with description + feature list
+- Should be accessible from the Class Features overlay info icons
+
+**Fighting Style Codex Entry:**
+- General mechanics page explaining Fighting Styles
+- Each style as a sub-entry with full description
+
+**Feat Codex Entries (unlock when feat is taken):**
+- Each of the 12 feats (Alert, Tough, GWM, Sharpshooter, Mobile, etc.)
+- Mechanical effects explained clearly
+
+**Mechanics Codex Entries (always available):**
+- How Extra Attack works (general)
+- How Saving Throws work (with Evasion, Danger Sense explained)
+- How Critical Hits work (with Improved Critical explained)
+- How Sneak Attack eligibility works
+- How Concentration works
+- How Advantage/Disadvantage work
+
+### Codebase Documentation
+- `FeatureEffectEngine.ts` — architecture doc: how to add new features
+- `data/features/fighting-styles.json` — format documentation
+- Class feature data flow: JSON → DataManager → LevelingEngine → FeatureEffectEngine → CombatOrchestrator
+- Testing guide: how to write and run CLI tests
+
+---
+
 ## Test Files
 - `src/ruleset/tests/test_combat_features.ts` — CombatResolutionEngine integration (14 tests)
 - `src/ruleset/tests/test_feature_effect_engine.ts` — FeatureEffectEngine unit tests (66 tests)
 - `src/ruleset/tests/test_duration_tick.ts` — Status effect duration tracking (9 tests)
+- `src/ruleset/tests/test_all_features.ts` — All 15 features comprehensive (79 tests)
+
+
+
+# new potential gap:
+    6. Temporary flags (_pendingASI, _pendingSubclass, _pendingFightingStyle, _pendingSpellChoices, _newFeatures) — These
+     use underscore prefix and are stored on the character object. They will persist in saves since PlayerCharacterSchema
+     uses Zod which strips unknown fields only if .strict() is used (it's not). However, these are transient flags that
+    should probably be cleared on load to avoid stale prompts showing up.
+
+    Potential gap: Those _pending* flags persisting across save/load could cause issues — e.g., loading a save where
+    _pendingSubclass was true but the player already chose a subclass in a different session. Since Zod's .parse() with
+    .default() doesn't strip extra fields, these could linger.
+
+    Recommendation (after verification if necessary): A cleanup step in GameStateManager.loadGame() should clear transient flags:
+    - Delete _pendingSubclass if subclass is already set
+    - Delete _pendingFightingStyle if fightingStyle is already set
+    - Delete _pendingSpellChoices if value is 0
+    - Delete _newFeatures always (it's a one-time UI highlight)

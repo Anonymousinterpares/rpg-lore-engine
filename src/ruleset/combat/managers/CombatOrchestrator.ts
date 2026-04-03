@@ -1162,6 +1162,10 @@ export class CombatOrchestrator {
 
                 if (!damageFormula) break;
 
+                // Reckless Attack: enemies get advantage when attacking a reckless barbarian
+                const targetIsReckless = target.statusEffects?.some(e => e.id === 'reckless_attack');
+                const aiFeatureCtx = targetIsReckless ? { forceAdvantage: true } : undefined;
+
                 const result = CombatResolutionEngine.resolveAttack(
                     actor,
                     target,
@@ -1170,7 +1174,8 @@ export class CombatOrchestrator {
                     0,
                     isRanged,
                     forceDisadvantage,
-                    this.getCombatLighting()
+                    this.getCombatLighting(),
+                    aiFeatureCtx as any
                 );
 
 

@@ -182,7 +182,25 @@ export class SpellManager {
         const spellAttackBonus = MechanicsEngine.getModifier(caster.stats['INT'] || caster.stats['WIS'] || caster.stats['CHA'] || 10) + MechanicsEngine.getProficiencyBonus(pc.level);
         const spellSaveDC = 8 + spellAttackBonus;
 
+        // Sculpt Spells (Evocation Wizard L2+): choose allies to auto-succeed on evocation saves
+        const hasSculptSpells = pc.class === 'Wizard' && pc.subclass === 'School of Evocation' && pc.level >= 2
+            && effectiveSpell.school?.toLowerCase() === 'evocation'
+            && effect?.targets?.count === 'ALL_IN_AREA';
+        const sculptCount = hasSculptSpells ? 1 + (effectiveSpell.level || 0) : 0;
+        // Sculpt protects all friendly targets (up to sculptCount)
+        const friendlyInAoE = hasSculptSpells ? targets.filter(t => t.type === 'player' || t.type === 'companion') : [];
+        const sculptedIds = new Set(friendlyInAoE.slice(0, sculptCount).map(t => t.id));
+        if (sculptedIds.size > 0) {
+            fullMessage += `(Sculpt Spells: ${sculptedIds.size} allies protected) `;
+        }
+
         for (const target of targets) {
+            // Sculpt Spells: sculpted allies auto-succeed save and take 0 damage
+            if (sculptedIds.has(target.id)) {
+                fullMessage += `${target.name} is protected by Sculpt Spells. `;
+                continue;
+            }
+
             // Cover save bonus: D&D 5e grants cover bonus ONLY to DEX saves
             let coverSaveBonus = 0;
             if (combo.grid && effectiveSpell.save && (effectiveSpell.save as any).ability === 'DEX') {
