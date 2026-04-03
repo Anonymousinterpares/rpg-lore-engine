@@ -8,7 +8,8 @@ import { Spell } from '../../../ruleset/schemas/SpellSchema';
 interface SpellbookFlyoutProps {
     spells: Spell[];
     spellSlots?: Record<string, { current: number; max: number }>;
-    distanceToTarget?: number; // distance in feet to nearest/selected enemy
+    distanceToTarget?: number;
+    resources?: { actionSpent: boolean; bonusActionSpent: boolean; reactionSpent: boolean };
     onCast: (spell: Spell, slotLevel?: number) => void;
     onClose: () => void;
 }
@@ -67,7 +68,7 @@ function getLevelTierClass(lv: number): string {
 }
 
 export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
-    spells, spellSlots = {}, distanceToTarget, onCast, onClose
+    spells, spellSlots = {}, distanceToTarget, resources, onCast, onClose
 }) => {
     const levels = Array.from(new Set(spells.map(s => s.level))).sort((a, b) => a - b);
     // Default to first non-cantrip level, or cantrips if that's all there is
@@ -143,7 +144,16 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
                     const slotLevels = getAvailableSlotLevels(spell, spellSlots);
                     const spellRange = parseRange(spell.range);
                     const outOfRange = distanceToTarget != null && distanceToTarget > spellRange;
-                    const canCast = !outOfRange && (spell.level === 0 || slotLevels.length > 0);
+
+                    // Check resource availability based on casting time
+                    const castTime = spell.time?.toLowerCase() || '1 action';
+                    const isReaction = castTime.includes('reaction');
+                    const isBonusAction = castTime.includes('bonus');
+                    const resourceSpent = resources
+                        ? (isReaction ? resources.reactionSpent : isBonusAction ? resources.bonusActionSpent : resources.actionSpent)
+                        : false;
+
+                    const canCast = !outOfRange && !resourceSpent && (spell.level === 0 || slotLevels.length > 0);
                     const chosenLv = selectedSlot[spell.name];
                     const isCastReady = canCast && chosenLv != null;
                     const hasScaling = !!(spell as any).damage?.scaling;
@@ -152,7 +162,9 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
 
                     // Disabled reason
                     let disabledReason = '';
-                    if (outOfRange) {
+                    if (resourceSpent) {
+                        disabledReason = isReaction ? 'Reaction already used' : isBonusAction ? 'Bonus action already used' : 'Action already used';
+                    } else if (outOfRange) {
                         disabledReason = `Out of range (${distanceToTarget}ft, need ${spellRange}ft)`;
                     } else if (!canCast && spell.level > 0) {
                         const baseSlot = spellSlots[spell.level.toString()];
@@ -195,25 +207,28 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
                                             <span className={styles.spellDamage}>{(spell as any).damage.dice}</span>
                                         )}
                                     </div>
-                                    {disabledReason && (
-                                        <span className={styles.outOfRange}>{disabledReason}</span>
-                                    )}
-
-                                    {/* CAST button — appears when a level is selected */}
+                                    {/* CAST button — overlays above level row when a level is selected */}
                                     {isCastReady && (
-                                        <button
-                                            className={styles.castBtn}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                onCast(spell, chosenLv!);
-                                                setSelectedSlot(prev => ({ ...prev, [spell.name]: null }));
-                                            }}
-                                        >
-                                            CAST
-                                        </button>
+                                        <div className={styles.castBtnWrap}>
+                                            <button
+                                                className={styles.castBtn}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onCast(spell, chosenLv!);
+                                                    setSelectedSlot(prev => ({ ...prev, [spell.name]: null }));
+                                                }}
+                                            >
+                                                CAST
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             </div>
+
+                            {/* Disabled reason — outside greyscaled area so color stays visible */}
+                            {disabledReason && (
+                                <span className={styles.disabledReason}>{disabledReason}</span>
+                            )}
 
                             {/* Level selector row — only for leveled spells with available slots */}
                             {spell.level > 0 && canCast && slotLevels.length > 0 && (
