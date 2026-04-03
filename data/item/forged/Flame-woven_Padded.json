@@ -1,0 +1,40 @@
+{
+  "name": "Flame-woven Padded",
+  "type": "Armor",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 250,
+    "pp": 0
+  },
+  "weight": 8,
+  "isMagic": true,
+  "modifiers": [
+    {
+      "type": "ACBonus",
+      "target": "AC",
+      "value": 2
+    },
+    {
+      "type": "DamageResistance",
+      "target": "Fire",
+      "value": 1
+    }
+  ],
+  "tags": [],
+  "quantity": 1,
+  "rarity": "Rare",
+  "itemLevel": 12,
+  "isForged": true,
+  "forgeSource": "Archmage CR 12 Plains",
+  "magicalProperties": [
+    {
+      "type": "Resistance",
+      "element": "Fire",
+      "description": "Resistance to Fire damage"
+    }
+  ],
+  "acCalculated": "11",
+  "stealthDisadvantage": true
+}

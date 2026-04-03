@@ -1730,6 +1730,25 @@ export class GameLoop {
         return msg;
     }
 
+    /** Apply spell learning choices after level up. */
+    public async learnSpells(spellNames: string[]): Promise<string> {
+        const pc = this.state.character;
+        const isWizard = pc.class === 'Wizard';
+        for (const name of spellNames) {
+            if (isWizard) {
+                if (!pc.spellbook.includes(name)) pc.spellbook.push(name);
+            } else {
+                if (!pc.knownSpells.includes(name)) pc.knownSpells.push(name);
+            }
+            // Remove from unseen
+            pc.unseenSpells = pc.unseenSpells.filter(s => s !== name);
+        }
+        // Consume pending choices
+        (pc as any)._pendingSpellChoices = Math.max(0, ((pc as any)._pendingSpellChoices || 0) - spellNames.length);
+        await this.emitStateUpdate();
+        return `Learned ${spellNames.length} spell(s): ${spellNames.join(', ')}.`;
+    }
+
     public async generateAmbushNarration(encounter: Encounter, restType: 'rest' | 'wait'): Promise<string> {
         return NarratorService.narrateAmbush(this.state, encounter, restType);
     }

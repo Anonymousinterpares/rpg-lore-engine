@@ -141,8 +141,53 @@ export class LevelingEngine {
             }
         }
 
+        // Activate new class features at this level
+        const newFeatures: string[] = [];
+        if (classData?.allFeatures) {
+            for (const feat of classData.allFeatures) {
+                if (feat.level === pc.level && feat.usage && feat.usage.type !== 'PASSIVE') {
+                    if (!pc.featureUsages) (pc as any).featureUsages = {};
+                    if (!pc.featureUsages[feat.name]) {
+                        pc.featureUsages[feat.name] = {
+                            current: feat.usage.limit || 0,
+                            max: feat.usage.limit || 0,
+                            usageType: feat.usage.type
+                        };
+                    }
+                }
+                if (feat.level === pc.level) {
+                    newFeatures.push(feat.name);
+                }
+            }
+        }
+        // Track new features for UI highlighting
+        if (newFeatures.length > 0) {
+            (pc as any)._newFeatures = newFeatures;
+        }
+
+        // Spell learning: track pending spell choices for casters
+        const spellLearningClasses: Record<string, number> = {
+            'Wizard': 2, 'Sorcerer': 1, 'Bard': 1, 'Ranger': 1, 'Warlock': 1
+        };
+        const spellsToLearn = spellLearningClasses[levelingClass] || 0;
+        if (spellsToLearn > 0 && pc.level > 1) {
+            (pc as any)._pendingSpellChoices = ((pc as any)._pendingSpellChoices || 0) + spellsToLearn;
+            // Update unseenSpells with newly accessible spell levels
+            const maxSpellLevel = Math.min(9, Math.ceil(pc.level / 2));
+            const allClassSpells = DataManager.getSpellsByClass(levelingClass, maxSpellLevel);
+            const known = new Set([
+                ...(pc.cantripsKnown || []),
+                ...(pc.knownSpells || []),
+                ...(pc.spellbook || []),
+                ...(pc.preparedSpells || [])
+            ]);
+            pc.unseenSpells = allClassSpells.filter(s => !known.has(s.name)).map(s => s.name);
+        }
+
         const classLabel = isMulticlass ? ` (${levelingClass})` : '';
         let summary = `${pc.name} reached Level ${pc.level}${classLabel}! HP +${hpIncrease} (max ${pc.hp.max}). Gained ${spGrant} SP.`;
+        if (newFeatures.length > 0) summary += ` New features: ${newFeatures.join(', ')}.`;
+        if (spellsToLearn > 0 && pc.level > 1) summary += ` Choose ${spellsToLearn} new spell(s)!`;
 
         if (isMulticlass && pc.multiclassLevels) {
             const levels = Object.entries(pc.multiclassLevels).map(([c, l]) => `${c} ${l}`).join(' / ');

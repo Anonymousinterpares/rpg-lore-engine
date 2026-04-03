@@ -14,6 +14,7 @@ import GameOverScreen from '../menu/GameOverScreen';
 import SaveLoadModal from '../menu/SaveLoadModal';
 import RestWaitModal from '../exploration/RestWaitModal';
 import ArcaneRecoveryFlyout from '../exploration/ArcaneRecoveryFlyout';
+import SpellLearningFlyout from '../exploration/SpellLearningFlyout';
 import ExamineOverlay from '../combat/ExamineOverlay';
 import LevelUpOverlay from '../combat/LevelUpOverlay';
 import { useGameState } from '../../hooks/useGameState';
@@ -271,6 +272,25 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
                         setArcaneRecovery(null);
                     }}
                     onSkip={() => setArcaneRecovery(null)}
+                />
+            )}
+
+            {state?.character && (state.character as any)._pendingSpellChoices > 0 && (
+                <SpellLearningFlyout
+                    className={state.character.class}
+                    maxLevel={Math.min(9, Math.ceil(state.character.level / 2))}
+                    count={(state.character as any)._pendingSpellChoices}
+                    alreadyKnown={[
+                        ...(state.character.cantripsKnown || []),
+                        ...(state.character.knownSpells || []),
+                        ...(state.character.spellbook || []),
+                    ]}
+                    onConfirm={async (names) => {
+                        if (engine) await engine.learnSpells(names);
+                    }}
+                    onSkip={() => {
+                        if (state?.character) (state.character as any)._pendingSpellChoices = 0;
+                    }}
                 />
             )}
 

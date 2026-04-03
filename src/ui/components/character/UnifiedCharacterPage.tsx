@@ -18,6 +18,7 @@ import { getACBonus, getStatBonus } from '../../utils/effectiveStats';
 import { DataManager } from '../../../ruleset/data/DataManager';
 import ItemContextMenu from '../inventory/ItemContextMenu';
 import ItemDatasheet from '../inventory/ItemDatasheet';
+import ParticleGlow from '../common/ParticleGlow';
 
 const SKILL_GROUPS = [
     { ability: 'STR', label: 'Strength', skills: ['Athletics', 'Unarmed Combat'] },
@@ -271,9 +272,17 @@ const UnifiedCharacterPage: React.FC = () => {
                     </div>
 
 
-                    <button className={styles.panelBtn} onClick={() => setShowFeatures(!showFeatures)}>
+                    <ParticleGlow
+                        active={!!((pc as any)._newFeatures?.length)}
+                        glowRange={12}
+                        particleRange={20}
+                        particleSpeed={0.33}
+                        className={styles.panelBtn}
+                        onClick={() => setShowFeatures(!showFeatures)}
+                    >
                         <BookOpen size={13} /> Class Features ({AbilityParser.getCombatAbilities(pc).length})
-                    </button>
+                    </ParticleGlow>
+                    <div style={{ height: 15 }} />
                     <button className={styles.panelBtn} onClick={() => setShowPersonality(!showPersonality)}>
                         <Users size={13} /> Personality & Traits
                     </button>
@@ -389,15 +398,32 @@ const UnifiedCharacterPage: React.FC = () => {
 
             {/* OVERLAYS — outside scale wrapper (fixed position) */}
             {showFeatures && (
-                <div className={styles.overlay} onClick={() => setShowFeatures(false)}>
+                <div className={styles.overlay} onClick={() => {
+                    // Permanently clear new features flag
+                    if ((pc as any)._newFeatures) {
+                        (pc as any)._newFeatures = undefined;
+                        updateState();
+                    }
+                    setShowFeatures(false);
+                }}>
                     <div className={styles.overlayPanel} onClick={e => e.stopPropagation()}>
                         <h2 className={styles.overlayTitle}>Class Features</h2>
-                        {AbilityParser.getCombatAbilities(pc).map((a, i) => (
-                            <div key={i} className={styles.featureCard}>
-                                <strong>{a.name}</strong> {a.actionCost !== 'NONE' && <small>({a.actionCost.replace('_',' ')})</small>}
-                                <p>{a.description}</p>
-                            </div>
-                        ))}
+                        {AbilityParser.getCombatAbilities(pc).map((a, i) => {
+                            const isNew = !!(pc as any)._newFeatures?.includes(a.name);
+                            return (
+                                <ParticleGlow
+                                    key={i}
+                                    active={isNew}
+                                    glowRange={10}
+                                    particleRange={20}
+                                    particleSpeed={0.33}
+                                    className={styles.featureCard}
+                                >
+                                    <strong>{a.name}</strong> {a.actionCost !== 'NONE' && <small>({a.actionCost.replace('_',' ')})</small>}
+                                    <p>{a.description}</p>
+                                </ParticleGlow>
+                            );
+                        })}
                         {AbilityParser.getCombatAbilities(pc).length === 0 && <p style={{opacity:0.5}}>No features yet.</p>}
                     </div>
                 </div>

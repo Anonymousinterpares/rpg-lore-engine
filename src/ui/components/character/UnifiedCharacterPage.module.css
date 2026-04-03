@@ -240,6 +240,8 @@
 }
 .panelBtn:hover { background: rgba(232, 213, 181, 0.1); }
 
+/* ParticleGlow component handles new feature highlighting via canvas particles */
+
 /* RIGHT: Skills — 370px (takes remaining + 12px gap from mainGrid) */
 .rightCol {
     width: 330px;
@@ -300,7 +302,7 @@
 .overlayPanel {
     background: #1a1208; border: 2px solid rgba(232, 213, 181, 0.2);
     border-radius: 8px; padding: 20px;
-    max-width: 600px; max-height: 756px; overflow-y: auto; color: #e8d5b5;
+    max-width: 600px; max-height: 756px; overflow-y: auto; overflow-x: hidden; color: #e8d5b5;
 }
 
 .overlayTitle {
