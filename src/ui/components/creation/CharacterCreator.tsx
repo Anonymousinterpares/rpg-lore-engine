@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './CharacterCreator.module.css';
+import tipStyles from '../../styles/tooltip.module.css';
 import { DataManager } from '../../../ruleset/data/DataManager';
 import { CharacterFactory } from '../../../ruleset/factories/CharacterFactory';
 import { Race } from '../../../ruleset/schemas/RaceSchema';
@@ -413,8 +414,8 @@ const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onComplete, onCance
                                     <div key={key} className={styles.statBox}>
                                         <div className={styles.statLabelRow}>
                                             <label>{key}</label>
-                                            <div className={styles.statTooltip}>?
-                                                <span className={styles.tooltipText}>{getStatDescription(key)}</span>
+                                            <div className={`${styles.statTooltip} ${tipStyles.hoverWrap}`}>?
+                                                <span className={tipStyles.hoverTip}>{getStatDescription(key)}</span>
                                             </div>
                                         </div>
                                         <div className={styles.pointBuyControls}>

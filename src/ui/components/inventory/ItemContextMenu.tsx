@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import styles from './ItemContextMenu.module.css';
 import { Info, Trash2, Search, Zap, ArrowUpCircle, Package } from 'lucide-react';
+import GameTooltip from '../common/GameTooltip';
 
 interface ItemContextMenuProps {
     x: number;
@@ -59,13 +60,14 @@ const ItemContextMenu: React.FC<ItemContextMenuProps> = ({
                     </button>
 
                     {isEquippable && (
+                        <GameTooltip text={!equipAllowed ? equipReason : undefined}>
                         <button
                             onClick={() => equipAllowed && onAction('equip')}
                             className={!equipAllowed ? styles.requirementUnmet : ''}
-                            title={!equipAllowed ? equipReason : ''}
                         >
                             <ArrowUpCircle size={14} /> Equip / Unequip
                         </button>
+                        </GameTooltip>
                     )}
 
                     {isConsumable && (
@@ -80,13 +82,14 @@ const ItemContextMenu: React.FC<ItemContextMenuProps> = ({
                             ? 'This item is already identified.'
                             : examineDisabledReason || 'Attempt to identify this item (Arcana/Investigation check)';
                         return (
+                            <GameTooltip text={tooltip}>
                             <button
                                 onClick={() => canExamine ? onAction('examine') : undefined}
                                 className={canExamine ? '' : styles.disabled}
-                                title={tooltip}
                             >
                                 <Search size={14} /> {isUnidentified ? 'Examine (Identify)' : 'Examine'}
                             </button>
+                            </GameTooltip>
                         );
                     })()}
 

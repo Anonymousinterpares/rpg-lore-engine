@@ -8,6 +8,7 @@ import { SpellbookEngine } from '../../../ruleset/combat/SpellbookEngine';
 import { Spell } from '../../../ruleset/schemas/SpellSchema';
 import Codex from '../codex/Codex';
 import { Sparkles, Book, Plus, Minus, Search, X, Info } from 'lucide-react';
+import GameTooltip from '../common/GameTooltip';
 
 const SpellIcon: React.FC<{ spellName: string }> = ({ spellName }) => {
     const [iconPath, setIconPath] = useState<string | null>(null);
@@ -174,6 +175,7 @@ const SpellPreparationPanel: React.FC = () => {
                                             <div className={styles.spellInfo}>
                                                 <div className={styles.spellHeaderRow}>
                                                     <span className={styles.spellName}>{spell.name}</span>
+                                                    <GameTooltip text="View in Codex">
                                                     <button
                                                         className={styles.infoBtn}
                                                         onClick={(e) => {
@@ -184,10 +186,10 @@ const SpellPreparationPanel: React.FC = () => {
                                                                 content: <Codex isOpen={true} onClose={() => { }} initialDeepLink={{ category: 'magic', entryId: spell.name }} isPage={true} />
                                                             });
                                                         }}
-                                                        title="View in Codex"
                                                     >
                                                         <Info size={14} />
                                                     </button>
+                                                    </GameTooltip>
                                                 </div>
                                                 <span className={styles.spellMeta}>Lvl {spell.level} • {spell.school}</span>
                                             </div>

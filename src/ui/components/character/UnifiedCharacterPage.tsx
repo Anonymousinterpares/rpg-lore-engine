@@ -12,6 +12,7 @@ import XPBar from './XPBar';
 import HealthBar from './HealthBar';
 import Codex from '../codex/Codex';
 import { Shield, Zap, Heart, Footprints, Info, Award, BookOpen, Users, CheckCircle2 as Check, Lock } from 'lucide-react';
+import GameTooltip from '../common/GameTooltip';
 import { PaperdollItem, SlotId } from '../paperdoll/types';
 import { getACBonus, getStatBonus } from '../../utils/effectiveStats';
 import { DataManager } from '../../../ruleset/data/DataManager';
@@ -169,9 +170,9 @@ const UnifiedCharacterPage: React.FC = () => {
                         const hasPending = (pendingASI[ab] || 0) > 0;
                         const canAdd = totalASIPoints > 0 && usedASIPoints < totalASIPoints && val < 20;
                         return (
+                            <GameTooltip text={statBuff.value ? statBuff.sources.join(', ') : undefined}>
                             <div key={ab} className={`${styles.abilityRow} ${hasPending ? styles.rowPending : ''}`}
-                                onClick={() => openCodex('mechanics', `ability_${ab.toLowerCase()}`)}
-                                title={statBuff.value ? statBuff.sources.join(', ') : undefined}>
+                                onClick={() => openCodex('mechanics', `ability_${ab.toLowerCase()}`)}>
                                 <span className={styles.profEmpty} />{/* spacer to align with saving throw proficiency markers */}
                                 <span className={styles.abName}>{ab}</span>
                                 <span className={styles.abScore}>
@@ -190,6 +191,7 @@ const UnifiedCharacterPage: React.FC = () => {
                                         onClick={() => setPendingASI(prev => ({...prev, [ab]: (prev[ab]||0)+1}))}>+</button>
                                 </div>
                             </div>
+                            </GameTooltip>
                         );
                     })}
 
@@ -245,7 +247,8 @@ const UnifiedCharacterPage: React.FC = () => {
                     />
 
                     <div className={styles.combatMetrics}>
-                        <div className={styles.metricBox} onClick={() => openCodex('mechanics', 'combat_ac')} style={{cursor:'pointer'}} title={acBonusData.value ? acBonusData.sources.join(', ') : undefined}>
+                        <GameTooltip text={acBonusData.value ? acBonusData.sources.join(', ') : undefined}>
+                        <div className={styles.metricBox} onClick={() => openCodex('mechanics', 'combat_ac')} style={{cursor:'pointer'}}>
                             <div className={styles.metricVal}>
                                 {pc.ac + acBonusData.value}
                                 {acBonusData.value !== 0 && (
@@ -256,6 +259,7 @@ const UnifiedCharacterPage: React.FC = () => {
                             </div>
                             <div className={styles.metricLbl}><Shield size={12} /> AC <Info size={8} className={styles.metricInfo} /></div>
                         </div>
+                        </GameTooltip>
                         <div className={styles.metricBox} onClick={() => openCodex('mechanics', 'combat_initiative')} style={{cursor:'pointer'}}>
                             <div className={styles.metricVal}>{fmtMod(getMod(stats.DEX || 10))}</div>
                             <div className={styles.metricLbl}><Zap size={12} /> Init <Info size={8} className={styles.metricInfo} /></div>
@@ -322,9 +326,9 @@ const UnifiedCharacterPage: React.FC = () => {
                                             <span className={styles.skillName}>{sn}</span>
                                             {eTier > 0 && <span className={styles.tierTag} style={{color:TIER_COLORS[eTier], cursor:'pointer'}} onClick={(e) => {e.stopPropagation(); openCodex('mechanics', 'skill_proficiency_tiers');}}>{TIER_NAMES[eTier]}</span>}
                                             <span className={styles.skillMod}>{fmtMod(mod)}</span>
-                                            <span className={styles.lockSlot} title={lockReason || undefined}>
+                                            <GameTooltip text={lockReason || undefined}><span className={styles.lockSlot}>
                                                 {showLock ? <Lock size={10} className={styles.lockIcon} /> : null}
-                                            </span>
+                                            </span></GameTooltip>
                                             <button className={styles.infoBtn} onClick={() => openCodex('skills', sn)}><Info size={10} /></button>
                                             <div className={styles.pmSlotSm}>
                                                 <button className={styles.minusBtn} style={{width:16,height:16,fontSize:'0.65rem',visibility:pAdv>0?'visible':'hidden'}}

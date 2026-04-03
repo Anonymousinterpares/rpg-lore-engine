@@ -1,6 +1,7 @@
 import React from 'react';
 import { Currency } from '../../../ruleset/combat/CurrencyEngine';
 import styles from './CurrencyDisplay.module.css';
+import GameTooltip from './GameTooltip';
 
 interface CurrencyDisplayProps {
     currency: Currency;
@@ -27,9 +28,9 @@ const CurrencyDisplay: React.FC<CurrencyDisplayProps> = ({ currency, showTooltip
                 <React.Fragment key={part.unit}>
                     {idx > 0 && <span className={styles.separator}>, </span>}
                     {showTooltips ? (
+                        <GameTooltip text={part.tooltip}>
                         <span
                             className={styles.coinGroup}
-                            title={part.tooltip}
                             onClick={onCodexClick}
                             style={{ cursor: onCodexClick ? 'pointer' : 'default' }}
                         >
@@ -42,6 +43,7 @@ const CurrencyDisplay: React.FC<CurrencyDisplayProps> = ({ currency, showTooltip
                                 {part.unit}
                             </span>
                         </span>
+                        </GameTooltip>
                     ) : (
                         <span className={styles.coinGroup}>
                             <span className={styles.coinValue}>{part.value}</span>

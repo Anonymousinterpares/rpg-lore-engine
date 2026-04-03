@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './LocationPanel.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
 import { MapPin, Info, Trees, Mountain, Waves, Landmark, Compass, Pickaxe, Users, Route } from 'lucide-react';
+import GameTooltip from '../common/GameTooltip';
 
 interface Poi {
     id: string;
@@ -90,16 +91,17 @@ const LocationPanel: React.FC<LocationPanelProps> = ({
                 </div>
                 <div className={styles.headerActions}>
                     {onCompassClick && (
+                        <GameTooltip text="Open Navigation & Skills Menu">
                         <button
                             className={styles.compassButton}
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onCompassClick();
                             }}
-                            title="Open Navigation & Skills Menu"
                         >
                             <Compass size={24} />
                         </button>
+                        </GameTooltip>
                     )}
                 </div>
             </div>
@@ -181,32 +183,35 @@ const LocationPanel: React.FC<LocationPanelProps> = ({
                                                     <span className={styles.thinkingText}>Listening</span>
                                                 </div>
                                             ) : (
+                                                <GameTooltip text={`Talk to ${npc.name}`}>
                                                 <button
                                                     className={styles.npcActionButton}
                                                     onClick={() => onTalkToNpc?.(npc.id)}
-                                                    title={`Talk to ${npc.name}`}
                                                     disabled={!!talkingNpcId} // Disable all buttons while talking
                                                 >
                                                     💬 Talk
                                                 </button>
+                                                </GameTooltip>
                                             )}
                                             {talkingNpcId === npc.id && (
+                                                <GameTooltip text="End Conversation">
                                                 <button
                                                     className={`${styles.npcActionButton} ${styles.endTalkButton}`}
                                                     onClick={() => onTalkToNpc?.('__end__')}
-                                                    title="End Conversation"
                                                 >
                                                     🚪 Exit
                                                 </button>
+                                                </GameTooltip>
                                             )}
                                             {npc.isMerchant && (
+                                                <GameTooltip text={`Trade with ${npc.name}`}>
                                                 <button
                                                     className={styles.npcActionButton}
                                                     onClick={() => onTradeWithNpc?.(npc.id)}
-                                                    title={`Trade with ${npc.name}`}
                                                 >
                                                     🛒 Trade
                                                 </button>
+                                                </GameTooltip>
                                             )}
                                         </div>
                                     </div>

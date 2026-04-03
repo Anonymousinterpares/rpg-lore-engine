@@ -3,6 +3,7 @@ import styles from './AbilitiesFlyout.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
 import { X, Zap } from 'lucide-react';
 import { CombatAbility } from '../../../ruleset/combat/AbilityParser';
+import GameTooltip from '../common/GameTooltip';
 
 interface AbilitiesFlyoutProps {
     abilities: CombatAbility[];
@@ -33,12 +34,12 @@ export const AbilitiesFlyout: React.FC<AbilitiesFlyoutProps> = ({
                     const canUse = !hasUsage || (ability.usage && ability.usage.current > 0);
 
                     return (
+                        <GameTooltip text={ability.description}>
                         <button
                             key={ability.name}
                             className={`${styles.abilityItem} ${parchmentStyles.button}`}
                             onClick={() => canUse && onUse(ability)}
                             disabled={!canUse}
-                            title={ability.description}
                         >
                             <div className={styles.abilityHeader}>
                                 <span className={styles.abilityName}>{ability.name}</span>
@@ -53,6 +54,7 @@ export const AbilitiesFlyout: React.FC<AbilitiesFlyoutProps> = ({
                                 {!hasUsage && <span className={styles.passiveTag}>Passive/Perpetual</span>}
                             </div>
                         </button>
+                        </GameTooltip>
                     );
                 })}
                 {abilities.length === 0 && (

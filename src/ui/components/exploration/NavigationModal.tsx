@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './NavigationModal.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
 import { X, Map as MapIcon, Compass, Wind, Plane, EyeOff } from 'lucide-react';
+import GameTooltip from '../common/GameTooltip';
 import { useGameState } from '../../hooks/useGameState';
 
 interface NavigationModalProps {
@@ -53,15 +54,16 @@ const NavigationModal: React.FC<NavigationModalProps> = ({ onClose }) => {
                 <div className={styles.section}>
                     <h3 className={styles.sectionTitle}>Mental & Physical Skills</h3>
                     <div className={styles.actionGrid}>
+                        <GameTooltip text="Survey the surroundings to reveal hidden paths and uncharted terrain features. Requires Cartographer's tools, Ink, and Parchment.">
                         <button
                             className={styles.actionButton}
                             onClick={() => handleAction('/survey')}
-                            title="Survey the surroundings to reveal hidden paths and uncharted terrain features. Requires Cartographer's tools, Ink, and Parchment."
                         >
                             <MapIcon size={24} className={styles.actionIcon} />
                             <span className={styles.actionName}>Survey Area</span>
                             <span className={styles.actionCost}>Uses Supplies</span>
                         </button>
+                        </GameTooltip>
                     </div>
                 </div>
 
@@ -74,17 +76,18 @@ const NavigationModal: React.FC<NavigationModalProps> = ({ onClose }) => {
                             explorationSpells.map(spell => {
                                 const isDisabled = isBlind && spell.level >= 3;
                                 return (
+                                    <GameTooltip text={isDisabled ? "Blocked by Exploration Blindness" : `Cast ${spell.name}`}>
                                     <button
                                         key={spell.name}
                                         className={styles.actionButton}
                                         onClick={() => handleAction(spell.cmd)}
                                         disabled={isDisabled}
-                                        title={isDisabled ? "Blocked by Exploration Blindness" : `Cast ${spell.name}`}
                                     >
                                         <div className={styles.actionIcon}>{spell.icon}</div>
                                         <span className={styles.actionName}>{spell.name}</span>
                                         <span className={styles.actionCost}>Level {spell.level}</span>
                                     </button>
+                                    </GameTooltip>
                                 );
                             })
                         )}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styles from './InventoryGrid.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
 import { Package, Sword, Shield, FlaskConical, Scroll, Coins, ChevronDown } from 'lucide-react';
+import GameTooltip from '../common/GameTooltip';
 import ItemContextMenu from './ItemContextMenu';
 import ItemDatasheet from './ItemDatasheet';
 import { DataManager } from '../../../ruleset/data/DataManager';
@@ -132,13 +133,14 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
             <div className={styles.header}>
                 <div className={styles.titleRow}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <GameTooltip text={isCollapsed ? "Expand Inventory" : "Collapse Inventory"}>
                         <button
                             className={`${styles.toggleBtn} ${isCollapsed ? '' : styles.rotated}`}
                             onClick={() => setIsCollapsed(!isCollapsed)}
-                            title={isCollapsed ? "Expand Inventory" : "Collapse Inventory"}
                         >
                             <ChevronDown size={18} />
                         </button>
+                        </GameTooltip>
                         <h3 className={parchmentStyles.heading} style={{ margin: 0 }}>Quick Inventory</h3>
                     </div>
                     <div className={styles.gold}>
@@ -183,8 +185,8 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                         'very-rare': '#a335ee',
                         legendary: '#ff8000',
                     };
-                    return <div
-                        key={item.instanceId || item.id}
+                    return <GameTooltip key={item.instanceId || item.id} text={`${item.name} (${item.type})`}>
+                    <div
                         className={`${styles.itemSlot} ${item.equipped ? styles.equipped : ''}`}
                         style={{
                             ...(rarityBg[rarity] ? { background: rarityBg[rarity] } : {}),
@@ -192,7 +194,6 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                         }}
                         onClick={() => onItemClick?.(item)}
                         onContextMenu={(e) => handleContextMenu(e, item)}
-                        title={`${item.name} (${item.type})`}
                         draggable
                         onDragStart={(e) => {
                             e.dataTransfer.setData('item', JSON.stringify(item));
@@ -211,7 +212,8 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                             const perceivedRarity = ((item as any).rarity || '').toLowerCase().replace(' ', '-');
                             return <div className={styles.equippedBadge} style={{ background: badgeColors[perceivedRarity] || '#888', right: 'auto', left: 2, color: '#000', fontWeight: 700 }}>?</div>;
                         })()}
-                    </div>;
+                    </div>
+                    </GameTooltip>;
                 })}
                 {/* Fill empty slots */}
                 {[...Array(Math.max(0, maxSlots - items.length))].map((_, i) => (
@@ -221,24 +223,26 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: 'var(--spacing-sm)' }}>
                 {hasCombatLoot && (
+                    <GameTooltip text="View loot from recent combat">
                     <button
                         className={`${styles.lootBtn} ${styles.hasLoot}`}
                         onClick={() => setShowLoot(!showLoot)}
-                        title="View loot from recent combat"
                     >
                         <Coins size={14} />
                         Combat Loot ({combatLoot?.length})
                     </button>
+                    </GameTooltip>
                 )}
 
+                <GameTooltip text={hasDroppedItems ? "View items at current location" : "No items on the ground"}>
                 <button
                     className={`${styles.droppedItemsBtn} ${hasDroppedItems ? styles.hasItems : ''}`}
                     onClick={() => hasDroppedItems && setShowDropped(!showDropped)}
-                    title={hasDroppedItems ? "View items at current location" : "No items on the ground"}
                 >
                     <Package size={14} />
                     {hasDroppedItems ? `Dropped Items (${droppedItems?.length})` : 'No items nearby'}
                 </button>
+                </GameTooltip>
             </div>
 
             {showDropped && hasDroppedItems && (

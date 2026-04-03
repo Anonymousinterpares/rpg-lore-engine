@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './HandRings.module.css';
 import EquipmentSlot from './EquipmentSlot';
 import { PaperdollItem, SlotConfig, SlotId } from './types';
+import GameTooltip from '../common/GameTooltip';
 
 interface HandRingsProps {
     hand: 'left' | 'right';
@@ -34,7 +35,8 @@ const HandRings: React.FC<HandRingsProps> = ({ hand, sex, equippedSlots, onDrop,
             <div className={styles.handLabel}>{hand === 'left' ? 'Left Hand' : 'Right Hand'}</div>
             <div className={styles.ringSlots}>
                 {slotConfigs.map((slotConfig, i) => (
-                    <div key={slotConfig.id} className={styles.ringSlotWrapper} title={FINGER_LABELS[i]}>
+                    <GameTooltip key={slotConfig.id} text={FINGER_LABELS[i]}>
+                    <div className={styles.ringSlotWrapper}>
                         <EquipmentSlot
                             config={slotConfig}
                             item={equippedSlots[slotConfig.id] || null}
@@ -45,6 +47,7 @@ const HandRings: React.FC<HandRingsProps> = ({ hand, sex, equippedSlots, onDrop,
                         />
                         <span className={styles.fingerLabel}>{FINGER_LABELS[i][0]}</span>
                     </div>
+                    </GameTooltip>
                 ))}
             </div>
         </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './CombatantStatusCard.module.css';
 import { Combatant, GridPosition } from '../../../ruleset/schemas/CombatSchema';
+import GameTooltip from '../common/GameTooltip';
 
 interface CombatantStatusCardProps {
     combatant: Combatant;
@@ -78,10 +79,12 @@ const CombatantStatusCard: React.FC<CombatantStatusCardProps> = ({
 
             <div className={styles.conditions}>
                 {combatant.statusEffects.map((effect: any) => (
-                    <span key={effect.id} className={styles.conditionTag} title={effect.stat && effect.modifier ? `${effect.stat.toUpperCase()} ${effect.modifier > 0 ? '+' : ''}${effect.modifier}` : undefined}>
+                    <GameTooltip key={effect.id} text={effect.stat && effect.modifier ? `${effect.stat.toUpperCase()} ${effect.modifier > 0 ? '+' : ''}${effect.modifier}` : undefined}>
+                    <span className={styles.conditionTag}>
                         {effect.name || effect.id}
                         {effect.duration != null && ` (${effect.duration})`}
                     </span>
+                    </GameTooltip>
                 ))}
             </div>
         </div>

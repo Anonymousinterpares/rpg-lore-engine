@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import styles from './SpellbookFlyout.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
+import tip from '../../styles/tooltip.module.css';
 import { X, Sparkles, Info } from 'lucide-react';
 import { Spell } from '../../../ruleset/schemas/SpellSchema';
 
@@ -262,15 +263,14 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
                 )}
             </div>
 
-            {/* Spell Info Tooltip — portal with click-anywhere-to-close backdrop */}
+            {/* Spell Info Tooltip — uses shared tooltip styles */}
             {infoTooltip && ReactDOM.createPortal(
                 <>
-                    <div className={styles.tooltipBackdrop} onClick={() => setInfoTooltip(null)} />
+                    <div className={tip.backdrop} onClick={() => setInfoTooltip(null)} />
                     <div
-                        className={styles.spellInfoTooltip}
+                        className={tip.tooltip}
                         ref={(el) => {
                             if (!el) return;
-                            // Position after render: measure actual height, shift up if overflowing
                             const tipH = el.offsetHeight;
                             const tipW = el.offsetWidth;
                             let top = infoTooltip.rect.bottom + 6;
@@ -285,25 +285,25 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
                             el.style.left = `${left}px`;
                         }}
                     >
-                        <div className={styles.tipHeader}>
-                            <span className={styles.tipName}>{infoTooltip.spell.name}</span>
-                            <span className={styles.tipSchool}>{infoTooltip.spell.school} — Level {infoTooltip.spell.level}</span>
+                        <div className={tip.header}>
+                            <span className={tip.name}>{infoTooltip.spell.name}</span>
+                            <span className={tip.subtitle}>{infoTooltip.spell.school} — Level {infoTooltip.spell.level}</span>
                         </div>
-                        <div className={styles.tipRow}>
+                        <div className={tip.row}>
                             <span>Range: {infoTooltip.spell.range}</span>
                             <span>Time: {infoTooltip.spell.time}</span>
                         </div>
                         {(infoTooltip.spell as any).duration && (
-                            <div className={styles.tipRow}>
+                            <div className={tip.row}>
                                 <span>Duration: {(infoTooltip.spell as any).duration}</span>
                             </div>
                         )}
                         {(infoTooltip.spell as any).damage?.dice && (
-                            <div className={styles.tipDamage}>
+                            <div className={tip.highlight}>
                                 Damage: {(infoTooltip.spell as any).damage.dice} {(infoTooltip.spell as any).damage.type || ''}
                             </div>
                         )}
-                        <div className={styles.tipDesc}>{infoTooltip.spell.description}</div>
+                        <div className={tip.desc}>{infoTooltip.spell.description}</div>
                     </div>
                 </>,
                 document.body

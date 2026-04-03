@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './InitiativeTracker.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
 import { ChevronRight } from 'lucide-react';
+import GameTooltip from '../common/GameTooltip';
 
 interface Combatant {
     id: string;
@@ -47,16 +48,17 @@ const InitiativeTracker: React.FC<InitiativeTrackerProps> = ({
                                 <span className={styles.name}>{c.name}</span>
                                 <span className={styles.init}>({c.initiative})</span>
                                 {!c.isPlayer && (
+                                    <GameTooltip text="View Details">
                                     <button
                                         className={styles.inspectBtn}
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             onInspect?.(c.id);
                                         }}
-                                        title="View Details"
                                     >
                                         i
                                     </button>
+                                    </GameTooltip>
                                 )}
                             </div>
                             <div className={styles.hpContainer}>

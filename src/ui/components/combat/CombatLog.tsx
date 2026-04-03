@@ -4,6 +4,7 @@ import styles from './CombatLog.module.css';
 import terminalStyles from '../../styles/terminal.module.css';
 
 import { CombatLogEntry } from '../../../ruleset/schemas/CombatSchema';
+import GameTooltip from '../common/GameTooltip';
 
 // interface LogEntry { ... } // Replaced by import
 
@@ -43,13 +44,13 @@ const CombatLog: React.FC<CombatLogProps> = ({ logs, className = '' }) => {
                         <span className={styles.message}>
                             {log.message}
                             {(log as any).details?.rollDetails?.modifiers && (
-                                <span className={styles.rollDetail} title="Roll Breakdown">
+                                <GameTooltip text="Roll Breakdown"><span className={styles.rollDetail}>
                                     {' '}(
                                     {(log as any).details.rollDetails.modifiers.map((m: any, i: number) =>
                                         `${i > 0 ? ', ' : ''}${m.label}: ${m.value >= 0 ? '+' : ''}${m.value}`
                                     ).join('')}
                                     )
-                                </span>
+                                </span></GameTooltip>
                             )}
                         </span>
                     </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './ActionButton.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
+import tip from '../../styles/tooltip.module.css';
 
 interface ActionButtonProps {
     icon: React.ReactNode;
@@ -25,20 +26,24 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
     active = false,
     className = ''
 }) => {
+    const tipText = disabled && disabledReason ? `Disabled: ${disabledReason}` : tooltip;
+
     return (
-        <button
-            className={`${styles.actionButton} ${parchmentStyles.button} ${active ? styles.active : ''} ${className}`}
-            onClick={onClick}
-            disabled={disabled}
-            title={disabled && disabledReason ? `Disabled: ${disabledReason}` : tooltip}
-        >
-            <div className={styles.iconWrapper}>
-                {icon}
-                {hotkey && <span className={styles.hotkey}>{hotkey}</span>}
-            </div>
-            <span className={styles.label}>{label}</span>
-            {disabled && <div className={styles.disabledOverlay} />}
-        </button>
+        <div className={tip.hoverWrap}>
+            <button
+                className={`${styles.actionButton} ${parchmentStyles.button} ${active ? styles.active : ''} ${className}`}
+                onClick={onClick}
+                disabled={disabled}
+            >
+                <div className={styles.iconWrapper}>
+                    {icon}
+                    {hotkey && <span className={styles.hotkey}>{hotkey}</span>}
+                </div>
+                <span className={styles.label}>{label}</span>
+                {disabled && <div className={styles.disabledOverlay} />}
+            </button>
+            {tipText && <div className={tip.hoverTip}>{tipText}</div>}
+        </div>
     );
 };
 

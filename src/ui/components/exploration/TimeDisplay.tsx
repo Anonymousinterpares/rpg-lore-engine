@@ -5,6 +5,7 @@ import { useGameState } from '../../hooks/useGameState';
 import { WorldClockEngine } from '../../../ruleset/combat/WorldClockEngine';
 import { TravelPace } from '../../../ruleset/schemas/BaseSchemas';
 import { Footprints, ShieldAlert, Zap, Ghost } from 'lucide-react';
+import GameTooltip from '../common/GameTooltip';
 
 const TimeDisplay: React.FC = () => {
     const { state, engine } = useGameState();
@@ -32,38 +33,42 @@ const TimeDisplay: React.FC = () => {
     return (
         <div className={styles.timeDisplay}>
             <div className={styles.paceSection}>
-                <label className={styles.paceLabel} title="Determine your speed and awareness while traveling across the map.">
+                <GameTooltip text="Determine your speed and awareness while traveling across the map."><label className={styles.paceLabel}>
                     Travel Mode
-                </label>
+                </label></GameTooltip>
                 <div className={styles.modeButtonGroup}>
+                    <GameTooltip text={getPaceTooltip('Cautious')}>
                     <button
                         className={`${styles.modeButton} ${state.travelPace === 'Cautious' ? styles.modeButtonActive : ''}`}
                         onClick={() => handlePaceChange('Cautious')}
-                        title={getPaceTooltip('Cautious')}
                     >
                         <ShieldAlert size={16} />
                     </button>
+                    </GameTooltip>
+                    <GameTooltip text={getPaceTooltip('Normal')}>
                     <button
                         className={`${styles.modeButton} ${state.travelPace === 'Normal' ? styles.modeButtonActive : ''}`}
                         onClick={() => handlePaceChange('Normal')}
-                        title={getPaceTooltip('Normal')}
                     >
                         <Footprints size={16} />
                     </button>
+                    </GameTooltip>
+                    <GameTooltip text={getPaceTooltip('Forced March')}>
                     <button
                         className={`${styles.modeButton} ${state.travelPace === 'Forced March' ? styles.modeButtonActive : ''}`}
                         onClick={() => handlePaceChange('Forced March')}
-                        title={getPaceTooltip('Forced March')}
                     >
                         <Zap size={16} />
                     </button>
+                    </GameTooltip>
+                    <GameTooltip text={getPaceTooltip('Stealth')}>
                     <button
                         className={`${styles.modeButton} ${state.travelPace === 'Stealth' ? styles.modeButtonActive : ''}`}
                         onClick={() => handlePaceChange('Stealth')}
-                        title={getPaceTooltip('Stealth')}
                     >
                         <Ghost size={16} />
                     </button>
+                    </GameTooltip>
                 </div>
             </div>
 

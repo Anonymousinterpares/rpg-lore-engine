@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './ConditionDisplay.module.css';
+import GameTooltip from '../common/GameTooltip';
 
 interface ConditionItem {
     id: string;
@@ -33,13 +34,13 @@ const ConditionDisplay: React.FC<ConditionDisplayProps> = ({ conditions, classNa
                 const name = getName(condition);
                 const dur = getDuration(condition);
                 return (
+                    <GameTooltip key={`${name}-${i}`} text={dur !== undefined ? `${name} (${dur} rounds)` : name}>
                     <span
-                        key={`${name}-${i}`}
                         className={`${styles.badge} ${getConditionColor(name)}`}
-                        title={dur !== undefined ? `${name} (${dur} rounds)` : name}
                     >
                         {name}{dur !== undefined ? ` (${dur})` : ''}
                     </span>
+                    </GameTooltip>
                 );
             })}
         </div>

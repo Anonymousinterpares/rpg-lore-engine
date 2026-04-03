@@ -6,6 +6,7 @@ import XPBar from './XPBar';
 import ConditionDisplay from './ConditionDisplay';
 import SpellSlotTracker from './SpellSlotTracker';
 import { Sword, Shield, Zap } from 'lucide-react';
+import GameTooltip from '../common/GameTooltip';
 
 import { useGameState } from '../../hooks/useGameState';
 import { MechanicsEngine } from '../../../ruleset/combat/MechanicsEngine';
@@ -37,22 +38,26 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({ onCharacter, onSkills }
 
     return (
         <div className={styles.panel}>
-            <div className={styles.header} onClick={onCharacter} style={{ cursor: 'pointer' }} title="Open Character Sheet">
+            <GameTooltip text="Open Character Sheet">
+            <div className={styles.header} onClick={onCharacter} style={{ cursor: 'pointer' }}>
                 <h2 className={styles.name}>{char.name}</h2>
+                <GameTooltip text={(char as any).skillPoints?.available > 0 ? 'Open Skill Mastery' : undefined}>
                 <div
                     className={`${styles.level} ${(char as any).skillPoints?.available > 0 ? styles.levelGlow : ''}`}
                     onClick={(e) => { if ((char as any).skillPoints?.available > 0 && onSkills) { e.stopPropagation(); onSkills(); } }}
                     style={(char as any).skillPoints?.available > 0 ? { cursor: 'pointer' } : undefined}
-                    title={(char as any).skillPoints?.available > 0 ? 'Open Skill Mastery' : undefined}
                 >
                     Level {char.level} {char.class}
                     {(char as any).skillPoints?.available > 0 && <span className={styles.spBadge}>{(char as any).skillPoints.available} SP</span>}
                     {(char as any)._pendingASI > 0 && <span className={styles.asiBadge}>ASI</span>}
                 </div>
+                </GameTooltip>
             </div>
+            </GameTooltip>
 
             <div className={styles.statsRow}>
-                <div className={styles.statBox} title={acBonus.value ? acBonus.sources.join(', ') : undefined}>
+                <GameTooltip text={acBonus.value ? acBonus.sources.join(', ') : undefined}>
+                <div className={styles.statBox}>
                     <Shield size={16} />
                     <span className={styles.statValue}>
                         {char.ac + acBonus.value}
@@ -64,6 +69,7 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({ onCharacter, onSkills }
                     </span>
                     <span className={styles.statLabel}>AC</span>
                 </div>
+                </GameTooltip>
                 <div className={styles.statBox}>
                     <Zap size={16} />
                     <span className={styles.statValue}>{initiativeStr}</span>
@@ -80,7 +86,8 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({ onCharacter, onSkills }
                 {Object.entries(char.stats).map(([stat, val]) => {
                     const bonus = getStatBonus(effects, stat);
                     return (
-                        <div key={stat} className={styles.abilityBox} title={bonus.value ? bonus.sources.join(', ') : undefined}>
+                        <GameTooltip key={stat} text={bonus.value ? bonus.sources.join(', ') : undefined}>
+                        <div className={styles.abilityBox}>
                             <div className={styles.abilityLabel}>{stat}</div>
                             <div className={styles.abilityValue}>
                                 {(val as number) + bonus.value}
@@ -91,6 +98,7 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({ onCharacter, onSkills }
                                 )}
                             </div>
                         </div>
+                        </GameTooltip>
                     );
                 })}
             </div>

@@ -2,6 +2,7 @@ import React from 'react';
 import parchmentStyles from '../../styles/parchment.module.css';
 import styles from './Header.module.css';
 import { Shield, Menu, Settings, Users, Book, User, Backpack } from 'lucide-react';
+import GameTooltip from '../common/GameTooltip';
 import TimeDisplay from '../exploration/TimeDisplay';
 
 interface HeaderProps {
@@ -28,15 +29,21 @@ const Header: React.FC<HeaderProps> = ({ onLobby, onSettings, onCodex, onCharact
                     <Users size={18} />
                     <span>Lobby</span>
                 </button>
-                <button className={parchmentStyles.button} onClick={onCharacter} title="Character Sheet">
+                <GameTooltip text="Character Sheet">
+                <button className={parchmentStyles.button} onClick={onCharacter}>
                     <User size={18} />
                 </button>
-                <button className={parchmentStyles.button} onClick={onEquipment} title="Equipment">
+                </GameTooltip>
+                <GameTooltip text="Equipment">
+                <button className={parchmentStyles.button} onClick={onEquipment}>
                     <Backpack size={18} />
                 </button>
-                <button className={parchmentStyles.button} onClick={onCodex} title="Codex">
+                </GameTooltip>
+                <GameTooltip text="Codex">
+                <button className={parchmentStyles.button} onClick={onCodex}>
                     <Book size={18} />
                 </button>
+                </GameTooltip>
                 <button className={parchmentStyles.button} onClick={onSettings}>
                     <Settings size={18} />
                 </button>

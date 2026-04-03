@@ -5,6 +5,7 @@ import { ActionButton } from './ActionButton';
 import { SpellbookFlyout } from './SpellbookFlyout';
 import { AbilitiesFlyout } from './AbilitiesFlyout';
 import { Sword, Sparkles, Shield, Zap, Move, ChevronRight, FastForward, Star, Target, Dices, DoorOpen } from 'lucide-react';
+import GameTooltip from '../common/GameTooltip';
 import { useGameState } from '../../hooks/useGameState';
 import { TacticalOption, TacticalSubOption } from '../../../ruleset/combat/grid/CombatAnalysisEngine';
 import { TacticalFlyout } from './TacticalFlyout';
@@ -149,10 +150,10 @@ export const CombatActionBar: React.FC = () => {
         return (
             <div className={styles.actionBar}>
                 <div className={styles.group}>
+                    <GameTooltip text={deathSaves ? `Successes: ${deathSaves.successes}/3 | Failures: ${deathSaves.failures}/3` : 'Roll a Death Save'}>
                     <button
                         className={styles.deathSaveButton}
                         onClick={() => handleAction('death_save')}
-                        title={deathSaves ? `Successes: ${deathSaves.successes}/3 | Failures: ${deathSaves.failures}/3` : 'Roll a Death Save'}
                     >
                         <Dices size={32} />
                         <span className={styles.deathSaveLabel}>Roll Death Save</span>
@@ -168,6 +169,7 @@ export const CombatActionBar: React.FC = () => {
                             </span>
                         )}
                     </button>
+                    </GameTooltip>
                 </div>
             </div>
         );

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styles from './DroppedItemsPanel.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
 import { Package, Sword, Shield, FlaskConical, Scroll, X, CheckSquare, Square } from 'lucide-react';
+import GameTooltip from '../common/GameTooltip';
 import ItemContextMenu from './ItemContextMenu';
 import ItemDatasheet from './ItemDatasheet';
 import { DataManager } from '../../../ruleset/data/DataManager';
@@ -145,8 +146,8 @@ const DroppedItemsPanel: React.FC<DroppedItemsPanelProps> = ({
                         legendary: '#ff8000',
                     };
                     return (
+                        <GameTooltip key={id} text={`${item.name} (${item.weight} lb)`}>
                         <div
-                            key={id}
                             className={`${styles.itemSlot} ${selectedIds.has(id) ? styles.selected : ''}`}
                             style={{
                                 ...(rarityBg[rarity] ? { background: rarityBg[rarity] } : {}),
@@ -154,7 +155,6 @@ const DroppedItemsPanel: React.FC<DroppedItemsPanelProps> = ({
                             }}
                             onClick={(e) => handleItemClick(e, item)}
                             onContextMenu={(e) => handleContextMenu(e, item)}
-                            title={`${item.name} (${item.weight} lb)`}
                             draggable
                             onDragStart={(e) => {
                                 e.dataTransfer.setData('item', JSON.stringify(item));
@@ -167,6 +167,7 @@ const DroppedItemsPanel: React.FC<DroppedItemsPanelProps> = ({
                             {item.quantity > 1 && <span className={styles.quantity}>{item.quantity}</span>}
                             {selectedIds.has(id) && <div className={styles.checkMark}><CheckSquare size={10} /></div>}
                         </div>
+                        </GameTooltip>
                     );
                 })}
                 {items.length === 0 && <div className={styles.emptyText}>No items on the ground.</div>}

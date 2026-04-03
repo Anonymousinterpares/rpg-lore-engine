@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import styles from './EquipmentSlot.module.css';
 import { PaperdollItem, SlotConfig } from './types';
 import ItemTooltip from './ItemTooltip';
+import GameTooltip from '../common/GameTooltip';
 import {
     Sword, Shield, Crown, Footprints, Shirt,
     CircleDot, Target, Gem, Wind,
@@ -102,6 +103,7 @@ const EquipmentSlot: React.FC<EquipmentSlotProps> = ({ config, item, onDrop, onU
 
     return (
         <>
+            <GameTooltip text={!item ? config.label : undefined}>
             <div
                 ref={slotRef}
                 className={`${styles.slot} ${styles[size]} ${dragOver ? styles.dragOver : ''} ${item ? styles.filled : ''}`}
@@ -114,7 +116,6 @@ const EquipmentSlot: React.FC<EquipmentSlotProps> = ({ config, item, onDrop, onU
                 onContextMenu={handleContextMenu}
                 onMouseEnter={() => item && setShowTooltip(true)}
                 onMouseLeave={() => setShowTooltip(false)}
-                title={!item ? config.label : undefined}
             >
                 {item ? (
                     <div className={styles.itemIcon}>
@@ -130,6 +131,7 @@ const EquipmentSlot: React.FC<EquipmentSlotProps> = ({ config, item, onDrop, onU
                     <span className={styles.slotLabel}>{config.label}</span>
                 )}
             </div>
+            </GameTooltip>
 
             {item && (
                 <ItemTooltip item={item} anchorRect={anchorRect} visible={showTooltip} />

@@ -3,6 +3,7 @@ import styles from './WorldMapPage.module.css';
 import HexMapView from '../exploration/HexMapView';
 import { useGameState } from '../../hooks/useGameState';
 import { MapPin, Pickaxe, Leaf, Info } from 'lucide-react';
+import GameTooltip from '../common/GameTooltip';
 
 const WorldMapPage: React.FC = () => {
     const { state, engine, updateState } = useGameState();
@@ -82,9 +83,9 @@ const WorldMapPage: React.FC = () => {
         <div className={styles.container}>
             <div className={styles.mapArea}>
                 <div className={styles.zoomControls}>
-                    <button onClick={handleZoomIn} title="Zoom In">+</button>
-                    <button onClick={handleZoomOut} title="Zoom Out">-</button>
-                    <button onClick={() => setZoomMultiplier(1)} title="Reset Zoom">1:1</button>
+                    <GameTooltip text="Zoom In"><button onClick={handleZoomIn}>+</button></GameTooltip>
+                    <GameTooltip text="Zoom Out"><button onClick={handleZoomOut}>-</button></GameTooltip>
+                    <GameTooltip text="Reset Zoom"><button onClick={() => setZoomMultiplier(1)}>1:1</button></GameTooltip>
                 </div>
                 <HexMapView
                     hexes={hexData}

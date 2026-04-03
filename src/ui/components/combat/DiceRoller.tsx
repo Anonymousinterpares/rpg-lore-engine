@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import styles from './DiceRoller.module.css';
+import GameTooltip from '../common/GameTooltip';
 
 interface RollResult {
     value: number;
@@ -109,16 +110,17 @@ const DiceRoller: React.FC<DiceRollerProps> = ({ result, sides = 20, isRolling =
 
                 {/* Subtle Breakdown Info */}
                 {breakdown && Array.isArray(breakdown) && (
+                    <GameTooltip text={breakdown.map((mod: any) => `${mod.label} ${mod.value >= 0 ? '+' : ''}${mod.value}`).join(' | ')}>
                     <div
                         className={styles.breakdownInfo}
                         style={{ marginLeft: '8px', cursor: 'help', color: '#00dc82', fontSize: '0.8rem', fontWeight: 'bold' }}
-                        title={breakdown.map((mod: any) => `${mod.label} ${mod.value >= 0 ? '+' : ''}${mod.value}`).join(' | ')}
                         onClick={() => {
                             if (onOpenCodex) onOpenCodex('mechanics', 'combat_modifiers');
                         }}
                     >
                         [?]
                     </div>
+                    </GameTooltip>
                 )}
 
                 <div className={styles.mathSection}>

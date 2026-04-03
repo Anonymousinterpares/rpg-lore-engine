@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import styles from './TradeModal.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
+import tipStyles from '../../styles/tooltip.module.css';
 import { useGameState } from '../../hooks/useGameState';
 import { ShopEngine } from '../../../ruleset/combat/ShopEngine';
 import { DataManager } from '../../../ruleset/data/DataManager';
@@ -172,7 +173,7 @@ const TradeModal: React.FC<TradeModalProps> = ({ onClose, onOpenCodex }) => {
                                             {item!.isBuyback ? 'Buyback' : 'Buy'}
                                         </button>
                                         {!item!.isBuyback && (
-                                            <div className={styles.tooltipTrigger}>
+                                            <div className={tipStyles.hoverWrap}>
                                                 <button
                                                     className={`${styles.actionButton} ${styles.haggleBtn}`}
                                                     onClick={() => handleAction(`/haggle ${item!.data.name}`)}
@@ -180,7 +181,7 @@ const TradeModal: React.FC<TradeModalProps> = ({ onClose, onOpenCodex }) => {
                                                 >
                                                     Haggle
                                                 </button>
-                                                <div className={styles.tooltip}>
+                                                <div className={tipStyles.hoverTip}>
                                                     Negotiate for a better price using Persuasion.
                                                     {item!.haggleLocked && " Failed attempt! Cooldown active."}
                                                 </div>
@@ -228,29 +229,29 @@ const TradeModal: React.FC<TradeModalProps> = ({ onClose, onOpenCodex }) => {
                     </div>
 
                     <div className={styles.specialActions}>
-                        <div className={styles.tooltipTrigger}>
+                        <div className={tipStyles.hoverWrap}>
                             <button
                                 className={styles.specialBtn}
                                 onClick={() => handleAction('/intimidate')}
                             >
                                 <Zap size={16} /> Intimidate
-                                <div className={styles.tooltip}>
-                                    Force a permanent discount via Intimidation.
-                                    Risky: Failure destroys relationship.
-                                </div>
                             </button>
+                            <div className={tipStyles.hoverTip}>
+                                Force a permanent discount via Intimidation.
+                                Risky: Failure destroys relationship.
+                            </div>
                         </div>
-                        <div className={styles.tooltipTrigger}>
+                        <div className={tipStyles.hoverWrap}>
                             <button
                                 className={styles.specialBtn}
                                 onClick={() => handleAction('/deceive')}
                             >
                                 <Info size={16} /> Deceive
-                                <div className={styles.tooltip}>
-                                    Lie about your items to get 20% more gold.
-                                    Critical Failure results in being banned from shop.
-                                </div>
                             </button>
+                            <div className={tipStyles.hoverTip}>
+                                Lie about your items to get 20% more gold.
+                                Critical Failure results in being banned from shop.
+                            </div>
                         </div>
                     </div>
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './HexMapView.module.css';
 import { Pickaxe, Leaf, MapPin } from 'lucide-react';
+import GameTooltip from '../common/GameTooltip';
 
 interface HexData {
     id: string;
@@ -555,7 +556,6 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                         <div
                             key={hex.id}
                             className={`${styles.hex} ${variantClass || styles.plains} ${hex.isVisited ? styles.visited : styles.unvisited} ${hex.isCurrent ? styles.current : ''} ${isSelected ? styles.selected : ''}`}
-                            title={tooltip}
                             style={{
                                 left: `calc(50% + ${getX(hex.q, hex.r)}px)`,
                                 top: `calc(50% + ${getY(hex.q, hex.r)}px)`,
@@ -573,7 +573,7 @@ const HexMapView: React.FC<HexMapViewProps> = ({
                                 onHexContextMenu?.(hex.id, e.clientX, e.clientY);
                             }}
                         >
-                            <div className={styles.hexInner}>
+                            <div className={styles.hexInner} title={tooltip}>
                                 {showBiomeImage && hex.visualVariant && (
                                     <img
                                         src={`/assets/biomes/${biomeBase}_${hex.visualVariant}.png`}
@@ -828,13 +828,14 @@ const HexMapView: React.FC<HexMapViewProps> = ({
 
             {/* Recenter Button - Only show if draggable (World Map view) */}
             {isDraggable && (panOffset.x !== 0 || panOffset.y !== 0) && (
+                <GameTooltip text="Recenter on Player">
                 <button
                     className={styles.recenterButton}
                     onClick={() => setPanOffset({ x: 0, y: 0 })}
-                    title="Recenter on Player"
                 >
                     <MapPin size={24} />
                 </button>
+                </GameTooltip>
             )}
         </div>
     );
