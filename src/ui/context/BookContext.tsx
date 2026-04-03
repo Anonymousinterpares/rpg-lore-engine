@@ -13,33 +13,34 @@ interface BookContextType {
     pushPage: (page: BookPageData) => void;
     popPage: () => void;
     goToPage: (id: string) => void;
+    resetStack: () => void;
     activePageId: string | null;
 }
 
 const BookContext = createContext<BookContextType | undefined>(undefined);
 
-export const BookProvider: React.FC<{ children: ReactNode; initialPages?: BookPageData[]; initialActiveId?: string }> = ({ children, initialPages = [], initialActiveId }) => {
+export const BookProvider: React.FC<{ children: ReactNode; initialPages?: BookPageData[]; initialActiveId?: string; openCounter?: number }> = ({ children, initialPages = [], initialActiveId, openCounter = 0 }) => {
     const [pages, setPages] = useState<BookPageData[]>(initialPages);
     const [activePageId, setActivePageId] = useState<string | null>(initialActiveId || (initialPages.length > 0 ? initialPages[initialPages.length - 1].id : null));
     const [history, setHistory] = useState<string[]>(initialActiveId ? [initialActiveId] : []);
 
+    // Force navigate to initialActiveId whenever the book is opened (openCounter changes)
     useEffect(() => {
         if (initialActiveId) {
-            setActivePageId(initialActiveId);
-            setHistory(prev => {
-                if (prev[prev.length - 1] === initialActiveId) return prev;
-                return [...prev, initialActiveId];
-            });
-            // Also ensure it's top of stack if already exists
+            // Remove non-permanent pages (stale codex entries etc.)
             setPages(prev => {
-                const index = prev.findIndex(p => p.id === initialActiveId);
-                if (index === -1 || index === prev.length - 1) return prev;
-                const updated = [...prev];
-                const [page] = updated.splice(index, 1);
-                return [...updated, page];
+                const permanent = prev.filter(p => p.permanent);
+                const target = permanent.find(p => p.id === initialActiveId);
+                if (target) {
+                    const rest = permanent.filter(p => p.id !== initialActiveId);
+                    return [...rest, target]; // Target on top
+                }
+                return permanent;
             });
+            setActivePageId(initialActiveId);
+            setHistory([initialActiveId]);
         }
-    }, [initialActiveId]);
+    }, [initialActiveId, openCounter]);
 
     // Sync state if initialPages changes (essential for dynamic content like Settings)
     useEffect(() => {
@@ -108,8 +109,14 @@ export const BookProvider: React.FC<{ children: ReactNode; initialPages?: BookPa
         });
     }, []);
 
+    /** Remove all non-permanent pages and reset history. */
+    const resetStack = useCallback(() => {
+        setPages(prev => prev.filter(p => p.permanent));
+        setHistory(prev => prev.length > 0 ? [prev[0]] : []);
+    }, []);
+
     return (
-        <BookContext.Provider value={{ pages, pushPage, popPage, goToPage, activePageId }}>
+        <BookContext.Provider value={{ pages, pushPage, popPage, goToPage, resetStack, activePageId }}>
             {children}
         </BookContext.Provider>
     );

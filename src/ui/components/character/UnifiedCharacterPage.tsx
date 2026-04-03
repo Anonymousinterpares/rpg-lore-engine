@@ -174,9 +174,8 @@ const UnifiedCharacterPage: React.FC = () => {
                         const canAdd = totalASIPoints > 0 && usedASIPoints < totalASIPoints && val < 20;
                         return (
                             <GameTooltip text={statBuff.value ? statBuff.sources.join(', ') : undefined}>
-                            <div key={ab} className={`${styles.abilityRow} ${hasPending ? styles.rowPending : ''}`}
-                                onClick={() => openCodex('mechanics', `ability_${ab.toLowerCase()}`)}>
-                                <span className={styles.profEmpty} />{/* spacer to align with saving throw proficiency markers */}
+                            <div key={ab} className={`${styles.abilityRow} ${hasPending ? styles.rowPending : ''}`}>
+                                <button className={styles.infoBtn} onClick={() => openCodex('mechanics', `ability_${ab.toLowerCase()}`)}><Info size={10} /></button>
                                 <span className={styles.abName}>{ab}</span>
                                 <span className={styles.abScore}>
                                     {effectiveVal}

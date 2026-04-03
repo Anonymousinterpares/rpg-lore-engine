@@ -41,7 +41,6 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({ onCharacter, onSkills }
             <GameTooltip text="Open Character Sheet">
             <div className={styles.header} onClick={onCharacter} style={{ cursor: 'pointer' }}>
                 <h2 className={styles.name}>{char.name}</h2>
-                <GameTooltip text={(char as any).skillPoints?.available > 0 ? 'Open Skill Mastery' : undefined}>
                 <div
                     className={`${styles.level} ${(char as any).skillPoints?.available > 0 ? styles.levelGlow : ''}`}
                     onClick={(e) => { if ((char as any).skillPoints?.available > 0 && onSkills) { e.stopPropagation(); onSkills(); } }}
@@ -51,7 +50,6 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({ onCharacter, onSkills }
                     {(char as any).skillPoints?.available > 0 && <span className={styles.spBadge}>{(char as any).skillPoints.available} SP</span>}
                     {(char as any)._pendingASI > 0 && <span className={styles.asiBadge}>ASI</span>}
                 </div>
-                </GameTooltip>
             </div>
             </GameTooltip>
 

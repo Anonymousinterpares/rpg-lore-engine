@@ -15,9 +15,14 @@ interface BookModalProps {
 const TAB_ORDER = ['character', /* 'skills' + 'equipment' merged into character tab */ 'codex', 'world', 'world_map', 'quests', 'settings'];
 
 const BookModalContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-    const { pages, activePageId, popPage, goToPage } = useBook();
+    const { pages, activePageId, popPage, goToPage, resetStack } = useBook();
     const { state, engine, updateState } = useGameState();
     const [animating, setAnimating] = useState<string | null>(null);
+
+    const handleClose = () => {
+        resetStack();
+        onClose();
+    };
 
     // Filter to last 4 pages for display stack
     const displayStack = pages.slice(-4);
@@ -54,7 +59,7 @@ const BookModalContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     // Close on ESC
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') onClose();
+            if (e.key === 'Escape') handleClose();
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
@@ -64,7 +69,7 @@ const BookModalContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const isTutorialActive = state?.activeQuests?.some(q => q.id === 'tutorial_01' && !q.objectives.find(o => o.id === 'obj_master_booklet')?.isCompleted);
 
     return (
-        <div className={styles.bookOverlay} onClick={onClose}>
+        <div className={styles.bookOverlay} onClick={handleClose}>
             <div className={styles.bookContainer} onClick={e => e.stopPropagation()}>
                 {/* Tabs */}
                 <div className={styles.tabBar}>
@@ -112,7 +117,7 @@ const BookModalContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                             >
                                 <div className={styles.pageContent}>
                                     {isActive && (
-                                        <button className={styles.closeBtn} onClick={onClose}>
+                                        <button className={styles.closeBtn} onClick={handleClose}>
                                             <X size={24} />
                                         </button>
                                     )}

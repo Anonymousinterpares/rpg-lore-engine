@@ -38,6 +38,7 @@ const App: React.FC = () => {
     const [showLobby, setShowLobby] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
     const [bookOpen, setBookOpen] = useState(false);
+    const [bookOpenCounter, setBookOpenCounter] = useState(0);
     const [activeBookPageId, setActiveBookPageId] = useState<string>('character');
     const [isCreatingCharacter, setIsCreatingCharacter] = useState(false);
     const [isNavigationModalOpen, setIsNavigationModalOpen] = useState(false);
@@ -243,44 +244,54 @@ const App: React.FC = () => {
     ];
 
     const openCharacterSheet = () => {
+        setCodexDeepLink(undefined);
         setActiveBookPageId('character');
+        setBookOpenCounter(c => c + 1);
         setBookOpen(true);
     };
 
     const openSkillsPage = () => {
+        setCodexDeepLink(undefined);
         setActiveBookPageId('character');
+        setBookOpenCounter(c => c + 1);
         setBookOpen(true);
     };
 
     const openCodex = (category: string = 'mechanics', entryId?: string) => {
         setCodexDeepLink(entryId ? { category, entryId } : undefined);
         setActiveBookPageId('codex');
+        setBookOpenCounter(c => c + 1);
         setBookOpen(true);
     };
 
     const openEquipment = () => {
+        setCodexDeepLink(undefined);
         setActiveBookPageId('equipment');
+        setBookOpenCounter(c => c + 1);
         setBookOpen(true);
     };
 
     const openSettings = () => {
         setActiveBookPageId('settings');
+        setBookOpenCounter(c => c + 1);
         setBookOpen(true);
     };
 
     const openWorldMap = () => {
         setActiveBookPageId('world_map');
+        setBookOpenCounter(c => c + 1);
         setBookOpen(true);
     };
 
     const openQuests = () => {
         setActiveBookPageId('quests');
+        setBookOpenCounter(c => c + 1);
         setBookOpen(true);
     };
 
 
     return (
-        <BookProvider initialPages={bookPages} initialActiveId={activeBookPageId}>
+        <BookProvider initialPages={bookPages} initialActiveId={activeBookPageId} openCounter={bookOpenCounter}>
             <ScaleProvider scale={scale} portalContainer={portalContainer}>
             <div className={styles.appShell} ref={scaleRef}>
                 <div className={styles.scaleWrapper} style={{ zoom: scale }}>
@@ -391,7 +402,11 @@ const App: React.FC = () => {
                 {bookOpen && (
                     <BookModal
                         isOpen={bookOpen}
-                        onClose={() => setBookOpen(false)}
+                        onClose={() => {
+                            setBookOpen(false);
+                            setCodexDeepLink(undefined);
+                            setActiveBookPageId('character');
+                        }}
                         initialPages={bookPages}
                         activePageId={activeBookPageId}
                     />

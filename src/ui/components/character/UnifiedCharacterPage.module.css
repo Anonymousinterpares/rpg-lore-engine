@@ -287,7 +287,7 @@
 .lockIcon { color: #8b6914; opacity: 0.6; }
 .tierTag { font-size: var(--uc-skill-tier-size); flex-shrink: 0; }
 .skillMod { min-width: 24px; text-align: right; font-weight: 600; flex-shrink: 0; font-size: var(--uc-skill-mod-size); }
-.infoBtn { background: none; border: none; color: #dfb46b; opacity: 0.7; cursor: pointer; padding: 1px; flex-shrink: 0; }
+.infoBtn { background: none; border: none; color: #dfb46b; opacity: 0.7; cursor: pointer; padding: 1px; flex-shrink: 0; width: 20px; display: flex; align-items: center; justify-content: center; }
 .infoBtn:hover { opacity: 1; }
 .sectionInfoBtn { background: none; border: none; color: #dfb46b; opacity: 0.5; cursor: pointer; padding: 0 2px; }
 .sectionInfoBtn:hover { opacity: 1; }
