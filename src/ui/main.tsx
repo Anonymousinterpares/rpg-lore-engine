@@ -14,6 +14,11 @@ cursorStyle.textContent = `
     [style*="cursor: pointer"], [style*="cursor:pointer"] {
         cursor: url('/assets/icons/LINK-SELECT.cur'), pointer !important;
     }
+    input[type="text"], input[type="search"], input[type="email"], input[type="password"],
+    input[type="url"], input[type="tel"], input[type="number"], input:not([type]),
+    textarea, [contenteditable="true"] {
+        cursor: url('/assets/icons/TEXT.cur'), text !important;
+    }
 `;
 document.head.appendChild(cursorStyle);
 

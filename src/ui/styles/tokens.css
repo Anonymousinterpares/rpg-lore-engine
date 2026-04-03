@@ -35,6 +35,7 @@
     /* --- Custom Cursors --- */
     --cursor-default: url('/assets/icons/NORMAL.cur'), default;
     --cursor-pointer: url('/assets/icons/LINK-SELECT.cur'), pointer;
+    --cursor-text: url('/assets/icons/TEXT.cur'), text;
 }
 
 * {
