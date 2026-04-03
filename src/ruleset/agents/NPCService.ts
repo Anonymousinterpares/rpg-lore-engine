@@ -4,6 +4,7 @@ import { LLMClient } from '../combat/LLMClient';
 import { LLM_PROVIDERS } from '../data/StaticData';
 import { WorldNPC } from '../schemas/WorldEnrichmentSchema';
 import { EventBusManager } from '../combat/managers/EventBusManager';
+import { toStructuredTraits, formatTraitsForPrompt } from '../data/TraitRegistry';
 
 export class NPCService {
     /**
@@ -34,11 +35,12 @@ export class NPCService {
         const modelConfig = providerConfig.models.find(m => m.id === profile.modelId);
         if (!modelConfig) return null;
 
-        const traits = targetNPC.traits.join(', ');
+        const structuredTraits = formatTraitsForPrompt(toStructuredTraits(targetNPC.traits));
         const memory = targetNPC.conversationHistory.slice(-3).map(c => `${c.speaker}: ${c.text}`).join('\n');
 
         const systemPrompt = `You are the NPC Controller for ${targetNPC.name}.
-PERSONALITY TRAITS: ${traits}
+## CHARACTER TRAITS
+${structuredTraits}
 
 ## SCENE CONTEXT
 - Location: ${context.location.name}
@@ -82,11 +84,12 @@ Keep it under 2 sentences. Do not use generic fantasy tropes unless they fit the
         const modelConfig = providerConfig.models.find(m => m.id === profile.modelId);
         if (!modelConfig) return null;
 
-        const traits = npc.traits.join(', ');
+        const structuredTraits = formatTraitsForPrompt(toStructuredTraits(npc.traits));
         const memory = npc.conversationHistory.slice(-5).map(c => `${c.speaker}: ${c.text}`).join('\n');
 
         const systemPrompt = `You are responding as ${npc.name} in a D&D RPG.
-PERSONALITY TRAITS: ${traits}
+## CHARACTER TRAITS
+${structuredTraits}
 RELATIONSHIP STANDING: ${npc.relationship.standing} (-100 to 100)
 
 ## CONVERSATION HISTORY
@@ -125,6 +128,12 @@ Respond to the player's message in character.
                     text: response,
                     timestamp: new Date().toISOString()
                 });
+
+                // Cap conversation history to prevent save bloat (30 entries = 15 exchanges)
+                const MAX_CONVERSATION_HISTORY = 30;
+                if (npc.conversationHistory.length > MAX_CONVERSATION_HISTORY) {
+                    npc.conversationHistory = npc.conversationHistory.slice(-MAX_CONVERSATION_HISTORY);
+                }
             }
 
             EventBusManager.publish('NPC_INTERACTION', { npcId: npc.id, nodeTopic: playerInput.substring(0, 50) });
@@ -133,6 +142,54 @@ Respond to the player's message in character.
         } catch (e) {
             console.error(`[NPCService] Dialogue generation failed for ${npc.name}:`, e);
             return "The individual seems unable to respond right now.";
+        }
+    }
+
+    /**
+     * Evaluates how a dialogue exchange affected the NPC's relationship with the player.
+     * Called as a fallback when the narrator didn't emit set_npc_disposition.
+     * Returns a small delta (-5 to +5) and a brief reason.
+     */
+    public static async evaluateRelationshipDelta(
+        npc: WorldNPC,
+        playerInput: string,
+        npcResponse: string
+    ): Promise<{ delta: number; reason: string } | null> {
+        const profile = AgentManager.getAgentProfile('DIRECTOR');
+        const providerConfig = LLM_PROVIDERS.find(p => p.id === profile.providerId);
+        const modelConfig = providerConfig?.models.find(m => m.id === profile.modelId);
+        if (!providerConfig || !modelConfig) return null;
+
+        const systemPrompt = `You evaluate how a dialogue exchange affects an NPC's feelings toward the player.
+NPC: ${npc.name} (current standing: ${npc.relationship.standing})
+NPC traits: ${npc.traits.join(', ')}
+
+Return ONLY valid JSON: { "delta": <number -5 to 5>, "reason": "<brief reason>" }
+- delta 0 = neutral exchange, no change
+- delta +1 to +5 = player was kind, helpful, respectful, shared interests
+- delta -1 to -5 = player was rude, threatening, dismissive, insulting
+- Consider the NPC's personality when judging (e.g., a "Suspicious" NPC is harder to impress)`;
+
+        try {
+            const response = await LLMClient.generateCompletion(
+                providerConfig, modelConfig,
+                {
+                    systemPrompt,
+                    userMessage: `Player said: "${playerInput}"\nNPC responded: "${npcResponse}"`,
+                    temperature: 0.1,
+                    maxTokens: 300,
+                    responseFormat: 'json'
+                }
+            );
+
+            const parsed = JSON.parse(response.replace(/```json/g, '').replace(/```/g, '').trim());
+            const delta = Math.max(-5, Math.min(5, parsed.delta || 0));
+            if (delta === 0) return null; // No change, no need to update
+
+            return { delta, reason: parsed.reason || 'Dialogue exchange' };
+        } catch (e) {
+            console.warn('[NPCService] Relationship delta evaluation failed (non-critical):', e);
+            return null;
         }
     }
 }

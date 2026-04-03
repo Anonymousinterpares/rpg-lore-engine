@@ -143,6 +143,54 @@ export class EngineDispatcher {
                         }
                         break;
 
+                    case 'set_npc_disposition': {
+                        const targetNpc = state.worldNpcs.find(
+                            n => n.id === call.args.npcId || n.name === call.args.npcName
+                        );
+                        if (targetNpc) {
+                            const delta = call.args.delta || 0;
+                            const absolute = call.args.standing;
+                            if (typeof absolute === 'number') {
+                                targetNpc.relationship.standing = Math.max(-100, Math.min(100, absolute));
+                            } else if (delta) {
+                                targetNpc.relationship.standing = Math.max(-100, Math.min(100, targetNpc.relationship.standing + delta));
+                            }
+                            // Log the interaction
+                            targetNpc.relationship.interactionLog = targetNpc.relationship.interactionLog || [];
+                            targetNpc.relationship.interactionLog.push({
+                                event: call.args.reason || 'Narrative disposition change',
+                                delta: delta || 0,
+                                timestamp: new Date().toISOString()
+                            });
+                            targetNpc.relationship.lastInteraction = new Date().toISOString();
+                            console.log(`[EngineDispatcher] NPC disposition: ${targetNpc.name} standing=${targetNpc.relationship.standing}`);
+                        }
+                        break;
+                    }
+
+                    case 'saving_throw': {
+                        const saveResult = Dice.roll('1d20') + Math.floor(((state.character.stats[call.args.ability as keyof typeof state.character.stats] || 10) - 10) / 2);
+                        console.log(`[EngineDispatcher] Saving Throw (${call.args.ability}): ${saveResult} vs DC ${call.args.dc}`);
+                        break;
+                    }
+
+                    case 'trigger_trap': {
+                        const trapDamage = call.args.damage ? Dice.roll(call.args.damage) : 0;
+                        if (trapDamage > 0) {
+                            state.character.hp.current = Math.max(0, state.character.hp.current - trapDamage);
+                            console.log(`[EngineDispatcher] Trap triggered: ${trapDamage} damage`);
+                        }
+                        break;
+                    }
+
+                    case 'level_up':
+                        console.log(`[EngineDispatcher] Level up suggested by narrator (handled by LevelUpManager).`);
+                        break;
+
+                    case 'end_combat':
+                        console.log(`[EngineDispatcher] Combat end signaled by narrator.`);
+                        break;
+
                     case 'skill_check':
                         // This usually returns a result to the LLM, but here we can log it or apply auto-effects
                         const skillResult = Dice.roll('1d20') + Math.floor(((state.character.stats[call.args.stat as keyof typeof state.character.stats] || 10) - 10) / 2);

@@ -1,0 +1,55 @@
+{
+  "name": "Viper's Sash",
+  "type": "Weapon",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 1250,
+    "pp": 0
+  },
+  "weight": 3,
+  "isMagic": true,
+  "modifiers": [
+    {
+      "type": "HitBonus",
+      "target": "Attack",
+      "value": 1
+    },
+    {
+      "type": "DamageAdd",
+      "target": "Damage",
+      "value": 1
+    },
+    {
+      "type": "DamageAdd",
+      "target": "Poison",
+      "value": 2
+    }
+  ],
+  "tags": [],
+  "quantity": 1,
+  "rarity": "Rare",
+  "itemLevel": 1,
+  "isForged": true,
+  "forgeSource": "Goblin CR 1 Plains",
+  "magicalProperties": [
+    {
+      "type": "BonusDamage",
+      "element": "Poison",
+      "dice": "1d4",
+      "value": 2
+    }
+  ],
+  "damage": {
+    "dice": "1d6",
+    "type": "Slashing"
+  },
+  "properties": [
+    "Finesse",
+    "Light"
+  ],
+  "range": {
+    "normal": 5
+  }
+}

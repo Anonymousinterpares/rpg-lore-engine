@@ -236,6 +236,25 @@ export class GameLoop {
                 const response = await NPCService.generateDialogue(this.state, npc, input);
                 if (response) {
                     await this.updateNpcProfiles(response, [npc]);
+
+                    // C4: Relationship delta — evaluate if narrator didn't handle it
+                    // (lightweight fallback LLM call for dialogue relationship tracking)
+                    try {
+                        const deltaResult = await NPCService.evaluateRelationshipDelta(npc, input, response);
+                        if (deltaResult && deltaResult.delta !== 0) {
+                            npc.relationship.standing = Math.max(-100, Math.min(100, npc.relationship.standing + deltaResult.delta));
+                            npc.relationship.interactionLog = npc.relationship.interactionLog || [];
+                            npc.relationship.interactionLog.push({
+                                event: deltaResult.reason,
+                                delta: deltaResult.delta,
+                                timestamp: new Date().toISOString()
+                            });
+                            npc.relationship.lastInteraction = new Date().toISOString();
+                            console.log(`[GameLoop] Dialogue relationship delta: ${npc.name} ${deltaResult.delta > 0 ? '+' : ''}${deltaResult.delta} (${deltaResult.reason})`);
+                        }
+                    } catch (relErr) {
+                        console.warn('[GameLoop] Relationship delta eval failed (non-critical):', relErr);
+                    }
                 }
 
                 // History Update
@@ -339,10 +358,18 @@ export class GameLoop {
                 // Execute Effects
                 this.applyNarratorEffects(narratorResponse);
 
-                // Step 5: Extract facts from narrator output
+                // Step 5: Extract facts from narrator output — only for NPCs actually referenced
                 if (currentHex?.npcs && currentHex.npcs.length > 0) {
-                    const npcsToCheck = this.state.worldNpcs.filter(n => currentHex.npcs!.includes(n.id));
-                    await this.updateNpcProfiles(narratorOutput, npcsToCheck);
+                    const npcsInHex = this.state.worldNpcs.filter(n => currentHex.npcs!.includes(n.id));
+                    // Two-tier check: exact name match OR interaction signal patterns
+                    const interactionSignals = /\b(says?|speaks?|tells?|asks?|replies?|nods?|whispers?|shouts?|gestures?|offers?|greets?|waves?|approaches?)\b/i;
+                    const mentionedNpcs = npcsInHex.filter(n =>
+                        narratorOutput.includes(n.name) ||
+                        (interactionSignals.test(narratorOutput) && npcsInHex.length === 1) // Single NPC + interaction verb = likely about them
+                    );
+                    if (mentionedNpcs.length > 0) {
+                        await this.updateNpcProfiles(narratorOutput, mentionedNpcs);
+                    }
                 }
 
                 systemResponse = systemResponse ? `${systemResponse}\n\n${narratorOutput}` : narratorOutput;

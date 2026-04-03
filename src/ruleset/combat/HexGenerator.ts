@@ -25,7 +25,8 @@ export class HexGenerator {
         pool?: BiomePoolManager,
         coastlines: Coastline[] = [],
         seed: number = 12345, // Default seed if none provided
-        existingStub?: Partial<Hex>
+        existingStub?: Partial<Hex>,
+        existingWorldNpcs?: { name: string }[]
     ): GeneratedHexResult {
         const result = BiomeGenerationEngine.selectBiome(coords, coastlines, seed);
         const biome = result.biome;
@@ -70,7 +71,7 @@ export class HexGenerator {
         const spawnConfig = SPAWN_TABLES[biome];
 
         if (spawnConfig && Math.random() < spawnConfig.chance) {
-            const npc = NPCFactory.generateRandomNPC(biome);
+            const npc = NPCFactory.generateRandomNPC(biome, existingWorldNpcs);
             spawnedNPCs.push(npc);
             npcIds.push(npc.id);
         }

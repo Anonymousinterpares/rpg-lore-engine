@@ -5,7 +5,7 @@
         "providerId": "openrouter",
         "modelId": "gpt-oss-120b",
         "temperature": 0.8,
-        "maxTokens": 1500
+        "maxTokens": 2000
     },
     "DIRECTOR": {
         "id": "DIRECTOR",

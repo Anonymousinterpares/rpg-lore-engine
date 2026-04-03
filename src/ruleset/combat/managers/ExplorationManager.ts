@@ -106,7 +106,7 @@ export class ExplorationManager {
                 clusterSizes[b] = neighborWithBiome ? this.hexMapManager.getClusterSize(neighborWithBiome) : 0;
             }
 
-            const result = HexGenerator.generateHex(coords, neighbors, clusterSizes, this.biomePool, this.state.worldMap.coastlines || [], 12345, hex);
+            const result = HexGenerator.generateHex(coords, neighbors, clusterSizes, this.biomePool, this.state.worldMap.coastlines || [], 12345, hex, this.state.worldNpcs || []);
             generatedData = result.hex;
             biome = (result.hex as any).biome;
             variant = (result.hex as any).visualVariant;

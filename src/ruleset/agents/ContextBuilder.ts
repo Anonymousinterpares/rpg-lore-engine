@@ -101,6 +101,74 @@ export class ContextBuilder {
         };
     }
 
+    /**
+     * Smart context budget allocation.
+     * Total budget of 25 slots split by weight: inhabitants 0.45, neighbors 0.30, quests 0.25.
+     * Unused slots from under-populated categories are redistributed to others.
+     * Only caps when total exceeds budget by >20%.
+     */
+    private static applyContextBudget(
+        inhabitants: string[],
+        neighbors: { direction: string; biome: string; name?: string; distance: number }[],
+        quests: { title: string; currentObjective: string }[]
+    ): {
+        inhabitants: string[];
+        inhabitantsCapped: boolean;
+        neighbors: typeof neighbors;
+        neighborsCapped: boolean;
+        quests: typeof quests;
+        questsCapped: boolean;
+    } {
+        const TOTAL_BUDGET = 25;
+        const total = inhabitants.length + neighbors.length + quests.length;
+
+        // If within 20% of budget, no capping needed
+        if (total <= TOTAL_BUDGET * 1.2) {
+            return {
+                inhabitants, inhabitantsCapped: false,
+                neighbors, neighborsCapped: false,
+                quests, questsCapped: false
+            };
+        }
+
+        // Weighted allocation with surplus redistribution
+        const weights = { inhabitants: 0.45, neighbors: 0.30, quests: 0.25 };
+        const counts = { inhabitants: inhabitants.length, neighbors: neighbors.length, quests: quests.length };
+        const categories = ['inhabitants', 'neighbors', 'quests'] as const;
+
+        // First pass: allocate base slots, identify surplus
+        const baseSlots: Record<string, number> = {};
+        let surplus = 0;
+        let needMore: string[] = [];
+
+        for (const cat of categories) {
+            const allocated = Math.floor(TOTAL_BUDGET * weights[cat]);
+            if (counts[cat] <= allocated) {
+                baseSlots[cat] = counts[cat]; // fits, no capping needed
+                surplus += allocated - counts[cat]; // unused slots
+            } else {
+                baseSlots[cat] = allocated;
+                needMore.push(cat);
+            }
+        }
+
+        // Second pass: redistribute surplus to categories that need it
+        for (const cat of needMore) {
+            const share = Math.floor(surplus / needMore.length);
+            baseSlots[cat] += share;
+            surplus -= share;
+        }
+
+        return {
+            inhabitants: inhabitants.slice(0, baseSlots['inhabitants']),
+            inhabitantsCapped: inhabitants.length > baseSlots['inhabitants'],
+            neighbors: neighbors.slice(0, baseSlots['neighbors']),
+            neighborsCapped: neighbors.length > baseSlots['neighbors'],
+            quests: quests.slice(0, baseSlots['quests']),
+            questsCapped: quests.length > baseSlots['quests']
+        };
+    }
+
     private static buildExplorationContext(base: BaseContext, state: GameState, hexManager: HexMapManager): ExplorationContext {
         const hex = this.getCurrentHex(state);
 
@@ -118,15 +186,11 @@ export class ContextBuilder {
         neighborsD1.forEach(n1 => {
             const neighborsD2 = hexManager.getNeighbors(n1.coordinates);
             neighborsD2.forEach(n2 => {
-                // Filter out current hex and duplicates (if already covered)
                 const isCurrent = n2.coordinates[0] === hex.coordinates[0] && n2.coordinates[1] === hex.coordinates[1];
                 const isD1 = neighborsD1.some(d1 => d1.coordinates[0] === n2.coordinates[0] && d1.coordinates[1] === n2.coordinates[1]);
-                // Simplified check for already added D2 hexes. For now, we'll allow some redundancy if directions are approximate.
-                // A more robust check would involve unique hex IDs or coordinate pairs.
                 const isAlreadyAdded = neighborInfoD2.some(d => d.name === n2.name && d.biome === n2.biome && d.distance === 2);
 
                 if (!isCurrent && !isD1 && !isAlreadyAdded) {
-                    // Calculate rough direction from center
                     const dir = this.getDirection(hex.coordinates, n2.coordinates);
                     neighborInfoD2.push({
                         direction: dir,
@@ -138,24 +202,42 @@ export class ContextBuilder {
             });
         });
 
-        // Deduplicate D2 list based on direction/biome to avoid spamming "North: Mountains, North: Mountains"
-        // Actually, let's just pass all legitimate hexes and let the LLM sort it out, or refine.
+        const allNeighbors = [...neighborInfoD1, ...neighborInfoD2];
+        const allInhabitants = (hex.npcs || []).map(id => {
+            const npc = state.worldNpcs.find(n => n.id === id);
+            return npc ? `${npc.name} (${npc.role || 'Unknown'} - ${npc.factionId || 'Unaffiliated'})` : 'Unknown Figure';
+        });
+        const allQuests = state.activeQuests.map(q => ({
+            title: q.title,
+            currentObjective: q.objectives.find(o => !o.isCompleted)?.description || 'No active objective'
+        }));
+
+        const budget = this.applyContextBudget(allInhabitants, allNeighbors, allQuests);
+
+        // Build capping notes for the LLM
+        const cappingNotes: string[] = [];
+        if (budget.inhabitantsCapped) {
+            cappingNotes.push(`[${allInhabitants.length - budget.inhabitants.length} more inhabitants present — full list available in the UI sidebar.]`);
+        }
+        if (budget.neighborsCapped) {
+            cappingNotes.push(`[${allNeighbors.length - budget.neighbors.length} more hexes visible — player should check the Map panel for full surroundings.]`);
+        }
+        if (budget.questsCapped) {
+            cappingNotes.push(`[${allQuests.length - budget.quests.length} more quests active — full list in the Quest panel.]`);
+        }
+
+        // Append capping notes to inhabitants so they appear in the LLM context naturally
+        const finalInhabitants = [...budget.inhabitants, ...cappingNotes];
 
         return {
             ...base,
             hex: {
                 interestPoints: hex.interest_points.map(p => p.name),
                 resourceNodes: hex.resourceNodes.map(r => r.resourceType),
-                neighbors: [...neighborInfoD1, ...neighborInfoD2],
-                inhabitants: (hex.npcs || []).map(id => {
-                    const npc = state.worldNpcs.find(n => n.id === id);
-                    return npc ? `${npc.name} (${npc.role || 'Unknown'} - ${npc.factionId || 'Unaffiliated'})` : 'Unknown Figure';
-                })
+                neighbors: budget.neighbors,
+                inhabitants: finalInhabitants
             },
-            activeQuests: state.activeQuests.map(q => ({
-                title: q.title,
-                currentObjective: q.objectives.find(o => !o.isCompleted)?.description || 'No active objective'
-            }))
+            activeQuests: budget.quests
         };
     }
 
@@ -213,9 +295,8 @@ export class ContextBuilder {
     }
 
     private static buildDialogueContext(base: BaseContext, state: GameState): DialogueContext {
-        // Find the NPC we are talking to (assuming stored in location or state)
-        // This is a placeholder as the Dialogue mode is yet to be fully implemented
-        const npcId = state.location.subLocationId; // Placeholder
+        // Use activeDialogueNpcId (set when /talk is initiated) with fallback
+        const npcId = (state as any).activeDialogueNpcId || state.location.subLocationId;
         const npc = state.worldNpcs.find(n => n.id === npcId);
 
         return {

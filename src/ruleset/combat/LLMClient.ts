@@ -146,13 +146,37 @@ export class LLMClient {
 
         const { systemPrompt, userMessage, temperature = 0.7, maxTokens = 1000, responseFormat = 'text' } = options;
 
+        // Token safety: estimate input size and warn/truncate if approaching context window
+        const estimatedInputTokens = Math.ceil((systemPrompt.length + userMessage.length) / 4);
+        const contextLimit = model.contextWindow || 128000;
+        const safeLimit = Math.floor(contextLimit * 0.90); // 90% of context window
+
+        if (estimatedInputTokens + maxTokens > safeLimit) {
+            console.warn(
+                `[LLMClient] Token budget warning: ~${estimatedInputTokens} input + ${maxTokens} output = ~${estimatedInputTokens + maxTokens} ` +
+                `exceeds 90% of ${contextLimit} context window (${safeLimit}).`
+            );
+
+            // Truncate userMessage from the front (oldest context is least important)
+            const availableForInput = safeLimit - maxTokens;
+            const systemTokens = Math.ceil(systemPrompt.length / 4);
+            const maxUserChars = Math.max(200, (availableForInput - systemTokens) * 4);
+            if (userMessage.length > maxUserChars) {
+                const truncatedUserMessage = '...[truncated]\n' + userMessage.substring(userMessage.length - maxUserChars);
+                console.warn(`[LLMClient] Truncated userMessage from ${userMessage.length} to ${truncatedUserMessage.length} chars.`);
+                options = { ...options, userMessage: truncatedUserMessage };
+            }
+        }
+
+        const effectiveUserMessage = (options as any).userMessage || userMessage;
+
         if (provider.id === 'gemini') {
             url = `${provider.baseUrl}/models/${model.apiName}:generateContent?key=${apiKey}`;
             body = {
                 system_instruction: {
                     parts: [{ text: systemPrompt }]
                 },
-                contents: [{ role: 'user', parts: [{ text: userMessage }] }],
+                contents: [{ role: 'user', parts: [{ text: effectiveUserMessage }] }],
                 generationConfig: {
                     temperature,
                     maxOutputTokens: maxTokens,
@@ -168,7 +192,7 @@ export class LLMClient {
             body = {
                 model: model.apiName,
                 system: systemPrompt,
-                messages: [{ role: 'user', content: userMessage }],
+                messages: [{ role: 'user', content: effectiveUserMessage }],
                 max_tokens: maxTokens,
                 temperature
             };
@@ -181,7 +205,7 @@ export class LLMClient {
                 model: model.apiName,
                 messages: [
                     { role: 'system', content: systemPrompt },
-                    { role: 'user', content: userMessage }
+                    { role: 'user', content: effectiveUserMessage }
                 ],
                 temperature,
                 max_tokens: maxTokens
@@ -194,8 +218,8 @@ export class LLMClient {
         console.log(`[LLMClient] Requesting ${model.id} via ${provider.id}...`);
         console.log(`[LLMClient] URL: ${url.split('?')[0]} (API Key hidden)`);
         console.log(`[LLMClient] SYSTEM PROMPT: ${systemPrompt.substring(0, 200)}${systemPrompt.length > 200 ? '...' : ''}`);
-        console.log(`[LLMClient] USER MSG: ${userMessage.substring(0, 200)}${userMessage.length > 200 ? '...' : ''}`);
-        console.log(`[LLMClient] maxTokens: ${maxTokens}, temp: ${temperature}, format: ${responseFormat}`);
+        console.log(`[LLMClient] USER MSG: ${effectiveUserMessage.substring(0, 200)}${effectiveUserMessage.length > 200 ? '...' : ''}`);
+        console.log(`[LLMClient] maxTokens: ${maxTokens}, temp: ${temperature}, format: ${responseFormat}, est. input tokens: ${estimatedInputTokens}`);
 
         const startTime = Date.now();
         const response = await fetch(url, {
