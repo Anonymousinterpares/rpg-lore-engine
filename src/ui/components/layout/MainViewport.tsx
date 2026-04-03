@@ -23,9 +23,10 @@ import { useCallback, useEffect } from 'react';
 interface MainViewportProps {
     className?: string;
     onCodex?: (category: string, entryId: string) => void;
+    onCharacterSheet?: () => void;
 }
 
-const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
+const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex, onCharacterSheet }) => {
     const { state, processCommand, isLoading, isProcessing, endGame, engine, startGame, loadGame, loadLastSave, getSaveRegistry } = useGameState();
     const [showLoadModal, setShowLoadModal] = useState(false);
     const [showRestModal, setShowRestModal] = useState(false);
@@ -33,6 +34,7 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
     const [saveSlots, setSaveSlots] = useState<any[]>([]);
     const [pendingCombat, setPendingCombat] = useState<any>(null);
     const [arcaneRecovery, setArcaneRecovery] = useState<{ budget: number } | null>(null);
+    const [levelUpStage, setLevelUpStage] = useState<'none' | 'overlay' | 'spells' | 'done'>('none');
 
     // Examine overlay orchestration
     const [examineOverlay, setExamineOverlay] = useState<any>(null);
@@ -73,9 +75,18 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
                 spGained: levelsGained * spPerLevel,
                 hasASI,
             });
+            setLevelUpStage('overlay');
         }
         lastLevelRef.current = currentLevel;
     }, [state?.character?.level]);
+
+    // Open character sheet after level-up sequence completes
+    useEffect(() => {
+        if (levelUpStage === 'done') {
+            setLevelUpStage('none');
+            if (onCharacterSheet) onCharacterSheet();
+        }
+    }, [levelUpStage, onCharacterSheet]);
 
     const handleExamineOverlayComplete = useCallback(() => {
         setExamineOverlay(null);
@@ -232,7 +243,16 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
                     className={levelUpOverlay.className}
                     spGained={levelUpOverlay.spGained}
                     hasASI={levelUpOverlay.hasASI}
-                    onComplete={() => setLevelUpOverlay(null)}
+                    onComplete={() => {
+                        setLevelUpOverlay(null);
+                        // Check if spell learning is pending
+                        if ((state?.character as any)?._pendingSpellChoices > 0) {
+                            setLevelUpStage('spells');
+                        } else {
+                            // No spells to learn — go straight to character sheet
+                            setLevelUpStage('done');
+                        }
+                    }}
                 />
             )}
 
@@ -275,7 +295,7 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
                 />
             )}
 
-            {state?.character && (state.character as any)._pendingSpellChoices > 0 && (
+            {state?.character && (state.character as any)._pendingSpellChoices > 0 && levelUpStage !== 'overlay' && (
                 <SpellLearningFlyout
                     className={state.character.class}
                     maxLevel={Math.min(9, Math.ceil(state.character.level / 2))}
@@ -287,9 +307,11 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex }) => {
                     ]}
                     onConfirm={async (names) => {
                         if (engine) await engine.learnSpells(names);
+                        setLevelUpStage('done');
                     }}
                     onSkip={() => {
                         if (state?.character) (state.character as any)._pendingSpellChoices = 0;
+                        setLevelUpStage('done');
                     }}
                 />
             )}
