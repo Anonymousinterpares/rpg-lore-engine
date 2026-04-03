@@ -292,7 +292,7 @@
 
 /* OVERLAYS */
 .overlay {
-    position: fixed; inset: 0; z-index: 2000;
+    position: absolute; inset: 0; z-index: 2000;
     background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
     display: flex; align-items: center; justify-content: center;
 }
@@ -300,7 +300,7 @@
 .overlayPanel {
     background: #1a1208; border: 2px solid rgba(232, 213, 181, 0.2);
     border-radius: 8px; padding: 20px;
-    max-width: 600px; max-height: 70vh; overflow-y: auto; color: #e8d5b5;
+    max-width: 600px; max-height: 756px; overflow-y: auto; color: #e8d5b5;
 }
 
 .overlayTitle {

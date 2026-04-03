@@ -5,6 +5,7 @@ import parchmentStyles from '../../styles/parchment.module.css';
 import tip from '../../styles/tooltip.module.css';
 import { X, Sparkles, Info } from 'lucide-react';
 import { Spell } from '../../../ruleset/schemas/SpellSchema';
+import { useScaleFactor } from '../../contexts/ScaleContext';
 
 interface SpellbookFlyoutProps {
     spells: Spell[];
@@ -71,6 +72,7 @@ function getLevelTierClass(lv: number): string {
 export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
     spells, spellSlots = {}, distanceToTarget, resources, onCast, onClose
 }) => {
+    const { scale, portalContainer, DESIGN_W, DESIGN_H } = useScaleFactor();
     const levels = Array.from(new Set(spells.map(s => s.level))).sort((a, b) => a - b);
     // Default to first non-cantrip level, or cantrips if that's all there is
     const defaultLevel = levels.find(l => l > 0) ?? levels[0] ?? 0;
@@ -271,15 +273,16 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
                         className={tip.tooltip}
                         ref={(el) => {
                             if (!el) return;
+                            const s = scale || 1;
                             const tipH = el.offsetHeight;
                             const tipW = el.offsetWidth;
-                            let top = infoTooltip.rect.bottom + 6;
-                            let left = infoTooltip.rect.right + 8;
-                            if (top + tipH > window.innerHeight - 10) {
-                                top = Math.max(10, window.innerHeight - tipH - 10);
+                            let top = infoTooltip.rect.bottom / s + 6;
+                            let left = infoTooltip.rect.right / s + 8;
+                            if (top + tipH > DESIGN_H - 10) {
+                                top = Math.max(10, DESIGN_H - tipH - 10);
                             }
-                            if (left + tipW > window.innerWidth - 10) {
-                                left = Math.max(10, infoTooltip.rect.left - tipW - 8);
+                            if (left + tipW > DESIGN_W - 10) {
+                                left = Math.max(10, infoTooltip.rect.left / s - tipW - 8);
                             }
                             el.style.top = `${top}px`;
                             el.style.left = `${left}px`;
@@ -306,7 +309,7 @@ export const SpellbookFlyout: React.FC<SpellbookFlyoutProps> = ({
                         <div className={tip.desc}>{infoTooltip.spell.description}</div>
                     </div>
                 </>,
-                document.body
+                portalContainer || document.body
             )}
         </div>
     );

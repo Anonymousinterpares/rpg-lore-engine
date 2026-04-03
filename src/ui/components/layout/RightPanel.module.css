@@ -19,7 +19,7 @@
 
 .section h3 {
     font-family: 'Cinzel', serif;
-    font-size: 0.9rem;
+    font-size: 14px;
     color: #5d4037;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -50,7 +50,7 @@
 }
 
 .toggleLabel {
-    font-size: 0.7rem;
+    font-size: 11px;
     color: #5d4037;
     opacity: 0.7;
     text-transform: none;
@@ -63,7 +63,7 @@
     border: 1px solid rgba(93, 64, 55, 0.2);
     border-radius: 4px;
     padding: 2px 8px;
-    font-size: 0.7rem;
+    font-size: 11px;
     color: #5d4037;
     cursor: pointer;
     text-transform: uppercase;
@@ -127,7 +127,7 @@
 }
 
 .sectionHeader h2 {
-    font-size: 0.8rem;
+    font-size: 13px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     margin: 0;
@@ -140,7 +140,7 @@
     flex-direction: column;
     gap: 8px;
     font-family: 'Courier New', Courier, monospace;
-    font-size: 0.85rem;
+    font-size: 14px;
     word-break: break-word;
     /* Wrap long lines */
 }
@@ -148,7 +148,7 @@
 .timestamp {
     color: #666;
     margin-right: 8px;
-    font-size: 0.75rem;
+    font-size: 12px;
 }
 
 .narratorText {
@@ -165,7 +165,7 @@
 }
 
 .contextMenu {
-    position: fixed;
+    position: absolute;
     background: rgba(46, 32, 28, 0.98);
     border: 1px solid #8b4513;
     border-radius: 4px;
@@ -184,7 +184,7 @@
     color: #e6d3ba;
     padding: 8px 12px;
     font-family: 'Cinzel', serif;
-    font-size: 0.8rem;
+    font-size: 13px;
     cursor: pointer;
     text-align: left;
     transition: all 0.2s ease;
@@ -205,7 +205,7 @@
 .contextMenuDisabled {
     padding: 8px 12px;
     color: #666;
-    font-size: 0.8rem;
+    font-size: 13px;
     font-style: italic;
     background: rgba(0, 0, 0, 0.2);
     border-radius: 2px;

@@ -1,15 +1,15 @@
 .currencyDisplay {
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 4px;
     font-family: 'Cinzel', serif;
-    font-size: 0.9rem;
+    font-size: 14px;
 }
 
 .coinGroup {
     display: inline-flex;
     align-items: baseline;
-    gap: 0.15rem;
+    gap: 2px;
 }
 
 .coinValue {
@@ -47,7 +47,7 @@
 .emptyPurse {
     color: rgba(0, 0, 0, 0.4);
     font-style: italic;
-    font-size: 0.85rem;
+    font-size: 14px;
 }
 
 .coinGroup[title]:hover {

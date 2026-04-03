@@ -1,7 +1,7 @@
 .panel {
-    position: fixed;
+    position: absolute;
     left: 320px;
-    top: 80px;
+    bottom: 130px;
     width: 380px;
     height: 450px;
     display: flex;
@@ -92,7 +92,7 @@
     bottom: 2px;
     right: 4px;
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 11px;
     font-weight: bold;
     color: #2a2015;
 }
@@ -128,7 +128,7 @@
     align-items: center;
     gap: var(--spacing-sm);
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 12px;
     color: #5d4037;
     cursor: pointer;
     user-select: none;

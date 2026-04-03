@@ -101,12 +101,12 @@
 .abilityName {
     font-weight: bold;
     font-family: var(--font-narrative);
-    font-size: 1rem;
+    font-size: 16px;
     color: var(--parchment-text);
 }
 
 .abilityCost {
-    font-size: 0.65rem;
+    font-size: 10px;
     text-transform: uppercase;
     background: var(--parchment-accent);
     color: white;
@@ -117,7 +117,7 @@
 .abilityMeta {
     display: flex;
     justify-content: space-between;
-    font-size: 0.75rem;
+    font-size: 12px;
     color: var(--parchment-border);
     font-family: var(--font-narrative);
 }

@@ -5,10 +5,11 @@ interface GameTooltipProps {
     text?: string;
     children: React.ReactNode;
     className?: string;
+    offsetY?: number;
 }
 
-/** Wraps any element with a styled hover tooltip. Escapes overflow:hidden containers. */
-const GameTooltip: React.FC<GameTooltipProps> = ({ text, children, className }) => {
+/** Wraps any element with a styled hover tooltip. Escapes overflow:hidden containers via position:fixed. */
+const GameTooltip: React.FC<GameTooltipProps> = ({ text, children, className, offsetY = 0 }) => {
     const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
     const wrapRef = useRef<HTMLDivElement>(null);
 
@@ -33,7 +34,7 @@ const GameTooltip: React.FC<GameTooltipProps> = ({ text, children, className }) 
                     className={tip.hoverTip}
                     style={{
                         left: pos.x,
-                        top: pos.y - 6,
+                        top: pos.y - 26 + offsetY,
                         transform: 'translate(-50%, -100%)',
                         visibility: 'visible',
                         opacity: 1,

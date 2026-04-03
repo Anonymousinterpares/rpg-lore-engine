@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './App.module.css';
 import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
@@ -24,6 +24,8 @@ import DevOverlay from './components/exploration/DevOverlay';
 import NavigationModal from './components/exploration/NavigationModal';
 import TradeModal from './components/exploration/TradeModal';
 import { SettingsManager } from '../ruleset/combat/SettingsManager';
+import { useGameScale } from './hooks/useGameScale';
+import { ScaleProvider } from './contexts/ScaleContext';
 
 const App: React.FC = () => {
     const [showSaveModal, setShowSaveModal] = useState(false);
@@ -42,6 +44,13 @@ const App: React.FC = () => {
     const [codexDeepLink, setCodexDeepLink] = useState<{ category: string; entryId?: string } | undefined>(undefined);
 
     const [appSettings, setAppSettings] = useState(SettingsManager.getGlobalSettings());
+    const { scale, ref: scaleRef } = useGameScale();
+    const portalRef = useRef<HTMLDivElement>(null);
+    const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        setPortalContainer(portalRef.current);
+    }, []);
 
     // Initial settings load
     useEffect(() => {
@@ -272,7 +281,10 @@ const App: React.FC = () => {
 
     return (
         <BookProvider initialPages={bookPages} initialActiveId={activeBookPageId}>
-            <div className={styles.appShell}>
+            <ScaleProvider scale={scale} portalContainer={portalContainer}>
+            <div className={styles.appShell} ref={scaleRef}>
+                <div className={styles.scaleWrapper} style={{ zoom: scale }}>
+                <div className={styles.canvas}>
                 {isCreatingCharacter ? (
                     <CharacterCreator
                         onComplete={handleCharacterComplete}
@@ -435,7 +447,11 @@ const App: React.FC = () => {
                         </div>
                     </div>
                 )}
+                <div ref={portalRef} id="portal-root" style={{ position: 'absolute', top: 0, left: 0, width: 0, height: 0 }} />
+                </div>{/* .canvas */}
+                </div>{/* .scaleWrapper */}
             </div>
+            </ScaleProvider>
         </BookProvider>
     );
 };

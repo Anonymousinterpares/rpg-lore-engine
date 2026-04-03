@@ -1,5 +1,5 @@
 .overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
@@ -15,7 +15,7 @@
 .modal {
     width: 90%;
     max-width: 500px;
-    max-height: 80vh;
+    max-height: 864px;
     padding: var(--spacing-xl);
     display: flex;
     flex-direction: column;
@@ -34,7 +34,7 @@
 .header h2 {
     margin: 0;
     font-family: var(--font-primary);
-    font-size: 1.8rem;
+    font-size: 29px;
     color: var(--color-ink);
 }
 
@@ -58,7 +58,7 @@
 
 .sectionTitle {
     font-family: var(--font-mono);
-    font-size: 0.9rem;
+    font-size: 14px;
     font-weight: bold;
     text-transform: uppercase;
     color: var(--color-ink-dim);
@@ -104,14 +104,14 @@
 
 .actionName {
     font-family: var(--font-primary);
-    font-size: 0.9rem;
+    font-size: 14px;
     font-weight: bold;
     color: var(--color-ink);
 }
 
 .actionCost {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 11px;
     color: var(--color-ink-dim);
 }
 
@@ -121,7 +121,7 @@
     border: 1px solid rgba(200, 0, 0, 0.2);
     border-radius: var(--radius-sm);
     color: #a00;
-    font-size: 0.8rem;
+    font-size: 13px;
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);

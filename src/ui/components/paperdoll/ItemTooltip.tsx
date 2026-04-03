@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import styles from './ItemTooltip.module.css';
 import { PaperdollItem } from './types';
+import { useScaleFactor } from '../../contexts/ScaleContext';
 
 interface ItemTooltipProps {
     item: PaperdollItem;
@@ -20,19 +21,21 @@ const RARITY_COLORS: Record<string, string> = {
 const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, anchorRect, visible }) => {
     const tooltipRef = useRef<HTMLDivElement>(null);
     const [pos, setPos] = useState({ top: 0, left: 0 });
+    const { scale, portalContainer, DESIGN_W, DESIGN_H } = useScaleFactor();
 
     useEffect(() => {
         if (!anchorRect || !tooltipRef.current) return;
         const tt = tooltipRef.current.getBoundingClientRect();
-        let top = anchorRect.top - tt.height - 8;
-        let left = anchorRect.left + anchorRect.width / 2 - tt.width / 2;
+        const s = scale || 1;
+        let top = anchorRect.top / s - tt.height / s - 8;
+        let left = anchorRect.left / s + anchorRect.width / s / 2 - tt.width / s / 2;
 
-        if (top < 4) top = anchorRect.bottom + 8;
+        if (top < 4) top = anchorRect.bottom / s + 8;
         if (left < 4) left = 4;
-        if (left + tt.width > window.innerWidth - 4) left = window.innerWidth - tt.width - 4;
+        if (left + tt.width / s > DESIGN_W - 4) left = DESIGN_W - tt.width / s - 4;
 
         setPos({ top, left });
-    }, [anchorRect, visible]);
+    }, [anchorRect, visible, scale, DESIGN_W]);
 
     if (!visible) return null;
 
@@ -176,7 +179,7 @@ const ItemTooltip: React.FC<ItemTooltipProps> = ({ item, anchorRect, visible }) 
                 </p>
             )}
         </div>,
-        document.body
+        portalContainer || document.body
     );
 };
 

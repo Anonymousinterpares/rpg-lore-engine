@@ -1,5 +1,5 @@
 .tooltip {
-    position: fixed;
+    position: absolute;
     z-index: 25000;
     min-width: 220px;
     max-width: 320px;

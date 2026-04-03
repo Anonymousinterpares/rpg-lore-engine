@@ -289,17 +289,17 @@
     transform: translate(-50%, -50%);
     color: rgba(255, 255, 255, 0.4);
     font-family: 'Cinzel', serif;
-    font-size: 0.9rem;
+    font-size: 14px;
     white-space: nowrap;
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .recenterButton {
     position: absolute;
-    bottom: 2rem;
-    right: 2rem;
-    width: 3.5rem;
-    height: 3.5rem;
+    bottom: 32px;
+    right: 32px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     background: rgba(15, 15, 18, 0.85);
     border: 2px solid rgba(78, 205, 196, 0.6);

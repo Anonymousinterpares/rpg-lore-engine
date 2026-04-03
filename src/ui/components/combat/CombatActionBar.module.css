@@ -51,7 +51,7 @@
     border-radius: 8px;
     color: #ff6666;
     font-family: var(--font-narrative, serif);
-    font-size: 1.1rem;
+    font-size: 18px;
     font-weight: bold;
     cursor: pointer;
     animation: deathPulse 1.5s ease-in-out infinite;
@@ -77,11 +77,11 @@
 }
 
 .deathSaveLabel {
-    font-size: 1rem;
+    font-size: 16px;
 }
 
 .deathSaveTracker {
-    font-size: 1.2rem;
+    font-size: 19px;
     letter-spacing: 4px;
 }
 

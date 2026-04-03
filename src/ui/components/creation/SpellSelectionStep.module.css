@@ -13,7 +13,7 @@
 
 .stepHeader h3 {
     font-family: var(--font-narrative);
-    font-size: 2rem;
+    font-size: 32px;
     color: var(--parchment-text);
     margin: 0;
 }
@@ -31,7 +31,7 @@
     border: 1px solid var(--parchment-border);
     border-radius: 20px;
     font-family: var(--font-narrative);
-    font-size: 1rem;
+    font-size: 16px;
     font-weight: 700;
 }
 
@@ -67,7 +67,7 @@
 .section h4 {
     margin: 0;
     font-family: var(--font-narrative);
-    font-size: 1.2rem;
+    font-size: 1.32px;
     color: var(--parchment-accent);
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -132,11 +132,11 @@
 
 .spellName {
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 16px;
 }
 
 .spellInfo {
-    font-size: 0.8rem;
+    font-size: 13px;
     opacity: 0.8;
 }
 
@@ -209,7 +209,7 @@
 
 .detailsPanel h4 {
     font-family: var(--font-narrative);
-    font-size: 1.5rem;
+    font-size: 24px;
     color: var(--parchment-accent);
     margin: 0;
 }
@@ -222,17 +222,17 @@
 
 .detailLabel {
     font-weight: 800;
-    font-size: 0.8rem;
+    font-size: 13px;
     color: var(--parchment-accent);
     text-transform: uppercase;
 }
 
 .detailValue {
-    font-size: 0.95rem;
+    font-size: 15px;
 }
 
 .detailDesc {
-    font-size: 0.9rem;
+    font-size: 14px;
     line-height: 1.5;
     margin-top: var(--spacing-sm);
     font-style: italic;

@@ -28,7 +28,7 @@
     align-items: center;
     gap: var(--spacing-xs);
     font-family: var(--font-mono);
-    font-size: 0.85rem;
+    font-size: 14px;
     color: #d4a017;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
     font-weight: bold;
@@ -38,7 +38,7 @@
     display: flex;
     justify-content: space-between;
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 11px;
     color: var(--glass-text-dim);
     letter-spacing: 0.02em;
     white-space: nowrap;
@@ -58,7 +58,7 @@
     padding: var(--spacing-sm);
     border-radius: var(--radius-sm);
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -99,7 +99,7 @@
     padding: var(--spacing-sm);
     border-radius: var(--radius-sm);
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -214,7 +214,7 @@
     bottom: 2px;
     right: 4px;
     font-family: var(--font-mono);
-    font-size: 0.65rem;
+    font-size: 10px;
     font-weight: bold;
     color: #fff;
     text-shadow: 0 0 4px #000;
@@ -225,7 +225,7 @@
     top: 2px;
     left: 4px;
     font-family: var(--font-mono);
-    font-size: 0.6rem;
+    font-size: 10px;
     font-weight: bold;
     color: var(--glass-accent);
 }
@@ -244,7 +244,7 @@
 }
 
 .inventoryToast {
-    position: fixed;
+    position: absolute;
     transform: translate(-50%, -100%);
     background: transparent;
     color: #e83e8c;
@@ -254,7 +254,7 @@
     padding: var(--spacing-sm) var(--spacing-md);
     font-family: var(--font-body);
     font-weight: bold;
-    font-size: 1.1rem;
+    font-size: 18px;
     /* Slightly larger text */
     pointer-events: none;
     z-index: 9999;

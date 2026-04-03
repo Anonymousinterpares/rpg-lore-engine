@@ -1,5 +1,5 @@
 .menu {
-    position: fixed;
+    position: absolute;
     z-index: 20000;
     background: #2a2015;
     border: 2px solid #5d4037;
@@ -13,7 +13,7 @@
 
 .itemName {
     padding: var(--spacing-xs) var(--spacing-md);
-    font-size: 0.75rem;
+    font-size: 12px;
     font-weight: bold;
     color: #d4a017;
     text-transform: uppercase;
@@ -30,7 +30,7 @@
     padding: var(--spacing-xs) var(--spacing-md);
     text-align: left;
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: 13px;
     cursor: pointer;
     display: flex;
     align-items: center;

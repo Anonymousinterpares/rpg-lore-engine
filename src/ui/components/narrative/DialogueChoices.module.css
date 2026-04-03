@@ -21,7 +21,7 @@
     background: var(--glass-bg);
     color: var(--glass-text);
     font-family: var(--font-primary);
-    font-size: 1.1rem;
+    font-size: 18px;
     text-align: left;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -38,7 +38,7 @@
     color: var(--glass-accent);
     font-weight: bold;
     font-family: var(--font-mono);
-    min-width: 1.5rem;
+    min-width: 24px;
 }
 
 .text {

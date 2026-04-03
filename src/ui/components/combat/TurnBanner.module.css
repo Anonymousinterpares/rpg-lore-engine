@@ -1,5 +1,5 @@
 .overlay {
-    position: fixed;
+    position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -46,17 +46,17 @@
 }
 
 .nameBanner .text {
-    font-size: 3rem;
-    letter-spacing: 0.5rem;
+    font-size: 48px;
+    letter-spacing: 8px;
     color: #ffd700;
 }
 
 .text {
     font-family: var(--font-narrative);
-    font-size: 4rem;
+    font-size: 64px;
     color: var(--parchment-accent);
     font-weight: 700;
-    letter-spacing: 0.8rem;
+    letter-spacing: 13px;
     text-shadow: 0 0 20px rgba(201, 162, 39, 0.6);
     margin: 15px 0;
     text-transform: uppercase;

@@ -4,6 +4,7 @@ import parchmentStyles from '../../styles/parchment.module.css';
 import { X, Weight, Coins, Shield, Sword, Target } from 'lucide-react';
 import ReactDOM from 'react-dom';
 import { useGameState } from '../../hooks/useGameState';
+import { useScaleFactor } from '../../contexts/ScaleContext';
 
 interface Item {
     id: string;
@@ -36,6 +37,7 @@ interface ItemDatasheetProps {
 
 const ItemDatasheet: React.FC<ItemDatasheetProps> = ({ item, onClose }) => {
     const { engine, updateState } = useGameState();
+    const { portalContainer } = useScaleFactor();
 
     React.useEffect(() => {
         const trackEvent = async () => {
@@ -47,7 +49,7 @@ const ItemDatasheet: React.FC<ItemDatasheetProps> = ({ item, onClose }) => {
         trackEvent();
     }, [engine, item.name, updateState]);
 
-    // Render into portal to document.body to avoid stacking issues
+    // Render into portal to avoid stacking issues
     return ReactDOM.createPortal(
         <div className={styles.overlay} onClick={onClose}>
             <div className={`${styles.sheet} ${parchmentStyles.panel}`} onClick={(e) => e.stopPropagation()}>
@@ -177,7 +179,7 @@ const ItemDatasheet: React.FC<ItemDatasheetProps> = ({ item, onClose }) => {
                 </div>
             </div>
         </div>,
-        document.body
+        portalContainer || document.body
     );
 };
 

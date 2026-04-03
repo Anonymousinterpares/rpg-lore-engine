@@ -223,7 +223,7 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: 'var(--spacing-sm)' }}>
                 {hasCombatLoot && (
-                    <GameTooltip text="View loot from recent combat">
+                    <GameTooltip text="View loot from recent combat" offsetY={-20}>
                     <button
                         className={`${styles.lootBtn} ${styles.hasLoot}`}
                         onClick={() => setShowLoot(!showLoot)}
@@ -234,7 +234,7 @@ const InventoryGrid: React.FC<InventoryGridProps> = ({
                     </GameTooltip>
                 )}
 
-                <GameTooltip text={hasDroppedItems ? "View items at current location" : "No items on the ground"}>
+                <GameTooltip text={hasDroppedItems ? "View items at current location" : "No items on the ground"} offsetY={-20}>
                 <button
                     className={`${styles.droppedItemsBtn} ${hasDroppedItems ? styles.hasItems : ''}`}
                     onClick={() => hasDroppedItems && setShowDropped(!showDropped)}

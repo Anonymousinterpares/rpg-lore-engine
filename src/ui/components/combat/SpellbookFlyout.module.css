@@ -88,7 +88,7 @@
     bottom: 100px;
     left: 50%;
     transform: translateX(-50%);
-    width: min(var(--sb-flyout-width), 94vw);
+    width: min(var(--sb-flyout-width), 1805px);
     max-height: var(--sb-flyout-max-height);
     overflow: hidden;
     z-index: 1000;
@@ -161,12 +161,12 @@
     gap: 10px;
     padding: 4px 0;
     margin-bottom: var(--spacing-xs);
-    font-size: 0.78rem;
+    font-size: 12px;
     color: var(--parchment-border);
 }
 
 .slotSummaryLabel {
-    font-size: 0.7rem;
+    font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     opacity: 0.6;
@@ -199,7 +199,7 @@
     padding: 4px var(--spacing-sm);
     background: var(--sb-tab-bg);
     border: 1px solid var(--sb-tab-border);
-    font-size: 0.82rem;
+    font-size: 13px;
     font-family: var(--font-narrative);
     cursor: pointer;
     white-space: nowrap;
@@ -214,7 +214,7 @@
 }
 
 .slotInfo {
-    font-size: 0.72rem;
+    font-size: 12px;
     margin-left: 4px;
     opacity: 0.8;
 }
@@ -338,7 +338,7 @@
 .spellName {
     font-weight: bold;
     font-family: var(--font-narrative);
-    font-size: 1.1rem;
+    font-size: 18px;
     color: var(--sb-spell-name-color);
     white-space: nowrap;
     overflow: hidden;
@@ -346,7 +346,7 @@
 }
 
 .spellSchool {
-    font-size: 0.6rem;
+    font-size: 10px;
     text-transform: uppercase;
     color: var(--sb-spell-school-color);
     opacity: 0.8;
@@ -356,7 +356,7 @@
 .spellMeta {
     display: flex;
     justify-content: space-between;
-    font-size: 0.72rem;
+    font-size: 12px;
     color: var(--sb-spell-meta-color);
 }
 
@@ -366,7 +366,7 @@
 }
 
 .spellRange {
-    font-size: 0.6rem;
+    font-size: 10px;
     color: var(--sb-spell-meta-color);
     opacity: 0.8;
     white-space: nowrap;
@@ -384,7 +384,7 @@
 
 .castBtn {
     padding: 2px 20px;
-    font-size: 0.72rem;
+    font-size: 12px;
     font-weight: 800;
     letter-spacing: 1px;
     text-transform: uppercase;
@@ -427,13 +427,13 @@
 }
 
 .levelLabel {
-    font-size: 0.67rem;
+    font-size: 11px;
     opacity: 0.5;
     margin-right: 2px;
 }
 
 .lvlBtn {
-    font-size: 0.72rem;
+    font-size: 12px;
     font-weight: 700;
     width: var(--sb-lvl-size-w);
     height: var(--sb-lvl-size-h);
@@ -488,7 +488,7 @@
 }
 
 .lvlDice {
-    font-size: 0.6rem;
+    font-size: 10px;
     font-weight: 400;
     opacity: 0.7;
 }
@@ -499,7 +499,7 @@
 
 /* No scaling warning */
 .noScaling {
-    font-size: 0.65rem;
+    font-size: 10px;
     color: var(--sb-warning-color);
     font-style: italic;
     white-space: nowrap;
@@ -508,7 +508,7 @@
 
 /* Disabled reason — sits outside greyscaled .spellMain so color is preserved */
 .disabledReason {
-    font-size: 0.68rem;
+    font-size: 11px;
     color: var(--sb-warning-color);
     font-weight: 600;
     text-align: center;

@@ -1,9 +1,9 @@
 .container {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 1920px;
+    height: 1080px;
     z-index: 5000;
     display: flex;
     align-items: center;
@@ -31,7 +31,7 @@
 
 .gameTitle {
     font-family: var(--font-narrative);
-    font-size: 5rem;
+    font-size: 80px;
     font-weight: bold;
     letter-spacing: 0.15em;
     color: var(--parchment-bg);
@@ -58,7 +58,7 @@
     border-style: double;
     color: var(--parchment-text);
     font-family: var(--font-narrative);
-    font-size: 1.2rem;
+    font-size: 19px;
     font-weight: 600;
     text-transform: capitalize;
     letter-spacing: 0.05em;
@@ -81,7 +81,7 @@
     display: flex;
     gap: var(--spacing-xxl);
     font-family: var(--font-narrative);
-    font-size: 0.9rem;
+    font-size: 14px;
     color: var(--parchment-bg);
     opacity: 0.7;
 }

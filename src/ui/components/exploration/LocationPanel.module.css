@@ -59,7 +59,7 @@
     background: rgba(0, 0, 0, 0.05);
     border-radius: var(--radius-sm);
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 11px;
     text-transform: uppercase;
     color: var(--color-ink);
     margin-bottom: var(--spacing-xs);
@@ -67,7 +67,7 @@
 
 .title {
     font-family: var(--font-primary);
-    font-size: 1.5rem;
+    font-size: 24px;
     margin: 0;
     color: var(--color-ink);
 }
@@ -94,7 +94,7 @@
 
 .description {
     font-family: var(--font-primary);
-    font-size: 0.95rem;
+    font-size: 15px;
     line-height: 1.5;
     font-style: italic;
     margin: 0;
@@ -114,7 +114,7 @@
     align-items: center;
     gap: var(--spacing-xs);
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 12px;
     font-weight: bold;
     text-transform: uppercase;
     color: var(--color-ink-dim);
@@ -131,7 +131,7 @@
     align-items: center;
     gap: var(--spacing-sm);
     font-family: var(--font-primary);
-    font-size: 0.9rem;
+    font-size: 14px;
     padding: 4px 8px;
     border-radius: var(--radius-xs);
     background: rgba(0, 0, 0, 0.03);
@@ -167,7 +167,7 @@
 
 .npcName {
     font-weight: 600;
-    font-size: 1.1em;
+    font-size: 18px;
     color: var(--color-text-primary);
     font-family: 'Cinzel', serif;
 }
@@ -175,7 +175,7 @@
 .npcMeta {
     display: flex;
     gap: 8px;
-    font-size: 0.85em;
+    font-size: 14px;
     opacity: 0.8;
     margin-bottom: 6px;
 }
@@ -191,7 +191,7 @@
 }
 
 .npcStanding {
-    font-size: 0.85em;
+    font-size: 14px;
     margin-bottom: 10px;
 }
 
@@ -219,7 +219,7 @@
     justify-content: center;
     gap: 6px;
     padding: 6px;
-    font-size: 0.85em;
+    font-size: 14px;
     border: 1px solid rgba(139, 119, 75, 0.3);
     border-radius: 4px;
     background: rgba(255, 248, 230, 0.05);
@@ -256,7 +256,7 @@
     justify-content: center;
     gap: 2px;
     padding: 6px;
-    font-size: 0.85em;
+    font-size: 14px;
     border: 1px solid rgba(139, 119, 75, 0.3);
     border-radius: 4px;
     background: rgba(255, 248, 230, 0.1);

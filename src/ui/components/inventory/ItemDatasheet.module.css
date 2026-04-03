@@ -1,9 +1,9 @@
 .overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 1920px;
+    height: 1080px;
     background: rgba(0, 0, 0, 0.7);
     display: flex;
     align-items: center;
@@ -57,12 +57,12 @@
 
 .name {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 24px;
     color: #2a1b0a;
 }
 
 .type {
-    font-size: 0.8rem;
+    font-size: 13px;
     color: #7d5a50;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -80,7 +80,7 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
-    font-size: 0.85rem;
+    font-size: 14px;
     color: #2a1b0a;
 }
 
@@ -103,7 +103,7 @@
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
-    font-size: 0.9rem;
+    font-size: 14px;
     color: #2a1b0a;
 }
 
@@ -116,7 +116,7 @@
 .propertyBadge {
     background: #5d4037;
     color: #fdf5e6;
-    font-size: 0.7rem;
+    font-size: 11px;
     padding: 2px 8px;
     border-radius: 10px;
     text-transform: capitalize;
@@ -132,13 +132,13 @@
     font-style: italic;
     font-family: serif;
     line-height: 1.5;
-    font-size: 1rem;
+    font-size: 16px;
     color: #4a342e;
 }
 
 .footer {
     text-align: center;
-    font-size: 0.7rem;
+    font-size: 11px;
     color: #a1887f;
     margin-top: var(--spacing-sm);
     text-transform: uppercase;

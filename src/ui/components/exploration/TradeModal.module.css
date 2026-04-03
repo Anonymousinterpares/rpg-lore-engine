@@ -5,10 +5,10 @@
     border: 1px solid var(--parchment-border);
     color: var(--parchment-text);
     font-family: var(--font-narrative);
-    padding: 0.25rem 0.75rem;
+    padding: 4px 12px;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-size: 0.8rem;
+    font-size: 13px;
     font-weight: 600;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-radius: 4px;
@@ -61,11 +61,11 @@
 
 /* Include existing modal styles */
 .modalOverlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 1920px;
+    height: 1080px;
     background: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
@@ -78,7 +78,7 @@
     height: 800px;
     display: flex;
     flex-direction: column;
-    padding: 2rem;
+    padding: 32px;
     position: relative;
     /* Parchment styling handled by component composition */
 }
@@ -89,7 +89,7 @@
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    padding: 1rem 2rem;
+    padding: 16px 32px;
     border-radius: 4px;
     color: white;
     font-weight: bold;
@@ -137,8 +137,8 @@
 
 .header {
     border-bottom: 2px solid #8b4513;
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -147,7 +147,7 @@
 .header h2 {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 8px;
     margin: 0;
     color: #5d4037;
     font-family: 'Cinzel', serif;
@@ -157,27 +157,27 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 0.25rem;
+    gap: 4px;
 }
 
 .standingBadge {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 4px;
     font-weight: bold;
-    font-size: 0.9rem;
+    font-size: 14px;
     color: #5d4037;
 }
 
 .passiveBanner {
-    font-size: 0.8rem;
+    font-size: 13px;
     color: #27ae60;
     font-style: italic;
 }
 
 .panes {
     display: flex;
-    gap: 2rem;
+    gap: 32px;
     flex: 1;
     overflow: hidden;
 }
@@ -188,16 +188,16 @@
     flex-direction: column;
     background: rgba(255, 255, 255, 0.3);
     border-radius: 8px;
-    padding: 1rem;
+    padding: 16px;
     border: 1px solid rgba(139, 69, 19, 0.2);
 }
 
 .pane h3 {
-    margin: 0 0 1rem 0;
+    margin: 0 0 16px 0;
     color: #8b4513;
     font-family: 'Cinzel', serif;
     border-bottom: 1px dashed rgba(139, 69, 19, 0.3);
-    padding-bottom: 0.5rem;
+    padding-bottom: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -206,7 +206,7 @@
 .itemList {
     flex: 1;
     overflow-y: auto;
-    padding-right: 0.5rem;
+    padding-right: 8px;
 }
 
 /* Scrollbar styling */
@@ -224,7 +224,7 @@
 }
 
 .itemEntry {
-    padding: 0.75rem;
+    padding: 12px;
     border-bottom: 1px solid rgba(139, 69, 19, 0.1);
     transition: background 0.2s;
     display: flex;
@@ -239,7 +239,7 @@
 .itemInfo {
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: 3px;
 }
 
 .itemName {
@@ -248,16 +248,16 @@
 }
 
 .itemPrice {
-    font-size: 0.9rem;
+    font-size: 14px;
     display: flex;
-    gap: 0.5rem;
+    gap: 8px;
     align-items: center;
 }
 
 .originalPrice {
     text-decoration: line-through;
     opacity: 0.6;
-    font-size: 0.8rem;
+    font-size: 13px;
 }
 
 .currentPrice {
@@ -267,22 +267,22 @@
 
 .itemActions {
     display: flex;
-    gap: 0.5rem;
+    gap: 8px;
 }
 
 .buybackTag {
-    font-size: 0.7rem;
+    font-size: 11px;
     background: #e67e22;
     color: white;
     padding: 1px 4px;
     border-radius: 2px;
-    margin-right: 0.5rem;
+    margin-right: 8px;
 }
 
 .footer {
-    margin-top: 1rem;
+    margin-top: 16px;
     border-top: 1px solid rgba(139, 69, 19, 0.2);
-    padding-top: 1rem;
+    padding-top: 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -290,7 +290,7 @@
 
 .activeActions {
     display: flex;
-    gap: 1rem;
+    gap: 16px;
 }
 
 /* Reusing actionButton style for special buttons but we might want them slightly larger */
@@ -298,7 +298,7 @@
     composes: actionButton;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 8px;
     background: #f1c40f;
     /* Active gold */
     color: #4a3b2b;
@@ -313,13 +313,13 @@
     background: #c0392b;
     color: white;
     border: none;
-    padding: 0.5rem 1.5rem;
+    padding: 8px 24px;
     font-family: 'Cinzel', serif;
     cursor: pointer;
     border-radius: 4px;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 8px;
 }
 
 .closeBtn:hover {
@@ -350,7 +350,7 @@
     margin-left: -100px;
     opacity: 0;
     transition: opacity 0.3s;
-    font-size: 0.8rem;
+    font-size: 13px;
     pointer-events: none;
 }
 
@@ -360,40 +360,40 @@
 }
 
 .itemBadge {
-    font-size: 0.7rem;
+    font-size: 11px;
     background-color: #e67e22;
     color: white;
     padding: 1px 4px;
     border-radius: 3px;
-    margin-left: 0.5rem;
+    margin-left: 8px;
 }
 
 .magicBadge {
-    font-size: 0.65rem;
+    font-size: 10px;
     background-color: rgba(163, 53, 238, 0.2);
     color: #a335ee;
     padding: 1px 5px;
     border-radius: 3px;
-    margin-left: 0.4rem;
+    margin-left: 6px;
     display: inline-flex;
     align-items: center;
     gap: 2px;
 }
 
 .forgedBadge {
-    font-size: 0.65rem;
+    font-size: 10px;
     background-color: rgba(255, 128, 0, 0.15);
     color: #ff8000;
     padding: 1px 5px;
     border-radius: 3px;
-    margin-left: 0.4rem;
+    margin-left: 6px;
     display: inline-flex;
     align-items: center;
     gap: 2px;
 }
 
 .modSummary {
-    font-size: 0.72rem;
+    font-size: 12px;
     color: #7f8c8d;
     font-style: italic;
     margin-top: 1px;

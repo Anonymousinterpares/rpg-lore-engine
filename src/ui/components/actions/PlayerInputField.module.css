@@ -18,8 +18,8 @@
     border: 1px solid var(--glass-border);
     border-radius: 20px;
     color: var(--glass-text);
-    padding: 0.4rem 0.8rem;
-    font-size: 0.8rem;
+    padding: 6px 13px;
+    font-size: 13px;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
@@ -33,7 +33,7 @@
 }
 
 .hintIcon {
-    font-size: 0.9rem;
+    font-size: 14px;
 }
 
 .inputRow {
@@ -77,7 +77,7 @@
 }
 
 .skipButton {
-    font-size: 0.65rem;
+    font-size: 13px;
     padding: 2px 8px;
     background: transparent;
     border: none;
@@ -126,8 +126,8 @@
 }
 
 .processingLabel {
-    margin-left: 0.5rem;
-    font-size: 0.85rem;
+    margin-left: 8px;
+    font-size: 14px;
     font-style: italic;
     color: var(--glass-text, #f0f0f0);
     opacity: 0.6;

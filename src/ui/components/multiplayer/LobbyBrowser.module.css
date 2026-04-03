@@ -1,9 +1,9 @@
 .overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 1920px;
+    height: 1080px;
     background: rgba(0, 0, 0, 0.7);
     display: flex;
     align-items: center;
@@ -14,9 +14,9 @@
 
 .modal {
     width: 800px;
-    max-width: 90vw;
+    max-width: 1728px;
     height: 600px;
-    max-height: 80vh;
+    max-height: 864px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -76,7 +76,7 @@
     border-radius: var(--radius-sm);
     color: var(--glass-text);
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: 13px;
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -100,7 +100,7 @@
     padding: var(--spacing-md) var(--spacing-lg);
     background: rgba(0, 0, 0, 0.2);
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 12px;
     font-weight: bold;
     text-transform: uppercase;
     color: var(--glass-text-dim);
@@ -152,7 +152,7 @@
     padding: 4px 12px;
     border-radius: var(--radius-sm);
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: 13px;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s ease;

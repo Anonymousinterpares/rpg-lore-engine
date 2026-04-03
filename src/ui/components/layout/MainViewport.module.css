@@ -71,7 +71,7 @@
 
 .placeholder {
     color: var(--terminal-dim);
-    font-size: 0.8rem;
+    font-size: 13px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
 }

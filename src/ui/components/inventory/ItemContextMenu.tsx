@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import styles from './ItemContextMenu.module.css';
 import { Info, Trash2, Search, Zap, ArrowUpCircle, Package } from 'lucide-react';
 import GameTooltip from '../common/GameTooltip';
+import { useScaleFactor } from '../../contexts/ScaleContext';
 
 interface ItemContextMenuProps {
     x: number;
@@ -23,6 +24,7 @@ const ItemContextMenu: React.FC<ItemContextMenuProps> = ({
     x, y, onClose, onAction, itemName, isEquippable, equipAllowed = true, equipReason, isConsumable, isUnidentified, examineDisabledReason, customActions
 }) => {
     const menuRef = useRef<HTMLDivElement>(null);
+    const { scale, portalContainer, DESIGN_W, DESIGN_H } = useScaleFactor();
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -34,9 +36,10 @@ const ItemContextMenu: React.FC<ItemContextMenuProps> = ({
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [onClose]);
 
-    // Prevent context menu from going off screen
-    const adjustedX = Math.min(x, window.innerWidth - 160);
-    const adjustedY = Math.min(y, window.innerHeight - 200);
+    // Prevent context menu from going off screen (in design-space coordinates)
+    const s = scale || 1;
+    const adjustedX = Math.min(x / s, DESIGN_W - 160);
+    const adjustedY = Math.min(y / s, DESIGN_H - 200);
 
     return ReactDOM.createPortal(
         <div
@@ -101,7 +104,7 @@ const ItemContextMenu: React.FC<ItemContextMenuProps> = ({
                 </>
             )}
         </div>,
-        document.body
+        portalContainer || document.body
     );
 };
 

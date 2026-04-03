@@ -12,18 +12,18 @@
 }
 
 .name {
-    font-size: 1.4rem;
+    font-size: 22px;
     font-weight: 700;
 }
 
 .level {
-    font-size: 0.9rem;
+    font-size: 14px;
     font-style: italic;
     color: var(--parchment-text);
     opacity: 0.8;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 8px;
 }
 
 .levelGlow {
@@ -36,7 +36,7 @@
 }
 
 .spBadge {
-    font-size: 0.65rem;
+    font-size: 10px;
     font-style: normal;
     font-weight: 700;
     background: rgba(255, 215, 0, 0.15);
@@ -47,7 +47,7 @@
 }
 
 .asiBadge {
-    font-size: 0.6rem;
+    font-size: 10px;
     font-style: normal;
     font-weight: 700;
     background: rgba(70, 130, 230, 0.2);
@@ -85,12 +85,12 @@
 }
 
 .statValue {
-    font-size: 1.2rem;
+    font-size: 19px;
     font-weight: 700;
 }
 
 .statLabel {
-    font-size: 0.65rem;
+    font-size: 10px;
     text-transform: uppercase;
     opacity: 0.7;
 }
@@ -109,18 +109,18 @@
 }
 
 .abilityLabel {
-    font-size: 0.6rem;
+    font-size: 10px;
     font-weight: 700;
 }
 
 .abilityValue {
-    font-size: 1rem;
+    font-size: 16px;
     font-weight: 600;
 }
 
 /* Buff/Debuff indicators */
 .buffIndicator {
-    font-size: 0.8rem;
+    font-size: 13px;
     font-weight: 700;
     color: #27ae60;
     margin-left: 2px;
@@ -128,7 +128,7 @@
 }
 
 .debuffIndicator {
-    font-size: 0.8rem;
+    font-size: 13px;
     font-weight: 700;
     color: #c0392b;
     margin-left: 2px;

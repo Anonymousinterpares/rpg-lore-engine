@@ -1,9 +1,9 @@
 .overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 1920px;
+    height: 1080px;
     background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
@@ -14,8 +14,8 @@
 
 .modal {
     width: 700px;
-    max-width: 95vw;
-    height: 80vh;
+    max-width: 1824px;
+    height: 864px;
     max-height: 800px;
     display: flex;
     flex-direction: column;
@@ -45,7 +45,7 @@
     margin: 0;
     color: #4a3c31;
     /* Dark brown ink */
-    font-size: 1.8rem;
+    font-size: 29px;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
@@ -87,7 +87,7 @@
     flex: 1;
     padding: var(--spacing-sm) var(--spacing-md);
     font-family: var(--font-narrative);
-    font-size: 1rem;
+    font-size: 16px;
     background: rgba(255, 255, 255, 0.5);
     border: 1px solid var(--parchment-border);
     border-radius: var(--radius-sm);
@@ -196,12 +196,12 @@
     font-weight: bold;
     color: #2c2520;
     /* Dark Ink */
-    font-size: 1.2rem;
+    font-size: 19px;
 }
 
 .charInfo {
     font-family: var(--font-mono);
-    font-size: 0.85rem;
+    font-size: 14px;
     color: #5d4037;
     /* Brown Ink */
     font-weight: 600;
@@ -225,12 +225,12 @@
     align-items: center;
     gap: var(--spacing-xs);
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 12px;
 }
 
 .slotSummary {
     margin: var(--spacing-xs) 0 0 0;
-    font-size: 0.9rem;
+    font-size: 14px;
     color: #4a3c31;
     line-height: 1.4;
     font-style: italic;
@@ -291,7 +291,7 @@
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
-    font-size: 0.8rem;
+    font-size: 13px;
     gap: var(--spacing-xs);
     font-family: var(--font-ui);
 }
@@ -314,5 +314,5 @@
 
 .emptyState p {
     font-family: var(--font-primary);
-    font-size: 1.2rem;
+    font-size: 19px;
 }

@@ -24,7 +24,7 @@
 
 .paceLabel {
     color: #ffd700;
-    font-size: 0.65rem;
+    font-size: 10px;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -89,7 +89,7 @@
 }
 
 .weatherLabel {
-    font-size: 0.9rem;
+    font-size: 14px;
     font-weight: 700;
     color: #ffd700;
     text-transform: uppercase;
@@ -103,7 +103,7 @@
 }
 
 .timeText {
-    font-size: 1.1rem;
+    font-size: 18px;
     font-weight: 900;
     letter-spacing: 0.05em;
     text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);

@@ -21,7 +21,7 @@
 
 .title {
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: 13px;
     text-transform: uppercase;
     color: var(--glass-text-dim);
     margin: 0;
@@ -52,20 +52,20 @@
 .sender {
     font-family: var(--font-primary);
     font-weight: bold;
-    font-size: 0.85rem;
+    font-size: 14px;
     color: var(--glass-accent);
 }
 
 .time {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 11px;
     color: var(--glass-text-dim);
     opacity: 0.5;
 }
 
 .msgBody {
     font-family: var(--font-primary);
-    font-size: 0.9rem;
+    font-size: 14px;
     color: var(--glass-text);
     line-height: 1.4;
 }
@@ -75,7 +75,7 @@
     background: rgba(255, 255, 255, 0.05);
     border-radius: var(--radius-sm);
     font-style: italic;
-    font-size: 0.8rem;
+    font-size: 13px;
     color: var(--glass-text-dim);
 }
 
@@ -92,7 +92,7 @@
     padding: var(--spacing-sm) var(--spacing-md);
     color: var(--glass-text);
     font-family: var(--font-primary);
-    font-size: 0.9rem;
+    font-size: 14px;
 }
 
 .input:focus {

@@ -7,7 +7,7 @@
 
 .label {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 12px;
     text-transform: uppercase;
     color: var(--glass-accent);
     margin: 0 0 var(--spacing-sm) 0;
@@ -28,9 +28,9 @@
 
 .level {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 11px;
     color: var(--glass-text-dim);
-    min-width: 2.5rem;
+    min-width: 40px;
 }
 
 .dots {

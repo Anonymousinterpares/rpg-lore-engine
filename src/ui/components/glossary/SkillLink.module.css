@@ -17,11 +17,11 @@
 }
 
 .overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 1920px;
+    height: 1080px;
     background: rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: center;
@@ -33,7 +33,7 @@
 
 .modal {
     width: 400px;
-    max-width: 90vw;
+    max-width: 1728px;
     background-color: #f4e4bc;
     /* Solid fallback */
     background-color: var(--parchment-bg);
@@ -85,7 +85,7 @@
 .header h3 {
     margin: 0;
     font-family: var(--font-narrative);
-    font-size: 1.5rem;
+    font-size: 24px;
     color: var(--parchment-text);
 }
 
@@ -107,7 +107,7 @@
 }
 
 .statLine {
-    font-size: 0.95rem;
+    font-size: 15px;
     margin-bottom: var(--spacing-md);
     color: var(--parchment-accent);
     font-family: var(--font-narrative);
@@ -116,12 +116,12 @@
 .description {
     line-height: 1.5;
     margin-bottom: var(--spacing-lg);
-    font-size: 1rem;
+    font-size: 16px;
     color: var(--parchment-text);
 }
 
 .examplesSection h4 {
-    font-size: 0.9rem;
+    font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: var(--spacing-xs);
@@ -131,7 +131,7 @@
 .examplesSection ul {
     margin: 0;
     padding-left: var(--spacing-lg);
-    font-size: 0.9rem;
+    font-size: 14px;
     line-height: 1.4;
     color: var(--parchment-text);
 }

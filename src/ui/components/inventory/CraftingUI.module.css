@@ -1,9 +1,9 @@
 .overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 1920px;
+    height: 1080px;
     background: rgba(0, 0, 0, 0.7);
     display: flex;
     align-items: center;
@@ -14,9 +14,9 @@
 
 .modal {
     width: 900px;
-    max-width: 95vw;
+    max-width: 1824px;
     height: 650px;
-    max-height: 85vh;
+    max-height: 918px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -75,7 +75,7 @@
 
 .sectionTitle {
     font-family: var(--font-mono);
-    font-size: 0.9rem;
+    font-size: 14px;
     color: var(--glass-accent);
     text-transform: uppercase;
     margin: 0;
@@ -119,13 +119,13 @@
 
 .recipeName {
     font-family: var(--font-primary);
-    font-size: 0.95rem;
+    font-size: 15px;
     color: var(--glass-text);
 }
 
 .recipeType {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 11px;
     color: var(--glass-text-dim);
 }
 
@@ -133,7 +133,7 @@
     position: absolute;
     top: 4px;
     right: 4px;
-    font-size: 0.6rem;
+    font-size: 10px;
     background: rgba(255, 50, 50, 0.2);
     color: #ff3232;
     padding: 2px 4px;
@@ -155,7 +155,7 @@
 
 .detailHeader h3 {
     font-family: var(--font-primary);
-    font-size: 2rem;
+    font-size: 32px;
     margin: 0 0 var(--spacing-sm) 0;
     color: var(--glass-text);
 }
@@ -169,7 +169,7 @@
 
 .requirements h4 {
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: 13px;
     color: var(--glass-accent);
     text-transform: uppercase;
     margin: 0 0 var(--spacing-md) 0;
@@ -201,7 +201,7 @@
 
 .ingCount {
     font-family: var(--font-mono);
-    font-size: 0.9rem;
+    font-size: 14px;
 }
 
 .craftButton {

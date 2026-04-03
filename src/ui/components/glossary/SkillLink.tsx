@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import styles from './SkillLink.module.css';
 import { CODEX_LORE } from '../../../ruleset/data/CodexRegistry';
 import { X, Info } from 'lucide-react';
+import { useScaleFactor } from '../../contexts/ScaleContext';
 
 interface Skill {
     name: string;
@@ -20,6 +21,7 @@ interface SkillLinkProps {
 
 const SkillLink: React.FC<SkillLinkProps> = ({ skillName, className, inheritColor }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const { portalContainer } = useScaleFactor();
 
     // Find skill data, handling case sensitivity and "Skill: " prefix
     const cleanName = skillName.replace('Skill: ', '');
@@ -70,7 +72,7 @@ const SkillLink: React.FC<SkillLinkProps> = ({ skillName, className, inheritColo
                         </div>
                     </div>
                 </div>,
-                document.body
+                portalContainer || document.body
             )}
         </>
     );

@@ -41,11 +41,11 @@ but have NO gameplay effect beyond the proficiency bonus on generic skill checks
 - No combat disarm
 - **Future:** Pickpocket mechanic, combat disarm action, trap disabling
 
-### Medicine (WIS)
-- Only used in crafting (potions)
-- NOT used in rest healing (RestingEngine has no skill involvement)
-- No poison/disease treatment
-- **Future:** Short rest healing bonus, stabilize dying allies without magic, cure conditions
+### Medicine (WIS) — PARTIALLY IMPLEMENTED (April 2026)
+- ~~NOT used in rest healing~~ → Medicine T2 +25%, T3 +50% short rest HP bonus (RestingEngine)
+- Medicine T4 passive: temp HP = WIS mod after long rest (RestingEngine)
+- Still missing: poison/disease treatment, stabilize dying allies
+- **Future:** Cure conditions, stabilize dying allies without magic
 
 ---
 
@@ -84,24 +84,25 @@ Items from the original implementation_plan.md that are incomplete or missing.
   Exhaustion would be the penalty system tying those mechanics together.
   For solo play, exhaustion should be generous (easy to recover, hard to reach level 3+).
 
-### Spell Upcasting — PARTIALLY IMPLEMENTED
-- Spell JSONs have `damage.scaling` arrays with correct upcast values (Fireball, Cure Wounds, etc.)
-- SpellcastingEngine validates `slotLevel >= spell.level` for casting
-- BUT engine does NOT apply upcast damage scaling when casting at higher levels — always uses base dice
-- **To implement:** In SpellcastingEngine.castSpell(), read `spell.damage.scaling[slotLevel - spell.level]` when slotLevel > spell.level
+### Spell Upcasting — ✅ FULLY IMPLEMENTED (April 2026)
+- Spell slots populated from class progression (all 12 classes, levels 1-20)
+- CharacterFactory, CharacterCreationEngine, LevelingEngine all wire spell slots
+- SpellManager.handleCast() applies upcast damage scaling from spell.damage.scaling
+- SpellbookFlyout UI: level rectangle selector → CAST button flow
+- Slot summary bar, range-based greying, "No scaling" warnings
+- Scaling data added to Magic Missile, Thunderwave, Spiritual Weapon, Spirit Guardians, Vampiric Touch
+- Existing saves auto-migrated (empty spellSlots patched)
+- Arcane Recovery (Wizard): proportional budget, choice flyout after short rest
+- Shield spell: +5 AC status effect, reaction resource, visible in UI
+- Casting time awareness: reaction/bonus action/action spells use correct resources
+- Status effects persist beyond combat, visible as buff/debuff indicators in UI
 
-### AoE Spell Geometry — PARTIALLY IMPLEMENTED
-- SpellSchema defines area shapes: CONE, SPHERE, RADIUS, CUBE, CYLINDER, LINE
-- Spell JSONs use these shapes (Fireball = RADIUS 20ft, Cone of Cold = CONE 60ft)
-- ALL_IN_AREA spells currently hit ALL enemies regardless of distance — no radius check
-- CombatGridManager has line-of-sight (Bresenham's algorithm) but NO AoE targeting geometry
-- Cover does NOT add to saving throws (D&D 5e: half cover = +2 DEX saves, three-quarters = +5)
-- Cover AC bonus only applies when character has "hunkered_down" status, not passively
-- **To implement:**
-  - AoE geometry resolver: filter targets within spell radius from origin point
-  - Cover save bonus: add cover-based bonus to DEX saves for AoE spells
-  - Full cover should block AoE effects entirely
-  - Fix cover to apply passively (not only when hunkered)
+### AoE Spell Geometry — ✅ FULLY IMPLEMENTED (April 2026)
+- ~~ALL_IN_AREA spells hit ALL enemies regardless of distance~~ → AoE radius filtering in SpellManager
+- ~~Cover does NOT add to saving throws~~ → Cover save bonus: +2 half, +5 three-quarters for DEX saves
+- ~~Full cover not handled~~ → Full cover targets excluded from AoE
+- SpellManager filters targets by spell area size using CombatGridManager.getDistance()
+- Cover bonus applied in CombatResolutionEngine.resolveSpell()
 
 ### Combat Narrator Tactical Awareness — MISSING
 - The LLM narrator during combat receives ONLY: round number, enemy summary, whose turn
@@ -128,21 +129,11 @@ Items from the original implementation_plan.md that are incomplete or missing.
 - Unclear if combat actually triggers hazard damage when combatants move to hazardous terrain tiles
 - **To implement:** HazardEngine with falling/drowning rules, wire grid hazard tiles into CombatOrchestrator movement
 
-### Light & Darkness — PARTIALLY IMPLEMENTED
-- VisibilityEngine has correct logic for Bright/Dim/Darkness with darkvision
-- BUT VisibilityEngine is NEVER CALLED during combat — completely dead code
-- Darkvision chain is fully broken: race data exists (Elf=60ft etc.) but never flows to combat
-  - PlayerCharacterSchema has no darkvision field
-  - CharacterFactory doesn't copy race.darkvision to character
-  - CombatantSchema has no darkvision field
-  - CombatFactory doesn't carry darkvision to combat
-  - CombatResolutionEngine never checks lighting/visibility
-- No grid-based light propagation or shadow casting
-- **Data chain FIXED** (April 2026): PlayerCharacterSchema, CombatantSchema, CharacterFactory, CharacterCreationEngine, CombatFactory all carry darkvision. VisibilityEngine simplified.
-- **Still missing:** VisibilityEngine not wired into CombatResolutionEngine (combat doesn't check lighting)
-- **Monster darkvision data:** Only 11/325 monsters have a darkvision field. Need bulk migration script to add
-  darkvision based on creature type (dragons=120ft, undead/fiends/aberrations=60ft, humanoids=0, etc.)
-  using D&D 5e SRD senses data as reference. ~200 monsters need the field added.
+### Light & Darkness — ✅ MOSTLY IMPLEMENTED (April 2026)
+- ~~Darkvision chain fully broken~~ → Full chain fixed: Race→PlayerCharacter→Combatant→VisibilityEngine→CombatResolutionEngine
+- ~~VisibilityEngine never called~~ → CombatResolutionEngine.resolveAttack() accepts lightLevel, checks darkvision for advantage/disadvantage
+- ~~Monster darkvision data missing~~ → 325 monster files bulk-migrated with darkvision based on creature type rules
+- **Still missing:** No grid-based light propagation or shadow casting, no torch/lantern illumination radius
 
 ### Sub-Location / Dungeon Navigation — NOT IMPLEMENTED
 - Currently the game only has hex-based movement on the world map
@@ -160,16 +151,19 @@ Items from the original implementation_plan.md that are incomplete or missing.
 
 ---
 
-### Ability Score Improvements (ASI)
-- D&D 5e grants ASI at levels 4, 8, 12, 16, 19
-- Currently NOT implemented in LevelingEngine
-- Characters never gain stat boosts or feats after creation
-- **Priority:** HIGH — significant balance gap at mid/high levels
+### Ability Score Improvements (ASI) — ✅ FULLY IMPLEMENTED (April 2026)
+- LevelingEngine grants ASI at levels 4, 8, 12, 16, 19
+- applyASISingle (+2 one ability), applyASISplit (+1/+1 two abilities)
+- Pending ASI tracked via `_pendingASI`, UI with +/- buttons in UnifiedCharacterPage
+- CON increase retroactively adjusts max HP
+- ASI history tracked for respec (`_asiHistory`)
 
-### Feat System
-- No feats exist in the engine
-- D&D 5e allows choosing a feat instead of ASI
-- **Future:** Feat selection at ASI levels, with prerequisites
+### Feat System — PARTIALLY IMPLEMENTED (April 2026)
+- ~~No feats exist~~ → 12 feats in data/feats/feats.json
+- LevelingEngine.selectFeat() consumes pending ASI, applies feat effects
+- Alert (+5 init), Tough (retroactive +2 HP/level) wired
+- Feat choice button in UnifiedCharacterPage ASI section
+- **Still unwired:** GWM/Sharpshooter power attacks, Lucky rerolls, Mobile speed, Sentinel/Polearm OA effects (see audit section above)
 
 ### Tool Proficiencies
 - Defined in background data (thieves' tools, gaming sets, etc.)
@@ -301,5 +295,16 @@ However, most active abilities only deduct a use — the mechanical EFFECT is no
 | Unarmed Combat | T4 | Pressure Point (paralyze on crit) | Paralyzed condition on crit |
 
 
-# ADDTIONAL HOLE DISCOVERED:
-on level up for spellcaster, there is no new spell addition! verify & analyse!
+## Additional Holes Discovered
+
+### Spellcaster Level-Up Spell Addition — NOT IMPLEMENTED
+- On level up for spellcasters, no new spells are added to known/spellbook
+- D&D 5e: Wizards learn 2 new spells per level (added to spellbook), prepared casters get access to full class list
+- LevelingEngine.levelUp() grants HP, SP, hit dice but never updates cantripsKnown, knownSpells, or spellbook
+- **To implement:** On level up, grant new spell selections based on class rules
+
+### Class Progression Features — NOT WIRED
+- All 12 class JSONs now have complete 1-20 progression with features listed
+- But LevelingEngine.levelUp() never reads progression[level].features to grant new class features
+- Features like Extra Attack (Fighter 5), Channel Divinity (Cleric 2), Wild Shape (Druid 2) exist in data but aren't activated
+- **To implement:** On level up, read class progression features and apply them (add to featureUsages, update capabilities)

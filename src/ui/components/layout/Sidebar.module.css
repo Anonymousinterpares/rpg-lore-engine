@@ -21,7 +21,7 @@
 }
 
 .sectionHeader h2 {
-    font-size: 0.9rem;
+    font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
 }
@@ -35,7 +35,7 @@
     border: 1px dashed var(--terminal-border);
     border-radius: var(--radius-md);
     color: var(--terminal-dim);
-    font-size: 0.8rem;
+    font-size: 13px;
     padding: var(--spacing-md);
     text-align: center;
 }

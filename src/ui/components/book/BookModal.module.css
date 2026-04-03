@@ -1,9 +1,9 @@
 .bookOverlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 1920px;
+    height: 1080px;
     background: rgba(0, 0, 0, 0.75);
     backdrop-filter: blur(8px);
     display: flex;
@@ -16,9 +16,9 @@
 
 .bookContainer {
     position: relative;
-    width: 90vw;
-    max-width: 1200px;
-    height: 85vh;
+    width: 1728px;
+    max-width: 1728px;
+    height: 918px;
     display: flex;
     flex-direction: column;
     transform-style: preserve-3d;
@@ -221,7 +221,7 @@
 
 .turnBackLabel {
     font-family: 'Cinzel', serif;
-    font-size: 0.9rem;
+    font-size: 14px;
     /* Slightly larger */
     font-weight: 900;
     /* Extra bold */

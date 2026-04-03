@@ -1,9 +1,9 @@
 .overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 1920px;
+    height: 1080px;
     background: rgba(0, 0, 0, 0.7);
     display: flex;
     align-items: center;
@@ -14,9 +14,9 @@
 
 .modal {
     width: 800px;
-    max-width: 90vw;
+    max-width: 1728px;
     height: 600px;
-    max-height: 80vh;
+    max-height: 864px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -71,7 +71,7 @@
     border-bottom: 2px solid transparent;
     color: var(--glass-text-dim);
     font-family: var(--font-mono);
-    font-size: 0.9rem;
+    font-size: 14px;
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -98,7 +98,7 @@
     justify-content: space-between;
     align-items: center;
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: 13px;
     color: var(--glass-text-dim);
     text-transform: uppercase;
 }
@@ -142,7 +142,7 @@
 
 .itemType {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 11px;
     color: var(--glass-text-dim);
     text-transform: uppercase;
 }
@@ -155,7 +155,7 @@
 
 .cost {
     font-family: var(--font-mono);
-    font-size: 0.9rem;
+    font-size: 14px;
     color: #ffd700;
 }
 
@@ -166,7 +166,7 @@
     padding: var(--spacing-sm) var(--spacing-lg);
     border-radius: var(--radius-sm);
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: 13px;
     cursor: pointer;
     transition: all 0.2s ease;
 }
