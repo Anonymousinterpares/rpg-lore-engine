@@ -38,10 +38,11 @@ export class CombatResolutionEngine {
         forceDisadvantage: boolean = false,
         lightLevel: LightLevel = 'Bright',
         featureContext?: {
-            critRange?: number;       // Improved Critical: 19 or Superior: 18 (default 20)
-            sneakAttackDice?: number;  // Sneak Attack: number of d6s (0 = none)
+            critRange?: number;         // Improved Critical: 19 or Superior: 18 (default 20)
+            sneakAttackDice?: number;   // Sneak Attack: number of d6s (0 = none)
             hasAllyNearTarget?: boolean; // For Sneak Attack eligibility
             isFinesseOrRanged?: boolean; // Sneak Attack requires finesse/ranged weapon
+            rerollDamageBelow?: number; // Great Weapon Fighting: reroll 1s and 2s
         }
     ): CombatActionResult {
         // Darkvision/lighting checks
@@ -106,9 +107,16 @@ export class CombatResolutionEngine {
 
         if (hit) {
             damage = Dice.roll(damageFormula);
+            // Great Weapon Fighting: reroll low damage dice
+            if (featureContext?.rerollDamageBelow && damage <= featureContext.rerollDamageBelow) {
+                damage = Dice.roll(damageFormula); // Reroll and must use new result
+            }
             if (isCrit) {
-                // Simplified crit: roll damage twice
-                damage += Dice.roll(damageFormula);
+                let critExtra = Dice.roll(damageFormula);
+                if (featureContext?.rerollDamageBelow && critExtra <= featureContext.rerollDamageBelow) {
+                    critExtra = Dice.roll(damageFormula);
+                }
+                damage += critExtra;
                 message = `${attacker.name} scores a CRITICAL HIT on ${target.name}!`;
             } else {
                 message = `${attacker.name} hits ${target.name}.`;

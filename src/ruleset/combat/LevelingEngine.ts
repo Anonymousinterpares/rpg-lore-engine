@@ -6,6 +6,11 @@ import { DataManager } from '../data/DataManager';
 /** Levels at which ASI (Ability Score Improvement) is granted. */
 const ASI_LEVELS = [4, 8, 12, 16, 19];
 
+/** Level at which each class gets Fighting Style. */
+const FIGHTING_STYLE_LEVELS: Record<string, number> = {
+    Fighter: 1, Paladin: 2, Ranger: 2
+};
+
 /** Level at which each class chooses their subclass. */
 const SUBCLASS_LEVELS: Record<string, number> = {
     Cleric: 1, Sorcerer: 1, Warlock: 1,
@@ -237,9 +242,16 @@ export class LevelingEngine {
 
         const classLabel = isMulticlass ? ` (${levelingClass})` : '';
         let summary = `${pc.name} reached Level ${pc.level}${classLabel}! HP +${hpIncrease} (max ${pc.hp.max}). Gained ${spGrant} SP.`;
+        // Fighting Style trigger
+        const fsLevel = FIGHTING_STYLE_LEVELS[levelingClass];
+        if (fsLevel && pc.level >= fsLevel && !pc.fightingStyle) {
+            (pc as any)._pendingFightingStyle = true;
+        }
+
         if (newFeatures.length > 0) summary += ` New features: ${newFeatures.join(', ')}.`;
         if (spellsToLearn > 0 && pc.level > 1) summary += ` Choose ${spellsToLearn} new spell(s)!`;
         if ((pc as any)._pendingSubclass) summary += ` Choose your subclass!`;
+        if ((pc as any)._pendingFightingStyle) summary += ` Choose your Fighting Style!`;
 
         if (isMulticlass && pc.multiclassLevels) {
             const levels = Object.entries(pc.multiclassLevels).map(([c, l]) => `${c} ${l}`).join(' / ');
@@ -456,6 +468,26 @@ export class LevelingEngine {
      */
     public static getSubclassLevel(className: string): number {
         return SUBCLASS_LEVELS[className] || 3;
+    }
+
+    /**
+     * Select a Fighting Style.
+     */
+    public static selectFightingStyle(pc: PlayerCharacter, styleName: string): string {
+        if (pc.fightingStyle) return `Already has Fighting Style: ${pc.fightingStyle}.`;
+        const { FeatureEffectEngine } = require('./FeatureEffectEngine');
+        const style = FeatureEffectEngine.getFightingStyle(styleName);
+        if (!style) return `Unknown Fighting Style: ${styleName}.`;
+        pc.fightingStyle = styleName;
+        delete (pc as any)._pendingFightingStyle;
+        return `Fighting Style chosen: ${styleName}! ${style.description}`;
+    }
+
+    /**
+     * Check if a class gets a Fighting Style.
+     */
+    public static getFightingStyleLevel(className: string): number | undefined {
+        return FIGHTING_STYLE_LEVELS[className];
     }
 
     /**

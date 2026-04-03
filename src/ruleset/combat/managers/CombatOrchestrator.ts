@@ -3,6 +3,7 @@ import { CombatState, Combatant, CombatLogEntry, Modifier } from '../../schemas/
 import { CombatManager } from '../CombatManager';
 import { CombatGridManager } from '../grid/CombatGridManager';
 import { CombatResolutionEngine } from '../CombatResolutionEngine';
+import { FeatureEffectEngine, AttackContext } from '../FeatureEffectEngine';
 import { CombatLogFormatter } from '../CombatLogFormatter';
 import { CombatAI } from '../CombatAI';
 import { CombatUtils } from '../CombatUtils';
@@ -509,26 +510,15 @@ export class CombatOrchestrator {
                     }
                 }
 
-                // Build feature context for class-specific attack modifiers
-                const pcClass = pc.class;
-                const pcSubclass = pc.subclass;
-                const pcLevel = pc.level;
-
-                // Improved Critical (Champion Fighter): crit on 19+ at L3, 18+ at L15
-                let critRange = 20;
-                if (pcClass === 'Fighter' && pcSubclass === 'Champion') {
-                    if (pcLevel >= 15) critRange = 18;
-                    else if (pcLevel >= 3) critRange = 19;
-                }
-
-                // Sneak Attack (Rogue): ceil(level/2) d6s
-                const sneakAttackDice = pcClass === 'Rogue' ? Math.ceil(pcLevel / 2) : 0;
-                const isFinesseOrRanged = isRanged || !!(mainHandItem as any)?.properties?.some(
+                // Build attack context for FeatureEffectEngine
+                const isFinesseWeapon = !!(mainHandItem as any)?.properties?.some(
                     (p: string) => p.toLowerCase().includes('finesse')
                 );
-                // Check if any ally is within 5ft (1 cell) of the target
+                const isTwoHanded = !!(mainHandItem as any)?.properties?.some(
+                    (p: string) => p.toLowerCase().includes('two-handed') || p.toLowerCase().includes('versatile')
+                );
                 let hasAllyNearTarget = false;
-                if (sneakAttackDice > 0 && combatState.grid && target) {
+                if (combatState.grid && target) {
                     hasAllyNearTarget = combatState.combatants.some(c =>
                         c.id !== currentCombatant.id &&
                         c.type !== 'enemy' &&
@@ -537,31 +527,37 @@ export class CombatOrchestrator {
                     );
                 }
 
-                const featureContext = {
-                    critRange,
-                    sneakAttackDice,
+                const attackContext: AttackContext = {
+                    isRanged,
+                    isFinesseWeapon,
+                    isTwoHanded,
+                    hasOffhand: !!pc.equipmentSlots.offHand,
+                    weaponType: isRanged ? 'ranged' : 'melee',
                     hasAllyNearTarget,
-                    isFinesseOrRanged,
+                    hasAdvantage: !forceDisadvantage && currentCombatant.statusEffects.some(
+                        e => e.id === 'press_advantage' || e.id === 'unseen' || e.id === 'flanking'
+                    ),
+                    wearingArmor: !!pc.equipmentSlots.armor,
                 };
 
-                // Determine number of attacks (Extra Attack feature)
-                let attackCount = 1;
-                if (currentCombatant.isPlayer) {
-                    const hasExtraAttack = (feat: string) => {
-                        const classFeatures = DataManager.getClass(pcClass)?.allFeatures || [];
-                        return classFeatures.some(f => f.name === feat && f.level <= pcLevel);
-                    };
-                    // Fighter gets Extra Attack at 5, Extra Attack (2) at 11, Extra Attack (3) at 20
-                    if (pcClass === 'Fighter') {
-                        if (pcLevel >= 20) attackCount = 4;
-                        else if (pcLevel >= 11) attackCount = 3;
-                        else if (pcLevel >= 5) attackCount = 2;
-                    } else if (['Ranger', 'Paladin', 'Monk'].includes(pcClass) && pcLevel >= 5) {
-                        attackCount = 2;
-                    } else if (pcClass === 'Bard' && pcSubclass === 'College of Valor' && pcLevel >= 6) {
-                        attackCount = 2;
-                    }
+                const mods = FeatureEffectEngine.getAttackModifiers(pc, attackContext);
+
+                // Apply fighting style attack bonus
+                if (mods.attackBonus) {
+                    modifiers.push({ label: 'Fighting Style', value: mods.attackBonus, source: 'Feature' });
                 }
+                // Apply fighting style / rage damage bonus
+                dmgBonus += mods.damageBonus;
+
+                const featureContext = {
+                    critRange: mods.critRange,
+                    sneakAttackDice: mods.sneakAttackDice,
+                    hasAllyNearTarget: attackContext.hasAllyNearTarget,
+                    isFinesseOrRanged: isFinesseWeapon || isRanged,
+                    rerollDamageBelow: mods.rerollDamageBelow,
+                };
+
+                const attackCount = 1 + mods.extraAttacks;
 
                 let usedSneakAttack = false; // Sneak Attack: only once per turn
                 const allAttackResults: string[] = [];
@@ -579,7 +575,7 @@ export class CombatOrchestrator {
                     const atkFeatureCtx = {
                         ...featureContext,
                         // Sneak Attack only applies once per turn
-                        sneakAttackDice: usedSneakAttack ? 0 : featureContext.sneakAttackDice,
+                        sneakAttackDice: usedSneakAttack ? 0 : mods.sneakAttackDice,
                     };
 
                     const result = CombatResolutionEngine.resolveAttack(
@@ -595,7 +591,7 @@ export class CombatOrchestrator {
                     );
 
                     // Track sneak attack usage
-                    if (result.damage > 0 && featureContext.sneakAttackDice > 0 && !usedSneakAttack &&
+                    if (result.damage > 0 && mods.sneakAttackDice > 0 && !usedSneakAttack &&
                         result.message.includes('Sneak Attack')) {
                         usedSneakAttack = true;
                     }

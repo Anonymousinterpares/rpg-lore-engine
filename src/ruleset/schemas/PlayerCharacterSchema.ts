@@ -41,6 +41,7 @@ export const PlayerCharacterSchema = z.object({
     darkvision: z.number().default(0), // Range in feet (0 = none, 60 = standard)
     class: z.string(), // Primary class
     subclass: z.string().optional(), // Subclass (e.g., "School of Evocation", "Champion")
+    fightingStyle: z.string().optional(), // Fighting Style (e.g., "Archery", "Defense", "Dueling")
     secondaryClass: z.string().optional(), // Multiclass (max 2)
     multiclassLevels: z.record(z.string(), z.number()).default({}), // { "Fighter": 5, "Rogue": 3 }
     conditions: z.array(CombatConditionSchema).default([]),
