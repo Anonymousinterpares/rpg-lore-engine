@@ -8,6 +8,7 @@ import { Encounter } from './EncounterDirector';
 import { DataManager } from '../data/DataManager';
 import { Dice } from './Dice';
 import { MechanicsEngine } from './MechanicsEngine';
+import { OAEngine, OAResult } from './OAEngine';
 import { LoreService } from '../agents/LoreService';
 import { DifficultyEngine, DifficultyLevel } from './DifficultyEngine';
 
@@ -208,6 +209,38 @@ export class CombatManager {
             ? ` (${nearestOpponent.dist * 5}ft from ${nearestOpponent.name})`
             : '';
 
+        // Check for Opportunity Attacks along the path
+        let oaMessages = '';
+        const allCombatants = this.state.combat?.combatants || [];
+        if (this.gridManager && allCombatants.length > 0) {
+            const { results: oaResults, stopAtIndex } = OAEngine.resolveOAsOnPath(
+                combatant as any, path, allCombatants as any[], this.gridManager, this.state.character
+            );
+
+            for (const oa of oaResults) {
+                oaMessages += `\n${oa.message}`;
+            }
+
+            // If movement was stopped (killed or Sentinel), update target position
+            if (stopAtIndex < path.length - 1) {
+                const stoppedPos = path[stopAtIndex];
+                combatant.position = stoppedPos;
+                combatant.movementRemaining -= (stopAtIndex * costMultiplier);
+
+                const sentinelStop = oaResults.some(r => r.sentinelStopsMovement);
+                const killedStop = oaResults.some(r => r.targetKilled);
+
+                if (killedStop) {
+                    return `${combatant.name} falls while trying to move!${oaMessages}`;
+                }
+                if (sentinelStop) {
+                    oaMessages += `\n${combatant.name}'s movement is halted by Sentinel!`;
+                }
+
+                return `${combatant.name} moves ${stopAtIndex * 5}ft ${direction} but is intercepted!${oaMessages}`;
+            }
+        }
+
         combatant.position = targetPos;
         combatant.movementRemaining -= totalCost;
 
@@ -222,7 +255,7 @@ export class CombatManager {
         if (costMultiplier < 1) paceDesc = 'recklessly';
         if (combatant.statusEffects.some(se => se.id === 'sprint_reckless')) paceDesc = 'at a full sprint';
 
-        return `${combatant.name} moves ${distanceFt}ft ${direction} ${paceDesc}${featureSuffix}${opponentContext}.${hazardMsg}`;
+        return `${combatant.name} moves ${distanceFt}ft ${direction} ${paceDesc}${featureSuffix}${opponentContext}.${oaMessages}${hazardMsg}`;
     }
 
     private checkHazard(combatant: Combatant, pos: GridPosition): string | null {

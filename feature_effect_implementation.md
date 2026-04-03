@@ -188,12 +188,34 @@ CombatOrchestrator and CombatResolutionEngine consume the engine — no feature-
 - Circle of the Moon: bonus action transform, higher CR beasts, elemental forms at L10
 - UI: beast form indicator, beast HP bar, attack options change
 
-#### Sprint: Opportunity Attack Rework + Sentinel/Polearm Master/War Caster
-- OA trigger system: detect enemy movement out of reach during movement phase
-- OA resolution: free reaction attack with weapon
-- Sentinel feat: OA stops movement, enemies can't Disengage, protect allies
-- Polearm Master feat: enemies entering 10ft reach provoke OA, bonus action butt-end attack
-- War Caster feat: cast spell instead of weapon OA, advantage on concentration saves
+#### Opportunity Attack System — ✅ IMPLEMENTED
+**New file: `src/ruleset/combat/OAEngine.ts`**
+- OA detection per-step along movement path (D&D RAW: resolves at exact moment of leaving reach)
+- Faction-aware: allies (player/companion/summon) never OA each other
+- Wired into CombatManager.moveCombatant() — affects both player and AI movement
+- Disengage status effect now properly prevents OA
+- If OA kills target mid-path, movement stops immediately
+- OA consumes attacker's reaction (one OA per enemy per movement)
+- Uses actual `tactical.reach` per combatant (5ft default, 10ft with Reach weapons/monsters)
+
+**Sentinel feat** — ✅ IMPLEMENTED
+- OA on hit: target's speed becomes 0, movement halted
+- Ignores Disengage: Sentinel's OA triggers even if mover has Disengage status
+- Feat detected on combatant's `feats` array
+
+**Polearm Master feat** — ✅ IMPLEMENTED
+- Enemies entering 10ft reach provoke OA (not just leaving)
+- Only triggers if the combatant has both the feat AND a reach weapon (10ft)
+- Message: "strikes with the butt-end as [target] enters reach"
+
+**War Caster** — Deferred (auto melee attack used instead per design decision)
+
+**OA Warnings** — ✅ IMPLEMENTED
+- `getOAWarnings()` returns list of enemies that would get OA for a planned path
+- Intended for easy/normal difficulty: show red tooltip warning before movement
+- Hard difficulty: no warning
+
+**29 tests covering:** basic OA, disengage prevention, reaction spending, multiple enemies, dead enemy, Sentinel stops movement, Sentinel ignores disengage, Polearm Master entering reach, 10ft reach, ally faction safety, one-OA-per-enemy, statistical hit rate/damage, enemy movement triggers player OA, OA warnings
 
 ### Feature Effects Deferred — No Current Plan
 - **Font of Magic / Metamagic** (Sorcerer) — sorcery point economy + spell modification
@@ -271,3 +293,8 @@ Each feature needs a codex entry accessible from the game. Entries should be **l
     - Delete _pendingFightingStyle if fightingStyle is already set
     - Delete _pendingSpellChoices if value is 0
     - Delete _newFeatures always (it's a one-time UI highlight)
+
+
+# idea for the future
+
+Evaluate my idea for inter-party  exchanges between player(s) and npc's -> up to 5 entities apart from player, each with separate personality, well  managed (memory, relationships etc) and possible to interact with player and other party members, eg. by having  pulse msg triggering randomly npc party mmenbers absed on personality, last exchanges, current context etc.; having  ability for member 1 (LLM) to communicate with member 2 (llm) personally (without knowledge of layer or other npc;s)  or publicly so that other members would be aware of the exchange. for player it could look like chat bubbles  appearing from given npc signifying his output (in the future, possibly tts with custom voices) and all of that made  so that human player could have impression that party is 'alive'. llms should not communicate too often or to  rarely - it should be relly realistic based on given personalities
