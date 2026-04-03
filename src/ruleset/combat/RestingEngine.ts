@@ -28,6 +28,7 @@ export class RestingEngine {
 
         // Rest ratio (based on 8-hour long rest)
         const ratio = Math.min(1.0, durationMinutes / 480);
+        const isLongRest = durationMinutes >= 480;
 
         // 1. HP Recovery (Medicine tier boosts short rest healing)
         // Long rest (8h) recovers 100%. Fractional rest recovers ratio * max.
@@ -51,32 +52,37 @@ export class RestingEngine {
         pc.hitDice.current = Math.min(pc.hitDice.max, pc.hitDice.current + regainAmount);
         const actualDiceRegained = pc.hitDice.current - oldDice;
 
-        // 3. Spell Slot Recovery
-        // Snapshot missing slots BEFORE recovery (for Arcane Recovery check later)
-        const hadMissingSlots = Object.values(pc.spellSlots).some(slot => slot.current < slot.max);
-
-        // We calculate total "slot levels" missing and recover a proportional amount.
-        let totalMissingSlots = 0;
+        // 3. Spell Slot Recovery — proportional to rest duration
+        // Total budget = floor(totalMaxSlots * ratio). For Wizards, Arcane Recovery
+        // lets them CHOOSE which slots to fill; others get auto lowest-first.
         let totalMaxSlots = 0;
         Object.values(pc.spellSlots).forEach(slot => {
-            totalMissingSlots += (slot.max - slot.current);
             totalMaxSlots += slot.max;
         });
 
-        let slotsToRecover = Math.floor(totalMaxSlots * ratio);
-        let actualSlotsRegained = 0;
+        const slotsRecoveryBudget = Math.floor(totalMaxSlots * ratio);
+        const hadMissingSlots = Object.values(pc.spellSlots).some(slot => slot.current < slot.max);
+        const isWizardWithAR = pc.class === 'Wizard' && !isLongRest
+            && pc.featureUsages?.['Arcane Recovery']?.current > 0 && hadMissingSlots;
 
-        if (slotsToRecover > 0) {
-            // Restore from lowest level up
+        let actualSlotsRegained = 0;
+        let arcaneRecoveryBudget = 0;
+
+        if (isWizardWithAR && slotsRecoveryBudget > 0) {
+            // Wizard: defer ALL slot recovery to Arcane Recovery flyout (player chooses)
+            arcaneRecoveryBudget = slotsRecoveryBudget;
+        } else if (slotsRecoveryBudget > 0) {
+            // Non-wizard or long rest: auto-recover lowest level first
+            let remaining = slotsRecoveryBudget;
             const levels = Object.keys(pc.spellSlots).sort((a, b) => parseInt(a) - parseInt(b));
             for (const level of levels) {
                 const slot = pc.spellSlots[level];
                 const space = slot.max - slot.current;
-                const canRecover = Math.min(space, slotsToRecover);
+                const canRecover = Math.min(space, remaining);
                 slot.current += canRecover;
-                slotsToRecover -= canRecover;
+                remaining -= canRecover;
                 actualSlotsRegained += canRecover;
-                if (slotsToRecover <= 0) break;
+                if (remaining <= 0) break;
             }
         }
 
@@ -110,7 +116,6 @@ export class RestingEngine {
         SkillAbilityEngine.resetAbilityUses(pc, durationMinutes >= 480 ? 'long' : 'short');
 
         // Reset class feature usages (featureUsages) based on rest type
-        const isLongRest = durationMinutes >= 480;
         if (pc.featureUsages) {
             for (const [name, usage] of Object.entries(pc.featureUsages)) {
                 if (isLongRest) {
@@ -123,20 +128,14 @@ export class RestingEngine {
             }
         }
 
-        // Arcane Recovery: Wizard feature, available once per short rest
-        // Uses pre-recovery snapshot — even if generic recovery filled all slots,
-        // the Wizard still gets to use Arcane Recovery if they HAD missing slots
+        // Arcane Recovery: if Wizard deferred slot recovery, signal the flyout
         let arcaneRecoveryAvailable = false;
-        let arcaneRecoveryBudget = 0;
-        if (!isLongRest && pc.class === 'Wizard' && hadMissingSlots) {
-            const arUsage = pc.featureUsages?.['Arcane Recovery'];
-            if (arUsage && arUsage.current > 0) {
-                // Check if any spell slots are STILL missing after generic recovery
-                const stillMissing = Object.values(pc.spellSlots).some(s => s.current < s.max);
-                if (stillMissing) {
-                    arcaneRecoveryAvailable = true;
-                    arcaneRecoveryBudget = Math.ceil(pc.level / 2);
-                }
+        if (isWizardWithAR && arcaneRecoveryBudget > 0) {
+            const stillMissing = Object.values(pc.spellSlots).some(s => s.current < s.max);
+            if (stillMissing) {
+                arcaneRecoveryAvailable = true;
+            } else {
+                arcaneRecoveryBudget = 0; // All slots already full
             }
         }
 
