@@ -357,7 +357,7 @@ export class FeatureEffectEngine {
     public static resolveActivatedFeature(
         pc: PlayerCharacter,
         featureName: string,
-        options?: { spellSlotLevel?: number; healAmount?: number }
+        options?: { spellSlotLevel?: number; healAmount?: number; targetName?: string }
     ): ActivatedFeatureResult {
         switch (featureName) {
             case 'Second Wind': return this.resolveSecondWind(pc);
@@ -367,6 +367,27 @@ export class FeatureEffectEngine {
             case 'Lay on Hands': return this.resolveLayOnHands(pc, options?.healAmount ?? 0);
             case 'Action Surge': return this.resolveActionSurge(pc);
             case 'Cunning Action': return this.resolveCunningAction(pc);
+            // Bardic Inspiration
+            case 'Bardic Inspiration': return this.resolveBardicInspiration(pc, options?.targetName);
+            // Ki abilities
+            case 'Ki: Flurry of Blows': return this.resolveKi(pc, 'flurry');
+            case 'Ki: Patient Defense': return this.resolveKi(pc, 'patient');
+            case 'Ki: Step of the Wind': return this.resolveKi(pc, 'step');
+            // Channel Divinity (Cleric base)
+            case 'Turn Undead': return this.resolveTurnUndead(pc);
+            // Channel Divinity (domain-specific)
+            case 'Channel Divinity: Preserve Life': return this.resolvePreserveLife(pc);
+            case 'Channel Divinity: Radiance of the Dawn': return this.resolveRadianceOfDawn(pc);
+            case 'Channel Divinity: Guided Strike': return this.resolveGuidedStrike(pc);
+            case 'Channel Divinity: War God\'s Blessing': return this.resolveWarGodsBlessing(pc);
+            case 'Channel Divinity: Sacred Weapon': return this.resolveSacredWeapon(pc);
+            case 'Channel Divinity: Turn the Unholy': return this.resolveTurnUnholy(pc);
+            case 'Channel Divinity: Abjure Enemy': return this.resolveAbjureEnemy(pc);
+            case 'Channel Divinity: Vow of Enmity': return this.resolveVowOfEnmity(pc, options?.targetName);
+            case 'Channel Divinity: Nature\'s Wrath': return this.resolveNaturesWrath(pc);
+            case 'Channel Divinity: Turn the Faithless': return this.resolveTurnFaithless(pc);
+            // Lucky feat
+            case 'Lucky': return this.resolveLucky(pc);
             default: return { success: false, message: `No automated effect for "${featureName}".` };
         }
     }
@@ -457,6 +478,281 @@ export class FeatureEffectEngine {
         }
         pc.featureUsages['Lay on Hands'].current -= actual;
         return { success: true, message: `Lay on Hands: healed ${actual} HP.`, healAmount: actual };
+    }
+
+    // ── Bardic Inspiration (Bard) ──
+
+    private static resolveBardicInspiration(pc: PlayerCharacter, targetName?: string): ActivatedFeatureResult {
+        if (pc.class !== 'Bard') return { success: false, message: 'Only Bards can use Bardic Inspiration.' };
+
+        const usage = pc.featureUsages?.['Bardic Inspiration'];
+        if (!usage || usage.current <= 0) return { success: false, message: 'No Bardic Inspiration uses remaining.' };
+
+        // Die size scales: L1=d6, L5=d8, L10=d10, L15=d12
+        const dieSize = pc.level >= 15 ? 'd12' : pc.level >= 10 ? 'd10' : pc.level >= 5 ? 'd8' : 'd6';
+        usage.current--;
+
+        const target = targetName || 'an ally';
+        return {
+            success: true,
+            message: `Bardic Inspiration! ${target} gains a ${dieSize} inspiration die for their next attack, save, or check.`,
+            statusEffect: { id: 'bardic_inspiration', name: `Inspiration (${dieSize})`, type: 'BUFF', duration: 100, modifier: dieSize as any },
+        };
+    }
+
+    /** Get Bardic Inspiration die size for a Bard level. */
+    public static getBardicInspirationDie(level: number): string {
+        return level >= 15 ? 'd12' : level >= 10 ? 'd10' : level >= 5 ? 'd8' : 'd6';
+    }
+
+    // ── Ki (Monk) ──
+
+    private static resolveKi(pc: PlayerCharacter, type: 'flurry' | 'patient' | 'step'): ActivatedFeatureResult {
+        if (pc.class !== 'Monk' || pc.level < 2) {
+            return { success: false, message: 'Ki requires Monk level 2+.' };
+        }
+
+        const usage = pc.featureUsages?.['Ki'];
+        if (!usage || usage.current <= 0) return { success: false, message: 'No Ki points remaining.' };
+
+        usage.current--;
+
+        switch (type) {
+            case 'flurry':
+                return {
+                    success: true,
+                    message: 'Flurry of Blows! Make two unarmed strikes as a bonus action.',
+                    statusEffect: { id: 'flurry_of_blows', name: 'Flurry of Blows', type: 'BUFF', duration: 1 },
+                };
+            case 'patient':
+                return {
+                    success: true,
+                    message: 'Patient Defense! You take the Dodge action as a bonus action.',
+                    statusEffect: { id: 'dodge', name: 'Dodge (Ki)', type: 'BUFF', duration: 1 },
+                };
+            case 'step':
+                return {
+                    success: true,
+                    message: 'Step of the Wind! Dash or Disengage as bonus action, jump distance doubled.',
+                    statusEffect: { id: 'step_of_the_wind', name: 'Step of the Wind', type: 'BUFF', duration: 1 },
+                };
+        }
+    }
+
+    /** Get Ki pool size (= Monk level). */
+    public static getKiPool(pc: PlayerCharacter): number {
+        if (pc.class !== 'Monk' || pc.level < 2) return 0;
+        return pc.level;
+    }
+
+    /** Get remaining Ki points. */
+    public static getKiRemaining(pc: PlayerCharacter): number {
+        const usage = pc.featureUsages?.['Ki'];
+        return usage ? usage.current : this.getKiPool(pc);
+    }
+
+    // ── Channel Divinity: Turn Undead (all Clerics L2) ──
+
+    private static consumeChannelDivinity(pc: PlayerCharacter): ActivatedFeatureResult | null {
+        const usage = pc.featureUsages?.['Channel Divinity'];
+        if (!usage || usage.current <= 0) return { success: false, message: 'No Channel Divinity uses remaining.' };
+        usage.current--;
+        return null; // Consumed successfully, caller handles effect
+    }
+
+    private static resolveTurnUndead(pc: PlayerCharacter): ActivatedFeatureResult {
+        if (pc.class !== 'Cleric' || pc.level < 2) return { success: false, message: 'Turn Undead requires Cleric level 2+.' };
+        const blocked = this.consumeChannelDivinity(pc);
+        if (blocked) return blocked;
+
+        const dc = 8 + MechanicsEngine.getProficiencyBonus(pc.level) + MechanicsEngine.getModifier(pc.stats.WIS || 10);
+        // Destroy Undead threshold: L5=CR½, L8=CR1, L11=CR2, L14=CR3, L17=CR4
+        let destroyCR = 0;
+        if (pc.level >= 17) destroyCR = 4;
+        else if (pc.level >= 14) destroyCR = 3;
+        else if (pc.level >= 11) destroyCR = 2;
+        else if (pc.level >= 8) destroyCR = 1;
+        else if (pc.level >= 5) destroyCR = 0.5;
+
+        return {
+            success: true,
+            message: `Turn Undead! Undead within 30ft must make WIS save (DC ${dc}) or be turned for 1 minute.${destroyCR > 0 ? ` Undead CR ${destroyCR} or lower are destroyed.` : ''}`,
+            statusEffect: { id: 'turn_undead_aura', name: 'Turn Undead', type: 'BUFF', duration: 10 },
+        };
+    }
+
+    // ── Life Domain: Preserve Life ──
+
+    private static resolvePreserveLife(pc: PlayerCharacter): ActivatedFeatureResult {
+        if (pc.class !== 'Cleric' || pc.subclass !== 'Life Domain') return { success: false, message: 'Requires Life Domain Cleric.' };
+        const blocked = this.consumeChannelDivinity(pc);
+        if (blocked) return blocked;
+
+        const healPool = pc.level * 5;
+        return {
+            success: true,
+            message: `Preserve Life! Distribute ${healPool} HP of healing among creatures within 30ft (max half their HP each).`,
+            healAmount: healPool,
+        };
+    }
+
+    // ── Light Domain: Radiance of the Dawn ──
+
+    private static resolveRadianceOfDawn(pc: PlayerCharacter): ActivatedFeatureResult {
+        if (pc.class !== 'Cleric' || pc.subclass !== 'Light Domain') return { success: false, message: 'Requires Light Domain Cleric.' };
+        const blocked = this.consumeChannelDivinity(pc);
+        if (blocked) return blocked;
+
+        const damage = Dice.roll('2d10') + pc.level;
+        return {
+            success: true,
+            message: `Radiance of the Dawn! Magical darkness dispelled within 30ft. Hostile creatures take ${damage} radiant damage (CON save half).`,
+            healAmount: -damage,
+        };
+    }
+
+    // ── War Domain: Guided Strike ──
+
+    private static resolveGuidedStrike(pc: PlayerCharacter): ActivatedFeatureResult {
+        if (pc.class !== 'Cleric' || pc.subclass !== 'War Domain') return { success: false, message: 'Requires War Domain Cleric.' };
+        const blocked = this.consumeChannelDivinity(pc);
+        if (blocked) return blocked;
+
+        return {
+            success: true,
+            message: 'Guided Strike! +10 to your next attack roll.',
+            statusEffect: { id: 'guided_strike', name: 'Guided Strike', type: 'BUFF', duration: 1, stat: 'attack', modifier: 10 },
+        };
+    }
+
+    // ── War Domain: War God's Blessing ──
+
+    private static resolveWarGodsBlessing(pc: PlayerCharacter): ActivatedFeatureResult {
+        if (pc.class !== 'Cleric' || pc.subclass !== 'War Domain' || pc.level < 6) return { success: false, message: 'Requires War Domain Cleric level 6+.' };
+        const blocked = this.consumeChannelDivinity(pc);
+        if (blocked) return blocked;
+
+        return {
+            success: true,
+            message: "War God's Blessing! An ally within 30ft gains +10 to their next attack roll.",
+            statusEffect: { id: 'war_gods_blessing', name: "War God's Blessing", type: 'BUFF', duration: 1, stat: 'attack', modifier: 10 },
+        };
+    }
+
+    // ── Devotion: Sacred Weapon ──
+
+    private static resolveSacredWeapon(pc: PlayerCharacter): ActivatedFeatureResult {
+        if (pc.class !== 'Paladin' || pc.subclass !== 'Oath of Devotion') return { success: false, message: 'Requires Oath of Devotion Paladin.' };
+        const blocked = this.consumeChannelDivinity(pc);
+        if (blocked) return blocked;
+
+        const chaBonus = Math.max(1, MechanicsEngine.getModifier(pc.stats.CHA || 10));
+        return {
+            success: true,
+            message: `Sacred Weapon! +${chaBonus} to attack rolls for 1 minute. Weapon emits bright light.`,
+            statusEffect: { id: 'sacred_weapon', name: 'Sacred Weapon', type: 'BUFF', duration: 10, stat: 'attack', modifier: chaBonus },
+        };
+    }
+
+    // ── Devotion: Turn the Unholy ──
+
+    private static resolveTurnUnholy(pc: PlayerCharacter): ActivatedFeatureResult {
+        if (pc.class !== 'Paladin' || pc.subclass !== 'Oath of Devotion') return { success: false, message: 'Requires Oath of Devotion Paladin.' };
+        const blocked = this.consumeChannelDivinity(pc);
+        if (blocked) return blocked;
+
+        const dc = 8 + MechanicsEngine.getProficiencyBonus(pc.level) + MechanicsEngine.getModifier(pc.stats.CHA || 10);
+        return {
+            success: true,
+            message: `Turn the Unholy! Fiends and undead within 30ft must make WIS save (DC ${dc}) or be turned for 1 minute.`,
+        };
+    }
+
+    // ── Vengeance: Abjure Enemy ──
+
+    private static resolveAbjureEnemy(pc: PlayerCharacter): ActivatedFeatureResult {
+        if (pc.class !== 'Paladin' || pc.subclass !== 'Oath of Vengeance') return { success: false, message: 'Requires Oath of Vengeance Paladin.' };
+        const blocked = this.consumeChannelDivinity(pc);
+        if (blocked) return blocked;
+
+        const dc = 8 + MechanicsEngine.getProficiencyBonus(pc.level) + MechanicsEngine.getModifier(pc.stats.CHA || 10);
+        return {
+            success: true,
+            message: `Abjure Enemy! One creature within 60ft must make WIS save (DC ${dc}) or be frightened with speed 0 for 1 minute.`,
+            statusEffect: { id: 'abjure_enemy', name: 'Abjure Enemy', type: 'DEBUFF', duration: 10 },
+        };
+    }
+
+    // ── Vengeance: Vow of Enmity ──
+
+    private static resolveVowOfEnmity(pc: PlayerCharacter, targetName?: string): ActivatedFeatureResult {
+        if (pc.class !== 'Paladin' || pc.subclass !== 'Oath of Vengeance') return { success: false, message: 'Requires Oath of Vengeance Paladin.' };
+        const blocked = this.consumeChannelDivinity(pc);
+        if (blocked) return blocked;
+
+        return {
+            success: true,
+            message: `Vow of Enmity! Advantage on attack rolls against ${targetName || 'target'} for 1 minute.`,
+            statusEffect: { id: 'vow_of_enmity', name: 'Vow of Enmity', type: 'BUFF', duration: 10 },
+        };
+    }
+
+    // ── Ancients: Nature's Wrath ──
+
+    private static resolveNaturesWrath(pc: PlayerCharacter): ActivatedFeatureResult {
+        if (pc.class !== 'Paladin' || pc.subclass !== 'Oath of the Ancients') return { success: false, message: 'Requires Oath of the Ancients Paladin.' };
+        const blocked = this.consumeChannelDivinity(pc);
+        if (blocked) return blocked;
+
+        const dc = 8 + MechanicsEngine.getProficiencyBonus(pc.level) + MechanicsEngine.getModifier(pc.stats.CHA || 10);
+        return {
+            success: true,
+            message: `Nature's Wrath! Spectral vines restrain creature within 10ft (STR/DEX save DC ${dc}).`,
+            statusEffect: { id: 'natures_wrath', name: "Nature's Wrath", type: 'DEBUFF', duration: 10 },
+        };
+    }
+
+    // ── Ancients: Turn the Faithless ──
+
+    private static resolveTurnFaithless(pc: PlayerCharacter): ActivatedFeatureResult {
+        if (pc.class !== 'Paladin' || pc.subclass !== 'Oath of the Ancients') return { success: false, message: 'Requires Oath of the Ancients Paladin.' };
+        const blocked = this.consumeChannelDivinity(pc);
+        if (blocked) return blocked;
+
+        const dc = 8 + MechanicsEngine.getProficiencyBonus(pc.level) + MechanicsEngine.getModifier(pc.stats.CHA || 10);
+        return {
+            success: true,
+            message: `Turn the Faithless! Fey and fiends within 30ft must make WIS save (DC ${dc}) or be turned for 1 minute.`,
+        };
+    }
+
+    // ── Lucky feat ──
+
+    private static resolveLucky(pc: PlayerCharacter): ActivatedFeatureResult {
+        if (!pc.feats?.includes('Lucky')) return { success: false, message: 'Requires Lucky feat.' };
+
+        if (!pc.featureUsages) (pc as any).featureUsages = {};
+        if (!pc.featureUsages['Lucky']) {
+            pc.featureUsages['Lucky'] = { current: 3, max: 3, usageType: 'LONG_REST' };
+        }
+        const usage = pc.featureUsages['Lucky'];
+        if (usage.current <= 0) return { success: false, message: 'No luck points remaining.' };
+
+        // Roll an extra d20 and take the better result
+        const reroll = Dice.d20();
+        usage.current--;
+        return {
+            success: true,
+            message: `Lucky! Rerolled d20: ${reroll}. (${usage.current} luck points remaining)`,
+            statusEffect: { id: 'lucky_reroll', name: 'Lucky', type: 'BUFF', duration: 1, modifier: reroll },
+        };
+    }
+
+    /** Get remaining Lucky points. */
+    public static getLuckyPointsRemaining(pc: PlayerCharacter): number {
+        const usage = pc.featureUsages?.['Lucky'];
+        if (usage) return usage.current;
+        return pc.feats?.includes('Lucky') ? 3 : 0;
     }
 
     // ════════════════════════════════════════════

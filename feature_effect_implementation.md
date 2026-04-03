@@ -147,17 +147,57 @@ CombatOrchestrator and CombatResolutionEngine consume the engine — no feature-
 - Wired in CombatOrchestrator.performAITurn()
 - Statistical test confirms ~63% more hits against reckless target
 
-### Feature Effects Still Not in FeatureEffectEngine
-- **Bardic Inspiration** (Bard) — d6-d12 to ally's roll (needs target selection UI)
-- **Ki** (Monk) — Flurry of Blows, Patient Defense, Step of the Wind (needs sub-ability UI)
-- **Wild Shape** (Druid) — beast transformation system (major new system)
-- **Channel Divinity** (Cleric/Paladin) — domain/oath-specific effects (9+ implementations)
-- **Font of Magic / Metamagic** (Sorcerer) — sorcery point system (needs new resource)
+### Bardic Inspiration — ✅ IMPLEMENTED
+- Bard class: bonus action, targets self or ally
+- Die scales: d6 (L1) → d8 (L5) → d10 (L10) → d12 (L15)
+- Status effect with die size stored as modifier
+- Uses from featureUsages pool (long rest recharge)
+- 16 tests covering scaling, targeting, exhaustion, cross-class
 
-### Feat Effects Still Not Implemented
-- Lucky: 3 rerolls per long rest (needs mid-roll UI prompt)
-- Sentinel/Polearm Master: OA effects (needs opportunity attack rework)
-- War Caster: concentration advantage + spell-as-OA (needs OA rework)
+### Ki (Monk) — ✅ IMPLEMENTED (3 sub-abilities)
+- Ki: Flurry of Blows — 2 bonus action unarmed strikes (status effect)
+- Ki: Patient Defense — Dodge as bonus action (dodge status effect)
+- Ki: Step of the Wind — Dash/Disengage + double jump (status effect)
+- Shared Ki pool (= Monk level, short rest recharge)
+- 11 tests covering all 3 abilities, pool exhaustion, level gating
+
+### Channel Divinity — ✅ IMPLEMENTED (all 10 variants)
+- Turn Undead (all Clerics L2): WIS save or turned, Destroy Undead scaling by level
+- Life Domain: Preserve Life (heal pool = 5×level)
+- Light Domain: Radiance of the Dawn (2d10+level radiant AoE)
+- War Domain: Guided Strike (+10 attack) / War God's Blessing (+10 ally attack, L6+)
+- Oath of Devotion: Sacred Weapon (CHA to attack) / Turn the Unholy
+- Oath of Vengeance: Abjure Enemy (frighten+speed 0) / Vow of Enmity (advantage vs target)
+- Oath of the Ancients: Nature's Wrath (restrain) / Turn the Faithless
+- Shared Channel Divinity pool across all variants per character
+- 18 tests covering all domains, oaths, shared pool, cross-class, wrong-domain
+
+### Lucky Feat — ✅ IMPLEMENTED
+- 3 luck points per long rest, auto-reroll on activation
+- Returns d20 reroll as status effect modifier
+- 8 tests covering uses, exhaustion, no-feat rejection
+
+### Feature Effects Deferred — Future Sprints
+
+#### Sprint: Wild Shape (Druid)
+- Beast stat block database (CR-gated by Druid level: CR 1/4 at L2, CR 1/2 at L4, CR 1 at L8)
+- Temporary stat/HP replacement (original stats stored, restored on revert)
+- Form-specific attacks (claw, bite) replacing weapon attacks
+- Revert on 0 HP with excess damage carry-over
+- Wild Shape uses (2 per short rest)
+- Circle of the Moon: bonus action transform, higher CR beasts, elemental forms at L10
+- UI: beast form indicator, beast HP bar, attack options change
+
+#### Sprint: Opportunity Attack Rework + Sentinel/Polearm Master/War Caster
+- OA trigger system: detect enemy movement out of reach during movement phase
+- OA resolution: free reaction attack with weapon
+- Sentinel feat: OA stops movement, enemies can't Disengage, protect allies
+- Polearm Master feat: enemies entering 10ft reach provoke OA, bonus action butt-end attack
+- War Caster feat: cast spell instead of weapon OA, advantage on concentration saves
+
+### Feature Effects Deferred — No Current Plan
+- **Font of Magic / Metamagic** (Sorcerer) — sorcery point economy + spell modification
+- **Eldritch Invocations** (Warlock) — customizable ability list
 
 ---
 
