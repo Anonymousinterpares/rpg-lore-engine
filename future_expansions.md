@@ -73,7 +73,7 @@ Items from the original implementation_plan.md that are incomplete or missing.
   - Actor: advantage on Deception/Performance impersonation — needs dialogue system check
   - Resilient: saving throw proficiency for chosen ability — needs ability choice UI + savingThrowProficiencies update
   - Athlete: STR/DEX choice — needs ability choice UI
-- **No feat selection UI** — players use /feat command only; should be added to LevelUpOverlay
+- ~~No feat selection UI~~ → Feat picker overlay in UnifiedCharacterPage with sapphire glow selection + confirm button
 
 ### Exhaustion System (6 Levels) — DEFERRED TO SURVIVAL EXPANSION
 - D&D 5e has graduated exhaustion: level 1 = disadvantage on ability checks, up to level 6 = death
@@ -310,11 +310,21 @@ However, most active abilities only deduct a use — the mechanical EFFECT is no
 - Particle effect on button and feature cards, cleared on viewing
 - Feat picker overlay with selection + confirm for ASI-level feat choice
 
+### Subclass System — ✅ FULLY IMPLEMENTED (April 2026)
+- 30 subclasses across 12 classes (SRD + 2-3 PHB per class)
+- `subclass` field on PlayerCharacterSchema, `description`/`spells` on ClassSchema
+- Character Creator: Subclass step for L1 classes (Cleric/Sorcerer/Warlock), skipped for others
+- Level-up: SubclassPickerOverlay at correct level, retroactive for existing saves
+- Feature activation: subclass features added to featureUsages on level-up
+- Domain/oath spells auto-prepared, don't count against preparation limit
+- AbilityParser includes subclass features in Class Features display
+- Subclass shown in CharacterPanel and UnifiedCharacterPage subtitles
+
 ### Remaining: Feature EFFECTS Not Wired
 - Features are activated (added to featureUsages, shown in UI) but most have NO mechanical effect:
   - Extra Attack: no multi-attack implementation in combat
   - Action Surge: featureUsages entry exists but no combat integration to grant extra action
   - Channel Divinity: no effect implementation
   - Wild Shape: no form transformation system
-  - Subclass selection (Arcane Tradition, Martial Archetype, etc.): no selection UI or effect
+  - Subclass features: tracked but no mechanical effects (Improved Critical, Sculpt Spells, etc.)
 - **To implement per feature** — each needs custom combat/exploration logic

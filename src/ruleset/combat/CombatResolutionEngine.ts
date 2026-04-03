@@ -36,7 +36,13 @@ export class CombatResolutionEngine {
         statMod: number,
         isRanged: boolean = false,
         forceDisadvantage: boolean = false,
-        lightLevel: LightLevel = 'Bright'
+        lightLevel: LightLevel = 'Bright',
+        featureContext?: {
+            critRange?: number;       // Improved Critical: 19 or Superior: 18 (default 20)
+            sneakAttackDice?: number;  // Sneak Attack: number of d6s (0 = none)
+            hasAllyNearTarget?: boolean; // For Sneak Attack eligibility
+            isFinesseOrRanged?: boolean; // Sneak Attack requires finesse/ranged weapon
+        }
     ): CombatActionResult {
         // Darkvision/lighting checks
         const attackerVision = VisibilityEngine.getVisibilityEffect(attacker as any, lightLevel);
@@ -63,7 +69,8 @@ export class CombatResolutionEngine {
 
         const d20 = (finalAdvantage === 'advantage') ? Dice.advantage() :
             (finalDisadvantage === 'disadvantage') ? Dice.disadvantage() : Dice.d20();
-        const isCrit = d20 === 20;
+        const critThreshold = featureContext?.critRange ?? 20;
+        const isCrit = d20 >= critThreshold;
 
         // Calculate effective AC
         let effectiveAC = target.ac;
@@ -108,6 +115,25 @@ export class CombatResolutionEngine {
             }
             // Add stat modifier to damage (simplified)
             damage += statMod;
+
+            // Sneak Attack (Rogue): requires finesse/ranged weapon + advantage or ally near target
+            const sneakDice = featureContext?.sneakAttackDice ?? 0;
+            if (sneakDice > 0 && featureContext?.isFinesseOrRanged) {
+                const hasAdvantage = finalAdvantage === 'advantage';
+                const hasAlly = featureContext?.hasAllyNearTarget ?? false;
+                if (hasAdvantage || hasAlly) {
+                    let sneakDmg = 0;
+                    for (let i = 0; i < sneakDice; i++) sneakDmg += Dice.roll('1d6');
+                    damage += sneakDmg;
+                    if (isCrit) {
+                        // Sneak Attack dice also double on crit
+                        for (let i = 0; i < sneakDice; i++) sneakDmg += Dice.roll('1d6');
+                        damage += sneakDmg;
+                    }
+                    message += ` Sneak Attack! (+${sneakDmg} damage)`;
+                }
+            }
+
             if (damage < 1) damage = 1;
 
             message += ` Dealing ${damage} damage.`;

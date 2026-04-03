@@ -509,43 +509,134 @@ export class CombatOrchestrator {
                     }
                 }
 
-                const result = CombatResolutionEngine.resolveAttack(
-                    currentCombatant,
-                    target,
-                    modifiers,
-                    damageFormula,
-                    dmgBonus,
-                    isRanged,
-                    forceDisadvantage,
-                    this.getCombatLighting()
-                );
+                // Build feature context for class-specific attack modifiers
+                const pcClass = pc.class;
+                const pcSubclass = pc.subclass;
+                const pcLevel = pc.level;
 
-                if (isRanged) {
-                    if (ammoItem) {
-                        ammoItem.quantity = (ammoItem.quantity || 1) - 1;
-                        if (ammoItem.quantity <= 0) pc.inventory.items = pc.inventory.items.filter(i => i.instanceId !== ammoItem.instanceId);
-                    } else if (CombatUtils.isThrownWeapon(mainHandItem)) {
-                        pc.inventory.items = pc.inventory.items.filter(i => i.instanceId !== inventoryEntry?.instanceId);
-                        pc.equipmentSlots.mainHand = undefined;
+                // Improved Critical (Champion Fighter): crit on 19+ at L3, 18+ at L15
+                let critRange = 20;
+                if (pcClass === 'Fighter' && pcSubclass === 'Champion') {
+                    if (pcLevel >= 15) critRange = 18;
+                    else if (pcLevel >= 3) critRange = 19;
+                }
+
+                // Sneak Attack (Rogue): ceil(level/2) d6s
+                const sneakAttackDice = pcClass === 'Rogue' ? Math.ceil(pcLevel / 2) : 0;
+                const isFinesseOrRanged = isRanged || !!(mainHandItem as any)?.properties?.some(
+                    (p: string) => p.toLowerCase().includes('finesse')
+                );
+                // Check if any ally is within 5ft (1 cell) of the target
+                let hasAllyNearTarget = false;
+                if (sneakAttackDice > 0 && combatState.grid && target) {
+                    hasAllyNearTarget = combatState.combatants.some(c =>
+                        c.id !== currentCombatant.id &&
+                        c.type !== 'enemy' &&
+                        c.hp.current > 0 &&
+                        gridManager.getDistance(target!.position, c.position) <= 1
+                    );
+                }
+
+                const featureContext = {
+                    critRange,
+                    sneakAttackDice,
+                    hasAllyNearTarget,
+                    isFinesseOrRanged,
+                };
+
+                // Determine number of attacks (Extra Attack feature)
+                let attackCount = 1;
+                if (currentCombatant.isPlayer) {
+                    const hasExtraAttack = (feat: string) => {
+                        const classFeatures = DataManager.getClass(pcClass)?.allFeatures || [];
+                        return classFeatures.some(f => f.name === feat && f.level <= pcLevel);
+                    };
+                    // Fighter gets Extra Attack at 5, Extra Attack (2) at 11, Extra Attack (3) at 20
+                    if (pcClass === 'Fighter') {
+                        if (pcLevel >= 20) attackCount = 4;
+                        else if (pcLevel >= 11) attackCount = 3;
+                        else if (pcLevel >= 5) attackCount = 2;
+                    } else if (['Ranger', 'Paladin', 'Monk'].includes(pcClass) && pcLevel >= 5) {
+                        attackCount = 2;
+                    } else if (pcClass === 'Bard' && pcSubclass === 'College of Valor' && pcLevel >= 6) {
+                        attackCount = 2;
                     }
                 }
 
-                if (result.details) {
-                    combatState.lastRoll = {
-                        value: result.details.roll || 0,
-                        modifier: result.details.modifier || 0,
-                        total: (result.details.roll || 0) + (result.details.modifier || 0),
-                        label: 'Attack',
-                        breakdown: result.details.rollDetails?.modifiers
+                let usedSneakAttack = false; // Sneak Attack: only once per turn
+                const allAttackResults: string[] = [];
+
+                for (let atkIdx = 0; atkIdx < attackCount; atkIdx++) {
+                    if (!target) break;
+                    // Re-check target alive for subsequent attacks
+                    if (atkIdx > 0 && target.hp.current <= 0) {
+                        // Switch to next alive enemy
+                        const nextTarget = combatState.combatants.find(c => c.type === 'enemy' && c.hp.current > 0);
+                        if (!nextTarget) break;
+                        target = nextTarget;
+                    }
+
+                    const atkFeatureCtx = {
+                        ...featureContext,
+                        // Sneak Attack only applies once per turn
+                        sneakAttackDice: usedSneakAttack ? 0 : featureContext.sneakAttackDice,
                     };
-                } else {
-                    combatState.lastRoll = 0;
+
+                    const result = CombatResolutionEngine.resolveAttack(
+                        currentCombatant,
+                        target,
+                        modifiers,
+                        damageFormula,
+                        dmgBonus,
+                        isRanged,
+                        forceDisadvantage,
+                        this.getCombatLighting(),
+                        atkFeatureCtx
+                    );
+
+                    // Track sneak attack usage
+                    if (result.damage > 0 && featureContext.sneakAttackDice > 0 && !usedSneakAttack &&
+                        result.message.includes('Sneak Attack')) {
+                        usedSneakAttack = true;
+                    }
+
+                    // Ammo consumption (only on first ranged attack — others are assumed to have ammo)
+                    if (isRanged && atkIdx === 0) {
+                        if (ammoItem) {
+                            ammoItem.quantity = (ammoItem.quantity || 1) - 1;
+                            if (ammoItem.quantity <= 0) pc.inventory.items = pc.inventory.items.filter(i => i.instanceId !== ammoItem.instanceId);
+                        } else if (CombatUtils.isThrownWeapon(mainHandItem)) {
+                            pc.inventory.items = pc.inventory.items.filter(i => i.instanceId !== inventoryEntry?.instanceId);
+                            pc.equipmentSlots.mainHand = undefined;
+                        }
+                    } else if (isRanged && atkIdx > 0 && ammoItem) {
+                        ammoItem.quantity = (ammoItem.quantity || 1) - 1;
+                        if (ammoItem.quantity <= 0) {
+                            pc.inventory.items = pc.inventory.items.filter(i => i.instanceId !== ammoItem.instanceId);
+                            // No more ammo — stop attacking
+                            break;
+                        }
+                    }
+
+                    if (result.details) {
+                        combatState.lastRoll = {
+                            value: result.details.roll || 0,
+                            modifier: result.details.modifier || 0,
+                            total: (result.details.roll || 0) + (result.details.modifier || 0),
+                            label: attackCount > 1 ? `Attack ${atkIdx + 1}/${attackCount}` : 'Attack',
+                            breakdown: result.details.rollDetails?.modifiers
+                        };
+                    } else {
+                        combatState.lastRoll = 0;
+                    }
+                    this.emitCombatEvent(result.type, target.id, result.damage || 0);
+                    const logMsg = (atkIdx > 0 ? `[Attack ${atkIdx + 1}] ` : '') + rangePrefix + CombatLogFormatter.format(result, currentCombatant.name, target.name, isRanged);
+                    this.state.combat.turnActions.push(logMsg);
+                    allAttackResults.push(logMsg);
+                    await this.applyCombatDamage(target, result.damage);
                 }
-                this.emitCombatEvent(result.type, target.id, result.damage || 0);
-                const logMsg = rangePrefix + CombatLogFormatter.format(result, currentCombatant.name, target.name, isRanged);
-                this.state.combat.turnActions.push(logMsg);
-                resultMsg = logMsg;
-                await this.applyCombatDamage(target, result.damage);
+
+                resultMsg = allAttackResults.join(' | ');
 
             } else if (intent.command === 'dodge') {
                 currentCombatant.statusEffects.push({
