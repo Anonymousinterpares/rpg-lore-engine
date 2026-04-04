@@ -183,8 +183,8 @@ export const CombatActionBar: React.FC = () => {
                     label="Attack"
                     hotkey="1"
                     onClick={() => handleAction('attack')}
-                    disabled={!isPlayerTurn || hasUsedAction}
-                    disabledReason={!isPlayerTurn ? "Not your turn" : "Action already used"}
+                    disabled={!isPlayerTurn || hasUsedAction || !state.combat?.selectedTargetId}
+                    disabledReason={!isPlayerTurn ? "Not your turn" : !state.combat?.selectedTargetId ? "Select a target first (left-click enemy)" : "Action already used"}
                     tooltip={getMeleeTooltip()}
                 />
                 <ActionButton
@@ -192,8 +192,8 @@ export const CombatActionBar: React.FC = () => {
                     label="Ranged"
                     hotkey="R"
                     onClick={() => handleAction('attack ranged')}
-                    disabled={!isPlayerTurn || hasUsedAction || !isRangedEquipped}
-                    disabledReason={!isPlayerTurn ? "Not your turn" : (hasUsedAction ? "Action already used" : "No ranged weapon equipped")}
+                    disabled={!isPlayerTurn || hasUsedAction || !isRangedEquipped || !state.combat?.selectedTargetId}
+                    disabledReason={!isPlayerTurn ? "Not your turn" : !state.combat?.selectedTargetId ? "Select a target first (left-click enemy)" : (hasUsedAction ? "Action already used" : "No ranged weapon equipped")}
                     tooltip={getRangedTooltip()}
                 />
                 <ActionButton

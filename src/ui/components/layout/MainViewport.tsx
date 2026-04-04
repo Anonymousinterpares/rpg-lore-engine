@@ -376,7 +376,11 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex, onChara
                             combatants={state.combat.combatants}
                             currentTurnId={state.combat.combatants[state.combat.currentTurnIndex]?.id || ''}
                             selectedTargetId={state.combat.selectedTargetId}
+                            companionDirectives={(state.combat as any).companionDirectives}
                             onSelectTarget={async (id) => await processCommand(`/target ${id}`)}
+                            onSetDirective={async (companionId, behavior, targetName) => {
+                                await processCommand(`/set_companion_directive ${companionId} ${behavior}${targetName ? ' ' + targetName : ''}`);
+                            }}
                             onInspect={handleInspect}
                         />
                     </div>

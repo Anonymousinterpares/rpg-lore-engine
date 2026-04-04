@@ -207,11 +207,17 @@ export const CombatStateSchema = z.object({
     }).optional(),
     lastActionMessage: z.string().optional(),
     turnActions: z.array(z.string()).default([]),
-    // Player's tactical directive for companion AI behavior
+    // Per-companion tactical directives for AI behavior (keyed by companion combatant ID)
+    companionDirectives: z.record(z.string(), z.object({
+        behavior: z.enum(['AGGRESSIVE', 'DEFENSIVE', 'SUPPORT', 'FOCUS', 'PROTECT']),
+        targetName: z.string().optional(),
+        rawText: z.string(),
+    })).optional(),
+    // Legacy single directive (from text input — distributed to all companions without individual orders)
     partyDirective: z.object({
         behavior: z.enum(['AGGRESSIVE', 'DEFENSIVE', 'SUPPORT', 'FOCUS', 'PROTECT']),
-        targetName: z.string().optional(),   // For FOCUS: enemy name. For PROTECT: ally name.
-        rawText: z.string(),                 // Original player input
+        targetName: z.string().optional(),
+        rawText: z.string(),
     }).optional()
 });
 

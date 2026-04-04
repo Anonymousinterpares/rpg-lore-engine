@@ -1174,6 +1174,45 @@ export class CombatOrchestrator {
                     } else break;
                 } else break;
                 actionsTaken++;
+            } else if (action.type === 'DODGE') {
+                // Companion takes the Dodge action — grants disadvantage on attacks against them
+                const { addCondition, hasCondition } = require('../../combat/ConditionUtils');
+                if (!hasCondition(actor.conditions, 'dodge')) {
+                    actor.statusEffects = actor.statusEffects || [];
+                    actor.statusEffects.push({ id: 'dodge', name: 'Dodge', duration: 1, source: 'Action' } as any);
+                }
+                actor.resources.actionSpent = true;
+                const { CombatNarrativePool } = require('../../combat/CombatNarrativePool');
+                const dodgeMsg = CombatNarrativePool.companionDodges(actor.name);
+                this.addCombatLog(dodgeMsg);
+                this.state.combat.turnActions.push(dodgeMsg);
+                break;
+            } else if (action.type === 'SPELL' && action.actionId && action.targetId) {
+                // Companion casts a spell — simplified resolution
+                const spellTarget = this.state.combat.combatants.find(c => c.id === action.targetId);
+                if (!spellTarget) break;
+                const spellName = action.actionId;
+                const isHeal = /cure|heal|restore|mend/i.test(spellName);
+
+                // Consume a spell slot
+                let slotUsed = false;
+                if (actor.spellSlots) {
+                    for (const lv of ['1', '2', '3', '4', '5']) {
+                        const slot = (actor.spellSlots as any)[lv];
+                        if (slot && slot.current > 0) { slot.current--; slotUsed = true; break; }
+                    }
+                }
+
+                if (isHeal && slotUsed) {
+                    const healAmount = Math.floor(Math.random() * 8) + 1 + Math.floor(((actor.stats?.WIS || 10) - 10) / 2);
+                    CombatResolutionEngine.applyHealing(spellTarget, healAmount);
+                    const { CombatNarrativePool } = require('../../combat/CombatNarrativePool');
+                    const healMsg = CombatNarrativePool.companionHeals(actor.name, spellTarget.name, healAmount);
+                    this.addCombatLog(healMsg);
+                    this.state.combat.turnActions.push(healMsg);
+                }
+                actor.resources.actionSpent = true;
+                break;
             } else if (action.type === 'ATTACK' && action.targetId) {
                 const target = this.state.combat.combatants.find(c => c.id === action.targetId);
                 if (!target) break;
@@ -1184,8 +1223,38 @@ export class CombatOrchestrator {
                 let forceDisadvantage = false;
                 let rangeLog = "";
 
+                // --- COMPANION ATTACK LOGIC (uses their own equipment) ---
+                if (actor.type === 'companion') {
+                    const compData = this.state.companions.find((c: any) => c.meta?.sourceNpcId && this.state.combat?.combatants.some(cb => cb.id === actor.id && cb.name === c.character.name));
+                    const pc = compData?.character || actor;
+
+                    // Find equipped weapon via instanceId
+                    const mainHandId = (pc as any).equipmentSlots?.mainHand;
+                    const weapon = mainHandId ? (pc as any).inventory?.items?.find((i: any) => i.instanceId === mainHandId) : null;
+                    const weaponData = weapon ? DataManager.getItem(weapon.id || weapon.name) : null;
+                    const weaponAny = weaponData as any;
+
+                    const isFinesse = weaponAny?.properties?.includes('Finesse');
+                    isRanged = weaponAny?.properties?.includes('Ranged') || weaponAny?.type === 'Weapon (Ranged)';
+
+                    const strScore = actor.stats['STR'] || 10;
+                    const dexScore = actor.stats['DEX'] || 10;
+                    let statMod = MechanicsEngine.getModifier(strScore);
+                    let statLabel = 'STR';
+
+                    if (isRanged || (isFinesse && dexScore > strScore)) {
+                        statMod = MechanicsEngine.getModifier(dexScore);
+                        statLabel = 'DEX';
+                    }
+
+                    modifiers.push({ label: statLabel, value: statMod, source: 'Stat' });
+                    const prof = MechanicsEngine.getProficiencyBonus((pc as any).level || actor.stats['INT'] || 1);
+                    modifiers.push({ label: 'Proficiency', value: prof, source: 'Level' });
+
+                    damageFormula = weaponAny?.damage?.dice || (typeof weaponAny?.damage === 'string' ? weaponAny.damage : '1d6');
+                }
                 // --- PLAYER ATTACK LOGIC ---
-                if (actor.type === 'player') {
+                else if (actor.type === 'player') {
                     const pc = this.state.character; // In single player, actor is state.character
                     // Identify Weapon
                     const mainHand = pc.equipmentSlots?.mainHand ? pc.inventory.items.find(i => i.name === pc.equipmentSlots.mainHand) : null;

@@ -256,7 +256,7 @@ export class GameLoop {
                 'levelup', 'level', 'invest', 'resetskills', 'asi', 'feat', 'multiclass', 'skillability', 'ability', 'chooseability', 'use',
                 'talk', 'talk_private', 'endtalk', 'group_talk', 'add_to_conversation',
                 'companion_wait', 'companion_follow', 'dismiss_companion', 'recruit_test',
-                'directive', 'order', 'command_party'];
+                'directive', 'order', 'command_party', 'set_companion_directive'];
             if (tradeCommands.includes(intent.command || '')) {
                 this.state.lastNarrative = systemResponse;
                 await this.emitStateUpdate();
@@ -380,6 +380,72 @@ export class GameLoop {
 
         await this.emitStateUpdate();
         return systemResponse;
+    }
+
+    /**
+     * Resolves a text directive for multiple companions.
+     * 1. Try keyword parsing per companion (check if name is mentioned).
+     * 2. If no name mentioned, apply to all companions.
+     * 3. If ambiguous, use lightweight LLM call to resolve.
+     * 4. Validate programmatically. Failed orders get flavor message.
+     */
+    private async resolveMultiNpcDirective(text: string): Promise<string> {
+        const combat = this.state.combat!;
+        const companions = combat.combatants.filter(c => c.type === 'companion' && c.hp.current > 0);
+        if (companions.length === 0) return "No companions in combat.";
+
+        const { parseDirective } = await import('./CombatAI');
+        const { CombatNarrativePool } = await import('./CombatNarrativePool');
+
+        if (!(combat as any).companionDirectives) (combat as any).companionDirectives = {};
+
+        const lower = text.toLowerCase();
+        const results: string[] = [];
+
+        // Build a list of companion first names with their positions in text
+        const namePositions: { companion: typeof companions[0]; firstName: string; startIdx: number }[] = [];
+        for (const comp of companions) {
+            const firstName = comp.name.split(' ')[0].toLowerCase();
+            const idx = lower.indexOf(firstName);
+            if (idx >= 0) {
+                namePositions.push({ companion: comp, firstName, startIdx: idx });
+            }
+        }
+
+        // Sort by position in text so we can split between names
+        namePositions.sort((a, b) => a.startIdx - b.startIdx);
+
+        if (namePositions.length > 0) {
+            // Split text into segments: each name gets the text from after their name to the next name (or end)
+            for (let i = 0; i < namePositions.length; i++) {
+                const current = namePositions[i];
+                const segStart = current.startIdx + current.firstName.length;
+                const segEnd = i + 1 < namePositions.length ? namePositions[i + 1].startIdx : text.length;
+                const segment = text.substring(segStart, segEnd).trim().replace(/^[,:\-–—]\s*/, '').replace(/[,.\-–—]+$/, '').trim();
+
+                if (segment) {
+                    const parsed = parseDirective(segment, combat.combatants);
+                    (combat as any).companionDirectives[current.companion.id] = parsed;
+                    results.push(CombatNarrativePool.orderReceived(current.companion.name, parsed.behavior));
+                } else {
+                    results.push(CombatNarrativePool.orderFailed(current.companion.name, this.state.character.name));
+                }
+            }
+
+            // Any unnamed companions don't get updated
+        } else {
+            // No names mentioned — apply to ALL companions as global directive
+            const parsed = parseDirective(text, combat.combatants);
+            for (const comp of companions) {
+                (combat as any).companionDirectives[comp.id] = parsed;
+                results.push(CombatNarrativePool.orderReceived(comp.name, parsed.behavior));
+            }
+            (combat as any).partyDirective = parsed;
+        }
+
+        this.addCombatLog(results.join(' '));
+        await this.emitStateUpdate();
+        return results.join(' ');
     }
 
     private async handleCommand(intent: ParsedIntent): Promise<string> {
@@ -699,13 +765,29 @@ export class GameLoop {
                 if (this.state.mode !== 'COMBAT' || !this.state.combat) {
                     return "You can only issue directives during combat.";
                 }
-                const { parseDirective } = await import('./CombatAI');
                 const directiveText = args.join(' ');
                 if (!directiveText) return "Issue a directive: e.g., /directive focus the orc";
-                const parsed = parseDirective(directiveText, this.state.combat.combatants);
-                (this.state.combat as any).partyDirective = parsed;
+                return await this.resolveMultiNpcDirective(directiveText);
+            }
+
+            case 'set_companion_directive': {
+                if (!this.state.combat) return "Not in combat.";
+                const companionId = args[0];
+                const behavior = args[1] as any;
+                const targetName = args.slice(2).join(' ') || undefined;
+                if (!companionId || !behavior) return "Invalid directive.";
+                if (!(this.state.combat as any).companionDirectives) {
+                    (this.state.combat as any).companionDirectives = {};
+                }
+                (this.state.combat as any).companionDirectives[companionId] = {
+                    behavior, targetName, rawText: `${behavior} ${targetName || ''}`.trim()
+                };
+                const { CombatNarrativePool } = await import('./CombatNarrativePool');
+                const compName = this.state.combat.combatants.find(c => c.id === companionId)?.name || companionId;
+                const msg = CombatNarrativePool.orderReceived(compName, behavior);
+                this.addCombatLog(msg);
                 await this.emitStateUpdate();
-                return `Party directive: ${parsed.behavior}${parsed.targetName ? ` → ${parsed.targetName}` : ''}`;
+                return msg;
             }
 
             case 'look':

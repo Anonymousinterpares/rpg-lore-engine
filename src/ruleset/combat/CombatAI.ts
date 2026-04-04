@@ -51,13 +51,13 @@ export function parseDirective(input: string, combatants: Combatant[]): Tactical
         return { behavior: 'SUPPORT', rawText: input };
     }
 
-    // DEFENSIVE: "defend" / "careful" / "stay back" / "dodge" / "tank"
-    if (/\b(defend|careful|stay back|be careful|dodge|tank|cautious|hold position|hold the line)\b/.test(lower)) {
+    // DEFENSIVE: "defend" / "careful" / "stay back" / "dodge" / "tank" / "defensive"
+    if (/\b(defend|defensive|careful|stay back|be careful|dodge|tank|cautious|hold position|hold the line|hang back|play safe|safe)\b/.test(lower)) {
         return { behavior: 'DEFENSIVE', rawText: input };
     }
 
     // AGGRESSIVE: "all out" / "charge" / "go all in" / "attack" (without target)
-    if (/\b(aggressive|charge|all out|go all in|full attack|berser|rage)\b/.test(lower)) {
+    if (/\b(aggressive|charge|all out|go all in|full attack|berser|rage|offensive)\b/.test(lower)) {
         return { behavior: 'AGGRESSIVE', rawText: input };
     }
 
@@ -90,8 +90,10 @@ export class CombatAI {
         const intScore = actor.stats['INT'] || 10;
         const isCompanion = actor.type === 'companion';
 
-        // Get the player's directive (companions only)
-        const directive = isCompanion ? (state as any).partyDirective as TacticalDirective | undefined : undefined;
+        // Get per-companion directive first, then fall back to global party directive
+        const perCompanion = isCompanion ? (state as any).companionDirectives?.[actor.id] as TacticalDirective | undefined : undefined;
+        const globalDirective = isCompanion ? (state as any).partyDirective as TacticalDirective | undefined : undefined;
+        const directive = perCompanion || globalDirective;
 
         // Identify potential targets
         const enemies = state.combatants.filter(c => {
