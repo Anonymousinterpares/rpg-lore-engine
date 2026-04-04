@@ -225,13 +225,46 @@ export class ConversationManager {
             }
         }
 
+        // Self-awareness: build from companion data
+        let selfAwareness: DialogueContext['selfAwareness'] = undefined;
+        const companion = this.state.companions.find((c: any) => c.meta?.sourceNpcId === forNpcId);
+        if (companion) {
+            const char = companion.character;
+            const slots = char.equipmentSlots || {};
+
+            const resolveItemName = (slotId: string | undefined) => {
+                if (!slotId) return undefined;
+                const item = char.inventory?.items?.find((i: any) => i.instanceId === slotId);
+                return item ? (item as any).name : undefined;
+            };
+
+            const hex = this.hexMapManager?.getHex(this.state.location.hexId);
+
+            selfAwareness = {
+                class: char.class,
+                level: char.level,
+                hp: { current: char.hp.current, max: char.hp.max },
+                ac: char.ac,
+                gold: char.inventory?.gold?.gp || 0,
+                equippedWeapon: resolveItemName((slots as any).mainHand),
+                equippedArmor: resolveItemName((slots as any).armor),
+                equippedShield: resolveItemName((slots as any).offHand),
+                preparedSpells: char.preparedSpells?.length > 0 ? char.preparedSpells : undefined,
+                cantrips: char.cantripsKnown?.length > 0 ? char.cantripsKnown : undefined,
+                conditions: char.conditions?.length > 0 ? char.conditions.map((c: any) => c.name || c.id || c) : undefined,
+                locationName: hex?.name || undefined,
+                locationBiome: hex?.biome || undefined,
+            };
+        }
+
         return {
             mode: (conv?.mode as 'PRIVATE' | 'NORMAL' | 'GROUP') || undefined,
             participants,
             partyMembers,
             recentExchanges,
             backgroundKnowledge: backgroundKnowledge.length > 0 ? backgroundKnowledge : undefined,
-            priorConversationSummary: convState.lastConversationSummary || undefined
+            priorConversationSummary: convState.lastConversationSummary || undefined,
+            selfAwareness,
         };
     }
 

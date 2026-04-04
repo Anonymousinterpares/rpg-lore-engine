@@ -197,6 +197,9 @@ Companion dialogue history is stored in `CompanionMeta.conversationHistory[]` �
 | Save during conversation | Full `ConversationState` persists in schema |
 | Companion dies in combat | Removed from party; orphaned background conversations cleaned |
 | Relationship deteriorates below -30 | Companion auto-leaves party (desertion) |
+| Drop/take equipped item from companion | `equipped` flag cleared, equipment slot cleared, AC recalculated; `reEvaluateEquipment()` promotes backup items |
+| Quest XP awarded | `QuestEngine` calls `LevelingEngine.autoLevelCompanions()` — companions level if eligible |
+| Narrative XP (EngineDispatcher `award_xp`) | `EngineDispatcher` calls `LevelingEngine.autoLevelCompanions()` — companions level if eligible |
 
 ---
 
@@ -248,6 +251,12 @@ conversationState?: {
 ```
 companionStanding: number       // -100 to 100, desertion at -30
 conversationHistory: {speaker, text, timestamp}[]  // Persistent across sessions
+pendingLevelUp?: {              // Set by autoLevelCompanions, cleared by UI after display
+    oldLevel, newLevel,
+    oldMaxHp, newMaxHp,
+    oldAc, newAc,
+    oldSpellSlots, newSpellSlots
+}
 ```
 
 ### EventBus Events
@@ -268,6 +277,9 @@ conversationHistory: {speaker, text, timestamp}[]  // Persistent across sessions
 | `dismiss_companion` | companionName/index, stayAtCurrentHex | Dismiss to world NPC |
 | `companion_wait` | companionName | Set to wait at current hex |
 | `companion_follow` | companionName | Resume following |
+| `give` | companionIndex, itemInstanceId | Give item from player to companion |
+| `take` | companionIndex, itemInstanceId | Take item from companion (standing 20+ required) |
+| `barter` | companionIndex, offerInstanceId, requestInstanceId | Swap items between player and companion (personality-driven acceptance) |
 
 ---
 
@@ -315,6 +327,19 @@ After combat ends (victory or flee), `recordCombatForCompanions()` appends:
 
 Companions can reference shared battles in future dialogue via the enriched DialogueContext.
 
+### Companion Auto-Leveling
+
+Companion auto-leveling triggers from ALL XP paths, centralized via `LevelingEngine.autoLevelCompanions(playerLevel, companions)`:
+
+| XP Source | Call Site |
+|-----------|----------|
+| Combat victory | `CombatOrchestrator` — after XP award |
+| Quest completion | `QuestEngine` — after quest XP |
+| Narrative XP | `EngineDispatcher` — after `award_xp` engine call |
+| Level-up (exploration) | `GameLoop` — after player level-up check |
+
+Companions level to `playerLevel - 1` (always one level behind the player). On level-up, `CompanionMeta.pendingLevelUp` is set with old/new stats (level, maxHp, AC, spell slots) so the UI can show a comparison badge.
+
 ---
 
 ## Starter Equipment
@@ -333,6 +358,17 @@ Companions receive role-based equipment at recruitment using the same item catal
 | Hermit (Cleric) | Mace | — | Leather Armor | Shield |
 | Noble | Rapier | — | Leather Armor | — |
 | Merchant | Dagger | — | — | Light Crossbow, Bolts |
+
+### Item Key Corrections (Sprint B)
+
+Item keys in `STARTER_EQUIPMENT` were corrected to match the actual data catalog:
+
+| Corrected Key | Old (Broken) Key |
+|---------------|-----------------|
+| `leather` | `leather_armor` |
+| `round_shield` | `shield` |
+| `arrow` | `arrows_(20)` |
+| `crossbow_light` | `crossbow,_light` |
 
 ### Equipment System
 
@@ -462,6 +498,54 @@ Implemented in `GameLoop.completeRest()` — iterates all following companions a
 
 ---
 
+## Bartering System
+
+**File:** `src/ruleset/combat/BarterEngine.ts`
+
+### Commands
+
+| Command | Usage | Description |
+|---------|-------|-------------|
+| `/give` | `/give <companion_index> <item_instanceId>` | Give an item to a companion (one-way transfer) |
+| `/take` | `/take <companion_index> <item_instanceId>` | Take an item from a companion (requires standing 20+) |
+| `/barter` | `/barter <companion_index> <offer_id> <request_id>` | Swap items; companion evaluates trade fairness |
+
+### Personality-Driven Valuation
+
+`evaluateItemValue()` scores items 0-100 for each companion based on:
+
+- **Class preference**: Each class has preferred item types (e.g., Fighter wants weapons/armor/shields; Wizard wants scrolls/wands/components)
+- **Trait modifiers**: Greedy +10, Humble/Helpful -10, Suspicious -5
+- **Rarity bonus**: Rare +15, Very Rare/Legendary +30, Common -10
+- **Standing bonus**: `floor(companionStanding / 10)` added to offer value (0-10 bonus)
+
+Trade accepted if effective offer value >= 70% of what the companion gives up.
+
+### Auto-Equip for Companions
+
+After receiving an item (via give or barter), `tryAutoEquip()` attempts to equip it:
+
+- Only fills **empty** slots — never replaces existing equipment
+- **Class validation**: Casters (Wizard, Sorcerer, Warlock, Druid) cannot auto-equip martial weapons
+- **Heavy armor check**: Wizard, Sorcerer, Warlock, Monk, Rogue, Ranger, Bard cannot equip heavy armor
+- **Two-handed checks**: Two-handed weapons require both mainHand and offHand to be free; equipping a shield checks if mainHand weapon is two-handed
+- AC recalculated after any equipment change
+
+### Re-Evaluate Equipment
+
+`BarterEngine.reEvaluateEquipment(char)` runs after taking an item from a companion:
+- Scans mainHand, armor, offHand slots
+- If any slot became empty, promotes an unequipped inventory item of matching type
+- Ensures companions always use the best available gear
+
+### Weight / Capacity Limits
+
+- **Weight capacity**: STR * 15 lbs
+- **Slot limit**: 20 inventory slots per companion
+- Both checked on `/give`; rejected with message if exceeded
+
+---
+
 ## Unconscious / Dead Companion Handling
 
 ### Status Display
@@ -499,6 +583,13 @@ Player **cannot move to another hex** while a following companion is unconscious
 | `combat/CompanionManager.ts` | Recruitment, dismissal, NPC conversion, starter equipment, spellcasting setup |
 | `combat/CombatAI.ts` | AI decision engine with directive support, parseDirective keyword parser |
 | `combat/CombatNarrativePool.ts` | Flavor message pools for combat narration (no LLM) |
+| `combat/BarterEngine.ts` | Personality-driven item exchange (give/take/barter), auto-equip with class validation |
+| `combat/ai/CompanionStrategy.ts` | Base companion AI strategy interface |
+| `combat/ai/MartialStrategy.ts` | AI strategy for martial companions (Fighter, Barbarian, Paladin) |
+| `combat/ai/SupportStrategy.ts` | AI strategy for support companions (Cleric, Bard) |
+| `combat/ai/CasterStrategy.ts` | AI strategy for caster companions (Wizard, Sorcerer, Warlock) |
+| `combat/ai/StealthStrategy.ts` | AI strategy for stealth companions (Rogue, Ranger) |
+| `combat/ai/StrategyRegistry.ts` | Maps companion class to appropriate strategy |
 | `combat/CombatFactory.ts` | fromPlayer() with companion type support |
 | `combat/CombatResolutionEngine.ts` | Friendly fire prevention |
 | `combat/EquipmentEngine.ts` | Shared AC recalculation (used by player and companions) |
@@ -570,6 +661,18 @@ Background chatter triggers automatically during exploration turns. To see it:
 4. After 3+ turns, speech bubbles may appear on companion cards
 5. Check browser console for "[ConversationManager] Background conversation:" logs
 ```
+
+### Bartering Commands
+
+```
+/give 0 <item_instanceId>                         -- Give item to companion at index 0
+/take 1 <item_instanceId>                         -- Take item from companion at index 1 (standing 20+)
+/barter 0 <your_item_id> <their_item_id>          -- Propose swap with companion 0
+```
+
+### Item Data Quality
+
+55 items enriched in the data catalog with corrected weights, types, properties, and rarity values. Validated by `test_item_data_quality.ts`.
 
 ### Combat Directives
 
@@ -657,4 +760,16 @@ npx tsx src/ruleset/tests/test_conversation_live.ts
 
 # Live LLM multi-turn NPC dialogue differentiation
 npx tsx src/ruleset/tests/test_npc_dialogue_integration.ts
+
+# Sprint A: combat XP → auto-level, barter give/take/trade, equipped state consistency
+npx tsx src/ruleset/tests/test_sprint_a_integration.ts
+
+# Sprint B: item key corrections, starter equipment, data catalog validation
+npx tsx src/ruleset/tests/test_sprint_b_integration.ts
+
+# Sprint D: centralized auto-level from all XP paths, quest/narrative XP triggers
+npx tsx src/ruleset/tests/test_sprint_d_integration.ts
+
+# Item data quality: validates 55 enriched items (weights, types, properties)
+npx tsx src/ruleset/tests/test_item_data_quality.ts
 ```

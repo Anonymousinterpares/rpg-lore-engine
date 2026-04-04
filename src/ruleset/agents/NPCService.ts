@@ -17,6 +17,22 @@ export interface DialogueContext {
     recentExchanges?: { speaker: string; text: string }[];
     backgroundKnowledge?: string[];
     priorConversationSummary?: string;
+    /** Self-awareness: the NPC's own stats, equipment, spells, gold, etc. */
+    selfAwareness?: {
+        class: string;
+        level: number;
+        hp: { current: number; max: number };
+        ac: number;
+        gold: number;
+        equippedWeapon?: string;
+        equippedArmor?: string;
+        equippedShield?: string;
+        preparedSpells?: string[];
+        cantrips?: string[];
+        conditions?: string[];
+        locationName?: string;
+        locationBiome?: string;
+    };
 }
 
 export class NPCService {
@@ -156,6 +172,21 @@ ${memory || 'No previous conversation.'}
         // Enriched context: recent exchanges from all participants
         if (dialogueCtx?.recentExchanges && dialogueCtx.recentExchanges.length > 0) {
             systemPrompt += `\n## RECENT EXCHANGE (what was just said)\n${dialogueCtx.recentExchanges.map(e => `${e.speaker}: ${e.text}`).join('\n')}\n`;
+        }
+
+        // Enriched context: SELF-AWARENESS — the NPC's own stats, gear, spells, location
+        if (dialogueCtx?.selfAwareness) {
+            const sa = dialogueCtx.selfAwareness;
+            let selfLines = `You are a Level ${sa.level} ${sa.class}. HP: ${sa.hp.current}/${sa.hp.max}. AC: ${sa.ac}.`;
+            if (sa.gold > 0) selfLines += ` Gold: ${sa.gold} gp.`;
+            if (sa.equippedWeapon) selfLines += `\nWielding: ${sa.equippedWeapon}.`;
+            if (sa.equippedArmor) selfLines += ` Wearing: ${sa.equippedArmor}.`;
+            if (sa.equippedShield) selfLines += ` Carrying: ${sa.equippedShield}.`;
+            if (sa.preparedSpells && sa.preparedSpells.length > 0) selfLines += `\nSpells: ${sa.preparedSpells.join(', ')}.`;
+            if (sa.cantrips && sa.cantrips.length > 0) selfLines += ` Cantrips: ${sa.cantrips.join(', ')}.`;
+            if (sa.conditions && sa.conditions.length > 0) selfLines += `\nConditions: ${sa.conditions.join(', ')}.`;
+            if (sa.locationName) selfLines += `\nLocation: ${sa.locationName}${sa.locationBiome ? ` (${sa.locationBiome})` : ''}.`;
+            systemPrompt += `\n## YOUR STATUS (what you know about yourself)\n${selfLines}\nReference your equipment, spells, or status naturally when relevant — e.g., mention your weapon by name, offer to cast a spell you know, or comment on your wounds.\n`;
         }
 
         // Enriched context: background knowledge (private NPC-NPC conversations this NPC had)
