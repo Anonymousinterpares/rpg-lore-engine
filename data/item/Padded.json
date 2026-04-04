@@ -1,6 +1,6 @@
 {
   "name": "Padded",
-  "type": "Armor",
+  "type": "Armor (Light)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -9,6 +9,7 @@
     "pp": 0
   },
   "weight": 8,
-  "acCalculated": "11",
-  "stealthDisadvantage": true
+  "acCalculated": "11 + DEX",
+  "stealthDisadvantage": true,
+  "description": "Padded armor consists of quilted layers of cloth and batting. It offers minimal protection but is cheap and widely available."
 }

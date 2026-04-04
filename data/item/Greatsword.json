@@ -1,6 +1,6 @@
 {
   "name": "Greatsword",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -19,5 +19,6 @@
   ],
   "range": {
     "normal": 5
-  }
+  },
+  "description": "A towering two-handed sword with a wide, heavy blade. Rolling 2d6 for damage gives it the most consistent high output among martial melee weapons."
 }

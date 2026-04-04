@@ -1,6 +1,6 @@
 {
   "name": "Dagger",
-  "type": "Weapon",
+  "type": "Weapon (Simple, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -22,5 +22,6 @@
   "range": {
     "normal": 20,
     "long": 60
-  }
+  },
+  "description": "A small, easily concealed blade useful for close combat or throwing. Its finesse allows the wielder to use Strength or Dexterity for attacks."
 }

@@ -1,6 +1,6 @@
 {
   "name": "Morningstar",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -16,5 +16,6 @@
   "properties": [],
   "range": {
     "normal": 5
-  }
+  },
+  "description": "A heavy, spiked mace designed to punch through armor. Its piercing spikes make it effective against heavily armored foes."
 }

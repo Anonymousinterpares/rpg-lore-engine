@@ -1,6 +1,6 @@
 {
   "name": "Greatclub",
-  "type": "Weapon",
+  "type": "Weapon (Simple, Melee)",
   "cost": {
     "cp": 0,
     "sp": 2,
@@ -18,5 +18,6 @@
   ],
   "range": {
     "normal": 5
-  }
+  },
+  "description": "A thick, heavy length of wood or bone, larger than a standard club. It requires two hands to wield but needs no special training."
 }

@@ -1,6 +1,6 @@
 {
   "name": "Handaxe",
-  "type": "Weapon",
+  "type": "Weapon (Simple, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -21,5 +21,6 @@
   "range": {
     "normal": 20,
     "long": 60
-  }
+  },
+  "description": "A light, single-handed axe balanced for both melee combat and throwing. Often carried in pairs for dual-wielding."
 }

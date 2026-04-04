@@ -1,6 +1,6 @@
 {
   "name": "Dart",
-  "type": "Weapon",
+  "type": "Weapon (Simple, Ranged)",
   "cost": {
     "cp": 5,
     "sp": 0,
@@ -20,5 +20,6 @@
   "range": {
     "normal": 20,
     "long": 60
-  }
+  },
+  "description": "A small, pointed missile designed for throwing. Light and inexpensive, darts are a simple ranged option that benefits from Dexterity or Strength."
 }

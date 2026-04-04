@@ -1,6 +1,6 @@
 {
   "name": "Maul",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -19,5 +19,6 @@
   ],
   "range": {
     "normal": 5
-  }
+  },
+  "description": "An enormous two-handed hammer capable of crushing armor and bone alike. Its 2d6 bludgeoning damage makes it the hammer equivalent of a greatsword."
 }

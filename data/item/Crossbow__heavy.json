@@ -1,6 +1,6 @@
 {
   "name": "Crossbow, heavy",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Ranged)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -22,5 +22,6 @@
   "range": {
     "normal": 100,
     "long": 400
-  }
+  },
+  "description": "A large, powerful crossbow that requires two hands and considerable strength to operate. Its heavy bolts deliver devastating damage at long range."
 }

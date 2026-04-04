@@ -1,6 +1,6 @@
 {
   "name": "Half Plate",
-  "type": "Armor",
+  "type": "Armor (Medium)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -9,6 +9,7 @@
     "pp": 0
   },
   "weight": 40,
-  "acCalculated": "15",
-  "stealthDisadvantage": true
+  "acCalculated": "15 + DEX (max 2)",
+  "stealthDisadvantage": true,
+  "description": "Half plate consists of shaped metal plates that cover most of the wearer's body. It does not include leg protection beyond simple greaves that are attached with leather straps."
 }

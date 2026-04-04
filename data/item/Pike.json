@@ -1,6 +1,6 @@
 {
   "name": "Pike",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -20,5 +20,6 @@
   ],
   "range": {
     "normal": 10
-  }
+  },
+  "description": "An extremely long thrusting spear used in formation combat. At 18 pounds it is among the heaviest weapons, but its reach keeps enemies at bay."
 }

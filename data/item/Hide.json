@@ -1,6 +1,6 @@
 {
   "name": "Hide",
-  "type": "Armor",
+  "type": "Armor (Medium)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -9,6 +9,7 @@
     "pp": 0
   },
   "weight": 12,
-  "acCalculated": "12",
-  "stealthDisadvantage": false
+  "acCalculated": "12 + DEX (max 2)",
+  "stealthDisadvantage": false,
+  "description": "This crude armor consists of thick furs and pelts. It is commonly worn by barbarian tribes, evil humanoids, and other folk who lack access to the tools and materials needed to create better armor."
 }

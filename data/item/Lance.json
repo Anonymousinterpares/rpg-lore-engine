@@ -1,6 +1,6 @@
 {
   "name": "Lance",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -19,5 +19,6 @@
   ],
   "range": {
     "normal": 10
-  }
+  },
+  "description": "A long, heavy spear designed for mounted combat. You have disadvantage when using it against a creature within 5 feet, and it requires two hands when not mounted."
 }

@@ -1,6 +1,6 @@
 {
   "name": "Arrow",
-  "type": "Adventuring Gear",
+  "type": "Ammunition",
   "cost": {
     "cp": 5,
     "sp": 0,
@@ -8,5 +8,6 @@
     "gp": 0,
     "pp": 0
   },
-  "weight": 1
+  "weight": 1,
+  "description": "A slender shaft tipped with a pointed head and fletched for stable flight. Sold in bundles of 20, arrows are used with shortbows and longbows."
 }

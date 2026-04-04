@@ -1,6 +1,6 @@
 {
   "name": "Crossbow bolt",
-  "type": "Adventuring Gear",
+  "type": "Ammunition",
   "cost": {
     "cp": 5,
     "sp": 0,
@@ -8,5 +8,6 @@
     "gp": 0,
     "pp": 0
   },
-  "weight": 1.5
+  "weight": 1.5,
+  "description": "A short, heavy projectile designed for crossbows. Sold in bundles of 20, bolts are used with light, heavy, and hand crossbows."
 }

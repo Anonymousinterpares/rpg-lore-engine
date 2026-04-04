@@ -1,6 +1,6 @@
 {
   "name": "Sling",
-  "type": "Weapon",
+  "type": "Weapon (Simple, Ranged)",
   "cost": {
     "cp": 0,
     "sp": 1,
@@ -19,5 +19,6 @@
   "range": {
     "normal": 30,
     "long": 120
-  }
+  },
+  "description": "A simple leather pouch on a cord used to hurl stones or bullets at range. Nearly weightless and free of cost, it is a humble but effective ranged weapon."
 }

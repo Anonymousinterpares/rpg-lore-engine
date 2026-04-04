@@ -1,6 +1,6 @@
 {
   "name": "Blowgun",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Ranged)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -20,5 +20,6 @@
   "range": {
     "normal": 25,
     "long": 100
-  }
+  },
+  "description": "A long, narrow tube used to propel darts by breath. Favored by assassins for its silence, it deals only 1 piercing damage but can deliver poisons effectively."
 }

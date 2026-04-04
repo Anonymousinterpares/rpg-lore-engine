@@ -1,6 +1,6 @@
 {
   "name": "War pick",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -16,5 +16,6 @@
   "properties": [],
   "range": {
     "normal": 5
-  }
+  },
+  "description": "A military pick with a heavy piercing head mounted on a shaft. Designed to penetrate plate armor, it delivers reliable piercing damage."
 }

@@ -1,6 +1,6 @@
 {
   "name": "Plate",
-  "type": "Armor",
+  "type": "Armor (Heavy)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -10,5 +10,7 @@
   },
   "weight": 65,
   "acCalculated": "18",
-  "stealthDisadvantage": true
+  "strengthReq": 15,
+  "stealthDisadvantage": true,
+  "description": "Plate consists of shaped, interlocking metal plates to cover the entire body. A suit of plate includes gauntlets, heavy leather boots, a visored helmet, and thick layers of padding underneath the armor."
 }

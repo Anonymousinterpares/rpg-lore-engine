@@ -1,6 +1,6 @@
 {
   "name": "Spear",
-  "type": "Weapon",
+  "type": "Weapon (Simple, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -21,5 +21,6 @@
   "range": {
     "normal": 20,
     "long": 60
-  }
+  },
+  "description": "A pointed shaft usable in melee or thrown at range. Versatile: deals 1d6 damage when wielded two-handed, making it one of the most practical simple weapons."
 }

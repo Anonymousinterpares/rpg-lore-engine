@@ -1,6 +1,6 @@
 {
   "name": "Glaive",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -20,5 +20,6 @@
   ],
   "range": {
     "normal": 10
-  }
+  },
+  "description": "A single-edged blade mounted on the end of a long pole. Its reach allows the wielder to strike foes 10 feet away."
 }

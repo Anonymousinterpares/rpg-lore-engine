@@ -1,6 +1,6 @@
 {
   "name": "Flail",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -16,5 +16,6 @@
   "properties": [],
   "range": {
     "normal": 5
-  }
+  },
+  "description": "A spiked metal ball attached to a handle by a chain. Its swinging arc makes it difficult to block with a shield."
 }

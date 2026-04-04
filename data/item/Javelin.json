@@ -1,6 +1,6 @@
 {
   "name": "Javelin",
-  "type": "Weapon",
+  "type": "Weapon (Simple, Melee)",
   "cost": {
     "cp": 0,
     "sp": 5,
@@ -20,5 +20,6 @@
   "range": {
     "normal": 30,
     "long": 120
-  }
+  },
+  "description": "A light spear designed primarily for throwing, though it can be used in melee. Inexpensive and common among soldiers and adventurers alike."
 }

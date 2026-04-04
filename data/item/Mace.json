@@ -1,6 +1,6 @@
 {
   "name": "Mace",
-  "type": "Weapon",
+  "type": "Weapon (Simple, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -18,5 +18,6 @@
   ],
   "range": {
     "normal": 5
-  }
+  },
+  "description": "A heavy metal head mounted on a wooden or metal shaft. A staple sidearm of clerics and warriors who favor bludgeoning over blades."
 }

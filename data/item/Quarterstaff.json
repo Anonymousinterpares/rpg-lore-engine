@@ -1,6 +1,6 @@
 {
   "name": "Quarterstaff",
-  "type": "Weapon",
+  "type": "Weapon (Simple, Melee)",
   "cost": {
     "cp": 0,
     "sp": 2,
@@ -19,5 +19,6 @@
   ],
   "range": {
     "normal": 5
-  }
+  },
+  "description": "A sturdy wooden staff wielded with one or two hands. A favored weapon of monks and traveling mages, it deals 1d8 damage when used two-handed."
 }

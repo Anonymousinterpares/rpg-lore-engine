@@ -1,6 +1,6 @@
 {
   "name": "Studded Leather",
-  "type": "Armor",
+  "type": "Armor (Light)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -9,6 +9,7 @@
     "pp": 0
   },
   "weight": 13,
-  "acCalculated": "12",
-  "stealthDisadvantage": false
+  "acCalculated": "12 + DEX",
+  "stealthDisadvantage": false,
+  "description": "Made from tough but flexible leather, studded leather is reinforced with close-set rivets or spikes."
 }

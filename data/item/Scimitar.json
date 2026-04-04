@@ -1,6 +1,6 @@
 {
   "name": "Scimitar",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -19,5 +19,6 @@
   ],
   "range": {
     "normal": 5
-  }
+  },
+  "description": "A curved, single-edged blade designed for slashing from horseback or on foot. Its light and finesse properties make it ideal for dual-wielding dexterous fighters."
 }

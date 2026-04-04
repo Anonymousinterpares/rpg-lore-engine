@@ -1,6 +1,6 @@
 {
   "name": "Trident",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -20,5 +20,6 @@
   "range": {
     "normal": 20,
     "long": 60
-  }
+  },
+  "description": "A three-pronged spear that can be thrown or used in melee. Versatile: deals 1d8 damage when wielded two-handed. Often associated with aquatic cultures."
 }

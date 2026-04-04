@@ -1,6 +1,6 @@
 {
   "name": "Warhammer",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -18,5 +18,6 @@
   ],
   "range": {
     "normal": 5
-  }
+  },
+  "description": "A sturdy hammer with a weighted head designed for battle. Versatile: deals 1d10 damage when wielded two-handed. A favored weapon of dwarven warriors."
 }

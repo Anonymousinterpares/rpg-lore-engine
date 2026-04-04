@@ -1,6 +1,6 @@
 {
   "name": "Club",
-  "type": "Weapon",
+  "type": "Weapon (Simple, Melee)",
   "cost": {
     "cp": 0,
     "sp": 1,
@@ -19,5 +19,6 @@
   ],
   "range": {
     "normal": 5
-  }
+  },
+  "description": "A simple length of wood, shaped for bashing. Crude but effective, it is one of the most basic weapons available."
 }

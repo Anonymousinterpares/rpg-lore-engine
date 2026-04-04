@@ -1,6 +1,6 @@
 {
   "name": "Sickle",
-  "type": "Weapon",
+  "type": "Weapon (Simple, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -19,5 +19,6 @@
   ],
   "range": {
     "normal": 5
-  }
+  },
+  "description": "A curved farming tool adapted for combat. Light enough to dual-wield, it is often associated with druids and rural folk."
 }

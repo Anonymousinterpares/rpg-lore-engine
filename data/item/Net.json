@@ -1,6 +1,6 @@
 {
   "name": "Net",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Ranged)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -20,5 +20,6 @@
   "range": {
     "normal": 5,
     "long": 15
-  }
+  },
+  "description": "A mesh of rope or cord thrown to entangle a creature. A restrained target can escape by making a DC 10 Strength check or dealing 5 slashing damage to the net."
 }

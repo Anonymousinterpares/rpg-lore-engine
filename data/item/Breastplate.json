@@ -1,6 +1,6 @@
 {
   "name": "Breastplate",
-  "type": "Armor",
+  "type": "Armor (Medium)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -9,6 +9,7 @@
     "pp": 0
   },
   "weight": 20,
-  "acCalculated": "14",
-  "stealthDisadvantage": false
+  "acCalculated": "14 + DEX (max 2)",
+  "stealthDisadvantage": false,
+  "description": "This armor consists of a fitted metal chest piece worn with supple leather. Although it leaves the legs and arms relatively unprotected, this armor provides good protection for the wearer's vital organs while leaving the wearer relatively unencumbered."
 }

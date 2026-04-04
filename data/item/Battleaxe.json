@@ -1,6 +1,6 @@
 {
   "name": "Battleaxe",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -18,5 +18,6 @@
   ],
   "range": {
     "normal": 5
-  }
+  },
+  "description": "A broad-bladed axe forged for war, balanced for powerful one- or two-handed strikes. Versatile: deals 1d10 damage when wielded two-handed."
 }

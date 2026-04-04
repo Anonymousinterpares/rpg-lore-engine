@@ -1,6 +1,6 @@
 {
   "name": "Whip",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -19,5 +19,6 @@
   ],
   "range": {
     "normal": 10
-  }
+  },
+  "description": "A braided leather cord that strikes with a sharp crack. The only martial weapon with both finesse and reach, allowing Dexterity-based attacks at 10 feet."
 }

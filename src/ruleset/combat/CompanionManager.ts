@@ -32,7 +32,7 @@ const STARTER_EQUIPMENT: Record<string, { mainHand?: string; offHand?: string; a
     'Druid':      { mainHand: 'quarterstaff', armor: 'leather', items: ['herbalism_kit'] },
     'Hermit':     { mainHand: 'mace', armor: 'leather', items: ['round_shield'] },
     'Monk':       { mainHand: 'quarterstaff' },
-    'Merchant':   { mainHand: 'dagger', items: ['crossbow,_light', 'crossbow_bolt'] },
+    'Merchant':   { mainHand: 'dagger', items: ['crossbow_light', 'crossbow_bolt'] },
     'Noble':      { mainHand: 'rapier', armor: 'leather' },
     'Farmer':     { mainHand: 'handaxe', items: ['sickle'] },
     'Miner':      { mainHand: 'light_hammer', items: ['handaxe'] },

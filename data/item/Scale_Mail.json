@@ -1,6 +1,6 @@
 {
   "name": "Scale Mail",
-  "type": "Armor",
+  "type": "Armor (Medium)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -9,6 +9,7 @@
     "pp": 0
   },
   "weight": 45,
-  "acCalculated": "14",
-  "stealthDisadvantage": true
+  "acCalculated": "14 + DEX (max 2)",
+  "stealthDisadvantage": true,
+  "description": "This armor consists of a coat and leggings of leather covered with overlapping pieces of metal, much like the scales of a fish. The suit includes gauntlets."
 }

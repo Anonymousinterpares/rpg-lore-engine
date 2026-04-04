@@ -1,6 +1,6 @@
 {
   "name": "Greataxe",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -19,5 +19,6 @@
   ],
   "range": {
     "normal": 5
-  }
+  },
+  "description": "A massive double-bladed axe that requires two hands to swing. A favorite of barbarians, it delivers the heaviest single-die damage of any melee weapon."
 }

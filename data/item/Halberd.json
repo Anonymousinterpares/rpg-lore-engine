@@ -1,6 +1,6 @@
 {
   "name": "Halberd",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -20,5 +20,6 @@
   ],
   "range": {
     "normal": 10
-  }
+  },
+  "description": "A polearm combining an axe blade, a spike, and a hook on a long shaft. Its reach and versatility make it a staple of trained infantry."
 }
