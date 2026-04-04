@@ -248,7 +248,14 @@ export class ConversationManager {
         if (!npc) return `You don't see anyone named "${npcIdOrName}" to talk to.`;
 
         // Check if NPC is accessible (companion following, or world NPC in hex)
-        const isCompanion = this.state.companions.some((c: any) => c.meta.sourceNpcId === npc.id && c.meta.followState === 'following');
+        const companionObj = this.state.companions.find((c: any) => c.meta.sourceNpcId === npc.id && c.meta.followState === 'following');
+        const isCompanion = !!companionObj;
+
+        // Block dialogue with unconscious/dead companions
+        if (isCompanion && companionObj.character.hp.current <= 0) {
+            return `${npc.name} is unconscious and cannot respond.`;
+        }
+
         if (!isCompanion) {
             const hex = this.hexMapManager.getHex(this.state.location.hexId);
             if (!hex?.npcs?.includes(npc.id)) {

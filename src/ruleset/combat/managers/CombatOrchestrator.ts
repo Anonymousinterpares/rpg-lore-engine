@@ -149,6 +149,20 @@ export class CombatOrchestrator {
             this.state.lastNarrative = `You are unconscious and dying. Roll a Death Save!`;
         }
 
+        // Companions auto-roll death saves on their turn
+        if (actor.type === 'companion' && actor.hp.current <= 0 && hasCondition(actor.conditions, 'Unconscious')) {
+            const result = DeathEngine.rollDeathSave(actor);
+            this.addCombatLog(`${actor.name}: ${result.message}`);
+
+            if (result.totalFailures >= 3) {
+                this.addCombatLog(`${actor.name} has died!`);
+            } else if (result.isRevived || result.totalSuccesses >= 3) {
+                this.addCombatLog(`${actor.name} stabilizes!`);
+                removeCondition(actor.conditions, 'Unconscious');
+                actor.hp.current = 1;
+            }
+        }
+
         await this.emitStateUpdate();
     }
 
@@ -156,8 +170,9 @@ export class CombatOrchestrator {
         if (damage <= 0) return;
         CombatResolutionEngine.applyDamage(target, damage);
 
-        // Check if target just dropped to 0 HP — trigger death save system for players
-        if (target.hp.current <= 0 && target.isPlayer && !hasCondition(target.conditions, 'Unconscious') && !hasCondition(target.conditions, 'Dead')) {
+        // Check if target just dropped to 0 HP — trigger death save system for players AND companions
+        const isAlly = target.isPlayer || target.type === 'companion';
+        if (target.hp.current <= 0 && isAlly && !hasCondition(target.conditions, 'Unconscious') && !hasCondition(target.conditions, 'Dead')) {
             const downedMsg = DeathEngine.handleDowned(target);
             this.addCombatLog(downedMsg);
         }

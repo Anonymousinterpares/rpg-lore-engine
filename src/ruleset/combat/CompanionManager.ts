@@ -181,7 +181,7 @@ export class CompanionManager {
 
         const character: PlayerCharacter = {
             name: npc.name,
-            sex: 'Unknown' as any,
+            sex: (Math.random() < 0.5 ? 'male' : 'female') as any,
             level: npcLevel,
             race: 'Human',
             darkvision: 0,

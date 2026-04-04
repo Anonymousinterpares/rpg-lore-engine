@@ -86,7 +86,19 @@ export class GameStateManager {
         if (!(await this.storage.exists(filePath))) return null;
 
         const data = await this.storage.read(filePath) as string;
-        const state = FullSaveStateSchema.parse(JSON.parse(data));
+        const raw = JSON.parse(data);
+
+        // Pre-parse migration: fix companion sex field ('Unknown' → random valid value)
+        if (raw.companions) {
+            for (const comp of raw.companions) {
+                const sex = comp?.character?.sex;
+                if (sex && sex !== 'male' && sex !== 'female') {
+                    comp.character.sex = Math.random() < 0.5 ? 'male' : 'female';
+                }
+            }
+        }
+
+        const state = FullSaveStateSchema.parse(raw);
 
         // Migration: rebuild empty spellSlots from class progression data
         this.migrateSpellSlots(state);

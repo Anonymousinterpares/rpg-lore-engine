@@ -192,11 +192,13 @@ const PartyPanel: React.FC = () => {
                                         {meta.originalRole || 'Adventurer'}
                                     </span>
                                     <span className={styles.companionStatus} style={{
-                                        color: isFollowing
-                                            ? 'var(--color-standing-positive, #6aaa64)'
-                                            : 'var(--color-standing-neutral, #b8944f)'
+                                        color: char.hp.current <= 0
+                                            ? '#c94040'
+                                            : isFollowing
+                                                ? 'var(--color-standing-positive, #6aaa64)'
+                                                : 'var(--color-standing-neutral, #b8944f)'
                                     }}>
-                                        {isFollowing ? '\u2764 Following' : '\u23f8 Waiting'}
+                                        {char.hp.current <= 0 ? '\u2620 Unconscious' : isFollowing ? '\u2764 Following' : '\u23f8 Waiting'}
                                     </span>
                                 </div>
 
@@ -218,10 +220,11 @@ const PartyPanel: React.FC = () => {
                                 <div className={styles.companionActions}>
                                     {/* Talk button with dropdown */}
                                     <div className={styles.talkBtnWrapper}>
-                                        <GameTooltip text={isTalking ? 'End conversation' : 'Talk to companion'}>
+                                        <GameTooltip text={char.hp.current <= 0 ? 'Unconscious — cannot talk' : isTalking ? 'End conversation' : 'Talk to companion'}>
                                             <button
                                                 className={`${styles.actionBtn} ${isTalking ? styles.talkBtnActive : ''}`}
                                                 onClick={(e) => handleTalkClick(e, npcId)}
+                                                disabled={char.hp.current <= 0 && !isTalking}
                                             >
                                                 <MessageCircle size={12} />
                                                 {isTalking ? 'End Talk' : 'Talk'}

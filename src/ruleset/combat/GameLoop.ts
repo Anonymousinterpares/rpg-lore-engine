@@ -394,6 +394,14 @@ export class GameLoop {
                 // Block if already moving
                 if (this.state.location.travelAnimation) return "You are already traveling.";
 
+                // Block movement with unconscious/dead companion
+                const downedCompanion = this.state.companions.find((c: any) =>
+                    c.meta?.followState === 'following' && c.character.hp.current <= 0
+                );
+                if (downedCompanion) {
+                    return `You cannot travel while ${downedCompanion.character.name} is unconscious. Heal them or dismiss them from the party first.`;
+                }
+
                 const direction = args[0] as any;
                 const startCoords = [...this.state.location.coordinates] as [number, number];
                 const startHex = this.hexMapManager.getHex(`${startCoords[0]},${startCoords[1]}`);
