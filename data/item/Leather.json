@@ -1,6 +1,6 @@
 {
   "name": "Leather",
-  "type": "Armor",
+  "type": "Armor (Light)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -9,6 +9,7 @@
     "pp": 0
   },
   "weight": 10,
-  "acCalculated": "11",
-  "stealthDisadvantage": false
+  "acCalculated": "11 + DEX",
+  "stealthDisadvantage": false,
+  "description": "The breastplate and shoulder protectors of this armor are made of leather that has been stiffened by being boiled in oil. The rest of the armor is made of softer and more flexible materials."
 }

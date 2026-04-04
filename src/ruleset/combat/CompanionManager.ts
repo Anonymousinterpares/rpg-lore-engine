@@ -356,14 +356,25 @@ export class CompanionManager {
                 equipped: !!equipSlot,
             };
 
-            // Preserve weapon/armor properties for combat resolution
+            // Copy ALL relevant item fields for display and combat resolution
             if (data) {
-                if ((data as any).damage) itemEntry.damage = (data as any).damage;
-                if ((data as any).properties) itemEntry.properties = (data as any).properties;
-                if ((data as any).range) itemEntry.range = (data as any).range;
-                if ((data as any).rarity) itemEntry.rarity = (data as any).rarity;
-                if ((data as any).description) itemEntry.description = (data as any).description;
-                if ((data as any).acCalculated) itemEntry.acCalculated = (data as any).acCalculated;
+                const d = data as any;
+                if (d.damage) itemEntry.damage = d.damage;
+                if (d.properties) itemEntry.properties = d.properties;
+                if (d.range) itemEntry.range = d.range;
+                if (d.rarity) itemEntry.rarity = d.rarity;
+                if (d.description) itemEntry.description = d.description;
+                if (d.acCalculated) itemEntry.acCalculated = d.acCalculated;
+                if (d.cost) itemEntry.cost = d.cost;
+                if (d.isMagic) itemEntry.isMagic = d.isMagic;
+                if (d.modifiers) itemEntry.modifiers = d.modifiers;
+                if (d.stealthDisadvantage) itemEntry.stealthDisadvantage = d.stealthDisadvantage;
+                if (d.strengthReq) itemEntry.strengthReq = d.strengthReq;
+                // Compute numeric AC from acCalculated for display (e.g., "11 + DEX" → 11)
+                if (d.acCalculated && !itemEntry.ac) {
+                    const acMatch = String(d.acCalculated).match(/(\d+)/);
+                    if (acMatch) itemEntry.ac = parseInt(acMatch[1]);
+                }
             }
 
             char.inventory.items.push(itemEntry);

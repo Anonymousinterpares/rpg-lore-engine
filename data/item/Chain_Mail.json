@@ -1,6 +1,6 @@
 {
   "name": "Chain Mail",
-  "type": "Armor",
+  "type": "Armor (Heavy)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -10,5 +10,7 @@
   },
   "weight": 55,
   "acCalculated": "16",
-  "stealthDisadvantage": true
+  "strengthReq": 13,
+  "stealthDisadvantage": true,
+  "description": "Made of interlocking metal rings, chain mail includes a layer of quilted fabric worn underneath to prevent chafing and cushion the impact of blows."
 }

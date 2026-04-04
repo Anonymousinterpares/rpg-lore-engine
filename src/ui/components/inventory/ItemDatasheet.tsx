@@ -15,6 +15,9 @@ interface Item {
     cost?: { gp: number, sp: number, cp: number };
     damage?: string | { dice: string, type: string };
     ac?: number;
+    acCalculated?: string;
+    stealthDisadvantage?: boolean;
+    strengthReq?: number;
     properties?: string[];
     range?: { normal: number, long?: number };
     // Forge fields
@@ -94,7 +97,7 @@ const ItemDatasheet: React.FC<ItemDatasheetProps> = ({ item, onClose }) => {
                 </div>
 
                 <div className={styles.content}>
-                    {(item.damage || item.ac !== undefined) && (
+                    {(item.damage || item.ac !== undefined || item.acCalculated) && (
                         <div className={styles.statsSection}>
                             {item.damage && (
                                 <div className={styles.statLine}>
@@ -102,10 +105,20 @@ const ItemDatasheet: React.FC<ItemDatasheetProps> = ({ item, onClose }) => {
                                     <strong>Damage:</strong> {typeof item.damage === 'object' ? `${item.damage.dice} ${item.damage.type}` : item.damage}
                                 </div>
                             )}
-                            {item.ac !== undefined && (
+                            {(item.acCalculated || item.ac !== undefined) && (
                                 <div className={styles.statLine}>
                                     <Shield size={14} />
-                                    <strong>AC Bonus:</strong> +{item.ac}
+                                    <strong>AC:</strong> {item.acCalculated || `+${item.ac}`}
+                                </div>
+                            )}
+                            {item.stealthDisadvantage && (
+                                <div className={styles.statLine} style={{ color: '#c94040' }}>
+                                    <strong>Stealth:</strong> Disadvantage
+                                </div>
+                            )}
+                            {item.strengthReq && item.strengthReq > 0 && (
+                                <div className={styles.statLine}>
+                                    <strong>Requires STR:</strong> {item.strengthReq}
                                 </div>
                             )}
                             {item.range && (

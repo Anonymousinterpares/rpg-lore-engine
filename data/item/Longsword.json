@@ -1,6 +1,6 @@
 {
   "name": "Longsword",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -18,5 +18,6 @@
   ],
   "range": {
     "normal": 5
-  }
+  },
+  "description": "A long, double-edged blade wielded with one or two hands. Versatile: deals 1d10 damage when wielded two-handed."
 }

@@ -1,6 +1,6 @@
 {
   "name": "Shortbow",
-  "type": "Weapon",
+  "type": "Weapon (Simple, Ranged)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -20,5 +20,6 @@
   "range": {
     "normal": 80,
     "long": 320
-  }
+  },
+  "description": "A compact bow designed for speed and mobility. Requires two hands to use and ammunition for each shot."
 }

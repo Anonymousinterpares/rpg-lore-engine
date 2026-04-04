@@ -1,6 +1,6 @@
 {
   "name": "Shortsword",
-  "type": "Weapon",
+  "type": "Weapon (Martial, Melee)",
   "cost": {
     "cp": 0,
     "sp": 0,
@@ -20,5 +20,6 @@
   ],
   "range": {
     "normal": 5
-  }
+  },
+  "description": "A short, light blade ideal for quick strikes. Its finesse allows you to use either Strength or Dexterity for attack and damage rolls."
 }
