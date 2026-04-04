@@ -51,7 +51,9 @@ export const ConversationStateSchema = z.object({
     chatterCooldowns: z.record(z.string(), z.number()).default({}),  // npcId -> last chatter turn
     lastBackgroundChatterTurn: z.number().default(0),
     lastConversationSummary: z.string().default(''),                 // Fed to narrator on resume
-    tokenBudgetUsedThisTurn: z.number().default(0)
+    tokenBudgetUsedThisTurn: z.number().default(0),
+    /** Name of the NPC currently chosen to respond (for UI "X wants to respond" phase) */
+    respondingNpcName: z.string().optional()
 });
 export type ConversationState = z.infer<typeof ConversationStateSchema>;
 

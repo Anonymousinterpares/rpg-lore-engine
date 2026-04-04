@@ -507,6 +507,10 @@ export class ConversationManager {
             return "The person you're talking to is no longer here.";
         }
 
+        // Signal UI: "{Name} wants to respond..." phase
+        this.getConvState().respondingNpcName = responderNpc.name;
+        await this.emitStateUpdate();
+
         // Add player message to conversation history
         this.addToConversationHistory('player', 'Player', input, conv.mode === 'PRIVATE');
 
@@ -532,6 +536,9 @@ export class ConversationManager {
                 }
             }
 
+            // Clear the "responding" phase
+            this.getConvState().respondingNpcName = undefined;
+
             const formatted = response ? `**${responderNpc.name}:** ${response}` : `${responderNpc.name} stays silent.`;
             this.state.lastNarrative = formatted;
 
@@ -545,6 +552,7 @@ export class ConversationManager {
             await this.emitStateUpdate();
             return formatted;
         } catch (e: any) {
+            this.getConvState().respondingNpcName = undefined;
             console.error('[ConversationManager] Dialogue failed:', e);
             return `${responderNpc.name} seems unable to respond.`;
         }

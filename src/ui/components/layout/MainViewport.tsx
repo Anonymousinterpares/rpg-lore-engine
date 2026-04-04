@@ -216,23 +216,33 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex, onChara
     // Determine processing message for input field
     // In talk mode: show companion name instead of "narrator"
     const activeConv = state?.conversationState?.activeConversation;
+    // Multi-phase processing indicator:
+    // 1. "The party is deliberating..." (scoring, brief)
+    // 2. "{Name} decided to answer..." (chosen, before LLM response)
+    // 3. "{Name} is thinking..." (waiting for LLM)
+    // 4. "{Name} is answering..." (typewriter active)
+    const respondingName = state?.conversationState?.respondingNpcName?.split(' ')[0];
     const talkingToName = (() => {
+        if (respondingName) return respondingName; // Phase 2-3: specific NPC chosen
         if (!activeConv) return null;
-        if (activeConv.mode === 'GROUP') return 'The party';
+        if (activeConv.mode === 'GROUP') return null; // Phase 1: still deliberating
         const comp = state?.companions?.find((c: any) => c.meta?.sourceNpcId === activeConv.primaryNpcId);
         if (comp) return comp.character.name.split(' ')[0];
         const npc = state?.worldNpcs?.find(n => n.id === activeConv.primaryNpcId);
         return npc?.name?.split(' ')[0] || null;
     })();
-    const thinkingEntity = talkingToName || 'The narrator';
 
     const inputDisabled = isProcessing || !!examineOverlay || isTyping;
     const processingMessage = isProcessing
-        ? `${thinkingEntity} is thinking...`
+        ? (respondingName
+            ? `${respondingName} is thinking...`
+            : activeConv?.mode === 'GROUP'
+                ? 'The party is deliberating...'
+                : `${talkingToName || 'The narrator'} is thinking...`)
         : examineOverlay
-            ? `${thinkingEntity} contemplates...`
+            ? 'Contemplating...'
             : isTyping
-                ? `${thinkingEntity} is answering...`
+                ? `${respondingName || talkingToName || 'The narrator'} is answering...`
                 : undefined;
 
     return (
