@@ -46,10 +46,30 @@ export const WeatherTypeSchema = z.enum([
 ]);
 export type WeatherType = z.infer<typeof WeatherTypeSchema>;
 
+/**
+ * Internal front simulation state. Optional so old saves deserialise without errors —
+ * WeatherEngine.advanceFront() will bootstrap a new front on the first tick if absent.
+ */
+export const WeatherFrontSchema = z.object({
+  category: z.enum(['Precipitation', 'Fog', 'Dry']),
+  /** 0 = pre-front clear … 5 = peak … 7 = clearing (triggers new front roll) */
+  phase: z.number().min(0).max(7).default(0),
+  /** Minutes per phase step */
+  velocity: z.number().default(120),
+  /** 0.0 (arctic) – 1.0 (tropical). Season baseline + biome offset. */
+  temperature: z.number().min(0).max(1).default(0.5),
+  /** 0.0 (arid) – 1.0 (saturated) */
+  moisture: z.number().min(0).max(1).default(0.4),
+  trend: z.enum(['building', 'stable', 'clearing']).default('building'),
+});
+
 export const WeatherSchema = z.object({
   type: WeatherTypeSchema,
-  durationMinutes: z.number().default(0), // Minutes remaining for this weather
-  intensity: z.number().default(1.0) // For future variation
+  durationMinutes: z.number().default(0),
+  /** 0.0–1.0 continuous intensity — the primary driver for gameplay effects and display labels */
+  intensity: z.number().min(0).max(1).default(0.0),
+  /** Front simulation state. Absent on old saves; bootstrapped on first tick. */
+  front: WeatherFrontSchema.optional(),
 });
 export type Weather = z.infer<typeof WeatherSchema>;
 

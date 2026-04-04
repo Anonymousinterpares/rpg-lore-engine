@@ -3,6 +3,7 @@ import { HexMapManager } from '../combat/HexMapManager';
 import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
 import { WorldClock } from '../schemas/WorldClockSchema';
 import { WorldClockEngine } from '../combat/WorldClockEngine';
+import { WeatherEngine } from '../combat/WeatherEngine';
 import { Hex } from '../schemas/HexMapSchema';
 
 export type HPStatus = 'healthy' | 'wounded' | 'bloodied' | 'critical' | 'unconscious';
@@ -24,7 +25,7 @@ export interface BaseContext {
         biome: string;
         description: string;
     };
-    weather: string;
+    weather: string | { type: string; label: string; intensity: number; trend: string };
     season: string;
     dateString: string;
     storySummary: string;
@@ -104,7 +105,12 @@ export class ContextBuilder {
                 biome: this.getCurrentHex(state).biome || 'Unknown Biome',
                 description: this.getCurrentHex(state).description || ''
             },
-            weather: state.weather.type,
+            weather: {
+                type:      state.weather.type,
+                label:     WeatherEngine.getIntensityLabel(state.weather),
+                intensity: Math.round((state.weather.intensity ?? 0) * 100) / 100,
+                trend:     state.weather.front?.trend ?? 'stable',
+            },
             season: this.getSeason(state.worldTime.month),
             dateString: WorldClockEngine.formatDate(state.worldTime),
             storySummary: state.storySummary,

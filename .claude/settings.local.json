@@ -24,7 +24,8 @@
       "Read(//e/AI/AI/projects/RPG New/rpg-lore-engine/**)",
       "Bash(ls:*)",
       "Bash(node -e ':*)",
-      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('desc' if 'description' in d else 'NO DESC'\\)\")"
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('desc' if 'description' in d else 'NO DESC'\\)\")",
+      "Bash(find:*)"
     ]
   }
 }

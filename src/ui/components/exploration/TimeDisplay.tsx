@@ -3,6 +3,7 @@ import styles from './TimeDisplay.module.css';
 import { Clock } from 'lucide-react';
 import { useGameState } from '../../hooks/useGameState';
 import { WorldClockEngine } from '../../../ruleset/combat/WorldClockEngine';
+import { WeatherEngine } from '../../../ruleset/combat/WeatherEngine';
 import { TravelPace } from '../../../ruleset/schemas/BaseSchemas';
 import { Footprints, ShieldAlert, Zap, Ghost } from 'lucide-react';
 import GameTooltip from '../common/GameTooltip';
@@ -79,15 +80,22 @@ const TimeDisplay: React.FC = () => {
 
             <div className={styles.weatherSection}>
                 <img
-                    src={`/assets/weather/${state.weather.type.toLowerCase()}.png`}
-                    alt={state.weather.type}
+                    src={`/assets/weather/${WeatherEngine.getWeatherIconKey(state.weather)}.png`}
+                    alt={WeatherEngine.getIntensityLabel(state.weather)}
                     className={styles.weatherIcon}
                     onError={(e) => {
-                        // Fallback if image doesn't exist yet
-                        (e.target as HTMLImageElement).style.display = 'none';
+                        // Fallback to base type icon if intensity variant not yet present
+                        const img = e.target as HTMLImageElement;
+                        const fallback = `/assets/weather/${state.weather.type.toLowerCase()}.png`;
+                        if (img.src !== fallback) img.src = fallback;
+                        else img.style.display = 'none';
                     }}
                 />
-                <span className={styles.weatherLabel}>{state.weather.type}</span>
+                <span className={styles.weatherLabel}>
+                    {WeatherEngine.getIntensityLabel(state.weather)}
+                    {state.weather.front?.trend === 'building'  && ' ↑'}
+                    {state.weather.front?.trend === 'clearing'  && ' ↓'}
+                </span>
             </div>
         </div>
     );

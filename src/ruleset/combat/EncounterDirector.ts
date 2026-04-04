@@ -78,10 +78,16 @@ export class EncounterDirector {
         const activity = state.travelPace || 'Normal';
         const mActivity = activity === 'Cautious' ? 0.5 : activity === 'Forced March' ? 1.5 : activity === 'Stealth' ? 0.25 : 1.0;
 
-        // Weather Multiplier (Storm/Blizzard increase danger/obscuration)
+        // Weather Multiplier — intensity-scaled (0.6 range: 1.0 at calm → 1.6 at peak storm/blizzard)
+        // Fog/Snow reduce visibility and push creatures into closer contact; Storm/Blizzard amplify chaos.
+        const wType = state.weather.type;
+        const wIntensity = state.weather.intensity ?? 0;
         let mWeather = 1.0;
-        if (state.weather.type === 'Storm') mWeather = 1.2;
-        if (state.weather.type === 'Blizzard') mWeather = 1.5;
+        if (wType === 'Storm' || wType === 'Blizzard' || wType === 'Fog' || wType === 'Snow') {
+            mWeather = 1.0 + (0.6 * wIntensity);
+        } else if (wType === 'Rain') {
+            mWeather = 1.0 + (0.25 * wIntensity);
+        }
 
         // Rest Multiplier: Being stationary and vulnerable
         let mRest = isResting ? 1.5 : 1.0;

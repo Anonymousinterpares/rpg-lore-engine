@@ -31,12 +31,14 @@ export class TimeManager {
             this.state.worldTime = WorldClockEngine.advanceTime(this.state.worldTime, step);
             remainingMinutes -= step;
 
-            if (this.state.weather.durationMinutes > 0) {
-                this.state.weather.durationMinutes -= step;
-            }
-            if (this.state.weather.durationMinutes <= 0) {
-                this.state.weather = WeatherEngine.generateWeather(this.state.worldTime);
-            }
+            // Advance front simulation — biome determines local climate character
+            const currentHexForWeather = this.hexMapManager.getHex(this.state.location.hexId);
+            const biome = (currentHexForWeather as any)?.biome ?? 'Plains';
+            this.state.weather = WeatherEngine.advanceFront(
+                this.state.worldTime,
+                this.state.weather,
+                biome
+            );
 
             await this.emitStateUpdate();
 

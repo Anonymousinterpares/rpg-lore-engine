@@ -78,7 +78,9 @@ export class CombatAnalysisEngine {
             const pathDist = this.gridManager.getDistanceVector(combatant.position, enemy.position);
 
             // A1. Charge (Strict linear move, now uses Sprint speed for consistency)
-            if (dist >= 4 && pathDist === dist && weather.type !== 'Blizzard' && weather.type !== 'Snow') {
+            // Charge disabled when difficult terrain threshold is reached (intensity ≥ 0.5 for cold precip)
+            const chargeDifficult = (weather.type === 'Snow' || weather.type === 'Blizzard') && (weather.intensity ?? 1) >= 0.5;
+            if (dist >= 4 && pathDist === dist && !chargeDifficult) {
                 const sprintSpeed = combatant.movementSpeed * 2;
                 const targetPos = this.getApproachPosition(reachable, enemy.position, 1); // getApproachPosition uses reachable which might be 1x? need to check
 
