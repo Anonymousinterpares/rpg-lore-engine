@@ -14,9 +14,55 @@ export enum AITier {
 }
 
 export interface AIAction {
-    type: 'ATTACK' | 'SPELL' | 'ABILITY' | 'MOVE' | 'RETREAT';
+    type: 'ATTACK' | 'SPELL' | 'ABILITY' | 'MOVE' | 'RETREAT' | 'DODGE';
     targetId: string;
     actionId?: string; // e.g., spell name or action name
+}
+
+export type DirectiveBehavior = 'AGGRESSIVE' | 'DEFENSIVE' | 'SUPPORT' | 'FOCUS' | 'PROTECT';
+
+export interface TacticalDirective {
+    behavior: DirectiveBehavior;
+    targetName?: string;
+    rawText: string;
+}
+
+/**
+ * Parses player text input into a structured TacticalDirective.
+ * Zero LLM calls — pure keyword matching.
+ */
+export function parseDirective(input: string, combatants: Combatant[]): TacticalDirective {
+    const lower = input.toLowerCase().trim();
+
+    // FOCUS: "focus <enemy>" / "attack <enemy>" / "kill <enemy>"
+    const focusMatch = lower.match(/(?:focus|target|attack|kill|hit)\s+(?:the\s+)?(.+)/);
+    if (focusMatch) {
+        return { behavior: 'FOCUS', targetName: focusMatch[1].trim(), rawText: input };
+    }
+
+    // PROTECT: "protect <ally>" / "guard <ally>" / "defend <ally>"
+    const protectMatch = lower.match(/(?:protect|guard|defend|shield|cover)\s+(?:the\s+)?(.+)/);
+    if (protectMatch) {
+        return { behavior: 'PROTECT', targetName: protectMatch[1].trim(), rawText: input };
+    }
+
+    // SUPPORT: "heal" / "support" / "help" / "buff"
+    if (/\b(heal|support|help|buff|cure|restore|aid)\b/.test(lower)) {
+        return { behavior: 'SUPPORT', rawText: input };
+    }
+
+    // DEFENSIVE: "defend" / "careful" / "stay back" / "dodge" / "tank"
+    if (/\b(defend|careful|stay back|be careful|dodge|tank|cautious|hold position|hold the line)\b/.test(lower)) {
+        return { behavior: 'DEFENSIVE', rawText: input };
+    }
+
+    // AGGRESSIVE: "all out" / "charge" / "go all in" / "attack" (without target)
+    if (/\b(aggressive|charge|all out|go all in|full attack|berser|rage)\b/.test(lower)) {
+        return { behavior: 'AGGRESSIVE', rawText: input };
+    }
+
+    // Default: treat as AGGRESSIVE if nothing matches
+    return { behavior: 'AGGRESSIVE', rawText: input };
 }
 
 export class CombatAI {
@@ -32,62 +78,164 @@ export class CombatAI {
     }
 
     /**
-     * Decides the best action for a combatant
+     * Decides the best action for a combatant.
+     * Companions read the player's tactical directive to modify behavior.
      */
     public static decideAction(actor: Combatant, state: CombatState): AIAction {
         if (!state.grid) {
-            // Fallback if no grid exists (should not happen in valid combat)
             return { type: 'ATTACK', targetId: '' };
         }
 
-        // 1. Setup Grid Manager for Spatial Reasoning
         const gridManager = new CombatGridManager(state.grid);
-
         const intScore = actor.stats['INT'] || 10;
-        const tier = this.getTier(intScore);
+        const isCompanion = actor.type === 'companion';
 
-        // 2. Identify Potential Targets (skip unconscious/dying players — they are not threats)
-        const targets = state.combatants.filter(c => {
+        // Get the player's directive (companions only)
+        const directive = isCompanion ? (state as any).partyDirective as TacticalDirective | undefined : undefined;
+
+        // Identify potential targets
+        const enemies = state.combatants.filter(c => {
             if (c.hp.current <= 0) return false;
             if (c.conditions?.some?.((cond: any) => (cond.id || cond) === 'Unconscious')) return false;
-            return actor.type === 'enemy' ? c.type !== 'enemy' : c.type === 'enemy';
+            return c.type === 'enemy';
         });
+
+        const allies = state.combatants.filter(c => {
+            if (c.hp.current <= 0) return false;
+            return c.type === 'player' || c.type === 'companion' || c.type === 'summon';
+        });
+
+        // For enemies: target non-enemies. For allies: target enemies.
+        const targets = actor.type === 'enemy'
+            ? state.combatants.filter(c => c.hp.current > 0 && c.type !== 'enemy' && !c.conditions?.some?.((cond: any) => (cond.id || cond) === 'Unconscious'))
+            : enemies;
 
         if (targets.length === 0) return { type: 'MOVE', targetId: '' };
 
-        // 3. Select Primary Target (Strategy Phase)
-        let primaryTarget: Combatant | null = null;
-
-        // Simple targeting logic based on tier
-        if (tier >= AITier.BEAST) {
-            // Tier 1+: Stick to closest or weak
-            primaryTarget = this.getNearestTarget(actor, targets, gridManager);
-        } else {
-            // Feral: Just closest
-            primaryTarget = this.getNearestTarget(actor, targets, gridManager);
+        // --- COMPANION DIRECTIVE-DRIVEN BEHAVIOR ---
+        if (isCompanion && directive) {
+            const result = this.applyDirective(actor, directive, targets, allies, enemies, state, gridManager);
+            if (result) return result;
         }
 
+        // --- DEFAULT BEHAVIOR (enemies and companions without directive) ---
+        let primaryTarget = this.getNearestTarget(actor, targets, gridManager);
         if (!primaryTarget) return { type: 'MOVE', targetId: '' };
 
-        // 4. Range Verification (Tactical Phase)
-        const distance = gridManager.getDistance(actor.position, primaryTarget.position);
+        return this.buildAttackOrMove(actor, primaryTarget, gridManager);
+    }
 
-        // Use tactical reach/range (converted to cells)
-        let reach = actor.tactical.isRanged ? 20 : Math.ceil((actor.tactical.reach || 5) / 5);
-        if (actor.tactical.range) {
+    /**
+     * Applies a player directive to modify companion behavior.
+     * Returns an AIAction if the directive overrides default behavior, null otherwise.
+     */
+    private static applyDirective(
+        actor: Combatant,
+        directive: TacticalDirective,
+        targets: Combatant[],
+        allies: Combatant[],
+        enemies: Combatant[],
+        state: CombatState,
+        grid: CombatGridManager
+    ): AIAction | null {
+        switch (directive.behavior) {
+            case 'FOCUS': {
+                // Target specific enemy by name
+                if (directive.targetName) {
+                    const named = targets.find(t =>
+                        t.name.toLowerCase().includes(directive.targetName!.toLowerCase())
+                    );
+                    if (named) return this.buildAttackOrMove(actor, named, grid);
+                }
+                // Fallback: attack weakest enemy
+                const weakest = [...targets].sort((a, b) => a.hp.current - b.hp.current)[0];
+                return weakest ? this.buildAttackOrMove(actor, weakest, grid) : null;
+            }
+
+            case 'AGGRESSIVE': {
+                // Attack weakest enemy (finish them off)
+                const weakest = [...targets].sort((a, b) => a.hp.current - b.hp.current)[0];
+                return weakest ? this.buildAttackOrMove(actor, weakest, grid) : null;
+            }
+
+            case 'DEFENSIVE': {
+                // Prioritize enemies threatening the player
+                const player = allies.find(a => a.isPlayer);
+                if (player) {
+                    // Find enemy closest to the player
+                    const threatToPlayer = this.getNearestTarget(player, enemies, grid);
+                    if (threatToPlayer) return this.buildAttackOrMove(actor, threatToPlayer, grid);
+                }
+                // If low HP, dodge instead of attacking
+                if (actor.hp.current / actor.hp.max < 0.3) {
+                    return { type: 'DODGE', targetId: actor.id };
+                }
+                return null; // Fall through to default
+            }
+
+            case 'SUPPORT': {
+                // Check if any ally needs healing (below 50% HP)
+                const woundedAlly = allies
+                    .filter(a => a.id !== actor.id && a.hp.current > 0)
+                    .sort((a, b) => (a.hp.current / a.hp.max) - (b.hp.current / b.hp.max))[0];
+
+                if (woundedAlly && woundedAlly.hp.current / woundedAlly.hp.max < 0.5) {
+                    // Check if actor has healing spells
+                    const healingSpell = (actor.preparedSpells || []).find((s: string) =>
+                        /cure|heal|restore|mend/i.test(s)
+                    );
+                    if (healingSpell && this.hasSpellSlots(actor)) {
+                        return { type: 'SPELL', targetId: woundedAlly.id, actionId: healingSpell };
+                    }
+                }
+                // No healing available: attack nearest enemy (still useful)
+                return null;
+            }
+
+            case 'PROTECT': {
+                // Position near the named ally and attack enemies threatening them
+                const protectTarget = directive.targetName
+                    ? allies.find(a => a.name.toLowerCase().includes(directive.targetName!.toLowerCase()))
+                    : allies.find(a => a.isPlayer);
+
+                if (protectTarget) {
+                    // Find enemy closest to the protected ally
+                    const threatToAlly = this.getNearestTarget(protectTarget, enemies, grid);
+                    if (threatToAlly) return this.buildAttackOrMove(actor, threatToAlly, grid);
+                }
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Builds an ATTACK action if target is in range, MOVE otherwise.
+     */
+    private static buildAttackOrMove(actor: Combatant, target: Combatant, grid: CombatGridManager): AIAction {
+        const distance = grid.getDistance(actor.position, target.position);
+        let reach = actor.tactical?.isRanged ? 20 : Math.ceil((actor.tactical?.reach || 5) / 5);
+        if (actor.tactical?.range) {
             reach = Math.ceil(actor.tactical.range.long / 5);
         }
 
         if (distance <= reach) {
-            // Target is in range -> ATTACK
-            return { type: 'ATTACK', targetId: primaryTarget.id };
+            return { type: 'ATTACK', targetId: target.id };
         } else {
-            // Target is out of range -> MOVE to closest valid position
-            // Find a path to the target
-            // NOTE: The GameLoop will handle the actual pathfinding and movement execution
-            // We just signal the intent to MOVE towards this target
-            return { type: 'MOVE', targetId: primaryTarget.id };
+            return { type: 'MOVE', targetId: target.id };
         }
+    }
+
+    /**
+     * Checks if a combatant has any spell slots remaining.
+     */
+    private static hasSpellSlots(actor: Combatant): boolean {
+        if (!actor.spellSlots) return false;
+        for (const lv of Object.keys(actor.spellSlots)) {
+            if ((actor.spellSlots as any)[lv]?.current > 0) return true;
+        }
+        return false;
     }
 
     private static getNearestTarget(actor: Combatant, targets: Combatant[], grid: CombatGridManager): Combatant {

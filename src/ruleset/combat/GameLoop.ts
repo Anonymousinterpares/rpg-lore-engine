@@ -255,7 +255,8 @@ export class GameLoop {
             const tradeCommands = ['trade', 'buy', 'sell', 'haggle', 'intimidate', 'deceive', 'buyback', 'closetrade', 'examine', 'identify', 'merchantidentify',
                 'levelup', 'level', 'invest', 'resetskills', 'asi', 'feat', 'multiclass', 'skillability', 'ability', 'chooseability', 'use',
                 'talk', 'talk_private', 'endtalk', 'group_talk', 'add_to_conversation',
-                'companion_wait', 'companion_follow', 'dismiss_companion', 'recruit_test'];
+                'companion_wait', 'companion_follow', 'dismiss_companion', 'recruit_test',
+                'directive', 'order', 'command_party'];
             if (tradeCommands.includes(intent.command || '')) {
                 this.state.lastNarrative = systemResponse;
                 await this.emitStateUpdate();
@@ -691,6 +692,21 @@ export class GameLoop {
                     return await this.combatOrchestrator.handleCombatAction(intent);
                 }
                 return "You can only target enemies in combat.";
+
+            case 'directive':
+            case 'order':
+            case 'command_party': {
+                if (this.state.mode !== 'COMBAT' || !this.state.combat) {
+                    return "You can only issue directives during combat.";
+                }
+                const { parseDirective } = await import('./CombatAI');
+                const directiveText = args.join(' ');
+                if (!directiveText) return "Issue a directive: e.g., /directive focus the orc";
+                const parsed = parseDirective(directiveText, this.state.combat.combatants);
+                (this.state.combat as any).partyDirective = parsed;
+                await this.emitStateUpdate();
+                return `Party directive: ${parsed.behavior}${parsed.targetName ? ` → ${parsed.targetName}` : ''}`;
+            }
 
             case 'look':
                 const hex = this.hexMapManager.getHex(this.state.location.hexId);

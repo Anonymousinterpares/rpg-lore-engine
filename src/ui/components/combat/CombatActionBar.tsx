@@ -273,6 +273,31 @@ export const CombatActionBar: React.FC = () => {
                 />
             </div>
 
+            {/* Party Directive Input — shown when companions are in combat */}
+            {state?.companions && state.companions.length > 0 && (
+                <div className={styles.directiveContainer}>
+                    <form onSubmit={(e) => {
+                        e.preventDefault();
+                        const input = (e.target as any).elements.directive?.value;
+                        if (input) {
+                            processCommand(`/directive ${input}`);
+                            (e.target as any).elements.directive.value = '';
+                        }
+                    }}>
+                        <input
+                            name="directive"
+                            className={styles.directiveInput}
+                            placeholder={
+                                (state.combat as any)?.partyDirective
+                                    ? `Directive: ${(state.combat as any).partyDirective.behavior}${(state.combat as any).partyDirective.targetName ? ' → ' + (state.combat as any).partyDirective.targetName : ''}`
+                                    : 'Issue order to party... (e.g., focus the orc, protect me, heal)'
+                            }
+                            disabled={!isPlayerTurn}
+                        />
+                    </form>
+                </div>
+            )}
+
             {showSpells && (
                 <SpellbookFlyout
                     spells={availableSpells}

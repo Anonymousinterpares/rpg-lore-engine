@@ -206,7 +206,13 @@ export const CombatStateSchema = z.object({
         visible: z.boolean().default(false)
     }).optional(),
     lastActionMessage: z.string().optional(),
-    turnActions: z.array(z.string()).default([])
+    turnActions: z.array(z.string()).default([]),
+    // Player's tactical directive for companion AI behavior
+    partyDirective: z.object({
+        behavior: z.enum(['AGGRESSIVE', 'DEFENSIVE', 'SUPPORT', 'FOCUS', 'PROTECT']),
+        targetName: z.string().optional(),   // For FOCUS: enemy name. For PROTECT: ally name.
+        rawText: z.string(),                 // Original player input
+    }).optional()
 });
 
 export type CombatState = z.infer<typeof CombatStateSchema>;

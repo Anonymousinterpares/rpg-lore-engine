@@ -223,7 +223,20 @@ CombatOrchestrator and CombatResolutionEngine consume the engine — no feature-
 
 ---
 
-## ❌ Documentation & Codex — NOT YET IMPLEMENTED
+## Codebase Documentation — ✅ CREATED
+
+- `docs/FEATURE_EFFECT_ARCHITECTURE.md` — Full architecture doc covering:
+  - File structure and data flow
+  - How to add new passive, activated, and data-driven features
+  - Command flow: UI → IntentRouter → GameLoop → CombatOrchestrator → FeatureEffectEngine
+  - Attack flow with all feature hooks
+  - Movement + OA flow
+  - Feature usage resource management
+  - Subclass and Fighting Style systems
+  - Complete feature summary tables (25 class features, 7 feats, 6 combat systems)
+  - Testing guide with all 9 test suites (~424 tests)
+
+## ❌ Codex Entries — NOT YET IMPLEMENTED
 
 ### Codex Entries (player-facing, in-game)
 Each feature needs a codex entry accessible from the game. Entries should be **locked/hidden until the player has the feature** (class, subclass, or feat that grants it).
@@ -270,11 +283,16 @@ Each feature needs a codex entry accessible from the game. Entries should be **l
 
 ---
 
-## Test Files
+## Test Files (~424 tests across 9 suites)
 - `src/ruleset/tests/test_combat_features.ts` — CombatResolutionEngine integration (14 tests)
 - `src/ruleset/tests/test_feature_effect_engine.ts` — FeatureEffectEngine unit tests (66 tests)
 - `src/ruleset/tests/test_duration_tick.ts` — Status effect duration tracking (9 tests)
 - `src/ruleset/tests/test_all_features.ts` — All 15 features comprehensive (79 tests)
+- `src/ruleset/tests/test_sculpt_reckless.ts` — Sculpt Spells + Reckless enemy advantage (21 tests)
+- `src/ruleset/tests/test_bardic_ki_channel_lucky.ts` — Bardic/Ki/Channel/Lucky (72 tests)
+- `src/ruleset/tests/test_opportunity_attacks.ts` — OA system + Sentinel + Polearm Master (29 tests)
+- `src/ruleset/tests/test_integration_abilities.ts` — Full pipeline integration (48 tests)
+- `src/ruleset/tests/test_visual_scenarios.ts` — All 10 visual test scenarios (87 tests)
 
 
 

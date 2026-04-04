@@ -6,7 +6,39 @@ import {
     calculateRecruitmentCost, ROLE_CLASS_MAP
 } from '../schemas/CompanionSchema';
 import { DataManager } from '../data/DataManager';
+import { EquipmentEngine } from './EquipmentEngine';
+import { buildSpellSlotsFromProgression } from './LevelingEngine';
+import { Dice } from './Dice';
 import { v4 as uuidv4 } from 'uuid';
+
+/**
+ * Role-based starter equipment sets.
+ * Each entry: { mainHand?, offHand?, armor?, items?[] }
+ * Uses item IDs from the game data catalog.
+ */
+// Item IDs use underscore format matching DataManager index: name.toLowerCase().replace(/ /g, '_')
+const STARTER_EQUIPMENT: Record<string, { mainHand?: string; offHand?: string; armor?: string; items?: string[] }> = {
+    'Guard':      { mainHand: 'longsword', offHand: 'shield', armor: 'chain_mail' },
+    'Mercenary':  { mainHand: 'longsword', armor: 'chain_shirt', items: ['handaxe'] },
+    'Fighter':    { mainHand: 'longsword', offHand: 'shield', armor: 'chain_mail' },
+    'Bandit':     { mainHand: 'shortsword', armor: 'leather_armor', items: ['shortbow', 'arrows_(20)'] },
+    'Scout':      { mainHand: 'shortsword', armor: 'leather_armor', items: ['shortbow', 'arrows_(20)'] },
+    'Hunter':     { mainHand: 'shortbow', armor: 'leather_armor', items: ['shortsword', 'arrows_(20)'] },
+    'Scholar':    { mainHand: 'quarterstaff', items: ['component_pouch'] },
+    'Druid':      { mainHand: 'quarterstaff', armor: 'leather_armor', items: ['herbalism_kit'] },
+    'Hermit':     { mainHand: 'mace', armor: 'leather_armor', items: ['shield'] },
+    'Monk':       { mainHand: 'quarterstaff' },
+    'Merchant':   { mainHand: 'dagger', items: ['crossbow,_light', 'bolts_(20)'] },
+    'Noble':      { mainHand: 'rapier', armor: 'leather_armor' },
+    'Farmer':     { mainHand: 'handaxe', items: ['sickle'] },
+    'Miner':      { mainHand: 'light_hammer', items: ['handaxe'] },
+    'Cultist':    { mainHand: 'dagger', items: ['component_pouch'] },
+    'Beggar':     { mainHand: 'club' },
+    'Traveler':   { mainHand: 'shortsword', armor: 'leather_armor' },
+    'Explorer':   { mainHand: 'shortsword', armor: 'leather_armor', items: ['shortbow', 'arrows_(20)'] },
+    'Sailor':     { mainHand: 'scimitar', armor: 'leather_armor' },
+    'Fisherman':  { mainHand: 'spear' },
+};
 
 export interface RecruitResult {
     success: boolean;
@@ -202,10 +234,10 @@ export class CompanionManager {
             hp: { current: hp, max: hp, temp: 0 },
             deathSaves: { successes: 0, failures: 0 },
             hitDice: { current: npcLevel, max: npcLevel, dieType: classData?.hitDie || '1d8' },
-            spellSlots: {},
-            cantripsKnown: [],
-            knownSpells: [],
-            preparedSpells: [],
+            spellSlots: classData ? buildSpellSlotsFromProgression(classData, npcLevel) : {},
+            cantripsKnown: this.pickCantrips(className, npcLevel),
+            knownSpells: this.pickSpells(className, npcLevel),
+            preparedSpells: this.pickSpells(className, npcLevel),
             spellbook: [],
             unseenSpells: [],
             ac: baseAc,
@@ -231,6 +263,10 @@ export class CompanionManager {
             },
             knownEntities: { monsters: [], items: [] }
         } as any;
+
+        // Assign starter equipment based on role, then recalculate AC using the same system as player
+        this.assignStarterEquipment(character, npc.role);
+        EquipmentEngine.recalculateAC(character);
 
         const meta: CompanionMeta = {
             sourceNpcId: npc.id,
@@ -282,15 +318,80 @@ export class CompanionManager {
      * Removes an NPC from worldNpcs and all hex.npcs references.
      */
     private static removeNpcFromWorld(state: GameState, npcId: string): void {
-        // Remove from worldNpcs array
         state.worldNpcs = state.worldNpcs.filter(n => n.id !== npcId);
-
-        // Remove from any hex's npcs list
         for (const hexId of Object.keys(state.worldMap.hexes)) {
             const hex = state.worldMap.hexes[hexId];
-            if (hex.npcs) {
-                hex.npcs = hex.npcs.filter(id => id !== npcId);
-            }
+            if (hex.npcs) hex.npcs = hex.npcs.filter(id => id !== npcId);
         }
+    }
+
+    /**
+     * Assigns starter equipment to a companion based on role.
+     * Uses the same inventory/equipment system as the player.
+     * Items get instanceIds and are equipped via equipmentSlots.
+     */
+    private static assignStarterEquipment(char: PlayerCharacter, role: string | undefined): void {
+        const loadout = STARTER_EQUIPMENT[role || ''] || STARTER_EQUIPMENT['Traveler'] || {};
+
+        const addItem = (itemKey: string, equipSlot?: string): void => {
+            const data = DataManager.getItem(itemKey);
+            const instanceId = uuidv4();
+            char.inventory.items.push({
+                id: data?.name || itemKey,
+                name: data?.name || itemKey,
+                type: data?.type || 'Weapon',
+                weight: data?.weight || 1,
+                instanceId,
+                quantity: 1,
+                equipped: !!equipSlot,
+            } as any);
+            if (equipSlot) {
+                (char.equipmentSlots as any)[equipSlot] = instanceId;
+            }
+        };
+
+        if (loadout.mainHand) addItem(loadout.mainHand, 'mainHand');
+        if (loadout.offHand)  addItem(loadout.offHand, 'offHand');
+        if (loadout.armor)    addItem(loadout.armor, 'armor');
+        if (loadout.items) {
+            for (const itemKey of loadout.items) addItem(itemKey);
+        }
+    }
+
+    /**
+     * Picks cantrips for a caster class companion.
+     */
+    private static pickCantrips(className: string, level: number): string[] {
+        const CASTER_CANTRIPS: Record<string, string[]> = {
+            'Wizard':  ['Fire Bolt', 'Mage Hand', 'Prestidigitation'],
+            'Cleric':  ['Sacred Flame', 'Guidance', 'Spare the Dying'],
+            'Druid':   ['Produce Flame', 'Shillelagh', 'Guidance'],
+            'Warlock': ['Eldritch Blast', 'Minor Illusion'],
+            'Bard':    ['Vicious Mockery', 'Minor Illusion'],
+            'Ranger':  [],
+        };
+        const cantrips = CASTER_CANTRIPS[className] || [];
+        const count = Math.min(cantrips.length, level >= 4 ? 3 : 2);
+        return cantrips.slice(0, count);
+    }
+
+    /**
+     * Picks known/prepared spells for a caster class companion.
+     */
+    private static pickSpells(className: string, level: number): string[] {
+        const CASTER_SPELLS: Record<string, { 1: string[]; 2: string[] }> = {
+            'Wizard':  { 1: ['Magic Missile', 'Shield', 'Mage Armor'], 2: ['Scorching Ray', 'Misty Step'] },
+            'Cleric':  { 1: ['Cure Wounds', 'Bless', 'Guiding Bolt'], 2: ['Spiritual Weapon', 'Hold Person'] },
+            'Druid':   { 1: ['Cure Wounds', 'Entangle', 'Thunderwave'], 2: ['Moonbeam', 'Barkskin'] },
+            'Warlock': { 1: ['Hex', 'Eldritch Blast'], 2: ['Hold Person', 'Misty Step'] },
+            'Bard':    { 1: ['Cure Wounds', 'Healing Word', 'Thunderwave'], 2: ['Hold Person', 'Shatter'] },
+            'Ranger':  { 1: ['Cure Wounds', "Hunter's Mark"], 2: ['Pass Without Trace'] },
+        };
+        const spells = CASTER_SPELLS[className];
+        if (!spells) return [];
+
+        const picked = [...spells[1]];
+        if (level >= 3 && spells[2]) picked.push(...spells[2]);
+        return picked;
     }
 }
