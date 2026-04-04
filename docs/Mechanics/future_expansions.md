@@ -1,4 +1,4 @@
-# NPC & Companion System — Future Expansions
+# RPG Lore Engine — Future Expansions & Improvement Backlog
 
 ## Remaining TODO Items
 
@@ -83,3 +83,89 @@ These features require a per-companion emotional state tracker (beyond current t
 - [ ] **Comfortable silence** — If all companions score < 2 importance, nobody responds. A brief system message like "*The group falls silent, each lost in their own thoughts.*" plays instead. More natural than forcing a response. Requires: silence threshold check after scoring.
 
 - [ ] **"Everyone responds" mode** — For big revelations or party-wide questions ("We need to decide: do we enter the dungeon?"), each companion gives a brief opinion sequentially (1 sentence each). Triggered by importance variance being low (everyone cares equally). Requires: batch LLM calls or sequential quick responses.
+
+---
+
+## Voice & Language Systems
+
+### Text-to-Speech (TTS)
+
+- [ ] **ElevenLabs TTS integration** — Each companion gets a distinct voice mapped from personality traits + sex. `TTSEngine.ts` wraps ElevenLabs API with voice assignment, audio caching, and streaming. Plays after dialogue text appears in chat. Settings: TTS on/off, volume, speed. Cost: ~100-300 chars per response, ElevenLabs free tier covers ~10k chars/month.
+
+- [ ] **Voice-personality mapping** — `VOICE_PROFILE_MAP` maps trait combinations → ElevenLabs voice ID. Male + Guard + Stoic → deep gruff voice. Female + Scholar + Inquisitive → articulate measured voice. Player can override per companion in settings.
+
+- [ ] **Narrator TTS** — Optional TTS for narrator output (exploration narration, combat summaries). Separate voice from companion voices. Toggle independent from companion TTS.
+
+### Speech-to-Text (STT)
+
+- [ ] **Browser-native STT (free)** — Web Speech API (`SpeechRecognition`) for zero-cost voice input. Mic button next to text input field in talk mode. "Listening..." intermediate state. Auto-submits transcription as dialogue input.
+
+- [ ] **Whisper API STT (paid, higher quality)** — OpenAI Whisper at $0.006/min as premium alternative. Better accuracy, supports 50+ languages. Toggle between browser-native and Whisper in settings.
+
+### Multi-Language Support
+
+- [ ] **LLM dialogue language** — System prompt injection: "All dialogue and narration must be in {language}." Works with modern LLMs out of the box. Language dropdown in game settings. Saved in `CampaignSettings` / localStorage for auto-load on startup.
+
+- [ ] **UI localization (i18n)** — Translation JSON files per language for all UI strings (buttons, labels, tooltips, menus). `i18n.ts` translation loader with English fallback. Hundreds of strings to translate — labor-intensive but not technically complex. Font considerations for CJK/Arabic.
+
+---
+
+## World & Exploration
+
+- [ ] **Ocean crossing / boat system** — Ocean biome currently blocks all movement. Need boat/ship mechanic to enable oceanic exploration. `MovementEngine.ts` line 123 has TODO placeholder.
+
+- [ ] **Survival passive discovery (Phase 3)** — Tier-based Survival skill: T3+ auto-discovers hidden paths. Higher tiers may need additional implementation. `GameLoop.ts` line 588.
+
+- [ ] **Infrastructure generation expansion (Phase 3)** — Roads, structures, and infrastructure on hex generation. Partially implemented in `ExplorationManager.ts`. May need expansion for trade routes, bridges, ruins.
+
+- [ ] **Cartography skill system** — Map-related skill for discovering/revealing hexes, marking POIs, creating player maps. Designed but not implemented.
+
+---
+
+## Combat & Magic Systems
+
+- [ ] **Concentration DC completion** — SpellcastingEngine has concentration tracking but DC calculation is incomplete (missing CON modifier application).
+
+- [ ] **Area of Effect spell handling** — SpellcastingEngine does basic single-target damage only. Missing AoE spell resolution (Fireball, Thunderwave, etc.).
+
+- [ ] **Unarmed combat bonuses** — `CombatOrchestrator.ts` has TODO for unarmed-specific bonuses beyond STR + proficiency. Monk unarmed strikes especially.
+
+- [ ] **spawn_npc engine call** — Defined in ICPSchemas but stubbed in EngineDispatcher. Narrator can emit it but nothing happens. Need: NPC creation at current location from engine call args.
+
+- [ ] **skill_check engine call improvements** — Basic dice roll exists but result isn't communicated back to narrator. Need: result passed to next narrator context so LLM knows if check succeeded.
+
+---
+
+## Data & Content Quality
+
+- [ ] **Magical item properties** — Schema supports magical properties but limited content. Need more magical weapons/armor with varied effects.
+
+- [ ] **Crafting system expansion** — Currently 6 recipes with basic framework. Need more recipes, material gathering, crafting UI.
+
+- [ ] **Weather intensity variation** — `WeatherSchema` has intensity field (0-1.0) but no game logic uses it for variable effects (rain intensity, storm severity, visibility reduction).
+
+- [ ] **Forged item persistence** — Rare+ forged items persist to disk but integration into future session loot generation may be incomplete.
+
+- [ ] **Completed quests storage** — Save routine lacks explicit completed quests array. Currently relies on activeQuests with COMPLETED status. Needs migration to separate completed quests array for better query performance.
+
+---
+
+## Visual & UX Enhancements
+
+- [ ] **Ambient animation effects** — Particle effects, floating damage numbers enhancement, environmental animations (rain, fog, fireflies). Currently minimal.
+
+- [ ] **Atmospheric visual design** — Background art, ambient textures, decorative elements. Currently functional but plain.
+
+- [ ] **Multiplayer support** — Schemas and basic WebRTC scaffolding exist only. Full implementation requires: session management, turn synchronization, shared state, player-to-player communication.
+
+---
+
+## Architecture & Code Quality
+
+- [ ] **Consolidate EquipmentEngine / InventoryManager equip paths** — Two independent equip code paths with slightly different behavior. Should be unified into single authoritative path.
+
+- [ ] **GameLoop size reduction** — Currently ~2000 lines. More command handlers could be extracted into dedicated managers (bartering, companion management already partially extracted).
+
+- [ ] **Story Scribe overflow handling** — HistoryManager buffer trim is functional but Scribe overflow summarization for very long sessions may need enhancement.
+
+- [ ] **Profile extraction enhancement** — ProfileExtractor works but could be extended with: grudge/gratitude tracking, emotional state persistence, secret knowledge logging from background conversations.
