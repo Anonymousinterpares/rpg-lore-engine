@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import styles from './MainViewport.module.css';
 import NarrativeBox from '../narrative/NarrativeBox';
+import TalkModeIndicator from '../narrative/TalkModeIndicator';
 import PlayerInputField from '../actions/PlayerInputField';
 import InitiativeTracker from '../combat/InitiativeTracker';
 import CombatLog from '../combat/CombatLog';
@@ -396,6 +397,7 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex, onChara
 
             <div className={styles.centerArea}>
                 <div className={styles.narrativeContainer}>
+                    <TalkModeIndicator />
                     <NarrativeBox
                         title={locationTitle}
                         text={narrativeText}
@@ -435,7 +437,22 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex, onChara
                     <PlayerInputField
                         suggestedActions={suggestedActions}
                         onSubmit={handlePlayerInput}
-                        placeholder={state?.activeDialogueNpcId ? `Say something to ${state.worldNpcs.find(n => n.id === state.activeDialogueNpcId)?.name}...` : "What do you do?"}
+                        placeholder={(() => {
+                            const conv = state?.conversationState?.activeConversation;
+                            if (conv) {
+                                const companion = state?.companions?.find((c: any) => c.meta?.sourceNpcId === conv.primaryNpcId);
+                                const npc = state?.worldNpcs?.find(n => n.id === conv.primaryNpcId);
+                                const name = companion?.character?.name || npc?.name || 'someone';
+                                if (conv.mode === 'PRIVATE') return `Say something privately to ${name}...`;
+                                if (conv.mode === 'GROUP') return `Address the party...`;
+                                return `Say something to ${name} (party can hear)...`;
+                            }
+                            if (state?.activeDialogueNpcId) {
+                                const npc = state.worldNpcs.find(n => n.id === state.activeDialogueNpcId);
+                                return `Say something to ${npc?.name || 'someone'}...`;
+                            }
+                            return "What do you do?";
+                        })()}
                         disabled={inputDisabled}
                         processingMessage={processingMessage}
                         onSkipToEnd={skipFn}

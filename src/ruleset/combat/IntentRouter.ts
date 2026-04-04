@@ -81,6 +81,10 @@ export class IntentRouter {
             if (lower === 'closetrade' || lower === 'close trade' || lower === 'close') {
                 return { type: 'COMMAND', command: 'closetrade', args: [], originalInput: input };
             }
+
+            if (lower === 'group talk' || lower === 'party talk' || lower === 'talk to everyone') {
+                return { type: 'COMMAND', command: 'group_talk', args: [], originalInput: input };
+            }
         }
 
         // 3. Default to Narrative

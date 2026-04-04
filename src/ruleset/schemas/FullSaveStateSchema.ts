@@ -8,6 +8,7 @@ import { SubLocationSchema, WorldNPCSchema } from './WorldEnrichmentSchema';
 import { QuestSchema } from './QuestSchema';
 import { FactionSchema } from './FactionSchema';
 import { CampaignSettingsSchema } from './CampaignSettingsSchema';
+import { ConversationStateSchema } from './ConversationSchema';
 
 export const ConversationTurnSchema = z.object({
     role: z.enum(['player', 'narrator', 'director', 'scribe', 'system']),
@@ -91,6 +92,9 @@ export const FullSaveStateSchema = z.object({
     // --- Progress ---
     activeQuests: z.array(QuestSchema).default([]),
     factions: z.array(FactionSchema).default([]),
+
+    // --- Conversation Orchestration ---
+    conversationState: ConversationStateSchema.optional(),
 
     // --- Narrative & LLM ---
     storySummary: z.string().default(''),

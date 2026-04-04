@@ -13,6 +13,7 @@ import { LoreService } from '../agents/LoreService';
 import { NPCService } from '../agents/NPCService';
 import { CompanionManager } from './CompanionManager';
 import { NPCFactory } from '../factories/NPCFactory';
+import { ConversationManager } from './managers/ConversationManager';
 import { MovementEngine } from './MovementEngine';
 import { GameStateManager } from './GameStateManager';
 import { StoryScribe } from './StoryScribe';
@@ -76,6 +77,7 @@ export class GameLoop {
     private npcMovement: NPCMovementEngine;
     private questEngine: QuestEngine;
     private questGenerator: QuestGenerator;
+    public conversationManager: ConversationManager;
 
     private onStateUpdate?: (state: GameState) => Promise<void>;
     private listeners: ((state: GameState) => void)[] = [];
@@ -165,6 +167,13 @@ export class GameLoop {
             () => this.emitStateUpdate()
         );
 
+        this.conversationManager = new ConversationManager(
+            this.state,
+            this.contextManager,
+            this.hexMapManager,
+            () => this.emitStateUpdate()
+        );
+
         // Safety Check: Register any NPCs in the current hex on load
         // This catches cases where the player loads into a hex with NPCs but didn't "move" there
         this.scanCurrentHexForNpcs();
@@ -209,98 +218,30 @@ export class GameLoop {
         // Clear one-shot UI signals from previous turn
         this.state.lastSkillCheck = undefined;
 
-        // DIALOGUE MODE INTERCEPT
-        if (this.state.activeDialogueNpcId && this.state.mode === 'EXPLORATION') {
+        // DIALOGUE MODE INTERCEPT — delegated to ConversationManager
+        if (this.conversationManager.isInTalkMode() && this.state.mode === 'EXPLORATION') {
             const dialogueIntent = IntentRouter.parse(input, false);
 
             // Allow /endtalk to exit, and other commands to trigger/exit
             if (dialogueIntent.type === 'COMMAND') {
                 if (dialogueIntent.command === 'endtalk') {
-                    this.state.activeDialogueNpcId = null;
-                    await this.emitStateUpdate();
-                    return "You end the conversation.";
+                    return await this.conversationManager.endTalk();
                 }
                 // Any other command exits dialogue mode first
-                this.state.activeDialogueNpcId = null;
-                await this.emitStateUpdate();
+                await this.conversationManager.endTalk();
                 return await this.handleCommand(dialogueIntent);
             }
 
-            // Route ALL free-text input to NPCService — check both world NPCs and companions
-            let npc = this.state.worldNpcs.find(n => n.id === this.state.activeDialogueNpcId);
+            // Route free-text to ConversationManager
+            const result = await this.conversationManager.processDialogueInput(input);
 
-            // If not in worldNpcs, check companions (they're removed from world on recruitment)
-            if (!npc) {
-                const companionDialogue = this.state.companions.find((c: any) =>
-                    c.meta.sourceNpcId === this.state.activeDialogueNpcId
-                );
-                if (companionDialogue) {
-                    npc = {
-                        id: companionDialogue.meta.sourceNpcId,
-                        name: companionDialogue.character.name,
-                        traits: companionDialogue.meta.originalTraits || [],
-                        relationship: { standing: 30, interactionLog: [], lastInteraction: undefined },
-                        conversationHistory: [],
-                        isMerchant: false,
-                        dialogue_triggers: [],
-                        inventory: [],
-                        availableQuests: [],
-                        stats: companionDialogue.character.stats,
-                        role: companionDialogue.meta.originalRole,
-                        factionId: companionDialogue.meta.originalFactionId,
-                    } as any;
-                }
+            // Handle passthrough signal (user typed a / command inside dialogue)
+            if (result === '__PASSTHROUGH__') {
+                const reparse = IntentRouter.parse(input, false);
+                return await this.handleCommand(reparse);
             }
 
-            if (!npc) {
-                this.state.activeDialogueNpcId = null;
-                await this.emitStateUpdate();
-                return "The person you were talking to is no longer here.";
-            }
-
-            try {
-                const response = await NPCService.generateDialogue(this.state, npc, input);
-                if (response) {
-                    await this.updateNpcProfiles(response, [npc]);
-
-                    // C4: Relationship delta — evaluate if narrator didn't handle it
-                    // (lightweight fallback LLM call for dialogue relationship tracking)
-                    try {
-                        const deltaResult = await NPCService.evaluateRelationshipDelta(npc, input, response);
-                        if (deltaResult && deltaResult.delta !== 0) {
-                            npc.relationship.standing = Math.max(-100, Math.min(100, npc.relationship.standing + deltaResult.delta));
-                            npc.relationship.interactionLog = npc.relationship.interactionLog || [];
-                            npc.relationship.interactionLog.push({
-                                event: deltaResult.reason,
-                                delta: deltaResult.delta,
-                                timestamp: new Date().toISOString()
-                            });
-                            npc.relationship.lastInteraction = new Date().toISOString();
-                            console.log(`[GameLoop] Dialogue relationship delta: ${npc.name} ${deltaResult.delta > 0 ? '+' : ''}${deltaResult.delta} (${deltaResult.reason})`);
-                        }
-                    } catch (relErr) {
-                        console.warn('[GameLoop] Relationship delta eval failed (non-critical):', relErr);
-                    }
-                }
-
-                // History Update
-                const turn = this.state.worldTime.totalTurns;
-                this.state.conversationHistory.push({ role: 'player', content: input, turnNumber: turn });
-                this.state.conversationHistory.push({ role: 'narrator', content: `**${npc.name}:** ${response || '...'}`, turnNumber: turn });
-
-                // CRITICAL: Set lastNarrative so the UI displays the response
-                const formattedResponse = response ? `**${npc.name}:** ${response}` : `${npc.name} stays silent.`;
-                this.state.lastNarrative = formattedResponse;
-
-                await this.emitStateUpdate();
-                return formattedResponse;
-            } catch (e: any) {
-                console.error('[GameLoop] Dialogue failed:', e);
-                const errorMsg = `${npc.name} seems unable to respond. (Dialogue generation failed: ${e.message})`;
-                this.state.lastNarrative = errorMsg;
-                await this.emitStateUpdate();
-                return errorMsg;
-            }
+            return result;
         }
 
         const intent = IntentRouter.parse(input, this.state.mode === 'COMBAT');
@@ -313,7 +254,8 @@ export class GameLoop {
             // Trade and examination commands are fully deterministic — bypass the LLM narrator pipeline entirely.
             const tradeCommands = ['trade', 'buy', 'sell', 'haggle', 'intimidate', 'deceive', 'buyback', 'closetrade', 'examine', 'identify', 'merchantidentify',
                 'levelup', 'level', 'invest', 'resetskills', 'asi', 'feat', 'multiclass', 'skillability', 'ability', 'chooseability', 'use',
-                'talk', 'endtalk', 'companion_wait', 'companion_follow', 'dismiss_companion', 'recruit_test'];
+                'talk', 'talk_private', 'endtalk', 'group_talk', 'add_to_conversation',
+                'companion_wait', 'companion_follow', 'dismiss_companion', 'recruit_test'];
             if (tradeCommands.includes(intent.command || '')) {
                 this.state.lastNarrative = systemResponse;
                 await this.emitStateUpdate();
@@ -360,15 +302,8 @@ export class GameLoop {
 
                 let narratorOutput = narratorResponse.narrative_output;
 
-                // Companion Chatter
-                const companionMsg = await NPCService.generateChatter(this.state, {
-                    location: { name: currentHex?.name || 'Unknown' },
-                    mode: this.state.mode,
-                    player: { hpStatus: `${this.state.character.hp.current}/${this.state.character.hp.max}` }
-                });
-                if (companionMsg) {
-                    narratorOutput += `\n\n${companionMsg}`;
-                }
+                // Companion chatter + background conversations (delegated to ConversationManager)
+                await this.conversationManager.tickBackgroundChatter(this.state.worldTime.totalTurns);
 
                 // Sync Narrative State (Only on SUCCESS)
                 this.state.lastNarrative = narratorOutput;
@@ -1128,85 +1063,16 @@ export class GameLoop {
                 return `Paid ${finalCost}gp. ${msg}`;
             }
 
-            case 'talk': {
-                const npcIdOrName = args.join(' ');
-
-                // Check companions first — they travel with the player
-                const companionMatch = this.state.companions.find((c: any) =>
-                    c.meta.sourceNpcId === npcIdOrName ||
-                    c.character.name.toLowerCase() === npcIdOrName.toLowerCase() ||
-                    c.character.name.toLowerCase().includes(npcIdOrName.toLowerCase())
-                );
-
-                if (companionMatch) {
-                    // Build a temporary WorldNPC-like object from companion data for dialogue
-                    const compNpc = {
-                        id: companionMatch.meta.sourceNpcId,
-                        name: companionMatch.character.name,
-                        traits: companionMatch.meta.originalTraits || [],
-                        relationship: { standing: 30, interactionLog: [], lastInteraction: undefined },
-                        conversationHistory: [],
-                        isMerchant: false,
-                        dialogue_triggers: [],
-                        inventory: [],
-                        availableQuests: [],
-                        stats: companionMatch.character.stats,
-                        role: companionMatch.meta.originalRole,
-                        factionId: companionMatch.meta.originalFactionId,
-                    } as any;
-
-                    this.state.activeDialogueNpcId = compNpc.id;
-                    await this.emitStateUpdate();
-
-                    try {
-                        const greeting = await NPCService.generateDialogue(this.state, compNpc, "[GREETING / START CONVERSATION — this is your traveling companion, the player wants to chat]");
-                        this.state.lastNarrative = greeting ? `**${compNpc.name}:** ${greeting}` : `${compNpc.name} looks at you expectantly.`;
-                        const turnStart = this.state.worldTime.totalTurns;
-                        this.state.conversationHistory.push({ role: 'narrator', content: this.state.lastNarrative, turnNumber: turnStart });
-                        await this.emitStateUpdate();
-                        return this.state.lastNarrative;
-                    } catch (e) {
-                        return `${compNpc.name} seems distracted.`;
-                    }
-                }
-
-                // Then check world NPCs
-                const npcToTalk = this.state.worldNpcs.find(n =>
-                    n.id === npcIdOrName || n.name.toLowerCase() === npcIdOrName.toLowerCase()
-                );
-
-                if (!npcToTalk) return `You don't see anyone named "${npcIdOrName}" here.`;
-
-                // Check if NPC is in current hex
-                const currentHexForTalk = this.hexMapManager.getHex(this.state.location.hexId);
-                if (!currentHexForTalk?.npcs?.includes(npcToTalk.id)) {
-                    return `${npcToTalk.name} is not in this location.`;
-                }
-
-                this.state.activeDialogueNpcId = npcToTalk.id;
-                await this.emitStateUpdate();
-
-                // Generate initial greeting
-                try {
-                    const greeting = await NPCService.generateDialogue(this.state, npcToTalk, "[GREETING / START CONVERSATION]");
-                    if (greeting) {
-                        await this.updateNpcProfiles(greeting, [npcToTalk]);
-                    }
-                    await this.emitStateUpdate();
-
-                    // History Update
-                    const turnStart = this.state.worldTime.totalTurns;
-                    this.state.conversationHistory.push({ role: 'narrator', content: `**${npcToTalk.name}:** ${greeting || '...'}`, turnNumber: turnStart });
-
-                    return greeting ? `**${npcToTalk.name}:** ${greeting}` : `${npcToTalk.name} acknowledges you.`;
-                } catch (e) {
-                    return `You approach ${npcToTalk.name}, but they are occupied.`;
-                }
-            }
+            case 'talk':
+                return await this.conversationManager.startTalk(args.join(' '), 'NORMAL');
+            case 'talk_private':
+                return await this.conversationManager.startTalk(args.join(' '), 'PRIVATE');
             case 'endtalk':
-                this.state.activeDialogueNpcId = null;
-                await this.emitStateUpdate();
-                return "You end the conversation.";
+                return await this.conversationManager.endTalk();
+            case 'group_talk':
+                return await this.conversationManager.startGroupTalk();
+            case 'add_to_conversation':
+                return await this.conversationManager.addToConversation(args.join(' '));
 
             // ===== COMPANION MANAGEMENT =====
             case 'companion_wait': {

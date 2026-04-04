@@ -6,7 +6,12 @@ export type GameEventType =
     | 'ITEM_LOST'
     | 'HEX_DISCOVERED'
     | 'NPC_INTERACTION'
-    | 'POI_INVESTIGATED';
+    | 'POI_INVESTIGATED'
+    | 'CONVERSATION_START'
+    | 'CONVERSATION_END'
+    | 'CONVERSATION_PARTICIPANT_ADDED'
+    | 'SPEECH_BUBBLE'
+    | 'BACKGROUND_CHATTER';
 
 export interface GameEventPayload {
     COMBAT_KILL: { targetId: string, count: number };
@@ -15,6 +20,11 @@ export interface GameEventPayload {
     HEX_DISCOVERED: { coordinates: [number, number], hexId: string };
     NPC_INTERACTION: { npcId: string, nodeTopic?: string };
     POI_INVESTIGATED: { poiId: string, questTriggerId?: string };
+    CONVERSATION_START: { npcId: string, mode: string, participants: string[] };
+    CONVERSATION_END: { npcId: string, summary: string, durationTurns: number };
+    CONVERSATION_PARTICIPANT_ADDED: { npcId: string, conversationPrimaryId: string };
+    SPEECH_BUBBLE: { npcId: string, text: string, isInterParty: boolean };
+    BACKGROUND_CHATTER: { participants: string[], topic: string };
 }
 
 export type EventCallback<T extends GameEventType> = (payload: GameEventPayload[T], state: GameState) => void | Promise<void>;

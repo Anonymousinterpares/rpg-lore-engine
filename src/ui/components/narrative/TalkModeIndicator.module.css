@@ -1,0 +1,68 @@
+.indicator {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    background: rgba(100, 180, 100, 0.12);
+    border: 1px solid rgba(100, 180, 100, 0.3);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--color-parchment-text, #3a2a1a);
+}
+
+.private {
+    background: rgba(180, 140, 60, 0.12);
+    border-color: rgba(180, 140, 60, 0.3);
+}
+
+.left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.npcName {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.modeBadge {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.08);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.participantCount {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 12px;
+    color: #6a5a4a;
+}
+
+.endBtn {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-family: 'Inter', sans-serif;
+    background: rgba(201, 64, 64, 0.1);
+    border: 1px solid rgba(201, 64, 64, 0.3);
+    border-radius: 4px;
+    color: #8a3030;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.endBtn:hover {
+    background: rgba(201, 64, 64, 0.2);
+    border-color: rgba(201, 64, 64, 0.5);
+}

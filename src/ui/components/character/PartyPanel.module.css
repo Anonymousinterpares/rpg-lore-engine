@@ -24,6 +24,20 @@
     flex: 1;
 }
 
+.groupTalkBtn {
+    background: none;
+    border: 1px solid rgba(139, 119, 75, 0.3);
+    border-radius: 4px;
+    padding: 2px 4px;
+    cursor: pointer;
+    color: var(--color-parchment-text, #3a2a1a);
+    transition: background 0.15s;
+}
+
+.groupTalkBtn:hover {
+    background: rgba(139, 119, 75, 0.15);
+}
+
 .companionList {
     display: flex;
     flex-direction: column;
@@ -32,6 +46,7 @@
 }
 
 .companionCard {
+    position: relative;
     background: rgba(255, 248, 230, 0.08);
     border: 1px solid rgba(139, 119, 75, 0.2);
     border-radius: 6px;
@@ -42,6 +57,12 @@
 .companionCard:hover {
     background: rgba(255, 248, 230, 0.12);
     border-color: rgba(139, 119, 75, 0.4);
+}
+
+.activeTalkCard {
+    border-color: rgba(100, 180, 100, 0.6) !important;
+    background: rgba(100, 180, 100, 0.08) !important;
+    box-shadow: 0 0 6px rgba(100, 180, 100, 0.2);
 }
 
 .companionHeader {
@@ -55,6 +76,17 @@
     font-size: 14px;
     font-weight: 700;
     color: var(--color-parchment-text, #3a2a1a);
+}
+
+.participantBadge {
+    font-size: 9px;
+    background: rgba(100, 180, 100, 0.2);
+    color: #4a8a4a;
+    padding: 1px 5px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .companionMeta {
@@ -108,10 +140,14 @@
     display: flex;
     gap: 4px;
     margin-top: 6px;
+    align-items: center;
+}
+
+.talkBtnWrapper {
+    position: relative;
 }
 
 .actionBtn {
-    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -132,8 +168,84 @@
     border-color: rgba(139, 119, 75, 0.5);
 }
 
+.talkBtnActive {
+    background: rgba(100, 180, 100, 0.25) !important;
+    border-color: rgba(100, 180, 100, 0.6) !important;
+    color: #2a6a2a;
+}
+
+.talkBtnActive:hover {
+    background: rgba(200, 80, 80, 0.2) !important;
+    border-color: rgba(200, 80, 80, 0.5) !important;
+    color: #8a2a2a;
+}
+
+.talkDropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 20;
+    background: #f4e4bc;
+    border: 1px solid rgba(139, 119, 75, 0.4);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    min-width: 130px;
+    margin-top: 2px;
+}
+
+.dropdownItem {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-family: 'Inter', sans-serif;
+    background: none;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    color: var(--color-parchment-text, #3a2a1a);
+    transition: background 0.1s;
+}
+
+.dropdownItem:hover {
+    background: rgba(139, 119, 75, 0.15);
+}
+
+.dropdownItem + .dropdownItem {
+    border-top: 1px solid rgba(139, 119, 75, 0.15);
+}
+
 .dismissBtn:hover {
     background: rgba(201, 64, 64, 0.15);
     border-color: rgba(201, 64, 64, 0.4);
     color: #c94040;
+}
+
+/* Speech Bubble */
+.speechBubble {
+    position: absolute;
+    top: -28px;
+    right: 8px;
+    background: #f4e4bc;
+    border: 1px solid rgba(139, 119, 75, 0.4);
+    border-radius: 8px 8px 8px 0;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    color: var(--color-parchment-text, #3a2a1a);
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    animation: fadeInBubble 0.3s ease;
+    z-index: 5;
+}
+
+@keyframes fadeInBubble {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
 }
