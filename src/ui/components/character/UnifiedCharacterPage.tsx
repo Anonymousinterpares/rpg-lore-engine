@@ -157,15 +157,13 @@ const UnifiedCharacterPage: React.FC = () => {
                         Abilities
                         {totalASIPoints > 0 && <span className={styles.pointsLabel}>{remainingASIPoints} pts</span>}
                     </div>
-                    {usedASIPoints > 0 && (
-                        <button className={styles.confirmBtn} onClick={() => {
+                    <button className={styles.confirmBtn} style={{visibility: usedASIPoints > 0 ? 'visible' : 'hidden', pointerEvents: usedASIPoints > 0 ? 'auto' : 'none'}} onClick={() => {
                             const entries = Object.entries(pendingASI).filter(([,v]) => v > 0);
                             if (entries.length === 1 && entries[0][1] === 2) LevelingEngine.applyASISingle(pc, entries[0][0]);
                             else if (entries.length === 2) LevelingEngine.applyASISplit(pc, entries[0][0], entries[1][0]);
                             else if (entries.length === 1) LevelingEngine.applyASISingle(pc, entries[0][0]);
                             setPendingASI({}); updateState();
                         }}>Confirm ASI</button>
-                    )}
                     {['STR','DEX','CON','INT','WIS','CHA'].map(ab => {
                         const val = (stats[ab] || 10) + (pendingASI[ab] || 0);
                         const statBuff = getStatBonus(activeEffects, ab);
@@ -198,11 +196,13 @@ const UnifiedCharacterPage: React.FC = () => {
                     })}
 
                     {/* Feat option */}
-                    {totalASIPoints > 0 && usedASIPoints === 0 && (
-                        <button className={styles.featChoiceBtn} onClick={() => setShowFeatPicker(true)}>
-                            <Award size={12} /> Or choose a Feat
-                        </button>
-                    )}
+                    <button
+                        className={styles.featChoiceBtn}
+                        style={{visibility: totalASIPoints > 0 && usedASIPoints === 0 ? 'visible' : 'hidden', pointerEvents: totalASIPoints > 0 && usedASIPoints === 0 ? 'auto' : 'none'}}
+                        onClick={() => setShowFeatPicker(true)}
+                    >
+                        <Award size={12} /> Or choose a Feat
+                    </button>
 
                     <div className={styles.sectionLabel}>
                         Saving Throws
@@ -295,14 +295,12 @@ const UnifiedCharacterPage: React.FC = () => {
                         Skills
                         {sp.available > 0 && <span className={styles.pointsLabel}>{effectiveSP} SP</span>}
                     </div>
-                    {totalPendingSPCost > 0 && (
-                        <button className={styles.confirmBtn} onClick={() => {
+                    <button className={styles.confirmBtn} style={{visibility: totalPendingSPCost > 0 ? 'visible' : 'hidden', pointerEvents: totalPendingSPCost > 0 ? 'auto' : 'none'}} onClick={() => {
                             for (const [sn, adv] of Object.entries(pendingSP)) {
                                 for (let i = 0; i < adv; i++) SkillEngine.invest(pc, sn);
                             }
                             setPendingSP({}); updateState();
                         }}>Confirm SP ({totalPendingSPCost})</button>
-                    )}
                     <div className={styles.skillsList}>
                         {SKILL_GROUPS.map(g => (
                             <div key={g.ability}>
