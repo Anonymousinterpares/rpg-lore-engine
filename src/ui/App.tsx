@@ -421,6 +421,7 @@ const App: React.FC = () => {
                             level: s.characterLevel,
                             location: s.locationSummary,
                             lastSaved: new Date(s.lastSaved).toLocaleString(),
+                            lastSavedRaw: s.lastSaved,
                             playTime: `${Math.floor(s.playTimeSeconds / 3600)}h ${Math.floor((s.playTimeSeconds % 3600) / 60)}m`,
                             narrativeSummary: s.narrativeSummary,
                             thumbnail: s.thumbnail
@@ -443,6 +444,7 @@ const App: React.FC = () => {
                             level: s.characterLevel,
                             location: s.locationSummary,
                             lastSaved: new Date(s.lastSaved).toLocaleString(),
+                            lastSavedRaw: s.lastSaved,
                             playTime: `${Math.floor(s.playTimeSeconds / 3600)}h ${Math.floor((s.playTimeSeconds % 3600) / 60)}m`,
                             narrativeSummary: s.narrativeSummary,
                             thumbnail: s.thumbnail

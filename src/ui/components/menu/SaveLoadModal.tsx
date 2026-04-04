@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './SaveLoadModal.module.css';
 import parchmentStyles from '../../styles/parchment.module.css';
-import { Save, FolderOpen, Calendar, Clock, X, Trash2, MapPin, Plus } from 'lucide-react';
+import { Save, FolderOpen, Calendar, Clock, X, Trash2, MapPin, Plus, ArrowUp, ArrowDown, Search } from 'lucide-react';
 
 interface SaveSlot {
     id: string;
@@ -10,6 +10,7 @@ interface SaveSlot {
     level: number;
     location: string;
     lastSaved: string;
+    lastSavedRaw: string;
     playTime: string;
     narrativeSummary?: string;
     thumbnail?: string;
@@ -34,6 +35,15 @@ const SaveLoadModal: React.FC<SaveLoadModalProps> = ({
 }) => {
     const [newSaveName, setNewSaveName] = useState('');
     const [confirmOverwrite, setConfirmOverwrite] = useState<{ id: string, name: string } | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
+
+    const displayedSlots = [...slots]
+        .filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase()))
+        .sort((a, b) => {
+            const diff = new Date(b.lastSavedRaw).getTime() - new Date(a.lastSavedRaw).getTime();
+            return sortOrder === 'desc' ? diff : -diff;
+        });
 
     const handleNewSaveClick = () => {
         const existingSlot = slots.find(s => s.name.toLowerCase() === newSaveName.trim().toLowerCase());
@@ -121,6 +131,27 @@ const SaveLoadModal: React.FC<SaveLoadModalProps> = ({
                     </div>
                 )}
 
+                <div className={styles.toolbar}>
+                    <div className={styles.searchWrapper}>
+                        <Search size={14} className={styles.searchIcon} />
+                        <input
+                            type="text"
+                            className={styles.searchInput}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search chronicles..."
+                        />
+                    </div>
+                    <button
+                        className={styles.sortButton}
+                        onClick={() => setSortOrder(o => o === 'desc' ? 'asc' : 'desc')}
+                        title={sortOrder === 'desc' ? 'Newest first — click for oldest first' : 'Oldest first — click for newest first'}
+                    >
+                        {sortOrder === 'desc' ? <ArrowDown size={14} /> : <ArrowUp size={14} />}
+                        <span>{sortOrder === 'desc' ? 'Newest' : 'Oldest'}</span>
+                    </button>
+                </div>
+
                 <div className={styles.slotList}>
                     {slots.length === 0 && (
                         <div className={styles.emptyState}>
@@ -129,8 +160,14 @@ const SaveLoadModal: React.FC<SaveLoadModalProps> = ({
                             {mode === 'save' && <span style={{ fontSize: '0.9rem' }}>Create one above!</span>}
                         </div>
                     )}
+                    {slots.length > 0 && displayedSlots.length === 0 && (
+                        <div className={styles.emptyState}>
+                            <Search size={48} opacity={0.3} />
+                            <p>No chronicles match your search</p>
+                        </div>
+                    )}
 
-                    {slots.map(slot => (
+                    {displayedSlots.map(slot => (
                         <div key={slot.id} className={styles.slotItem}>
                             <div className={styles.slotMain} onClick={() => handleSlotClick(slot)}>
                                 <div className={styles.slotHeader}>
