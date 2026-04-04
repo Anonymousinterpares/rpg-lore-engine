@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import ReactDOM from 'react-dom';
 import styles from './PartyPanel.module.css';
 import { useGameState } from '../../hooks/useGameState';
 import GameTooltip from '../common/GameTooltip';
@@ -464,17 +465,42 @@ const PartyPanel: React.FC = () => {
                 const compEquipped = new Set(Object.values(comp.character.equipmentSlots || {}).filter(Boolean) as string[]);
                 const playerEquipped = new Set(Object.values(state?.character?.equipmentSlots || {}).filter(Boolean) as string[]);
 
-                const ItemRow = ({ item, isEquipped, isSelected, onSelect }: { item: any; isEquipped: boolean; isSelected: boolean; onSelect: () => void }) => (
-                    <GameTooltip text={`${item.name} (${item.type})${item.weight ? ` · ${item.weight} lb` : ''}${isEquipped ? ' · Equipped' : ''}`}>
-                        <div
-                            className={`${styles.barterItem} ${isSelected ? styles.barterItemSelected : ''}`}
-                            onClick={onSelect}
-                        >
-                            <span className={styles.barterItemName}>{item.name}{isEquipped ? ' (E)' : ''}</span>
-                            <span className={styles.barterItemType}>{item.type}</span>
-                        </div>
-                    </GameTooltip>
-                );
+                const ItemRow = ({ item, isEquipped, isSelected, onSelect }: { item: any; isEquipped: boolean; isSelected: boolean; onSelect: () => void }) => {
+                    const [tipPos, setTipPos] = useState<{ x: number; y: number } | null>(null);
+                    const damage = item.damage ? (typeof item.damage === 'object' ? `${item.damage.dice} ${item.damage.type}` : item.damage) : null;
+                    const ac = item.acCalculated || (item.ac ? `AC ${item.ac}` : null);
+                    const props = item.properties?.join(', ');
+                    return (
+                        <>
+                            <div
+                                className={`${styles.barterItem} ${isSelected ? styles.barterItemSelected : ''}`}
+                                onClick={onSelect}
+                                onMouseEnter={(e) => {
+                                    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                                    setTipPos({ x: rect.right + 8, y: rect.top });
+                                }}
+                                onMouseLeave={() => setTipPos(null)}
+                            >
+                                <span className={styles.barterItemName}>{item.name}{isEquipped ? ' (E)' : ''}</span>
+                                <span className={styles.barterItemType}>{item.type}</span>
+                            </div>
+                            {tipPos && ReactDOM.createPortal(
+                                <div className={styles.barterTooltip} style={{ left: tipPos.x, top: tipPos.y }}>
+                                    <div className={styles.barterTooltipName}>{item.name}</div>
+                                    <div className={styles.barterTooltipType}>{item.type}</div>
+                                    {damage && <div className={styles.barterTooltipStat}>Damage: {damage}</div>}
+                                    {ac && <div className={styles.barterTooltipStat}>AC: {ac}</div>}
+                                    {props && <div className={styles.barterTooltipStat}>{props}</div>}
+                                    <div className={styles.barterTooltipMeta}>
+                                        {item.weight ? `${item.weight} lb` : ''}
+                                        {isEquipped ? ' · Equipped' : ''}
+                                    </div>
+                                </div>,
+                                document.body
+                            )}
+                        </>
+                    );
+                };
 
                 return (
                     <div className={styles.barterOverlay} onClick={e => e.stopPropagation()} onContextMenu={e => e.preventDefault()}>
