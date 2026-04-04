@@ -32,6 +32,10 @@ export interface DialogueContext {
         conditions?: string[];
         locationName?: string;
         locationBiome?: string;
+        timeOfDay?: string;
+        weather?: string;
+        season?: string;
+        calendarDate?: string;
     };
 }
 
@@ -186,7 +190,11 @@ ${memory || 'No previous conversation.'}
             if (sa.cantrips && sa.cantrips.length > 0) selfLines += ` Cantrips: ${sa.cantrips.join(', ')}.`;
             if (sa.conditions && sa.conditions.length > 0) selfLines += `\nConditions: ${sa.conditions.join(', ')}.`;
             if (sa.locationName) selfLines += `\nLocation: ${sa.locationName}${sa.locationBiome ? ` (${sa.locationBiome})` : ''}.`;
-            systemPrompt += `\n## YOUR STATUS (what you know about yourself)\n${selfLines}\nReference your equipment, spells, or status naturally when relevant — e.g., mention your weapon by name, offer to cast a spell you know, or comment on your wounds.\n`;
+            if (sa.timeOfDay) selfLines += ` Time: ${sa.timeOfDay}.`;
+            if (sa.weather) selfLines += ` Weather: ${sa.weather}.`;
+            if (sa.season) selfLines += ` Season: ${sa.season}.`;
+            if (sa.calendarDate) selfLines += ` Date: ${sa.calendarDate}.`;
+            systemPrompt += `\n## YOUR STATUS (what you know about yourself)\n${selfLines}\nReference your equipment, spells, status, time, or surroundings naturally when relevant — e.g., mention your weapon by name, note the weather or time of day, offer to cast a spell you know, or comment on your wounds.\n`;
         }
 
         // Enriched context: background knowledge (private NPC-NPC conversations this NPC had)

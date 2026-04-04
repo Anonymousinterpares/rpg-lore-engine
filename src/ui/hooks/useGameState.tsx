@@ -99,8 +99,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!engine || processingRef.current) return;
         processingRef.current = true;
         setIsProcessing(true);
-        // Safety timeout: unblock input after 30s even if LLM hangs
-        const timeout = setTimeout(() => { processingRef.current = false; setIsProcessing(false); }, 30_000);
+        // Safety timeout: unblock input after 60s even if LLM hangs
+        const timeout = setTimeout(() => { processingRef.current = false; setIsProcessing(false); }, 60_000);
         try {
             await engine.processTurn(command);
         } finally {

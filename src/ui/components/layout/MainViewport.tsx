@@ -214,16 +214,24 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex, onChara
     const playerCombatant = state?.combat?.combatants.find(c => c.isPlayer);
 
     // Determine processing message for input field
-    // isProcessing: command sent, awaiting LLM response
-    // examineOverlay: dice overlay is showing
-    // isTyping: typewriter is actively producing text
+    // In talk mode: show companion name instead of "narrator"
+    const activeConv = state?.conversationState?.activeConversation;
+    const talkingToName = (() => {
+        if (!activeConv) return null;
+        const comp = state?.companions?.find((c: any) => c.meta?.sourceNpcId === activeConv.primaryNpcId);
+        if (comp) return comp.character.name.split(' ')[0]; // First name only
+        const npc = state?.worldNpcs?.find(n => n.id === activeConv.primaryNpcId);
+        return npc?.name?.split(' ')[0] || null;
+    })();
+    const thinkingEntity = talkingToName || 'The narrator';
+
     const inputDisabled = isProcessing || !!examineOverlay || isTyping;
     const processingMessage = isProcessing
-        ? 'The narrator contemplates...'
+        ? `${thinkingEntity} is thinking...`
         : examineOverlay
-            ? 'The narrator contemplates...'
+            ? `${thinkingEntity} contemplates...`
             : isTyping
-                ? 'The narrator is answering...'
+                ? `${thinkingEntity} is answering...`
                 : undefined;
 
     return (

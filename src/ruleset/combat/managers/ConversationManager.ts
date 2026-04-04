@@ -254,6 +254,25 @@ export class ConversationManager {
                 conditions: char.conditions?.length > 0 ? char.conditions.map((c: any) => c.name || c.id || c) : undefined,
                 locationName: hex?.name || undefined,
                 locationBiome: hex?.biome || undefined,
+                timeOfDay: (() => {
+                    const h = this.state.worldTime.hour;
+                    if (h >= 22 || h < 5) return 'Night';
+                    if (h >= 5 && h < 8) return 'Dawn';
+                    if (h >= 8 && h < 12) return 'Morning';
+                    if (h >= 12 && h < 14) return 'Midday';
+                    if (h >= 14 && h < 17) return 'Afternoon';
+                    if (h >= 17 && h < 20) return 'Evening';
+                    return 'Dusk';
+                })(),
+                weather: (this.state as any).weather?.type || undefined,
+                season: (() => {
+                    const m = this.state.worldTime.month;
+                    if (m >= 3 && m <= 5) return 'Spring';
+                    if (m >= 6 && m <= 8) return 'Summer';
+                    if (m >= 9 && m <= 11) return 'Autumn';
+                    return 'Winter';
+                })(),
+                calendarDate: `Day ${this.state.worldTime.day}, Month ${this.state.worldTime.month}, Year ${this.state.worldTime.year}`,
             };
         }
 
