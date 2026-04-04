@@ -122,8 +122,28 @@ export function calculateImportanceScore(
     // === TIER 1: HARD SIGNALS ===
 
     // Signal 1: Direct name address (+9)
+    // Checks: exact match, prefix (≥3 chars), Levenshtein ≤ 2, substring
     const firstName = companion.name.split(' ')[0].toLowerCase();
-    const nameInInput = words.some(w => w === firstName || levenshtein(w, firstName) <= 2);
+    const lastName = companion.name.split(' ').slice(1).join(' ').toLowerCase();
+    const nameInInput = words.some(w => {
+        if (w.length < 2) return false;
+        // Exact match
+        if (w === firstName) return true;
+        // Prefix match (humans naturally abbreviate: "Gard" for "Gardain", "Grim" for "Grimjaw")
+        if (w.length >= 3 && firstName.startsWith(w)) return true;
+        if (w.length >= 3 && w.startsWith(firstName)) return true;
+        // Prefix-with-typo: compare input word against the same-length prefix of the name
+        // e.g., "Garrd" (5 chars) vs "Garda" (first 5 chars of "Gardain") → Levenshtein 1
+        if (w.length >= 3 && w.length < firstName.length) {
+            const namePrefix = firstName.substring(0, w.length);
+            if (levenshtein(w, namePrefix) <= 1) return true;
+        }
+        // Levenshtein fuzzy match on full name
+        if (levenshtein(w, firstName) <= 2) return true;
+        // Last name match (exact or prefix)
+        if (lastName && (w === lastName || (w.length >= 3 && lastName.startsWith(w)))) return true;
+        return false;
+    });
     if (nameInInput) {
         score += 9;
         signals.push(`name(+9)`);
