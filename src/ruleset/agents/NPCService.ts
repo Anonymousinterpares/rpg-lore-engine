@@ -6,6 +6,19 @@ import { WorldNPC } from '../schemas/WorldEnrichmentSchema';
 import { EventBusManager } from '../combat/managers/EventBusManager';
 import { toStructuredTraits, formatTraitsForPrompt } from '../data/TraitRegistry';
 
+/**
+ * Optional enriched context for dialogue — provides party awareness,
+ * conversation mode, participant info, and background knowledge.
+ */
+export interface DialogueContext {
+    mode?: 'PRIVATE' | 'NORMAL' | 'GROUP';
+    participants?: { name: string; role?: string; traits?: string }[];
+    partyMembers?: { name: string; role?: string }[];
+    recentExchanges?: { speaker: string; text: string }[];
+    backgroundKnowledge?: string[];
+    priorConversationSummary?: string;
+}
+
 export class NPCService {
     /**
      * Generates personality-driven chatter or reactions from party companions or nearby NPCs.
@@ -86,7 +99,12 @@ Keep it under 2 sentences. Do not use generic fantasy tropes unless they fit the
     /**
      * Generates a direct dialogue response from an NPC.
      */
-    public static async generateDialogue(state: GameState, npc: WorldNPC, playerInput: string): Promise<string | null> {
+    public static async generateDialogue(
+        state: GameState,
+        npc: WorldNPC,
+        playerInput: string,
+        dialogueCtx?: DialogueContext
+    ): Promise<string | null> {
         const profile = AgentManager.getAgentProfile('NPC_CONTROLLER');
 
         const providerConfig = LLM_PROVIDERS.find(p => p.id === profile.providerId);
@@ -98,14 +116,59 @@ Keep it under 2 sentences. Do not use generic fantasy tropes unless they fit the
         const structuredTraits = formatTraitsForPrompt(toStructuredTraits(npc.traits));
         const memory = npc.conversationHistory.slice(-5).map(c => `${c.speaker}: ${c.text}`).join('\n');
 
-        const systemPrompt = `You are responding as ${npc.name} in a D&D RPG.
+        let systemPrompt = `You are responding as ${npc.name} in a D&D RPG.
 ## CHARACTER TRAITS
 ${structuredTraits}
 RELATIONSHIP STANDING: ${npc.relationship.standing} (-100 to 100)
 
 ## CONVERSATION HISTORY
 ${memory || 'No previous conversation.'}
+`;
 
+        // Enriched context: conversation mode
+        if (dialogueCtx?.mode) {
+            const modeDesc = dialogueCtx.mode === 'PRIVATE'
+                ? 'This is a PRIVATE conversation. Other party members cannot hear what is being said.'
+                : dialogueCtx.mode === 'GROUP'
+                    ? 'This is a GROUP discussion. All listed participants can hear and respond.'
+                    : 'This is an open conversation. Other party members can hear.';
+            systemPrompt += `\n## CONVERSATION MODE\n${modeDesc}\n`;
+        }
+
+        // Enriched context: other participants in this conversation
+        if (dialogueCtx?.participants && dialogueCtx.participants.length > 0) {
+            const others = dialogueCtx.participants.filter(p => p.name !== npc.name);
+            if (others.length > 0) {
+                systemPrompt += `\n## OTHER PARTICIPANTS\n${others.map(p => `- ${p.name}${p.role ? ` (${p.role})` : ''}${p.traits ? ` — ${p.traits}` : ''}`).join('\n')}\n`;
+            }
+        }
+
+        // Enriched context: full party roster (companions not in conversation)
+        if (dialogueCtx?.partyMembers && dialogueCtx.partyMembers.length > 0) {
+            const notInConvo = dialogueCtx.partyMembers.filter(
+                p => p.name !== npc.name && !dialogueCtx.participants?.some(pp => pp.name === p.name)
+            );
+            if (notInConvo.length > 0) {
+                systemPrompt += `\n## OTHER PARTY MEMBERS (not in this conversation)\n${notInConvo.map(p => `- ${p.name}${p.role ? ` (${p.role})` : ''}`).join('\n')}\nYou know these companions and can reference them if asked.\n`;
+            }
+        }
+
+        // Enriched context: recent exchanges from all participants
+        if (dialogueCtx?.recentExchanges && dialogueCtx.recentExchanges.length > 0) {
+            systemPrompt += `\n## RECENT EXCHANGE (what was just said)\n${dialogueCtx.recentExchanges.map(e => `${e.speaker}: ${e.text}`).join('\n')}\n`;
+        }
+
+        // Enriched context: background knowledge (private NPC-NPC conversations this NPC had)
+        if (dialogueCtx?.backgroundKnowledge && dialogueCtx.backgroundKnowledge.length > 0) {
+            systemPrompt += `\n## PRIVATE KNOWLEDGE\nYou privately discussed the following (the player does not know about these):\n${dialogueCtx.backgroundKnowledge.map(k => `- ${k}`).join('\n')}\nYou may subtly reference this knowledge but should NOT reveal it was a private discussion.\n`;
+        }
+
+        // Enriched context: summary from a prior conversation session
+        if (dialogueCtx?.priorConversationSummary) {
+            systemPrompt += `\n## PRIOR CONVERSATION\nEarlier, you and the player discussed: ${dialogueCtx.priorConversationSummary}\n`;
+        }
+
+        systemPrompt += `
 ## TASK
 Respond to the player's message in character.
 - Your personality must be strictly driven by your TRAITS.
@@ -188,7 +251,7 @@ Return ONLY valid JSON: { "delta": <number -5 to 5>, "reason": "<brief reason>" 
                     systemPrompt,
                     userMessage: `Player said: "${playerInput}"\nNPC responded: "${npcResponse}"`,
                     temperature: 0.1,
-                    maxTokens: 300,
+                    maxTokens: 1000, // Thinking models need headroom for reasoning + JSON output
                     responseFormat: 'json'
                 }
             );

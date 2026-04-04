@@ -10,6 +10,12 @@ export const CompanionMetaSchema = z.object({
     originalRole: z.string().optional(),         // NPC role before recruitment (Guard, Scholar, etc.)
     originalTraits: z.array(z.string()).default([]), // Preserved for personality continuity
     originalFactionId: z.string().optional(),
+    // Persistent conversation history — survives across talk sessions and saves
+    conversationHistory: z.array(z.object({
+        speaker: z.string(),
+        text: z.string(),
+        timestamp: z.string()
+    })).default([]),
 });
 
 export const CompanionSchema = z.object({

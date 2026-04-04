@@ -240,6 +240,7 @@ export class CompanionManager {
             originalRole: npc.role,
             originalTraits: [...(npc.traits || [])],
             originalFactionId: npc.factionId,
+            conversationHistory: [...(npc.conversationHistory || [])], // Carry over pre-recruitment dialogue
         };
 
         return { character, meta };

@@ -1,6 +1,6 @@
 import { GameState } from '../../schemas/FullSaveStateSchema';
 import { WorldNPC } from '../../schemas/WorldEnrichmentSchema';
-import { NPCService } from '../../agents/NPCService';
+import { NPCService, DialogueContext } from '../../agents/NPCService';
 import { LLMClient } from '../LLMClient';
 import { AgentManager } from '../../agents/AgentManager';
 import { LLM_PROVIDERS } from '../../data/StaticData';
@@ -76,8 +76,9 @@ export class ConversationManager {
     // ---------------------------------------------------------------
 
     /**
-     * Builds a temporary WorldNPC-like object from companion data.
-     * Used for dialogue routing since companions are removed from worldNpcs on recruitment.
+     * Builds a WorldNPC-like object from companion data.
+     * Uses the companion's PERSISTENT conversationHistory from CompanionMeta
+     * so that dialogue history survives across talk sessions and saves.
      */
     public resolveCompanionAsNpc(npcIdOrName: string): WorldNPC | null {
         // Check companions first
@@ -88,19 +89,24 @@ export class ConversationManager {
         );
 
         if (companion) {
+            // Use the persistent conversationHistory from meta — this is a REFERENCE,
+            // so NPCService.generateDialogue() mutations will persist automatically.
+            const meta = companion.meta;
+            if (!meta.conversationHistory) meta.conversationHistory = [];
+
             return {
-                id: companion.meta.sourceNpcId,
+                id: meta.sourceNpcId,
                 name: companion.character.name,
-                traits: companion.meta.originalTraits || [],
+                traits: meta.originalTraits || [],
                 relationship: { standing: 30, interactionLog: [], lastInteraction: undefined },
-                conversationHistory: [],
+                conversationHistory: meta.conversationHistory, // SHARED REFERENCE — persists!
                 isMerchant: false,
                 dialogue_triggers: [],
                 inventory: [],
                 availableQuests: [],
                 stats: companion.character.stats,
-                role: companion.meta.originalRole,
-                factionId: companion.meta.originalFactionId,
+                role: meta.originalRole,
+                factionId: meta.originalFactionId,
             } as any;
         }
 
@@ -117,7 +123,8 @@ export class ConversationManager {
      * Returns the best-matching companion/NPC ID and confidence level.
      */
     public resolveNpcFromInput(input: string): { npcId: string; npcName: string; confidence: 'EXACT' | 'FUZZY' | 'INFERRED' } | null {
-        const words = input.toLowerCase().split(/\s+/);
+        // Strip punctuation from words for matching
+        const words = input.toLowerCase().split(/\s+/).map(w => w.replace(/[^a-z'-]/g, ''));
         const allNpcs = this.getDialogueParticipantNpcs();
 
         // Pass 1: exact name match (full name or first name)
@@ -161,7 +168,7 @@ export class ConversationManager {
         }
 
         // NPCs in current hex
-        const hex = this.hexMapManager.getHex(this.state.location.hexId);
+        const hex = this.hexMapManager?.getHex(this.state.location.hexId);
         if (hex?.npcs) {
             for (const npcId of hex.npcs) {
                 const npc = this.state.worldNpcs.find(n => n.id === npcId);
@@ -170,6 +177,60 @@ export class ConversationManager {
         }
 
         return npcs;
+    }
+
+    /**
+     * Builds enriched DialogueContext for NPCService.generateDialogue().
+     * Provides party awareness, mode, participants, background knowledge, and recent exchanges.
+     */
+    private buildDialogueContext(forNpcId: string): DialogueContext {
+        const conv = this.getConvState().activeConversation;
+        const convState = this.getConvState();
+
+        // Party roster (all following companions)
+        const partyMembers = this.state.companions
+            .filter((c: any) => c.meta?.followState === 'following')
+            .map((c: any) => ({
+                name: c.character.name,
+                role: c.meta.originalRole || 'Adventurer'
+            }));
+
+        // Participants in current conversation
+        const participants = (conv?.participants || []).map(id => {
+            const npc = this.resolveCompanionAsNpc(id);
+            return npc ? {
+                name: npc.name,
+                role: npc.role || 'Adventurer',
+                traits: (npc.traits || []).slice(0, 4).join(', ')
+            } : null;
+        }).filter(Boolean) as { name: string; role?: string; traits?: string }[];
+
+        // Recent exchanges from conversation history (last 5)
+        const recentExchanges = (conv?.history || []).slice(-5).map(m => ({
+            speaker: m.speakerName,
+            text: m.text
+        }));
+
+        // Background knowledge: private NPC-NPC conversations this NPC participated in
+        const backgroundKnowledge: string[] = [];
+        for (const bgConv of convState.backgroundConversations) {
+            if (bgConv.participantIds.includes(forNpcId)) {
+                const otherIds = bgConv.participantIds.filter(id => id !== forNpcId);
+                const otherNames = otherIds.map(id => this.resolveCompanionAsNpc(id)?.name || 'someone');
+                backgroundKnowledge.push(
+                    `Discussed "${bgConv.topic}" with ${otherNames.join(', ')}`
+                );
+            }
+        }
+
+        return {
+            mode: (conv?.mode as 'PRIVATE' | 'NORMAL' | 'GROUP') || undefined,
+            participants,
+            partyMembers,
+            recentExchanges,
+            backgroundKnowledge: backgroundKnowledge.length > 0 ? backgroundKnowledge : undefined,
+            priorConversationSummary: convState.lastConversationSummary || undefined
+        };
     }
 
     // ---------------------------------------------------------------
@@ -218,7 +279,8 @@ export class ConversationManager {
                 ? `[GREETING / START CONVERSATION — this is your traveling companion, the player wants to chat${mode === 'PRIVATE' ? ' privately' : ''}]`
                 : `[GREETING / START CONVERSATION]`;
 
-            const greeting = await NPCService.generateDialogue(this.state, npc, contextHint);
+            const dialogueCtx = this.buildDialogueContext(npc.id);
+            const greeting = await NPCService.generateDialogue(this.state, npc, contextHint, dialogueCtx);
 
             if (greeting) {
                 this.addToConversationHistory(npc.id, npc.name, greeting, mode === 'PRIVATE');
@@ -243,6 +305,49 @@ export class ConversationManager {
     /**
      * Exits talk mode. Generates conversation summary for narrator context.
      */
+    /**
+     * Synchronous force-end for non-interactive scenarios (combat start, companion dismissed).
+     * Skips LLM summary — generates a mechanical one instead.
+     */
+    public forceEndTalk(reason: string = 'interrupted'): void {
+        const convState = this.getConvState();
+        const conv = convState.activeConversation;
+        if (conv) {
+            const npcName = this.resolveCompanionAsNpc(conv.primaryNpcId)?.name || 'someone';
+            convState.lastConversationSummary = `Conversation with ${npcName} was ${reason} (${conv.history.length} exchanges).`;
+        }
+        convState.activeConversation = null;
+        this.state.activeDialogueNpcId = null;
+    }
+
+    /**
+     * Removes a participant from the active conversation.
+     * If the primary NPC is removed, ends the conversation.
+     * If last participant is removed, ends the conversation.
+     */
+    public removeParticipant(npcId: string): void {
+        const conv = this.getConvState().activeConversation;
+        if (!conv) return;
+
+        conv.participants = conv.participants.filter(id => id !== npcId);
+
+        if (conv.primaryNpcId === npcId || conv.participants.length === 0) {
+            this.forceEndTalk('ended — participant left');
+        }
+    }
+
+    /**
+     * Cleans up orphaned background conversations referencing NPCs no longer in party.
+     */
+    public cleanOrphanedConversations(): void {
+        const convState = this.getConvState();
+        const companionIds = new Set(this.state.companions.map((c: any) => c.meta?.sourceNpcId));
+
+        convState.backgroundConversations = convState.backgroundConversations.filter(bg =>
+            bg.participantIds.every(id => companionIds.has(id))
+        );
+    }
+
     public async endTalk(): Promise<string> {
         const convState = this.getConvState();
         const conv = convState.activeConversation;
@@ -278,6 +383,9 @@ export class ConversationManager {
         const convState = this.getConvState();
         const conv = convState.activeConversation;
         if (!conv) return "You're not in a conversation.";
+
+        // Empty input validation
+        if (!input || !input.trim()) return "You stay silent.";
 
         // Check for exit commands
         const lower = input.trim().toLowerCase();
@@ -315,7 +423,8 @@ export class ConversationManager {
 
         // Generate response
         try {
-            const response = await NPCService.generateDialogue(this.state, responderNpc, input);
+            const dialogueCtx = this.buildDialogueContext(responderId);
+            const response = await NPCService.generateDialogue(this.state, responderNpc, input, dialogueCtx);
 
             if (response) {
                 this.addToConversationHistory(responderId, responderNpc.name, response, conv.mode === 'PRIVATE');
@@ -370,9 +479,41 @@ export class ConversationManager {
             return `${npc.name} is already in this conversation.`;
         }
 
+        // Mode transition: PRIVATE + add member → NORMAL with notification
+        const wasPrivate = conv.mode === 'PRIVATE';
+        if (wasPrivate) {
+            conv.mode = 'NORMAL';
+            const primaryNpc = this.resolveCompanionAsNpc(conv.primaryNpcId);
+            const modeNotice = `[The conversation is no longer private — ${npc.name} has joined.]`;
+            this.addToConversationHistory('system', 'System', modeNotice, false);
+        }
+
         conv.participants.push(npc.id);
+
+        // Generate a contextual join greeting from the new participant
+        try {
+            const conversationSoFar = conv.history.slice(-3).map(m => `${m.speakerName}: ${m.text}`).join('\n');
+            const joinContext = `[You are joining an ongoing conversation. Here's what was just discussed:\n${conversationSoFar}\n\nSay something brief to join the discussion.]`;
+            const dialogueCtx = this.buildDialogueContext(npc.id);
+            const joinGreeting = await NPCService.generateDialogue(this.state, npc, joinContext, dialogueCtx);
+
+            if (joinGreeting) {
+                this.addToConversationHistory(npc.id, npc.name, joinGreeting, false);
+
+                const formatted = `*${npc.name} joins the conversation.*\n**${npc.name}:** ${joinGreeting}`;
+                this.state.lastNarrative = formatted;
+                this.state.conversationHistory.push({
+                    role: 'narrator', content: formatted,
+                    turnNumber: this.state.worldTime.totalTurns
+                });
+            }
+        } catch (e) {
+            console.warn('[ConversationManager] Join greeting failed:', e);
+        }
+
         await this.emitStateUpdate();
-        return `${npc.name} joins the conversation.`;
+        const modeNote = wasPrivate ? ' The conversation is now open.' : '';
+        return `${npc.name} joins the conversation.${modeNote}`;
     }
 
     /**
@@ -566,11 +707,11 @@ export class ConversationManager {
             if (!otherNpc) continue;
 
             try {
-                const comment = await NPCService.generateChatter(this.state, {
-                    location: { name: 'In conversation' },
-                    mode: 'DIALOGUE',
-                    player: { hpStatus: 'in conversation' }
-                }, otherNpc);
+                // Use generateDialogue with full context instead of generic chatter
+                const responderNpc = this.resolveCompanionAsNpc(responderId);
+                const contextPrompt = `[You are listening to a conversation. ${responderNpc?.name || 'Someone'} just said: "${responseText.substring(0, 200)}". React briefly (1 sentence max) if your personality drives you to, or stay silent.]`;
+                const dialogueCtx = this.buildDialogueContext(otherId);
+                const comment = await NPCService.generateDialogue(this.state, otherNpc, contextPrompt, dialogueCtx);
 
                 if (comment) {
                     const bubble: SpeechBubble = {

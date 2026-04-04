@@ -1095,7 +1095,14 @@ export class GameLoop {
                 const dismissName = args.join(' ');
                 const dismissIdx = CompanionManager.findCompanionIndex(this.state, dismissName);
                 if (dismissIdx < 0) return `No companion named "${dismissName}" in your party.`;
+                // If dismissing an NPC in active conversation, remove them or end talk
+                const dismissedNpcId = (this.state.companions[dismissIdx] as any)?.meta?.sourceNpcId;
+                if (dismissedNpcId && this.conversationManager.isInTalkMode()) {
+                    this.conversationManager.removeParticipant(dismissedNpcId);
+                }
                 const dismissMsg = CompanionManager.dismiss(this.state, dismissIdx, true);
+                // Clean orphaned background conversations
+                this.conversationManager.cleanOrphanedConversations();
                 await this.emitStateUpdate();
                 return dismissMsg;
             }
@@ -1449,6 +1456,11 @@ export class GameLoop {
     }
 
     public async initializeCombat(encounter: Encounter, preNarration?: string) {
+        // Force-end any active conversation before combat
+        if (this.conversationManager.isInTalkMode()) {
+            this.conversationManager.forceEndTalk('interrupted by combat');
+        }
+
         const biome = this.hexMapManager.getHex(this.state.location.hexId)?.biome || 'Plains';
 
         // Use preNarration if provided, or check if lastNarrative was set as ambush text
