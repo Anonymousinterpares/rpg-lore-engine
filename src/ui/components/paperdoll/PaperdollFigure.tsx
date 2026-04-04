@@ -31,6 +31,11 @@ const SLOT_CONFIGS: SlotConfig[] = [
 ];
 
 const PaperdollFigure: React.FC<PaperdollFigureProps> = ({ equippedSlots, sex, onDrop, onUnequip, onItemContextMenu }) => {
+    // Check if mainHand weapon is two-handed (blocks offHand slot)
+    const mainHandItem = equippedSlots['mainHand'];
+    const mainHandProps = (mainHandItem as any)?.properties || [];
+    const isMainHandTwoHanded = mainHandProps.some((p: string) => /two.?handed/i.test(p));
+
     return (
         <div className={styles.container}>
             <h3 className={styles.title}>Equipment</h3>
@@ -47,7 +52,9 @@ const PaperdollFigure: React.FC<PaperdollFigureProps> = ({ equippedSlots, sex, o
                 </div>
 
                 {/* Equipment slots positioned around the silhouette */}
-                {SLOT_CONFIGS.map((config) => (
+                {SLOT_CONFIGS.map((config) => {
+                    const isBlocked = config.id === 'offHand' && isMainHandTwoHanded && !equippedSlots['offHand'];
+                    return (
                     <div
                         key={config.id}
                         className={styles.slotPositioner}
@@ -62,9 +69,12 @@ const PaperdollFigure: React.FC<PaperdollFigureProps> = ({ equippedSlots, sex, o
                             onDrop={onDrop}
                             onUnequip={onUnequip}
                             onItemContextMenu={onItemContextMenu}
+                            blocked={isBlocked}
+                            blockedReason={isBlocked ? `Blocked: ${mainHandItem?.name || 'weapon'} requires two hands` : undefined}
                         />
                     </div>
-                ))}
+                    );
+                })}
             </div>
 
             {/* Ring slots - two hands at the bottom */}

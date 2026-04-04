@@ -71,6 +71,14 @@
     justify-content: center;
 }
 
+.blocked {
+    opacity: 0.3;
+    cursor: not-allowed !important;
+    pointer-events: none;
+    background: rgba(100, 80, 60, 0.15);
+    border-style: dashed !important;
+}
+
 .slotLabel {
     font-size: 7px;
     color: #5d4037;

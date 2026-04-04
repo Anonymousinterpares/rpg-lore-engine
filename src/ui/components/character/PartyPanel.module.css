@@ -389,7 +389,8 @@
     min-width: 500px;
     max-width: 600px;
     max-height: 80vh;
-    overflow-y: auto;
+    overflow: hidden;
+    scrollbar-gutter: stable;
 }
 
 .barterHeader {
@@ -440,8 +441,12 @@
 }
 
 .barterItemList {
-    max-height: none;
-    overflow: visible;
+    max-height: 280px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(139, 119, 75, 0.3) transparent;
+    scrollbar-gutter: stable;
 }
 
 .barterItem {

@@ -1,4 +1,5 @@
 import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
+import { EquipmentEngine } from './EquipmentEngine';
 
 export interface EncumbranceStatus {
     currentWeight: number;
@@ -51,10 +52,42 @@ export class InventoryEngine {
      * Toggles equipment status
      */
     public static toggleEquip(pc: PlayerCharacter, itemId: string): string {
-        const item = pc.inventory.items.find(i => i.id === itemId);
+        const item = pc.inventory.items.find(i => i.id === itemId || i.instanceId === itemId);
         if (!item) return 'Item not found.';
 
-        item.equipped = !item.equipped;
+        const slots = pc.equipmentSlots as Record<string, string | undefined>;
+
+        if (item.equipped) {
+            // Unequip: clear from slots
+            item.equipped = false;
+            for (const [slot, val] of Object.entries(slots)) {
+                if (val === item.instanceId || val === item.name) {
+                    slots[slot] = undefined;
+                }
+            }
+        } else {
+            // Equip: find appropriate slot (delegate to InventoryManager pattern)
+            const type = (item.type || '').toLowerCase();
+            let slot: string | undefined;
+            if (type.includes('weapon')) slot = 'mainHand';
+            else if (type.includes('armor')) slot = 'armor';
+            else if (type.includes('shield')) slot = 'offHand';
+
+            if (slot) {
+                // Clear old item in slot
+                const oldId = slots[slot];
+                if (oldId) {
+                    const oldItem = pc.inventory.items.find(i => i.instanceId === oldId);
+                    if (oldItem) oldItem.equipped = false;
+                }
+                slots[slot] = item.instanceId;
+                item.equipped = true;
+            } else {
+                item.equipped = true; // Generic equip for non-slotted items
+            }
+        }
+
+        EquipmentEngine.recalculateAC(pc);
         return `${item.name} is now ${item.equipped ? 'Equipped' : 'Unequipped'}.`;
     }
 }

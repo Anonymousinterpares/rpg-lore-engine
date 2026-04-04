@@ -218,6 +218,9 @@ export class BarterEngine {
         companion.character.inventory.items = companion.character.inventory.items.filter((i: any) => i.instanceId !== itemInstanceId);
         state.character.inventory.items.push(item as any);
 
+        // D2: Re-evaluate companion equipment — promote backup items to empty slots
+        this.reEvaluateEquipment(companion.character);
+
         return {
             success: true,
             message: `${companion.character.name} hands over ${(item as any).name}.`
@@ -226,25 +229,75 @@ export class BarterEngine {
 
     /**
      * Auto-equips an item for a companion if the appropriate slot is empty.
+     * Respects two-handed weapon constraints.
      * Only equips to empty slots — never replaces existing equipment.
      */
     private static tryAutoEquip(char: PlayerCharacter, item: any): void {
         const type = (item.type || '').toLowerCase();
         const slots = char.equipmentSlots as Record<string, string | undefined>;
+        // Prefer item's own properties (travel with the item), fallback to DataManager
+        const props = item.properties || (DataManager.getItem(item.id || item.name) as any)?.properties || [];
+        const isTwoHanded = props.some((p: string) => /two.?handed/i.test(p));
 
         let targetSlot: string | undefined;
-        if (type.includes('weapon') || type === 'weapon (martial, melee)' || type === 'weapon (simple, melee)' || type === 'weapon (martial, ranged)' || type === 'weapon (simple, ranged)') {
-            if (!slots.mainHand) targetSlot = 'mainHand';
-        } else if (type.includes('armor') || type === 'armor (light)' || type === 'armor (medium)' || type === 'armor (heavy)') {
+
+        if (type.includes('weapon') || type.includes('weapon (')) {
+            if (!slots.mainHand) {
+                targetSlot = 'mainHand';
+                // If two-handed, also need offHand to be free
+                if (isTwoHanded && slots.offHand) targetSlot = undefined;
+            }
+        } else if (type.includes('armor') || type.includes('armor (')) {
             if (!slots.armor) targetSlot = 'armor';
         } else if (type.includes('shield')) {
-            if (!slots.offHand) targetSlot = 'offHand';
+            // Can't equip shield if mainHand is two-handed
+            if (!slots.offHand) {
+                const mainHandItem = slots.mainHand
+                    ? char.inventory.items.find((i: any) => i.instanceId === slots.mainHand)
+                    : null;
+                // Prefer item's own properties
+                const mainProps = (mainHandItem as any)?.properties || (DataManager.getItem((mainHandItem as any)?.id || (mainHandItem as any)?.name) as any)?.properties || [];
+                const mainIsTwoHanded = mainProps.some((p: string) => /two.?handed/i.test(p));
+                if (!mainIsTwoHanded) targetSlot = 'offHand';
+            }
         }
 
         if (targetSlot) {
+            // If equipping two-handed to mainHand, clear offHand
+            if (targetSlot === 'mainHand' && isTwoHanded && slots.offHand) {
+                const offItem = char.inventory.items.find((i: any) => i.instanceId === slots.offHand);
+                if (offItem) (offItem as any).equipped = false;
+                slots.offHand = undefined;
+            }
+
             slots[targetSlot] = item.instanceId;
             item.equipped = true;
             EquipmentEngine.recalculateAC(char);
+        }
+    }
+
+    /**
+     * Re-evaluates companion equipment after an item is removed.
+     * If a slot became empty, looks for a suitable replacement in inventory.
+     */
+    public static reEvaluateEquipment(char: PlayerCharacter): void {
+        const slots = char.equipmentSlots as Record<string, string | undefined>;
+
+        for (const slotName of ['mainHand', 'armor', 'offHand']) {
+            if (!slots[slotName]) {
+                // Find an unequipped item that could go in this slot
+                const candidate = char.inventory.items.find((item: any) => {
+                    if (item.equipped) return false;
+                    const t = (item.type || '').toLowerCase();
+                    if (slotName === 'mainHand' && (t.includes('weapon'))) return true;
+                    if (slotName === 'armor' && (t.includes('armor'))) return true;
+                    if (slotName === 'offHand' && (t.includes('shield'))) return true;
+                    return false;
+                });
+                if (candidate) {
+                    BarterEngine.tryAutoEquip(char, candidate);
+                }
+            }
         }
     }
 }

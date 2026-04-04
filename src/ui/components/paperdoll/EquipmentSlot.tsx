@@ -16,6 +16,8 @@ interface EquipmentSlotProps {
     onUnequip: (slotId: string) => void;
     onItemContextMenu?: (e: React.MouseEvent, item: PaperdollItem, slotId: string) => void;
     isRingSlot?: boolean;
+    blocked?: boolean;
+    blockedReason?: string;
 }
 
 const SLOT_ICONS: Record<string, React.ReactNode> = {
@@ -56,7 +58,7 @@ const RARITY_GLOW: Record<string, string> = {
     legendary: 'rgba(255, 128, 0, 0.5)',
 };
 
-const EquipmentSlot: React.FC<EquipmentSlotProps> = ({ config, item, onDrop, onUnequip, onItemContextMenu, isRingSlot }) => {
+const EquipmentSlot: React.FC<EquipmentSlotProps> = ({ config, item, onDrop, onUnequip, onItemContextMenu, isRingSlot, blocked, blockedReason }) => {
     const [dragOver, setDragOver] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false);
     const slotRef = useRef<HTMLDivElement>(null);
@@ -64,10 +66,11 @@ const EquipmentSlot: React.FC<EquipmentSlotProps> = ({ config, item, onDrop, onU
     const size = isRingSlot ? 'small' : (config.size || 'normal');
 
     const handleDragOver = useCallback((e: React.DragEvent) => {
+        if (blocked) return; // Prevent drop on blocked slot
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
         setDragOver(true);
-    }, []);
+    }, [blocked]);
 
     const handleDragLeave = useCallback(() => {
         setDragOver(false);
@@ -103,10 +106,10 @@ const EquipmentSlot: React.FC<EquipmentSlotProps> = ({ config, item, onDrop, onU
 
     return (
         <>
-            <GameTooltip text={!item ? config.label : undefined}>
+            <GameTooltip text={blocked ? (blockedReason || 'Slot blocked') : !item ? config.label : undefined}>
             <div
                 ref={slotRef}
-                className={`${styles.slot} ${styles[size]} ${dragOver ? styles.dragOver : ''} ${item ? styles.filled : ''}`}
+                className={`${styles.slot} ${styles[size]} ${dragOver ? styles.dragOver : ''} ${item ? styles.filled : ''} ${blocked ? styles.blocked : ''}`}
                 style={rarityGlow && item ? { boxShadow: `0 0 10px ${rarityGlow}, inset 0 0 6px ${rarityGlow}` } : undefined}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
