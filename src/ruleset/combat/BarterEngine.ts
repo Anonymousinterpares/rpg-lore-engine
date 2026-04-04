@@ -104,14 +104,34 @@ export class BarterEngine {
             };
         }
 
+        // B2+B3: Clear equipped state on BOTH items before transfer
+        // Player's offered item: clear from player's equipmentSlots
+        const playerSlot = Object.entries(state.character.equipmentSlots || {}).find(([, v]) => v === playerOffersInstanceId);
+        if (playerSlot) {
+            (state.character.equipmentSlots as any)[playerSlot[0]] = undefined;
+        }
+        (playerItem as any).equipped = false;
+
+        // Companion's offered item: clear from companion's equipmentSlots
+        const compSlot = Object.entries(companion.character.equipmentSlots || {}).find(([, v]) => v === playerRequestsInstanceId);
+        if (compSlot) {
+            (companion.character.equipmentSlots as any)[compSlot[0]] = undefined;
+        }
+        (compItem as any).equipped = false;
+
         // Execute the swap
-        // Remove from player, add to companion
         state.character.inventory.items = state.character.inventory.items.filter((i: any) => i.instanceId !== playerOffersInstanceId);
         companion.character.inventory.items.push(playerItem as any);
 
-        // Remove from companion, add to player
         companion.character.inventory.items = companion.character.inventory.items.filter((i: any) => i.instanceId !== playerRequestsInstanceId);
         state.character.inventory.items.push(compItem as any);
+
+        // Auto-equip for companion only (NOT player — player equips manually)
+        this.tryAutoEquip(companion.character, playerItem as any);
+
+        // Recalculate AC for both sides
+        EquipmentEngine.recalculateAC(state.character);
+        EquipmentEngine.recalculateAC(companion.character);
 
         return {
             success: true,
@@ -143,11 +163,19 @@ export class BarterEngine {
             return { success: false, message: `${companion.character.name} can't carry any more (${currentWeight}/${capacity} lbs).` };
         }
 
+        // Clear player's equipped state if giving an equipped item
+        const giveSlot = Object.entries(state.character.equipmentSlots || {}).find(([, v]) => v === itemInstanceId);
+        if (giveSlot) {
+            (state.character.equipmentSlots as any)[giveSlot[0]] = undefined;
+            EquipmentEngine.recalculateAC(state.character);
+        }
+        (item as any).equipped = false;
+
         // Transfer
         state.character.inventory.items = state.character.inventory.items.filter((i: any) => i.instanceId !== itemInstanceId);
         companion.character.inventory.items.push(item as any);
 
-        // Auto-equip if companion has an empty slot for this item type
+        // Auto-equip for companion only (NOT player)
         this.tryAutoEquip(companion.character, item as any);
 
         return {
@@ -175,13 +203,18 @@ export class BarterEngine {
             return { success: false, message: `${companion.character.name} refuses to hand over their gear. (Needs standing 20+)` };
         }
 
-        // Auto-unequip if item is equipped
+        // Auto-unequip if item is equipped on companion side
         const equippedSlot = Object.entries(companion.character.equipmentSlots || {}).find(([, v]) => v === (item as any).instanceId);
         if (equippedSlot) {
             (companion.character.equipmentSlots as any)[equippedSlot[0]] = undefined;
         }
+        // B1: Clear the equipped flag so player receives an unequipped item
+        (item as any).equipped = false;
 
-        // Transfer
+        // Recalculate companion AC after losing equipment
+        EquipmentEngine.recalculateAC(companion.character);
+
+        // Transfer — item arrives at player as UNEQUIPPED (player must manually equip)
         companion.character.inventory.items = companion.character.inventory.items.filter((i: any) => i.instanceId !== itemInstanceId);
         state.character.inventory.items.push(item as any);
 

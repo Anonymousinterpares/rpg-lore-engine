@@ -101,14 +101,16 @@ export class EquipmentEngine {
             this.unequipItem(pc, slot);
         }
 
-        // 4. Mark in inventory as equipped
-        const inventoryItem = pc.inventory.items.find(i => i.name === item.name); // Using name as ID for now
+        // 4. Mark in inventory as equipped (B6: use instanceId, not name)
+        const inventoryItem = pc.inventory.items.find(i =>
+            i.instanceId === (item as any).instanceId || i.name === item.name
+        );
         if (inventoryItem) {
             inventoryItem.equipped = true;
         }
 
-        // 5. Set in slot
-        (pc.equipmentSlots as any)[slot] = item.name;
+        // 5. Set in slot — use instanceId if available, fallback to name for legacy
+        (pc.equipmentSlots as any)[slot] = (item as any).instanceId || item.name;
 
         // 6. Recalculate AC
         this.recalculateAC(pc);
@@ -122,7 +124,8 @@ export class EquipmentEngine {
     public static unequipItem(pc: PlayerCharacter, slot: string): void {
         const itemId = (pc.equipmentSlots as any)[slot];
         if (itemId) {
-            const inventoryItem = pc.inventory.items.find(i => i.name === itemId);
+            // B7: Match by instanceId first, fallback to name for legacy saves
+            const inventoryItem = pc.inventory.items.find(i => i.instanceId === itemId || i.name === itemId);
             if (inventoryItem) inventoryItem.equipped = false;
             (pc.equipmentSlots as any)[slot] = undefined;
             this.recalculateAC(pc);
