@@ -41,3 +41,45 @@
 - [ ] **Party formation presets** — Pre-configured tactical formations (phalanx, spread, ambush) that set companion directives automatically at combat start based on formation choice.
 
 - [ ] **Companion inventory auto-management** — AI-driven equipment optimization: companion automatically equips the best available gear from their inventory based on class/role/stats without player intervention.
+
+---
+
+## Phase 2: Conversation Enhancements (After NPC-NPC Relations)
+
+The following features require the inter-party NPC-NPC relationship matrix to be implemented first. They extend the `calculateImportanceScore()` group conversation routing system.
+
+### NPC-NPC Relationship-Driven Conversation Signals
+
+These signals cannot be implemented until each companion has standing values toward every OTHER companion (not just the player):
+
+- [ ] **Inter-NPC disagreement trigger (+3 importance)** — When Companion A says something, Companion B who DISAGREES (opposing traits, low NPC-NPC standing) gets an importance boost to respond next. Example: Lawful companion responds when Chaotic companion suggests theft. Requires: NPC-NPC standing matrix + trait opposition map.
+
+- [ ] **Alliance signaling (+2 importance)** — Companion supports their ally's point when NPC-NPC standing is > 50. "I agree with Grimjaw — we should press on." Requires: NPC-NPC standing > 50 check.
+
+- [ ] **Rivalry interruption (+3 importance)** — Companion interrupts a rival (NPC-NPC standing < -20) to contradict or one-up them. Creates natural tension and drama. Requires: NPC-NPC standing < -20 check + detection that rival just spoke.
+
+- [ ] **Pack behavior** — When two aligned NPCs (NPC-NPC standing > 30) both want to respond, the one who spoke less recently goes first, and the other gets a boosted commentary chance. Creates "we're on the same side" feel. Requires: NPC-NPC standing + recent speaker tracking.
+
+### Emotional Memory System
+
+These features require a per-companion emotional state tracker (beyond current trait/standing system):
+
+- [ ] **Emotional memory (+4 importance for triggered topics)** — Companion remembers being embarrassed, praised, insulted, or scared in recent conversations. If a topic touches that memory, emotional urgency overrides normal routing. Example: companion who was mocked about their cooking stays silent on food topics but gets angry if pressed. Requires: emotional event log per companion with decay over time.
+
+- [ ] **Mood state** — Running mood modifier (happy/neutral/angry/scared/reflective) influenced by: recent combat outcome, relationship deltas, time since rest, weather. Affects: extroversion factor (angry = more vocal), response tone, willingness to help. Requires: mood calculation function called each turn.
+
+- [ ] **Grudge/gratitude persistence** — If player helped a companion in combat (healed them, protected them), that companion is more eager to respond positively for several turns. If player let them take damage without helping, they become sulky. Requires: combat event attribution tracking (who healed whom, who tanked for whom).
+
+### Secret Knowledge and Private Context
+
+- [ ] **Secret knowledge relevance (+5 importance)** — When a topic in player's question relates to something a companion learned in a private NPC-NPC background conversation, they score high because they have insider knowledge. They can hint at it without revealing the private nature. Requires: topic matching against `backgroundConversations[].topic`.
+
+- [ ] **Whispered aside** — After a group conversation turn, two allied NPCs may have a quick private exchange (speech bubbles only to each other, player sees "[whispers to X]" but not content). Requires: NPC-NPC standing > 40 + recent controversial topic.
+
+### Advanced Turn-Taking
+
+- [ ] **Interruption mechanics** — High-urgency companion (importance > 7) can interrupt mid-response with a speech bubble, even if someone else is speaking. Visual: speech bubble appears on the interrupting companion's card while main narrative shows the primary speaker's text. Requires: parallel importance check during response generation.
+
+- [ ] **Comfortable silence** — If all companions score < 2 importance, nobody responds. A brief system message like "*The group falls silent, each lost in their own thoughts.*" plays instead. More natural than forcing a response. Requires: silence threshold check after scoring.
+
+- [ ] **"Everyone responds" mode** — For big revelations or party-wide questions ("We need to decide: do we enter the dungeon?"), each companion gives a brief opinion sequentially (1 sentence each). Triggered by importance variance being low (everyone cares equally). Requires: batch LLM calls or sequential quick responses.

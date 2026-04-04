@@ -14,6 +14,7 @@ import {
     MAX_TURN_TOKEN_BUDGET, SPEECH_BUBBLE_DURATION_MS, MAX_BACKGROUND_CONVERSATIONS,
     CHATTER_TRAIT_MODIFIERS, TRAIT_TOPIC_KEYWORDS
 } from '../../schemas/ConversationSchema';
+import { selectResponder } from './ImportanceScoring';
 import { DESERTION_THRESHOLD } from '../../schemas/CompanionSchema';
 import { CompanionManager } from '../CompanionManager';
 
@@ -382,30 +383,16 @@ export class ConversationManager {
             this.checkEavesdroppers(npc.id);
         }
 
-        // Generate greeting with situational context
-        try {
-            const contextHint = this.buildGreetingContext(npc, isCompanion, mode);
-            const dialogueCtx = this.buildDialogueContext(npc.id);
-            const greeting = await NPCService.generateDialogue(this.state, npc, contextHint, dialogueCtx);
+        // No greeting generated — player speaks first, NPC responds to actual input.
+        // Just activate talk mode and show a brief status message.
+        const modeLabel = mode === 'PRIVATE' ? 'privately' : 'openly';
+        const statusMsg = isCompanion
+            ? `*You turn to ${npc.name} to talk ${modeLabel}.*`
+            : `*You approach ${npc.name}.*`;
 
-            if (greeting) {
-                this.addToConversationHistory(npc.id, npc.name, greeting, mode === 'PRIVATE');
-                this.addToConversationHistory('player', 'Player', contextHint, mode === 'PRIVATE');
-            }
-
-            const formatted = greeting ? `**${npc.name}:** ${greeting}` : `${npc.name} looks at you expectantly.`;
-            this.state.lastNarrative = formatted;
-
-            const turn = this.state.worldTime.totalTurns;
-            this.state.conversationHistory.push({ role: 'narrator', content: formatted, turnNumber: turn });
-
-            await this.emitStateUpdate();
-            return formatted;
-        } catch (e) {
-            convState.activeConversation = null;
-            this.state.activeDialogueNpcId = null;
-            return `${npc.name} seems distracted.`;
-        }
+        this.state.lastNarrative = statusMsg;
+        await this.emitStateUpdate();
+        return statusMsg;
     }
 
     /**
@@ -505,18 +492,14 @@ export class ConversationManager {
             return '__PASSTHROUGH__'; // Signal to GameLoop to re-process as command
         }
 
-        // Determine who responds
+        // Determine who responds — multi-signal importance scoring
         let responderId = conv.primaryNpcId;
 
         if (conv.mode === 'GROUP' || conv.participants.length > 1) {
-            // Try name-based addressing first
-            const nameMatch = this.resolveNpcFromInput(input);
-            if (nameMatch && conv.participants.includes(nameMatch.npcId)) {
-                responderId = nameMatch.npcId;
-            } else if (conv.mode === 'GROUP') {
-                // Personality resonance: who is most likely to respond?
-                responderId = this.pickResponderByResonance(input, conv.participants);
-            }
+            const { responderId: scoredId } = selectResponder(
+                conv.participants, this.state, input, conv.history
+            );
+            responderId = scoredId;
         }
 
         const responderNpc = this.resolveCompanionAsNpc(responderId);
@@ -629,16 +612,21 @@ export class ConversationManager {
         const followingCompanions = this.state.companions.filter((c: any) => c.meta?.followState === 'following');
         if (followingCompanions.length === 0) return "You have no companions to talk to.";
 
-        const firstCompanion = followingCompanions[0];
-        const npcId = (firstCompanion as any).meta.sourceNpcId;
+        // Use importance scoring to pick who greets first (most eager/extroverted)
+        const participantIds = followingCompanions.map((c: any) => c.meta.sourceNpcId);
+        const { responderId } = selectResponder(
+            participantIds, this.state,
+            '[GROUP CONVERSATION STARTING — who is most eager to speak first?]',
+            []
+        );
 
-        // Start with first companion, then add all others
-        const result = await this.startTalk(npcId, 'NORMAL');
+        // Start with the highest-scored companion
+        const result = await this.startTalk(responderId, 'NORMAL');
 
         const conv = this.getConvState().activeConversation;
         if (conv) {
             conv.mode = 'GROUP';
-            for (const c of followingCompanions.slice(1)) {
+            for (const c of followingCompanions) {
                 const cId = (c as any).meta.sourceNpcId;
                 if (!conv.participants.includes(cId)) {
                     conv.participants.push(cId);
