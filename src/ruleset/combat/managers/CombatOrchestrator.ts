@@ -1059,14 +1059,22 @@ export class CombatOrchestrator {
             }
         }
 
-        // Ki pool for Monk
-        if (pc.class === 'Monk' && pc.level >= 2 && !pc.featureUsages['Ki']) {
-            pc.featureUsages['Ki'] = { current: pc.level, max: pc.level, usageType: 'SHORT_REST' };
+        // Ki pool for Monk (= Monk level, overrides allFeatures Ki entry)
+        if (pc.class === 'Monk' && pc.level >= 2) {
+            pc.featureUsages['Ki'] = { current: pc.featureUsages['Ki']?.current ?? pc.level, max: pc.level, usageType: 'SHORT_REST' };
         }
 
-        // Lay on Hands for Paladin
+        // Lay on Hands for Paladin (pool = level * 5)
         if (pc.class === 'Paladin' && !pc.featureUsages['Lay on Hands']) {
             pc.featureUsages['Lay on Hands'] = { current: pc.level * 5, max: pc.level * 5, usageType: 'LONG_REST' };
+        }
+
+        // Shared Channel Divinity pool for Cleric (L2+) and Paladin (L3+)
+        if ((pc.class === 'Cleric' && pc.level >= 2) || (pc.class === 'Paladin' && pc.level >= 3)) {
+            if (!pc.featureUsages['Channel Divinity']) {
+                const uses = (pc.class === 'Cleric' && pc.level >= 6) ? 2 : 1; // Clerics get 2 at L6
+                pc.featureUsages['Channel Divinity'] = { current: uses, max: uses, usageType: 'SHORT_REST' };
+            }
         }
 
         // Lucky feat
