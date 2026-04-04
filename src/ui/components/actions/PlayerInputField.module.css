@@ -73,6 +73,7 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    align-self: stretch;
     gap: 2px;
 }
 
@@ -96,8 +97,10 @@
 .submitButton {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: var(--spacing-sm);
     padding: 0 var(--spacing-lg);
+    flex: 1;
 }
 
 .submitButton:disabled {
