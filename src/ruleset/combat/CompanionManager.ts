@@ -247,7 +247,7 @@ export class CompanionManager {
             ac: baseAc,
             featureUsages: {},
             inventory: {
-                gold: { cp: 0, sp: 0, ep: 0, gp: 0, pp: 0 },
+                gold: { cp: 0, sp: 0, ep: 0, gp: Math.floor(Math.random() * 15) + 5, pp: 0 },
                 items: []
             },
             equipmentSlots: {},

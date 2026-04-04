@@ -235,9 +235,18 @@ export class BarterEngine {
     private static tryAutoEquip(char: PlayerCharacter, item: any): void {
         const type = (item.type || '').toLowerCase();
         const slots = char.equipmentSlots as Record<string, string | undefined>;
-        // Prefer item's own properties (travel with the item), fallback to DataManager
         const props = item.properties || (DataManager.getItem(item.id || item.name) as any)?.properties || [];
         const isTwoHanded = props.some((p: string) => /two.?handed/i.test(p));
+
+        // F2: Class proficiency check — don't auto-equip martial weapons for caster classes
+        const isMartialWeapon = type.includes('martial');
+        const casterClasses = ['Wizard', 'Sorcerer', 'Warlock', 'Druid'];
+        if (isMartialWeapon && casterClasses.includes(char.class)) return;
+
+        // Don't auto-equip heavy armor for classes that can't wear it
+        const isHeavyArmor = type.includes('heavy');
+        const noHeavyArmor = ['Wizard', 'Sorcerer', 'Warlock', 'Monk', 'Rogue', 'Ranger', 'Bard'];
+        if (isHeavyArmor && noHeavyArmor.includes(char.class)) return;
 
         let targetSlot: string | undefined;
 

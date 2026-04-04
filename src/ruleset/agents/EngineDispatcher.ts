@@ -5,6 +5,7 @@ import { DataManager } from '../data/DataManager';
 import { Dice } from '../combat/Dice';
 import { LoreService } from './LoreService';
 import { CompanionManager } from '../combat/CompanionManager';
+import { LevelingEngine } from '../combat/LevelingEngine';
 import { z } from 'zod';
 
 type EngineCall = z.infer<typeof EngineCallSchema>;
@@ -34,6 +35,12 @@ export class EngineDispatcher {
                 switch (call.function) {
                     case 'add_xp':
                         state.character.xp += (call.args.amount || 0);
+                        // Auto-level player if threshold reached
+                        while (LevelingEngine.canLevelUp(state.character)) {
+                            LevelingEngine.levelUp(state.character);
+                        }
+                        // Auto-level companions
+                        LevelingEngine.autoLevelCompanions(state.character.level, state.companions);
                         break;
 
                     case 'modify_hp':

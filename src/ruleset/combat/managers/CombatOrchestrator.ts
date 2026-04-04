@@ -964,41 +964,11 @@ export class CombatOrchestrator {
                 this.addCombatLog(`LEVEL UP! ${levelMsg} Spell Slots restored.`);
             }
 
-            // A1+A2+A3: Auto-level companions after combat victory
-            const targetCompLevel = Math.max(1, char.level - 1);
-            for (const comp of this.state.companions) {
-                if (comp.character.level < targetCompLevel) {
-                    const oldLevel = comp.character.level;
-                    const oldMaxHp = comp.character.hp.max;
-                    const oldAc = comp.character.ac;
-                    const oldSlots: Record<string, number> = {};
-                    for (const [lv, s] of Object.entries(comp.character.spellSlots || {})) {
-                        oldSlots[lv] = (s as any).max || 0;
-                    }
-
-                    let safetyCounter = 0;
-                    while (comp.character.level < targetCompLevel && safetyCounter < 20) {
-                        const prevLevel = comp.character.level;
-                        comp.character.xp = MechanicsEngine.getNextLevelXP(comp.character.level);
-                        const compMsg = LevelingEngine.levelUp(comp.character);
-                        this.addCombatLog(`${comp.character.name}: ${compMsg}`);
-                        if (comp.character.level === prevLevel) break;
-                        safetyCounter++;
-                    }
-
-                    // Store level-up notification for UI badge
-                    const newSlots: Record<string, number> = {};
-                    for (const [lv, s] of Object.entries(comp.character.spellSlots || {})) {
-                        newSlots[lv] = (s as any).max || 0;
-                    }
-                    comp.meta.pendingLevelUp = {
-                        oldLevel, newLevel: comp.character.level,
-                        oldMaxHp, newMaxHp: comp.character.hp.max,
-                        oldAc, newAc: comp.character.ac,
-                        oldSpellSlots: oldSlots, newSpellSlots: newSlots,
-                    };
-                }
-            }
+            // Auto-level companions after combat victory (centralized)
+            LevelingEngine.autoLevelCompanions(
+                char.level, this.state.companions,
+                (msg) => this.addCombatLog(msg)
+            );
         }
 
         if (victory) {

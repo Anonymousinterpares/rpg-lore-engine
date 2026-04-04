@@ -497,4 +497,58 @@ export class LevelingEngine {
         pc.xp += xp;
         return { totalXP: pc.xp, leveledUp: this.canLevelUp(pc) };
     }
+
+    /**
+     * Auto-levels all companions to player.level - 1.
+     * Centralized function — call from ANY path that grants XP and levels the player.
+     * Sets pendingLevelUp on each companion that leveled for UI notification.
+     * Returns messages for each companion that leveled.
+     */
+    public static autoLevelCompanions(
+        playerLevel: number,
+        companions: any[],
+        logCallback?: (msg: string) => void
+    ): string[] {
+        const targetLevel = Math.max(1, playerLevel - 1);
+        const messages: string[] = [];
+
+        for (const comp of companions) {
+            if (comp.character.level >= targetLevel) continue;
+
+            const oldLevel = comp.character.level;
+            const oldMaxHp = comp.character.hp.max;
+            const oldAc = comp.character.ac;
+            const oldSlots: Record<string, number> = {};
+            for (const [lv, s] of Object.entries(comp.character.spellSlots || {})) {
+                oldSlots[lv] = (s as any).max || 0;
+            }
+
+            let safety = 0;
+            while (comp.character.level < targetLevel && safety < 20) {
+                const prevLevel = comp.character.level;
+                comp.character.xp = MechanicsEngine.getNextLevelXP(comp.character.level);
+                const msg = this.levelUp(comp.character);
+                const fullMsg = `${comp.character.name}: ${msg}`;
+                messages.push(fullMsg);
+                logCallback?.(fullMsg);
+                if (comp.character.level === prevLevel) break;
+                safety++;
+            }
+
+            if (comp.character.level > oldLevel) {
+                const newSlots: Record<string, number> = {};
+                for (const [lv, s] of Object.entries(comp.character.spellSlots || {})) {
+                    newSlots[lv] = (s as any).max || 0;
+                }
+                comp.meta.pendingLevelUp = {
+                    oldLevel, newLevel: comp.character.level,
+                    oldMaxHp, newMaxHp: comp.character.hp.max,
+                    oldAc, newAc: comp.character.ac,
+                    oldSpellSlots: oldSlots, newSpellSlots: newSlots,
+                };
+            }
+        }
+
+        return messages;
+    }
 }

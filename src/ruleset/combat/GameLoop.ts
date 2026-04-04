@@ -1292,43 +1292,9 @@ export class GameLoop {
                     messages.push(msg);
                 }
 
-                // Auto-level companions to player.level - 1
-                const targetCompLevel = Math.max(1, this.state.character.level - 1);
-                for (const comp of this.state.companions) {
-                    if (comp.character.level < targetCompLevel) {
-                        // Snapshot old stats for level-up notification
-                        const oldLevel = comp.character.level;
-                        const oldMaxHp = comp.character.hp.max;
-                        const oldAc = comp.character.ac;
-                        const oldSlots: Record<string, number> = {};
-                        for (const [lv, s] of Object.entries(comp.character.spellSlots || {})) {
-                            oldSlots[lv] = (s as any).max || 0;
-                        }
-
-                        let safetyCounter = 0;
-                        while (comp.character.level < targetCompLevel && safetyCounter < 20) {
-                            const prevLevel = comp.character.level;
-                            comp.character.xp = MechanicsEngine.getNextLevelXP(comp.character.level);
-                            const compMsg = LevelingEngine.levelUp(comp.character);
-                            console.log(`[GameLoop] Companion auto-level: ${comp.character.name} level ${prevLevel}→${comp.character.level} (target: ${targetCompLevel}): ${compMsg}`);
-                            messages.push(`${comp.character.name}: ${compMsg}`);
-                            if (comp.character.level === prevLevel) break; // Stuck — avoid infinite loop
-                            safetyCounter++;
-                        }
-
-                        // Store level-up notification with old→new comparison
-                        const newSlots: Record<string, number> = {};
-                        for (const [lv, s] of Object.entries(comp.character.spellSlots || {})) {
-                            newSlots[lv] = (s as any).max || 0;
-                        }
-                        comp.meta.pendingLevelUp = {
-                            oldLevel, newLevel: comp.character.level,
-                            oldMaxHp, newMaxHp: comp.character.hp.max,
-                            oldAc, newAc: comp.character.ac,
-                            oldSpellSlots: oldSlots, newSpellSlots: newSlots,
-                        };
-                    }
-                }
+                // Auto-level companions (centralized)
+                const compMsgs = LevelingEngine.autoLevelCompanions(this.state.character.level, this.state.companions);
+                messages.push(...compMsgs);
 
                 await this.emitStateUpdate();
                 return messages.join('\n');

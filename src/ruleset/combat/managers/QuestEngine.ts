@@ -3,6 +3,7 @@ import { Quest, QuestObjective } from '../../schemas/QuestSchema';
 import { EventBusManager, GameEventType, GameEventPayload } from './EventBusManager';
 import { InventoryManager } from './InventoryManager';
 import { MechanicsEngine } from '../MechanicsEngine';
+import { LevelingEngine } from '../LevelingEngine';
 
 export class QuestEngine {
     private state: GameState;
@@ -232,15 +233,18 @@ export class QuestEngine {
             this.state.character.xp += quest.rewards.xp;
             this.addCombatLog(`**+${quest.rewards.xp} XP**`);
 
-            // Level up check
-            const nextThreshold = MechanicsEngine.getNextLevelXP(this.state.character.level);
-            if (this.state.character.xp >= nextThreshold && this.state.character.level < 20) {
-                this.state.character.level++;
-                this.state.character.hp.max += 10;
-                this.state.character.hp.current = this.state.character.hp.max;
+            // Level up check — use LevelingEngine (not manual increment)
+            while (LevelingEngine.canLevelUp(this.state.character)) {
+                const msg = LevelingEngine.levelUp(this.state.character);
                 Object.values(this.state.character.spellSlots).forEach(s => s.current = s.max);
-                this.addCombatLog(`LEVEL UP! You are now level ${this.state.character.level}. HP and Spell Slots restored.`);
+                this.addCombatLog(`LEVEL UP! ${msg} Spell Slots restored.`);
             }
+
+            // Auto-level companions after quest XP
+            LevelingEngine.autoLevelCompanions(
+                this.state.character.level, this.state.companions,
+                (msg) => this.addCombatLog(msg)
+            );
         }
 
         // Grant Gold

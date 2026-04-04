@@ -62,6 +62,11 @@ export class InventoryManager {
         if (itemIndex === -1) return "Item not found in inventory.";
 
         const item = char.inventory.items[itemIndex];
+
+        // B8: Clear equipped state before dropping
+        const wasEquipped = item.equipped;
+        item.equipped = false;
+
         char.inventory.items.splice(itemIndex, 1);
 
         if (!this.state.location.droppedItems) {
@@ -70,15 +75,20 @@ export class InventoryManager {
 
         this.state.location.droppedItems.push({
             ...item,
+            equipped: false, // Ensure dropped item is unequipped
             instanceId: item.instanceId || `${item.id}-${Date.now()}`
         });
 
-        const slots = char.equipmentSlots as Record<string, string | undefined>;
-        Object.keys(slots).forEach(slot => {
-            if (slots[slot] === instanceId) {
-                slots[slot] = undefined;
-            }
-        });
+        // Clear equipment slots if item was equipped
+        if (wasEquipped) {
+            const slots = char.equipmentSlots as Record<string, string | undefined>;
+            Object.keys(slots).forEach(slot => {
+                if (slots[slot] === instanceId) {
+                    slots[slot] = undefined;
+                }
+            });
+            EquipmentEngine.recalculateAC(char);
+        }
 
         await this.emitStateUpdate();
         EventBusManager.publish('ITEM_LOST', { itemId: item.id || item.name, quantity: item.quantity || 1 });
