@@ -191,46 +191,103 @@ export const NPC_NAME_POOLS = {
             'Ivor', 'Janna', 'Kael', 'Lyra', 'Mira', 'Nolan', 'Orin', 'Petra',
             'Quinn', 'Rowan', 'Selene', 'Theron', 'Una', 'Valen', 'Wren', 'Xara',
             'Yorick', 'Zara', 'Aldric', 'Breta', 'Corwin', 'Dessa', 'Edric', 'Fiora',
-            'Gwen', 'Hollis', 'Iona', 'Jasper', 'Kira', 'Leander'
+            'Gwen', 'Hollis', 'Iona', 'Jasper', 'Kira', 'Leander', 'Marek', 'Nyssa',
+            'Oswin', 'Priya', 'Renn', 'Sable', 'Taryn', 'Ulric', 'Vera', 'Wendel',
+            'Yasha', 'Cedric', 'Dorian', 'Elara', 'Finley', 'Greta', 'Hadwin', 'Isla',
+            'Jorik', 'Kessa', 'Lucan', 'Maren', 'Nessa', 'Orla', 'Phelan', 'Rhea'
         ],
         last: [
             'Shadowstep', 'Ironfoot', 'Oakheart', 'Silvervein', 'Brightwood', 'Stormborn',
             'Thornbusk', 'Ashford', 'Blackthorn', 'Copperfield', 'Dunmere', 'Eldergrove',
             'Fairwind', 'Greycloak', 'Hartwell', 'Inkwell', 'Kingsley', 'Larkwood',
             'Millstone', 'Nighthollow', 'Oakridge', 'Pennywhistle', 'Ravencrest', 'Stonegate',
-            'Thistledown', 'Underhill', 'Vex', 'Windermere', 'Yarrow', 'Zimmer'
+            'Thistledown', 'Underhill', 'Windermere', 'Yarrow', 'Zimmer', 'Ashvale',
+            'Birchwood', 'Clayborne', 'Duskhollow', 'Everhart', 'Foxglove', 'Greymantle',
+            'Hawthorn', 'Ivybrook', 'Kettleburn', 'Longmire', 'Mossheart', 'Northvale',
+            'Oakenshield', 'Pinecrest', 'Redthorn', 'Silverbell', 'Tidewater', 'Whitmore'
         ]
     },
     ELVEN: {
         first: [
             'Aelindra', 'Caladrel', 'Elessar', 'Faelith', 'Galathil', 'Ilyana',
             'Kethraniel', 'Lirael', 'Miriel', 'Naevys', 'Oreleth', 'Sylvaris',
-            'Thalion', 'Vaelora', 'Yrendil'
+            'Thalion', 'Vaelora', 'Yrendil', 'Anariel', 'Celeborn', 'Daeris',
+            'Elenwe', 'Faelar', 'Galanodel', 'Haelira', 'Ithilwen', 'Kethriel',
+            'Lothiriel', 'Meliamne', 'Naeris', 'Quelenna', 'Rillael', 'Siannodel',
+            'Thyrael', 'Uthemar', 'Vaeril', 'Xiloscient', 'Zuriel'
         ],
         last: [
             'Moonwhisper', 'Starweaver', 'Windwalker', 'Leafsong', 'Dawnbringer',
-            'Nightbloom', 'Silverstream', 'Thornveil', 'Sunshadow', 'Mistwalker'
+            'Nightbloom', 'Silverstream', 'Thornveil', 'Sunshadow', 'Mistwalker',
+            'Amberleaf', 'Brightmoon', 'Crystalveil', 'Deeproot', 'Evenstar',
+            'Feathergale', 'Goldpetal', 'Hollowvine', 'Ivyshroud', 'Jadebark',
+            'Lilygrove', 'Mossglen', 'Netherglow', 'Oakensong', 'Petalwind',
+            'Silverthorn', 'Twilightvale', 'Whisperwood', 'Willowshade', 'Zephyrveil'
         ]
     },
     DWARVEN: {
         first: [
             'Brummir', 'Dolgrin', 'Gundrak', 'Harbek', 'Kildrak', 'Morgran',
             'Rurik', 'Tordek', 'Vondal', 'Adrik', 'Brottor', 'Duergin',
-            'Helga', 'Kathra', 'Mardred'
+            'Helga', 'Kathra', 'Mardred', 'Barendd', 'Darrak', 'Eberk',
+            'Falkrunn', 'Gardain', 'Ilmek', 'Korbek', 'Lokir', 'Nundrik',
+            'Orsik', 'Rangrim', 'Stokk', 'Thoradin', 'Ulfgar', 'Whurbin',
+            'Bhaldrin', 'Dagna', 'Grimhild', 'Huldra', 'Kettra'
         ],
         last: [
             'Anvilstrike', 'Boulderback', 'Coppervein', 'Deepdelver', 'Fireforge',
-            'Goldbeard', 'Hammerfall', 'Ironhelm', 'Orebreaker', 'Stonefist'
+            'Goldbeard', 'Hammerfall', 'Ironhelm', 'Orebreaker', 'Stonefist',
+            'Blackhammer', 'Coalmantle', 'Darkstone', 'Embervein', 'Forgeheart',
+            'Granitefist', 'Hardpick', 'Ironbrow', 'Kegborn', 'Leadfoot',
+            'Magmabeard', 'Nailbender', 'Pickaxe', 'Quartzkin', 'Rustvein',
+            'Shalebreaker', 'Tinderforge', 'Underhold', 'Whetstone', 'Zincore'
         ]
     },
     ROUGH: {
         first: [
             'Grix', 'Skar', 'Vex', 'Rot', 'Mog', 'Nyx',
-            'Slag', 'Blight', 'Fang', 'Raze', 'Cinder', 'Murk'
+            'Slag', 'Blight', 'Fang', 'Raze', 'Cinder', 'Murk',
+            'Drek', 'Grub', 'Haze', 'Jinx', 'Krag', 'Lurk',
+            'Narg', 'Pox', 'Quag', 'Scab', 'Tusk', 'Wretch',
+            'Bile', 'Char', 'Doom', 'Filch', 'Gnash', 'Hex'
         ],
         last: [
             'Bonecrusher', 'Goreclaw', 'Skulltaker', 'Bloodmaw', 'Rotgut',
-            'Blightfinger', 'Snarl', 'Gutripper', 'Ashbane', 'Vilehand'
+            'Blightfinger', 'Snarl', 'Gutripper', 'Ashbane', 'Vilehand',
+            'Blacktongue', 'Corpsebreath', 'Dirgewalker', 'Eyegouger', 'Fleshrender',
+            'Gravespawn', 'Hexmark', 'Ironfang', 'Jawbreaker', 'Knifetooth',
+            'Leecher', 'Marrowgnaw', 'Nightcrawl', 'Plagueborn', 'Razorback',
+            'Scourge', 'Thornmaw', 'Venomspine', 'Wormwood', 'Yellowtusk'
+        ]
+    },
+    DESERT: {
+        first: [
+            'Amira', 'Bashir', 'Cyra', 'Dariush', 'Esma', 'Farid',
+            'Ghalia', 'Hakim', 'Idris', 'Jamila', 'Kasim', 'Leila',
+            'Mehdi', 'Nadia', 'Omar', 'Parisa', 'Rashid', 'Samira',
+            'Tahir', 'Uzma', 'Wahid', 'Yasmin', 'Zain', 'Aziza',
+            'Hamza', 'Khalil', 'Mirza', 'Nasreen', 'Sahar', 'Tariq'
+        ],
+        last: [
+            'al-Rashid', 'al-Hakim', 'ibn-Farouk', 'al-Sahar', 'al-Ghazi',
+            'ibn-Tariq', 'al-Nuri', 'al-Qasim', 'ibn-Khalil', 'al-Wahid',
+            'Dunestalker', 'Sandrider', 'Mirageborn', 'Oasiskeeper', 'Sunforge',
+            'Windscorched', 'Dustwalker', 'Sandveil', 'Heatscar', 'Starguide'
+        ]
+    },
+    SEAFARING: {
+        first: [
+            'Anchor', 'Bilge', 'Coral', 'Drake', 'Edda', 'Finn',
+            'Gale', 'Haven', 'Iris', 'Jetsam', 'Kelp', 'Lagoon',
+            'Mariner', 'Nemo', 'Oceana', 'Pike', 'Quay', 'Riptide',
+            'Storm', 'Tide', 'Undertow', 'Vela', 'Wake', 'Zephyr',
+            'Brine', 'Caspian', 'Dory', 'Fleet', 'Gull', 'Harpoon'
+        ],
+        last: [
+            'Saltblood', 'Wavecrest', 'Deepkeel', 'Tidecaller', 'Stormchaser',
+            'Reefdancer', 'Seaspray', 'Anchorborn', 'Foghorn', 'Driftwood',
+            'Barnacle', 'Coralheart', 'Shellback', 'Galewind', 'Kelpbeard',
+            'Netmender', 'Portside', 'Rumbottom', 'Sailmender', 'Whalebane'
         ]
     }
 };
@@ -239,23 +296,23 @@ export const NPC_NAME_POOLS = {
  * Maps biome types to preferred name culture pools.
  */
 export const BIOME_NAME_CULTURE: Record<string, (keyof typeof NPC_NAME_POOLS)[]> = {
-    'Urban':        ['HUMAN_COMMON', 'ELVEN', 'DWARVEN'],
-    'Farmland':     ['HUMAN_COMMON'],
-    'Plains':       ['HUMAN_COMMON'],
+    'Urban':        ['HUMAN_COMMON', 'ELVEN', 'DWARVEN', 'DESERT'],
+    'Farmland':     ['HUMAN_COMMON', 'DWARVEN'],
+    'Plains':       ['HUMAN_COMMON', 'DESERT'],
     'Forest':       ['ELVEN', 'HUMAN_COMMON'],
-    'Jungle':       ['HUMAN_COMMON', 'ELVEN'],
+    'Jungle':       ['HUMAN_COMMON', 'ELVEN', 'ROUGH'],
     'Hills':        ['DWARVEN', 'HUMAN_COMMON'],
     'Mountains':    ['DWARVEN', 'HUMAN_COMMON'],
-    'Mountain_High':['DWARVEN'],
-    'Coast':        ['HUMAN_COMMON'],
-    'Coast_Cold':   ['HUMAN_COMMON', 'DWARVEN'],
-    'Coast_Desert': ['HUMAN_COMMON'],
-    'Ocean':        ['HUMAN_COMMON'],
-    'Swamp':        ['ROUGH', 'HUMAN_COMMON'],
-    'Desert':       ['HUMAN_COMMON'],
+    'Mountain_High':['DWARVEN', 'HUMAN_COMMON'],
+    'Coast':        ['SEAFARING', 'HUMAN_COMMON'],
+    'Coast_Cold':   ['SEAFARING', 'DWARVEN', 'HUMAN_COMMON'],
+    'Coast_Desert': ['SEAFARING', 'DESERT'],
+    'Ocean':        ['SEAFARING'],
+    'Swamp':        ['ROUGH', 'HUMAN_COMMON', 'ELVEN'],
+    'Desert':       ['DESERT', 'HUMAN_COMMON'],
     'Tundra':       ['DWARVEN', 'HUMAN_COMMON'],
     'Volcanic':     ['ROUGH', 'DWARVEN'],
-    'Ruins':        ['ROUGH', 'HUMAN_COMMON'],
+    'Ruins':        ['ROUGH', 'HUMAN_COMMON', 'ELVEN'],
 };
 
 /**
