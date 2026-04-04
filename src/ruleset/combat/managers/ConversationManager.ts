@@ -235,6 +235,54 @@ export class ConversationManager {
         };
     }
 
+    /**
+     * Builds a rich, situational greeting context based on recent events.
+     * The NPC reacts to what just happened — combat, travel, time of day, etc.
+     */
+    private buildGreetingContext(npc: WorldNPC, isCompanion: boolean, mode: 'PRIVATE' | 'NORMAL'): string {
+        if (!isCompanion) return '[GREETING / START CONVERSATION]';
+
+        const parts: string[] = [];
+        parts.push(`[The player approaches you to chat${mode === 'PRIVATE' ? ' privately' : ''}.`);
+
+        // Recent combat?
+        const recentBattleMemory = this.state.conversationHistory
+            .filter(h => h.role === 'narrator' || h.role === 'system')
+            .slice(-5)
+            .find(h => h.content.toLowerCase().includes('battle') || h.content.toLowerCase().includes('combat') || h.content.toLowerCase().includes('fought') || h.content.toLowerCase().includes('fled'));
+        if (recentBattleMemory) {
+            parts.push(`You recently fought in a battle. React to it — are you relieved? Shaken? Pumped?`);
+        }
+
+        // Companion HP status
+        const companion = this.state.companions.find((c: any) => c.meta?.sourceNpcId === npc.id);
+        if (companion) {
+            const hpRatio = companion.character.hp.current / companion.character.hp.max;
+            if (hpRatio < 0.3) parts.push(`You are badly wounded (${companion.character.hp.current}/${companion.character.hp.max} HP). Show it.`);
+            else if (hpRatio < 0.6) parts.push(`You took some hits recently (${companion.character.hp.current}/${companion.character.hp.max} HP).`);
+        }
+
+        // Time of day mood
+        const hour = this.state.worldTime.hour;
+        if (hour >= 22 || hour < 5) parts.push(`It's late at night — you might be tired or reflective.`);
+        else if (hour >= 5 && hour < 8) parts.push(`It's early morning.`);
+
+        // Last narrative (what just happened in the world)
+        if (this.state.lastNarrative && this.state.lastNarrative.length > 20) {
+            const snippet = this.state.lastNarrative.substring(0, 150).replace(/\*\*/g, '');
+            parts.push(`Recent events: "${snippet}..."`);
+        }
+
+        // Prior conversation summary
+        const convState = this.getConvState();
+        if (convState.lastConversationSummary) {
+            parts.push(`Earlier conversation: ${convState.lastConversationSummary}`);
+        }
+
+        parts.push(`Greet the player in character. Be natural — react to the situation, don't just say hello.]`);
+        return parts.join(' ');
+    }
+
     // ---------------------------------------------------------------
     // Talk Mode Lifecycle
     // ---------------------------------------------------------------
@@ -282,12 +330,9 @@ export class ConversationManager {
             this.checkEavesdroppers(npc.id);
         }
 
-        // Generate greeting
+        // Generate greeting with situational context
         try {
-            const contextHint = isCompanion
-                ? `[GREETING / START CONVERSATION — this is your traveling companion, the player wants to chat${mode === 'PRIVATE' ? ' privately' : ''}]`
-                : `[GREETING / START CONVERSATION]`;
-
+            const contextHint = this.buildGreetingContext(npc, isCompanion, mode);
             const dialogueCtx = this.buildDialogueContext(npc.id);
             const greeting = await NPCService.generateDialogue(this.state, npc, contextHint, dialogueCtx);
 

@@ -229,7 +229,7 @@
     top: 4px;
     left: 100%;
     margin-left: 6px;
-    width: 200px;
+    width: 250px;
     background: #f4e4bc;
     border: 1px solid rgba(139, 119, 75, 0.4);
     border-radius: 0 8px 8px 8px;
@@ -238,12 +238,14 @@
     font-family: 'EB Garamond', serif;
     font-style: italic;
     color: var(--color-parchment-text, #3a2a1a);
-    max-height: 64px;
-    overflow: hidden;
+    max-height: 114px;
+    overflow-y: auto;
     line-height: 1.35;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     animation: fadeInBubble 0.3s ease;
     z-index: 10;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(139, 119, 75, 0.3) transparent;
 }
 
 .speechBubbleClose {

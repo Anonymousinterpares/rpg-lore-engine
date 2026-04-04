@@ -1737,6 +1737,38 @@ export class GameLoop {
     public async completeRest(durationMinutes: number, type: 'rest' | 'wait' = 'rest'): Promise<{ narration: string; arcaneRecoveryAvailable?: boolean; arcaneRecoveryBudget?: number }> {
         const restResult = await this.time.completeRest(durationMinutes, type);
 
+        // Apply rest benefits to companions too
+        for (const companion of this.state.companions) {
+            if ((companion as any).meta?.followState !== 'following') continue;
+            const char = companion.character;
+
+            if (type === 'rest') {
+                const isLongRest = durationMinutes >= 480; // 8+ hours = long rest
+
+                if (isLongRest) {
+                    // Long rest: full HP recovery, all hit dice restored, spell slots restored
+                    char.hp.current = char.hp.max;
+                    if (char.hitDice) char.hitDice.current = char.hitDice.max;
+                    if (char.spellSlots) {
+                        for (const lv of Object.keys(char.spellSlots)) {
+                            char.spellSlots[lv].current = char.spellSlots[lv].max;
+                        }
+                    }
+                    // Clear death saves
+                    if (char.deathSaves) { char.deathSaves.successes = 0; char.deathSaves.failures = 0; }
+                } else {
+                    // Short rest: spend hit dice for healing (auto-spend if below max)
+                    if (char.hitDice && char.hitDice.current > 0 && char.hp.current < char.hp.max) {
+                        const hitDieMax = char.hitDice.dieType ? parseInt(char.hitDice.dieType.replace('1d', '')) : 8;
+                        const conMod = Math.floor(((char.stats?.CON || 10) as number - 10) / 2);
+                        const healed = Math.floor(hitDieMax / 2) + 1 + conMod;
+                        char.hp.current = Math.min(char.hp.max, char.hp.current + healed);
+                        char.hitDice.current = Math.max(0, char.hitDice.current - 1);
+                    }
+                }
+            }
+        }
+
         try {
             const narration = await NarratorService.narrateRestCompletion(
                 this.state,
