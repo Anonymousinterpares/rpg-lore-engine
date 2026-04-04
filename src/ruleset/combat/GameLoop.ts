@@ -256,7 +256,8 @@ export class GameLoop {
                 'levelup', 'level', 'invest', 'resetskills', 'asi', 'feat', 'multiclass', 'skillability', 'ability', 'chooseability', 'use',
                 'talk', 'talk_private', 'endtalk', 'group_talk', 'add_to_conversation',
                 'companion_wait', 'companion_follow', 'dismiss_companion', 'recruit_test',
-                'directive', 'order', 'command_party', 'set_companion_directive'];
+                'directive', 'order', 'command_party', 'set_companion_directive',
+                'give', 'take', 'barter'];
             if (tradeCommands.includes(intent.command || '')) {
                 this.state.lastNarrative = systemResponse;
                 await this.emitStateUpdate();
@@ -1213,6 +1214,45 @@ export class GameLoop {
                 return dismissMsg;
             }
 
+            // ===== BARTERING =====
+            case 'give': {
+                // /give <companion_name> <item_instanceId>
+                const { BarterEngine } = await import('./BarterEngine');
+                const giveName = args[0];
+                const giveItemId = args[1];
+                if (!giveName || !giveItemId) return 'Usage: /give <companion_name> <item_instanceId>';
+                const giveIdx = CompanionManager.findCompanionIndex(this.state, giveName);
+                if (giveIdx < 0) return `No companion named "${giveName}".`;
+                const giveResult = BarterEngine.giveItem(this.state, giveIdx, giveItemId);
+                await this.emitStateUpdate();
+                return giveResult.message;
+            }
+            case 'take': {
+                // /take <companion_name> <item_instanceId>
+                const { BarterEngine } = await import('./BarterEngine');
+                const takeName = args[0];
+                const takeItemId = args[1];
+                if (!takeName || !takeItemId) return 'Usage: /take <companion_name> <item_instanceId>';
+                const takeIdx = CompanionManager.findCompanionIndex(this.state, takeName);
+                if (takeIdx < 0) return `No companion named "${takeName}".`;
+                const takeResult = BarterEngine.takeItem(this.state, takeIdx, takeItemId);
+                await this.emitStateUpdate();
+                return takeResult.message;
+            }
+            case 'barter': {
+                // /barter <companion_name> <offer_instanceId> <request_instanceId>
+                const { BarterEngine } = await import('./BarterEngine');
+                const barterName = args[0];
+                const offerId = args[1];
+                const requestId = args[2];
+                if (!barterName || !offerId || !requestId) return 'Usage: /barter <companion_name> <your_item_id> <their_item_id>';
+                const barterIdx = CompanionManager.findCompanionIndex(this.state, barterName);
+                if (barterIdx < 0) return `No companion named "${barterName}".`;
+                const barterResult = BarterEngine.executeBarter(this.state, barterIdx, offerId, requestId);
+                await this.emitStateUpdate();
+                return barterResult.message;
+            }
+
             // DEV: Force-recruit a test companion for UI testing
             case 'recruit_test': {
                 const roles = ['Guard', 'Scholar', 'Bandit', 'Merchant', 'Hermit'];
@@ -1247,6 +1287,19 @@ export class GameLoop {
                     if (msg.includes('specify class')) return msg;
                     messages.push(msg);
                 }
+
+                // Auto-level companions to player.level - 1
+                const targetCompLevel = Math.max(1, this.state.character.level - 1);
+                for (const comp of this.state.companions) {
+                    while (comp.character.level < targetCompLevel) {
+                        // Bypass XP check: force XP to level threshold
+                        const { MechanicsEngine: ME } = await import('./MechanicsEngine');
+                        comp.character.xp = ME.getNextLevelXP(comp.character.level);
+                        const compMsg = LevelingEngine.levelUp(comp.character);
+                        messages.push(`${comp.character.name}: ${compMsg}`);
+                    }
+                }
+
                 await this.emitStateUpdate();
                 return messages.join('\n');
             }

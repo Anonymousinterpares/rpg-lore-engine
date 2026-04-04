@@ -55,6 +55,8 @@ export class CombatManager {
             for (let i = 0; i < activeCompanions.length; i++) {
                 const companion = CombatFactory.fromPlayer(activeCompanions[i].character, `companion_${i}`, 'companion');
                 companion.initiative = Dice.d20() + MechanicsEngine.getModifier(companion.stats.DEX || 10);
+                // Tag with class for AI strategy resolution
+                (companion as any).companionClass = activeCompanions[i].character.class;
 
                 // Deployment: Pick unique positions from player zone
                 const posIndex = Math.min(i + 1, grid.playerStartZone.length - 1);

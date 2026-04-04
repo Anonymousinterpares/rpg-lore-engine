@@ -120,7 +120,22 @@ export class CombatAI {
             if (result) return result;
         }
 
-        // --- DEFAULT BEHAVIOR (enemies and companions without directive) ---
+        // --- CLASS-SPECIFIC STRATEGY (companions without directive, or directive returned null) ---
+        if (isCompanion) {
+            try {
+                const { getStrategyForCompanion, buildCombatContext } = require('./ai/StrategyRegistry');
+                const strategy = getStrategyForCompanion(actor, state);
+                if (strategy) {
+                    const ctx = buildCombatContext(actor, state, gridManager);
+                    const classAction = strategy.decideAutonomous(ctx);
+                    if (classAction) return classAction;
+                }
+            } catch (e) {
+                // Strategy module not loaded — fall through to default
+            }
+        }
+
+        // --- DEFAULT BEHAVIOR (enemies, or companions with no strategy match) ---
         let primaryTarget = this.getNearestTarget(actor, targets, gridManager);
         if (!primaryTarget) return { type: 'MOVE', targetId: '' };
 
