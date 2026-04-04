@@ -183,10 +183,13 @@ ${memory || 'No previous conversation.'}
             const sa = dialogueCtx.selfAwareness;
             let selfLines = `You are a Level ${sa.level} ${sa.class}. HP: ${sa.hp.current}/${sa.hp.max}. AC: ${sa.ac}.`;
             if (sa.gold > 0) selfLines += ` Gold: ${sa.gold} gp.`;
-            if (sa.equippedWeapon) selfLines += `\nWielding: ${sa.equippedWeapon}.`;
-            if (sa.equippedArmor) selfLines += ` Wearing: ${sa.equippedArmor}.`;
-            if (sa.equippedShield) selfLines += ` Carrying: ${sa.equippedShield}.`;
+            else selfLines += ` You have no gold.`;
+            // Equipment — explicitly state what you have AND don't have
+            selfLines += `\nWeapon: ${sa.equippedWeapon || 'NONE — you are unarmed, you have NO weapon.'}.`;
+            selfLines += ` Armor: ${sa.equippedArmor || 'NONE — you wear no armor.'}.`;
+            if (sa.equippedShield) selfLines += ` Shield: ${sa.equippedShield}.`;
             if (sa.preparedSpells && sa.preparedSpells.length > 0) selfLines += `\nSpells: ${sa.preparedSpells.join(', ')}.`;
+            else selfLines += `\nYou know NO spells.`;
             if (sa.cantrips && sa.cantrips.length > 0) selfLines += ` Cantrips: ${sa.cantrips.join(', ')}.`;
             if (sa.conditions && sa.conditions.length > 0) selfLines += `\nConditions: ${sa.conditions.join(', ')}.`;
             if (sa.locationName) selfLines += `\nLocation: ${sa.locationName}${sa.locationBiome ? ` (${sa.locationBiome})` : ''}.`;
@@ -194,7 +197,7 @@ ${memory || 'No previous conversation.'}
             if (sa.weather) selfLines += ` Weather: ${sa.weather}.`;
             if (sa.season) selfLines += ` Season: ${sa.season}.`;
             if (sa.calendarDate) selfLines += ` Date: ${sa.calendarDate}.`;
-            systemPrompt += `\n## YOUR STATUS (what you know about yourself)\n${selfLines}\nReference your equipment, spells, status, time, or surroundings naturally when relevant — e.g., mention your weapon by name, note the weather or time of day, offer to cast a spell you know, or comment on your wounds.\n`;
+            systemPrompt += `\n## YOUR STATUS (what you know about yourself)\n${selfLines}\nCRITICAL: ONLY reference items, weapons, armor, and spells listed above. If it says NONE, you do NOT have it — do NOT invent or hallucinate equipment you don't possess. If asked about gear you lack, honestly say you don't have it.\nReference your actual equipment, spells, status, time, or surroundings naturally when relevant.\n`;
         }
 
         // Enriched context: background knowledge (private NPC-NPC conversations this NPC had)
