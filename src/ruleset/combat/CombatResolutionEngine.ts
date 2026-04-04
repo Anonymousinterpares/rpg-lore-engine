@@ -50,6 +50,19 @@ export class CombatResolutionEngine {
             uncannyDodge?: boolean;     // Target has Uncanny Dodge (halve one attack)
         }
     ): CombatActionResult {
+        // Prevent friendly fire: allies cannot attack allies, enemies cannot attack enemies
+        const attackerIsAlly = attacker.type === 'player' || attacker.type === 'companion' || attacker.type === 'summon';
+        const targetIsAlly = target.type === 'player' || target.type === 'companion' || target.type === 'summon';
+        if (attackerIsAlly === targetIsAlly) {
+            return {
+                type: 'MISS',
+                damage: 0,
+                heal: 0,
+                message: `${attacker.name} cannot attack ${target.name} — they are an ally!`,
+                details: { roll: 0, total: 0, targetAC: target.ac }
+            };
+        }
+
         // Darkvision/lighting checks
         const attackerVision = VisibilityEngine.getVisibilityEffect(attacker as any, lightLevel);
         const targetVision = VisibilityEngine.getVisibilityEffect(target as any, lightLevel);

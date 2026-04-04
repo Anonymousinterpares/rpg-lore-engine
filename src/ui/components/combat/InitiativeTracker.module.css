@@ -109,6 +109,10 @@
     color: var(--parchment-accent);
 }
 
+.ally .name {
+    color: #3a6b8b;
+}
+
 .enemy .name {
     color: #8b3a3a;
 }
@@ -135,6 +139,10 @@
 
 .player .hpBar {
     background: linear-gradient(to right, #3a8b3a, #5cb85c);
+}
+
+.ally .hpBar {
+    background: linear-gradient(to right, #3a6b8b, #5b9bd5);
 }
 
 .enemy .hpBar {

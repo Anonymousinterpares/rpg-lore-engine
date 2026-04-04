@@ -10,6 +10,7 @@ interface Combatant {
     initiative: number;
     hp: { current: number, max: number };
     isPlayer: boolean;
+    type?: 'player' | 'companion' | 'enemy' | 'summon';
 }
 
 interface InitiativeTrackerProps {
@@ -40,14 +41,14 @@ const InitiativeTracker: React.FC<InitiativeTrackerProps> = ({
                     return (
                         <div
                             key={c.id}
-                            className={`${styles.combatant} ${isActive ? styles.active : ''} ${c.isPlayer ? styles.player : styles.enemy} ${isSelected ? styles.selected : ''}`}
-                            onClick={() => !c.isPlayer && onSelectTarget?.(c.id)}
+                            className={`${styles.combatant} ${isActive ? styles.active : ''} ${c.type === 'companion' || c.type === 'summon' ? styles.ally : c.isPlayer ? styles.player : styles.enemy} ${isSelected ? styles.selected : ''}`}
+                            onClick={() => c.type === 'enemy' && onSelectTarget?.(c.id)}
                         >
                             {isActive && <ChevronRight className={styles.indicator} size={14} />}
                             <div className={styles.info}>
                                 <span className={styles.name}>{c.name}</span>
                                 <span className={styles.init}>({c.initiative})</span>
-                                {!c.isPlayer && (
+                                {c.type === 'enemy' && (
                                     <GameTooltip text="View Details">
                                     <button
                                         className={styles.inspectBtn}

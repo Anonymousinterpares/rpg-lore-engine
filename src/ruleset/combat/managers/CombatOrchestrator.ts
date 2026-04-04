@@ -963,6 +963,11 @@ export class CombatOrchestrator {
                 this.state.lastNarrative = summary;
                 this.state.conversationHistory.push({ role: 'narrator', content: summary, turnNumber: this.state.worldTime.totalTurns });
                 this.contextManager.addEvent('narrator', summary);
+
+                // Record combat in companion memory (chronicles + conversationHistory for dialogue awareness)
+                const defeatedEnemies = combatState.combatants.filter((c: any) => c.type === 'enemy');
+                this.recordCombatForCompanions(defeatedEnemies.map((e: any) => e.name), combatState.round || 1, 'victory', summary);
+
                 await this.emitStateUpdate();
             } catch (e) { console.error(e); }
         } else {
@@ -998,8 +1003,19 @@ export class CombatOrchestrator {
             if (compCombatant) {
                 companion.character.hp.current = compCombatant.hp.current;
                 companion.character.hp.temp = compCombatant.hp.temp;
+                // Death check: companion failed all death saves during flee
+                if (compCombatant.hp.current <= 0) {
+                    const deathSaves = (compCombatant as any).deathSaves;
+                    if (deathSaves && deathSaves.failures >= 3) {
+                        console.log(`[CombatOrchestrator] Companion ${companion.character.name} died during flee.`);
+                        companion.character.hp.current = -1; // Signal: dead
+                    }
+                }
             }
         });
+
+        // Remove dead companions
+        this.state.companions = this.state.companions.filter(c => c.character.hp.current > -1);
 
         // No XP, no loot — you ran away
         this.state.mode = 'EXPLORATION';
@@ -1018,8 +1034,45 @@ export class CombatOrchestrator {
             this.state.lastNarrative = summary;
             this.state.conversationHistory.push({ role: 'narrator', content: summary, turnNumber: this.state.worldTime.totalTurns });
             this.contextManager.addEvent('narrator', summary);
+
+            // Record flee in companion memory
+            const enemyNames = combatState.combatants.filter(c => c.type === 'enemy').map(c => c.name);
+            this.recordCombatForCompanions(enemyNames, combatState.round || 1, 'fled', summary);
+
             await this.emitStateUpdate();
         } catch (e) { console.error('[Flee Narrative]', e); }
+    }
+
+    /**
+     * Records combat event in companion memory for dialogue awareness.
+     * Appends to biography.chronicles and meta.conversationHistory.
+     */
+    private recordCombatForCompanions(enemyNames: string[], rounds: number, outcome: 'victory' | 'fled', narrativeSummary: string): void {
+        const turn = this.state.worldTime.totalTurns;
+        const brief = outcome === 'victory'
+            ? `Fought ${enemyNames.join(', ')} for ${rounds} rounds and won.`
+            : `Fled from ${enemyNames.join(', ')} after ${rounds} rounds.`;
+
+        for (const companion of this.state.companions) {
+            // Chronicle entry (long-term biographical event)
+            if (companion.character.biography?.chronicles) {
+                companion.character.biography.chronicles.push({
+                    turn,
+                    event: brief
+                });
+            }
+
+            // Conversation history entry (accessible in dialogue context)
+            if (companion.meta?.conversationHistory) {
+                companion.meta.conversationHistory.push({
+                    speaker: 'System',
+                    text: `[Battle memory] ${narrativeSummary.substring(0, 200)}`,
+                    timestamp: new Date().toISOString()
+                });
+            }
+        }
+
+        console.log(`[CombatOrchestrator] Combat memory recorded for ${this.state.companions.length} companions: ${brief}`);
     }
 
     /** Ensure all unlocked class/subclass features have featureUsages entries. */
