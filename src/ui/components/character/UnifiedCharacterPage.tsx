@@ -340,6 +340,9 @@ const UnifiedCharacterPage: React.FC = () => {
                                                 {showLock ? <Lock size={10} className={styles.lockIcon} /> : null}
                                             </span></GameTooltip>
                                             <button className={styles.infoBtn} onClick={() => openCodex('skills', sn)}><Info size={10} /></button>
+                                            {eTier < 4 && cost !== undefined && (
+                                                <span className={`${styles.spCostBadge} ${canInv ? styles.spCostAffordable : styles.spCostLocked}`}>{cost} SP</span>
+                                            )}
                                             <div className={styles.pmSlotSm}>
                                                 <button className={styles.minusBtn} style={{width:16,height:16,fontSize:'0.65rem',visibility:pAdv>0?'visible':'hidden'}}
                                                     onClick={() => setPendingSP(prev => {const n={...prev};n[sn]=(n[sn]||0)-1;if(n[sn]<=0)delete n[sn];return n;})}>-</button>

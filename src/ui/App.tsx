@@ -271,6 +271,13 @@ const App: React.FC = () => {
         setBookOpen(true);
     };
 
+    const openSpellbook = () => {
+        setCodexDeepLink(undefined);
+        setActiveBookPageId('spellbook');
+        setBookOpenCounter(c => c + 1);
+        setBookOpen(true);
+    };
+
     const openSettings = () => {
         setActiveBookPageId('settings');
         setBookOpenCounter(c => c + 1);
@@ -293,7 +300,7 @@ const App: React.FC = () => {
     return (
         <BookProvider initialPages={bookPages} initialActiveId={activeBookPageId} openCounter={bookOpenCounter}>
             <ScaleProvider scale={scale} portalContainer={portalContainer}>
-            <div className={styles.appShell} ref={scaleRef}>
+            <div className={styles.appShell} ref={scaleRef} onContextMenu={(e) => e.preventDefault()}>
                 <div className={styles.scaleWrapper} style={{ zoom: scale }}>
                 <div className={styles.canvas}>
                 {isCreatingCharacter ? (
@@ -338,7 +345,7 @@ const App: React.FC = () => {
                             onCodex={openCodex}
                             onCharacter={openCharacterSheet}
                             onMenu={() => setShowMenu(true)}
-                            onEquipment={openEquipment}
+                            onSpellbook={openSpellbook}
                         />
                         <div className={styles.mainContent}>
                             <Sidebar

@@ -1,7 +1,7 @@
 import React from 'react';
 import parchmentStyles from '../../styles/parchment.module.css';
 import styles from './Header.module.css';
-import { Shield, Menu, Settings, Users, Book, User, Backpack } from 'lucide-react';
+import { Shield, Menu, Settings, Users, Book, User, BookOpen } from 'lucide-react';
 import GameTooltip from '../common/GameTooltip';
 import TimeDisplay from '../exploration/TimeDisplay';
 
@@ -10,11 +10,11 @@ interface HeaderProps {
     onSettings?: () => void;
     onCodex?: () => void;
     onCharacter?: () => void;
-    onEquipment?: () => void;
+    onSpellbook?: () => void;
     onMenu?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onLobby, onSettings, onCodex, onCharacter, onEquipment, onMenu }) => {
+const Header: React.FC<HeaderProps> = ({ onLobby, onSettings, onCodex, onCharacter, onSpellbook, onMenu }) => {
     return (
         <header className={styles.header}>
             <div className={styles.logo}>
@@ -34,9 +34,9 @@ const Header: React.FC<HeaderProps> = ({ onLobby, onSettings, onCodex, onCharact
                     <User size={18} />
                 </button>
                 </GameTooltip>
-                <GameTooltip text="Equipment">
-                <button className={parchmentStyles.button} onClick={onEquipment}>
-                    <Backpack size={18} />
+                <GameTooltip text="Spellbook">
+                <button className={parchmentStyles.button} onClick={onSpellbook}>
+                    <BookOpen size={18} />
                 </button>
                 </GameTooltip>
                 <GameTooltip text="Codex">
@@ -44,12 +44,16 @@ const Header: React.FC<HeaderProps> = ({ onLobby, onSettings, onCodex, onCharact
                     <Book size={18} />
                 </button>
                 </GameTooltip>
+                <GameTooltip text="Settings">
                 <button className={parchmentStyles.button} onClick={onSettings}>
                     <Settings size={18} />
                 </button>
+                </GameTooltip>
+                <GameTooltip text="Menu">
                 <button className={parchmentStyles.button} onClick={onMenu}>
                     <Menu size={18} />
                 </button>
+                </GameTooltip>
             </div>
         </header>
     );
