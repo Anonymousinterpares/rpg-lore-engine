@@ -10,6 +10,9 @@ export const CompanionMetaSchema = z.object({
     originalRole: z.string().optional(),         // NPC role before recruitment (Guard, Scholar, etc.)
     originalTraits: z.array(z.string()).default([]), // Preserved for personality continuity
     originalFactionId: z.string().optional(),
+    // Companion's relationship standing toward the player (-100 to 100)
+    // Below DESERTION_THRESHOLD (-30), companion may leave the party
+    companionStanding: z.number().default(25),
     // Persistent conversation history — survives across talk sessions and saves
     conversationHistory: z.array(z.object({
         speaker: z.string(),
@@ -31,6 +34,7 @@ export type Companion = z.infer<typeof CompanionSchema>;
  * MAX_PARTY_SIZE controls the companion limit — change this single value to expand.
  */
 export const MAX_PARTY_SIZE = 3;
+export const DESERTION_THRESHOLD = -30;
 
 /**
  * Gold cost calculation for recruiting an NPC.

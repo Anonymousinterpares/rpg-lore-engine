@@ -1111,10 +1111,10 @@ export class GameLoop {
             case 'recruit_test': {
                 const roles = ['Guard', 'Scholar', 'Bandit', 'Merchant', 'Hermit'];
                 const role = args[0] || roles[Math.floor(Math.random() * roles.length)];
-                const npc = NPCFactory.generateRandomNPC(
-                    (this.hexMapManager.getHex(this.state.location.hexId)?.biome || 'Plains') as any,
-                    this.state.worldNpcs
-                );
+                // Use varied biomes for faction diversity in testing
+                const testBiomes = ['Urban', 'Forest', 'Mountains', 'Swamp', 'Desert', 'Plains', 'Hills'] as any[];
+                const testBiome = testBiomes[Math.floor(Math.random() * testBiomes.length)];
+                const npc = NPCFactory.generateRandomNPC(testBiome, this.state.worldNpcs);
                 npc.role = role;
                 npc.relationship.standing = 75; // 75+ = free recruitment (true loyalty)
                 const npcTraits = [...npc.traits]; // Capture before recruitment moves the NPC

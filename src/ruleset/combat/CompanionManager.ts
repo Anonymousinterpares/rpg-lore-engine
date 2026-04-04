@@ -241,6 +241,7 @@ export class CompanionManager {
             originalTraits: [...(npc.traits || [])],
             originalFactionId: npc.factionId,
             conversationHistory: [...(npc.conversationHistory || [])], // Carry over pre-recruitment dialogue
+            companionStanding: Math.max(10, npc.relationship.standing), // Carry over standing, minimum 10 (recruited = trusts you)
         };
 
         return { character, meta };

@@ -14,6 +14,8 @@ import {
     MAX_TURN_TOKEN_BUDGET, SPEECH_BUBBLE_DURATION_MS, MAX_BACKGROUND_CONVERSATIONS,
     CHATTER_TRAIT_MODIFIERS, TRAIT_TOPIC_KEYWORDS
 } from '../../schemas/ConversationSchema';
+import { DESERTION_THRESHOLD } from '../../schemas/CompanionSchema';
+import { CompanionManager } from '../CompanionManager';
 
 /**
  * ConversationManager — Orchestrates all dialogue and party conversation systems.
@@ -858,11 +860,43 @@ Keep it under 50 words total.`;
      */
     private applyRelationshipDelta(npcId: string, delta: number, reason: string): void {
         // Check companions
-        const companion = this.state.companions.find((c: any) => c.meta?.sourceNpcId === npcId);
-        if (companion) {
-            // Companions don't have a relationship field directly, but we track via world NPC restoration
-            // For now, log it
-            console.log(`[ConversationManager] Companion relationship delta: ${companion.character.name} ${delta > 0 ? '+' : ''}${delta} (${reason})`);
+        const companionIdx = this.state.companions.findIndex((c: any) => c.meta?.sourceNpcId === npcId);
+        if (companionIdx >= 0) {
+            const companion = this.state.companions[companionIdx] as any;
+            const oldStanding = companion.meta.companionStanding ?? 25;
+            companion.meta.companionStanding = Math.max(-100, Math.min(100, oldStanding + delta));
+            console.log(`[ConversationManager] Companion relationship: ${companion.character.name} ${oldStanding}→${companion.meta.companionStanding} (${delta > 0 ? '+' : ''}${delta}: ${reason})`);
+
+            // Desertion check: if standing drops below threshold, companion leaves
+            if (companion.meta.companionStanding <= DESERTION_THRESHOLD) {
+                console.log(`[ConversationManager] ${companion.character.name} has had enough and leaves the party! (standing: ${companion.meta.companionStanding})`);
+
+                // End any active talk with this companion
+                if (this.isInTalkMode()) {
+                    this.removeParticipant(npcId);
+                }
+
+                // Dismiss them
+                const dismissMsg = CompanionManager.dismiss(this.state, companionIdx, true);
+
+                // Add a speech bubble announcing their departure
+                const convState = this.getConvState();
+                convState.speechBubbles.push({
+                    npcId,
+                    npcName: companion.character.name,
+                    text: `I've had enough of this. I'm leaving.`,
+                    expiresAt: Date.now() + 15000, // Longer duration for important event
+                    isInterParty: false
+                });
+
+                // Notify via narrative
+                this.state.lastNarrative = `**${companion.character.name}** grows furious and storms off. ${dismissMsg}`;
+                this.state.conversationHistory.push({
+                    role: 'system' as any,
+                    content: `${companion.character.name} left the party due to poor relationship.`,
+                    turnNumber: this.state.worldTime.totalTurns
+                });
+            }
             return;
         }
 

@@ -323,6 +323,16 @@ You may use engine_call "recruit_companion" or "dismiss_companion" if the narrat
 `;
         }
 
+        // Add recent conversation summary if player just finished talking to someone
+        const conversationSummary = (state as any).conversationState?.lastConversationSummary;
+        if (conversationSummary) {
+            prompt += `## RECENT PARTY CONVERSATION
+The player just had a conversation: ${conversationSummary}
+Take this into account in your narrative — the player may act on what was discussed.
+
+`;
+        }
+
         if (directorDirective) {
             prompt += `
 ## DIRECTOR DIRECTIVE
