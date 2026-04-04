@@ -257,7 +257,7 @@ export class GameLoop {
                 'talk', 'talk_private', 'endtalk', 'group_talk', 'add_to_conversation',
                 'companion_wait', 'companion_follow', 'dismiss_companion', 'recruit_test',
                 'directive', 'order', 'command_party', 'set_companion_directive',
-                'give', 'take', 'barter'];
+                'give', 'take', 'barter', 'dismiss_levelup'];
             if (tradeCommands.includes(intent.command || '')) {
                 this.state.lastNarrative = systemResponse;
                 await this.emitStateUpdate();
@@ -1214,40 +1214,44 @@ export class GameLoop {
                 return dismissMsg;
             }
 
+            case 'dismiss_levelup': {
+                const luName = args.join(' ');
+                const luIdx = CompanionManager.findCompanionIndex(this.state, luName);
+                if (luIdx >= 0) {
+                    this.state.companions[luIdx].meta.pendingLevelUp = undefined;
+                    await this.emitStateUpdate();
+                }
+                return '';
+            }
+
             // ===== BARTERING =====
             case 'give': {
-                // /give <companion_name> <item_instanceId>
+                // /give <companion_index> <item_instanceId>
                 const { BarterEngine } = await import('./BarterEngine');
-                const giveName = args[0];
+                const giveIdx = parseInt(args[0]);
                 const giveItemId = args[1];
-                if (!giveName || !giveItemId) return 'Usage: /give <companion_name> <item_instanceId>';
-                const giveIdx = CompanionManager.findCompanionIndex(this.state, giveName);
-                if (giveIdx < 0) return `No companion named "${giveName}".`;
+                if (isNaN(giveIdx) || !giveItemId) return 'Usage: /give <companion_index> <item_instanceId>';
                 const giveResult = BarterEngine.giveItem(this.state, giveIdx, giveItemId);
                 await this.emitStateUpdate();
                 return giveResult.message;
             }
             case 'take': {
-                // /take <companion_name> <item_instanceId>
+                // /take <companion_index> <item_instanceId>
                 const { BarterEngine } = await import('./BarterEngine');
-                const takeName = args[0];
+                const takeIdx = parseInt(args[0]);
                 const takeItemId = args[1];
-                if (!takeName || !takeItemId) return 'Usage: /take <companion_name> <item_instanceId>';
-                const takeIdx = CompanionManager.findCompanionIndex(this.state, takeName);
-                if (takeIdx < 0) return `No companion named "${takeName}".`;
+                if (isNaN(takeIdx) || !takeItemId) return 'Usage: /take <companion_index> <item_instanceId>';
                 const takeResult = BarterEngine.takeItem(this.state, takeIdx, takeItemId);
                 await this.emitStateUpdate();
                 return takeResult.message;
             }
             case 'barter': {
-                // /barter <companion_name> <offer_instanceId> <request_instanceId>
+                // /barter <companion_index> <offer_instanceId> <request_instanceId>
                 const { BarterEngine } = await import('./BarterEngine');
-                const barterName = args[0];
+                const barterIdx = parseInt(args[0]);
                 const offerId = args[1];
                 const requestId = args[2];
-                if (!barterName || !offerId || !requestId) return 'Usage: /barter <companion_name> <your_item_id> <their_item_id>';
-                const barterIdx = CompanionManager.findCompanionIndex(this.state, barterName);
-                if (barterIdx < 0) return `No companion named "${barterName}".`;
+                if (isNaN(barterIdx) || !offerId || !requestId) return 'Usage: /barter <companion_index> <your_item_id> <their_item_id>';
                 const barterResult = BarterEngine.executeBarter(this.state, barterIdx, offerId, requestId);
                 await this.emitStateUpdate();
                 return barterResult.message;
@@ -1291,12 +1295,38 @@ export class GameLoop {
                 // Auto-level companions to player.level - 1
                 const targetCompLevel = Math.max(1, this.state.character.level - 1);
                 for (const comp of this.state.companions) {
-                    while (comp.character.level < targetCompLevel) {
-                        // Bypass XP check: force XP to level threshold
-                        const { MechanicsEngine: ME } = await import('./MechanicsEngine');
-                        comp.character.xp = ME.getNextLevelXP(comp.character.level);
-                        const compMsg = LevelingEngine.levelUp(comp.character);
-                        messages.push(`${comp.character.name}: ${compMsg}`);
+                    if (comp.character.level < targetCompLevel) {
+                        // Snapshot old stats for level-up notification
+                        const oldLevel = comp.character.level;
+                        const oldMaxHp = comp.character.hp.max;
+                        const oldAc = comp.character.ac;
+                        const oldSlots: Record<string, number> = {};
+                        for (const [lv, s] of Object.entries(comp.character.spellSlots || {})) {
+                            oldSlots[lv] = (s as any).max || 0;
+                        }
+
+                        let safetyCounter = 0;
+                        while (comp.character.level < targetCompLevel && safetyCounter < 20) {
+                            const prevLevel = comp.character.level;
+                            comp.character.xp = MechanicsEngine.getNextLevelXP(comp.character.level);
+                            const compMsg = LevelingEngine.levelUp(comp.character);
+                            console.log(`[GameLoop] Companion auto-level: ${comp.character.name} level ${prevLevel}→${comp.character.level} (target: ${targetCompLevel}): ${compMsg}`);
+                            messages.push(`${comp.character.name}: ${compMsg}`);
+                            if (comp.character.level === prevLevel) break; // Stuck — avoid infinite loop
+                            safetyCounter++;
+                        }
+
+                        // Store level-up notification with old→new comparison
+                        const newSlots: Record<string, number> = {};
+                        for (const [lv, s] of Object.entries(comp.character.spellSlots || {})) {
+                            newSlots[lv] = (s as any).max || 0;
+                        }
+                        comp.meta.pendingLevelUp = {
+                            oldLevel, newLevel: comp.character.level,
+                            oldMaxHp, newMaxHp: comp.character.hp.max,
+                            oldAc, newAc: comp.character.ac,
+                            oldSpellSlots: oldSlots, newSpellSlots: newSlots,
+                        };
                     }
                 }
 

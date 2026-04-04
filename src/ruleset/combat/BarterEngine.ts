@@ -1,6 +1,7 @@
 import { GameState } from '../schemas/FullSaveStateSchema';
 import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
 import { DataManager } from '../data/DataManager';
+import { EquipmentEngine } from './EquipmentEngine';
 
 /**
  * BarterEngine — handles item exchange between player and companions.
@@ -146,6 +147,9 @@ export class BarterEngine {
         state.character.inventory.items = state.character.inventory.items.filter((i: any) => i.instanceId !== itemInstanceId);
         companion.character.inventory.items.push(item as any);
 
+        // Auto-equip if companion has an empty slot for this item type
+        this.tryAutoEquip(companion.character, item as any);
+
         return {
             success: true,
             message: `You give ${(item as any).name} to ${companion.character.name}.`
@@ -171,10 +175,10 @@ export class BarterEngine {
             return { success: false, message: `${companion.character.name} refuses to hand over their gear. (Needs standing 20+)` };
         }
 
-        // Check if item is equipped
-        const equipped = Object.values(companion.character.equipmentSlots || {}).includes((item as any).instanceId);
-        if (equipped) {
-            return { success: false, message: `${companion.character.name} won't give up equipped gear. Unequip it first.` };
+        // Auto-unequip if item is equipped
+        const equippedSlot = Object.entries(companion.character.equipmentSlots || {}).find(([, v]) => v === (item as any).instanceId);
+        if (equippedSlot) {
+            (companion.character.equipmentSlots as any)[equippedSlot[0]] = undefined;
         }
 
         // Transfer
@@ -185,5 +189,29 @@ export class BarterEngine {
             success: true,
             message: `${companion.character.name} hands over ${(item as any).name}.`
         };
+    }
+
+    /**
+     * Auto-equips an item for a companion if the appropriate slot is empty.
+     * Only equips to empty slots — never replaces existing equipment.
+     */
+    private static tryAutoEquip(char: PlayerCharacter, item: any): void {
+        const type = (item.type || '').toLowerCase();
+        const slots = char.equipmentSlots as Record<string, string | undefined>;
+
+        let targetSlot: string | undefined;
+        if (type.includes('weapon') || type === 'weapon (martial, melee)' || type === 'weapon (simple, melee)' || type === 'weapon (martial, ranged)' || type === 'weapon (simple, ranged)') {
+            if (!slots.mainHand) targetSlot = 'mainHand';
+        } else if (type.includes('armor') || type === 'armor (light)' || type === 'armor (medium)' || type === 'armor (heavy)') {
+            if (!slots.armor) targetSlot = 'armor';
+        } else if (type.includes('shield')) {
+            if (!slots.offHand) targetSlot = 'offHand';
+        }
+
+        if (targetSlot) {
+            slots[targetSlot] = item.instanceId;
+            item.equipped = true;
+            EquipmentEngine.recalculateAC(char);
+        }
     }
 }

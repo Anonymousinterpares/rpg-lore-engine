@@ -13,6 +13,17 @@ export const CompanionMetaSchema = z.object({
     // Companion's relationship standing toward the player (-100 to 100)
     // Below DESERTION_THRESHOLD (-30), companion may leave the party
     companionStanding: z.number().default(25),
+    // Level-up notification — stores old stats so UI can show old→new comparison
+    pendingLevelUp: z.object({
+        oldLevel: z.number(),
+        newLevel: z.number(),
+        oldMaxHp: z.number(),
+        newMaxHp: z.number(),
+        oldAc: z.number(),
+        newAc: z.number(),
+        oldSpellSlots: z.record(z.string(), z.number()).default({}),
+        newSpellSlots: z.record(z.string(), z.number()).default({}),
+    }).optional(),
     // Persistent conversation history — survives across talk sessions and saves
     conversationHistory: z.array(z.object({
         speaker: z.string(),

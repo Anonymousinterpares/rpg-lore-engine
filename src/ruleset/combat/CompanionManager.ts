@@ -16,27 +16,31 @@ import { v4 as uuidv4 } from 'uuid';
  * Each entry: { mainHand?, offHand?, armor?, items?[] }
  * Uses item IDs from the game data catalog.
  */
-// Item IDs use underscore format matching DataManager index: name.toLowerCase().replace(/ /g, '_')
+// Item keys MUST match actual item database names (DataManager indexes by name, lowercase, and underscore variants)
+// Verified against /data/item/ JSON files:
+// - Armor: "Leather" (not "Leather Armor"), "Chain Mail", "Chain Shirt"
+// - Shields: "Round Shield", "Kite Shield" (no generic "Shield")
+// - Ammo: "Arrow" (not "Arrows (20)"), "Crossbow bolt"
 const STARTER_EQUIPMENT: Record<string, { mainHand?: string; offHand?: string; armor?: string; items?: string[] }> = {
-    'Guard':      { mainHand: 'longsword', offHand: 'shield', armor: 'chain_mail' },
+    'Guard':      { mainHand: 'longsword', offHand: 'round_shield', armor: 'chain_mail' },
     'Mercenary':  { mainHand: 'longsword', armor: 'chain_shirt', items: ['handaxe'] },
-    'Fighter':    { mainHand: 'longsword', offHand: 'shield', armor: 'chain_mail' },
-    'Bandit':     { mainHand: 'shortsword', armor: 'leather_armor', items: ['shortbow', 'arrows_(20)'] },
-    'Scout':      { mainHand: 'shortsword', armor: 'leather_armor', items: ['shortbow', 'arrows_(20)'] },
-    'Hunter':     { mainHand: 'shortbow', armor: 'leather_armor', items: ['shortsword', 'arrows_(20)'] },
+    'Fighter':    { mainHand: 'longsword', offHand: 'round_shield', armor: 'chain_mail' },
+    'Bandit':     { mainHand: 'shortsword', armor: 'leather', items: ['shortbow', 'arrow'] },
+    'Scout':      { mainHand: 'shortsword', armor: 'leather', items: ['shortbow', 'arrow'] },
+    'Hunter':     { mainHand: 'shortbow', armor: 'leather', items: ['shortsword', 'arrow'] },
     'Scholar':    { mainHand: 'quarterstaff', items: ['component_pouch'] },
-    'Druid':      { mainHand: 'quarterstaff', armor: 'leather_armor', items: ['herbalism_kit'] },
-    'Hermit':     { mainHand: 'mace', armor: 'leather_armor', items: ['shield'] },
+    'Druid':      { mainHand: 'quarterstaff', armor: 'leather', items: ['herbalism_kit'] },
+    'Hermit':     { mainHand: 'mace', armor: 'leather', items: ['round_shield'] },
     'Monk':       { mainHand: 'quarterstaff' },
-    'Merchant':   { mainHand: 'dagger', items: ['crossbow,_light', 'bolts_(20)'] },
-    'Noble':      { mainHand: 'rapier', armor: 'leather_armor' },
+    'Merchant':   { mainHand: 'dagger', items: ['crossbow,_light', 'crossbow_bolt'] },
+    'Noble':      { mainHand: 'rapier', armor: 'leather' },
     'Farmer':     { mainHand: 'handaxe', items: ['sickle'] },
     'Miner':      { mainHand: 'light_hammer', items: ['handaxe'] },
     'Cultist':    { mainHand: 'dagger', items: ['component_pouch'] },
     'Beggar':     { mainHand: 'club' },
-    'Traveler':   { mainHand: 'shortsword', armor: 'leather_armor' },
-    'Explorer':   { mainHand: 'shortsword', armor: 'leather_armor', items: ['shortbow', 'arrows_(20)'] },
-    'Sailor':     { mainHand: 'scimitar', armor: 'leather_armor' },
+    'Traveler':   { mainHand: 'shortsword', armor: 'leather' },
+    'Explorer':   { mainHand: 'shortsword', armor: 'leather', items: ['shortbow', 'arrow'] },
+    'Sailor':     { mainHand: 'scimitar', armor: 'leather' },
     'Fisherman':  { mainHand: 'spear' },
 };
 
@@ -334,17 +338,35 @@ export class CompanionManager {
         const loadout = STARTER_EQUIPMENT[role || ''] || STARTER_EQUIPMENT['Traveler'] || {};
 
         const addItem = (itemKey: string, equipSlot?: string): void => {
-            const data = DataManager.getItem(itemKey);
+            // Try multiple lookup patterns to find the item data
+            const data = DataManager.getItem(itemKey)
+                || DataManager.getItem(itemKey.replace(/_/g, ' '))
+                || DataManager.getItem(itemKey.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()));
+            const displayName = data?.name || itemKey.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
             const instanceId = uuidv4();
-            char.inventory.items.push({
+
+            // Copy full item data if available
+            const itemEntry: any = {
                 id: data?.name || itemKey,
-                name: data?.name || itemKey,
-                type: data?.type || 'Weapon',
+                name: displayName,
+                type: data?.type || (itemKey.includes('armor') || itemKey.includes('mail') ? 'Armor' : itemKey.includes('shield') ? 'Shield' : 'Weapon'),
                 weight: data?.weight || 1,
                 instanceId,
                 quantity: 1,
                 equipped: !!equipSlot,
-            } as any);
+            };
+
+            // Preserve weapon/armor properties for combat resolution
+            if (data) {
+                if ((data as any).damage) itemEntry.damage = (data as any).damage;
+                if ((data as any).properties) itemEntry.properties = (data as any).properties;
+                if ((data as any).range) itemEntry.range = (data as any).range;
+                if ((data as any).rarity) itemEntry.rarity = (data as any).rarity;
+                if ((data as any).description) itemEntry.description = (data as any).description;
+                if ((data as any).acCalculated) itemEntry.acCalculated = (data as any).acCalculated;
+            }
+
+            char.inventory.items.push(itemEntry);
             if (equipSlot) {
                 (char.equipmentSlots as any)[equipSlot] = instanceId;
             }

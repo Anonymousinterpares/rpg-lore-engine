@@ -155,6 +155,32 @@ export class InventoryManager {
             }
 
             const slots = char.equipmentSlots as Record<string, string | undefined>;
+
+            // Two-handed weapon handling
+            const itemData = DataManager.getItem(item.id || item.name);
+            const itemProps = (itemData as any)?.properties || (item as any).properties || [];
+            const isTwoHanded = itemProps.some((p: string) => /two.?handed/i.test(p));
+
+            // If equipping two-handed weapon to mainHand, clear offHand
+            if (slot === 'mainHand' && isTwoHanded && slots['offHand']) {
+                const offItem = char.inventory.items.find(i => i.instanceId === slots['offHand']);
+                if (offItem) offItem.equipped = false;
+                slots['offHand'] = undefined;
+            }
+
+            // Block offHand if mainHand is two-handed
+            if (slot === 'offHand') {
+                const mainHandId = slots['mainHand'];
+                if (mainHandId) {
+                    const mainItem = char.inventory.items.find(i => i.instanceId === mainHandId);
+                    const mainData = mainItem ? DataManager.getItem(mainItem.id || mainItem.name) : null;
+                    const mainProps = (mainData as any)?.properties || (mainItem as any)?.properties || [];
+                    if (mainProps.some((p: string) => /two.?handed/i.test(p))) {
+                        return `Cannot equip off-hand: ${mainItem?.name || 'weapon'} requires two hands.`;
+                    }
+                }
+            }
+
             const currentInSlotId = slots[slot];
             if (currentInSlotId) {
                 const currentItem = char.inventory.items.find(i => i.instanceId === currentInSlotId);
@@ -190,16 +216,38 @@ export class InventoryManager {
             return errorMsg;
         }
 
+        const slots = char.equipmentSlots as Record<string, string | undefined>;
+
         // If item is already equipped elsewhere, remove from old slot
         if (item.equipped) {
-            const slots = char.equipmentSlots as Record<string, string | undefined>;
             Object.keys(slots).forEach(slot => {
                 if (slots[slot] === instanceId) slots[slot] = undefined;
             });
         }
 
+        // Two-handed weapon checks for drag-drop
+        const itemData2 = DataManager.getItem(item.id || item.name);
+        const itemProps2 = (itemData2 as any)?.properties || (item as any).properties || [];
+        const isTwoHanded2 = itemProps2.some((p: string) => /two.?handed/i.test(p));
+
+        if (slotId === 'mainHand' && isTwoHanded2 && slots['offHand']) {
+            const offItem = char.inventory.items.find(i => i.instanceId === slots['offHand']);
+            if (offItem) offItem.equipped = false;
+            slots['offHand'] = undefined;
+        }
+        if (slotId === 'offHand') {
+            const mainHandId = slots['mainHand'];
+            if (mainHandId) {
+                const mainItem = char.inventory.items.find(i => i.instanceId === mainHandId);
+                const mainData = mainItem ? DataManager.getItem(mainItem.id || mainItem.name) : null;
+                const mainProps = (mainData as any)?.properties || (mainItem as any)?.properties || [];
+                if (mainProps.some((p: string) => /two.?handed/i.test(p))) {
+                    return `Cannot equip off-hand: ${mainItem?.name || 'weapon'} requires two hands.`;
+                }
+            }
+        }
+
         // Swap out existing item in target slot
-        const slots = char.equipmentSlots as Record<string, string | undefined>;
         const currentInSlotId = slots[slotId];
         if (currentInSlotId) {
             const currentItem = char.inventory.items.find(i => i.instanceId === currentInSlotId);

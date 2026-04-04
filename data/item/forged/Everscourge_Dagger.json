@@ -1,0 +1,58 @@
+{
+  "name": "Everscourge Dagger",
+  "type": "Weapon",
+  "cost": {
+    "cp": 0,
+    "sp": 0,
+    "ep": 0,
+    "gp": 1000,
+    "pp": 0
+  },
+  "weight": 1,
+  "isMagic": true,
+  "modifiers": [
+    {
+      "type": "HitBonus",
+      "target": "Attack",
+      "value": 3
+    },
+    {
+      "type": "DamageAdd",
+      "target": "Damage",
+      "value": 1
+    },
+    {
+      "type": "DamageAdd",
+      "target": "Acid",
+      "value": 3
+    }
+  ],
+  "tags": [],
+  "quantity": 1,
+  "rarity": "Very Rare",
+  "itemLevel": 12,
+  "isForged": true,
+  "forgeSource": "Archmage CR 12 Plains",
+  "magicalProperties": [
+    {
+      "type": "BonusDamage",
+      "element": "Acid",
+      "dice": "1d6",
+      "value": 3
+    }
+  ],
+  "damage": {
+    "dice": "1d4",
+    "type": "Piercing"
+  },
+  "properties": [
+    "Finesse",
+    "Light",
+    "Thrown",
+    "Monk"
+  ],
+  "range": {
+    "normal": 20,
+    "long": 60
+  }
+}

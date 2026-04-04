@@ -2,6 +2,7 @@ import { PlayerCharacter } from '../schemas/PlayerCharacterSchema';
 import { Item } from '../schemas/ItemSchema';
 import { MechanicsEngine } from './MechanicsEngine';
 import { CombatConstants } from './CombatConstants';
+import { DataManager } from '../data/DataManager';
 
 export class EquipmentEngine {
     private static readonly ARMOR_TABLE: Record<string, { baseAC: number, maxDex: number }> = {
@@ -63,6 +64,29 @@ export class EquipmentEngine {
         // 1. Validate slot compatibility
         if (!this.isSlotCompatible(slot, item.type)) {
             return `Item ${item.name} cannot be equipped in slot ${slot}.`;
+        }
+
+        // 1b. Block offHand if mainHand weapon is two-handed (bows, greatswords, etc.)
+        if (slot === 'offHand') {
+            const mainHandId = (pc.equipmentSlots as any).mainHand;
+            if (mainHandId) {
+                const mainHandItem = pc.inventory.items.find(i => i.instanceId === mainHandId || i.name === mainHandId);
+                const mainHandData = mainHandItem ? DataManager.getItem(mainHandItem.id || mainHandItem.name) : null;
+                const props = (mainHandData as any)?.properties || [];
+                const isTwoHanded = props.some((p: string) => /two.?handed/i.test(p));
+                if (isTwoHanded) {
+                    return `Cannot equip ${item.name} in off-hand: ${mainHandItem?.name || 'weapon'} requires two hands.`;
+                }
+            }
+        }
+
+        // 1c. If equipping a two-handed weapon to mainHand, clear offHand
+        if (slot === 'mainHand') {
+            const props = (item as any).properties || [];
+            const isTwoHanded = props.some((p: string) => /two.?handed/i.test(p));
+            if (isTwoHanded && (pc.equipmentSlots as any).offHand) {
+                this.unequipItem(pc, 'offHand');
+            }
         }
 
         // 2. Validate requirements (Strength, etc.)
