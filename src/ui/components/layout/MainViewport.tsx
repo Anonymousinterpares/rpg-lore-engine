@@ -218,8 +218,9 @@ const MainViewport: React.FC<MainViewportProps> = ({ className, onCodex, onChara
     const activeConv = state?.conversationState?.activeConversation;
     const talkingToName = (() => {
         if (!activeConv) return null;
+        if (activeConv.mode === 'GROUP') return 'The party';
         const comp = state?.companions?.find((c: any) => c.meta?.sourceNpcId === activeConv.primaryNpcId);
-        if (comp) return comp.character.name.split(' ')[0]; // First name only
+        if (comp) return comp.character.name.split(' ')[0];
         const npc = state?.worldNpcs?.find(n => n.id === activeConv.primaryNpcId);
         return npc?.name?.split(' ')[0] || null;
     })();

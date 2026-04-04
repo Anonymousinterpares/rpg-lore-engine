@@ -612,30 +612,27 @@ export class ConversationManager {
         const followingCompanions = this.state.companions.filter((c: any) => c.meta?.followState === 'following');
         if (followingCompanions.length === 0) return "You have no companions to talk to.";
 
-        // Use importance scoring to pick who greets first (most eager/extroverted)
         const participantIds = followingCompanions.map((c: any) => c.meta.sourceNpcId);
-        const { responderId } = selectResponder(
-            participantIds, this.state,
-            '[GROUP CONVERSATION STARTING — who is most eager to speak first?]',
-            []
-        );
+        const convState = this.getConvState();
 
-        // Start with the highest-scored companion
-        const result = await this.startTalk(responderId, 'NORMAL');
+        // Set up group conversation directly — no single primaryNpcId, no forced greeting
+        convState.activeConversation = {
+            primaryNpcId: participantIds[0], // Needed for schema, but routing uses importance scoring
+            participants: participantIds,
+            mode: 'GROUP' as TalkMode,
+            history: [],
+            startedAtTurn: this.state.worldTime.totalTurns
+        };
 
-        const conv = this.getConvState().activeConversation;
-        if (conv) {
-            conv.mode = 'GROUP';
-            for (const c of followingCompanions) {
-                const cId = (c as any).meta.sourceNpcId;
-                if (!conv.participants.includes(cId)) {
-                    conv.participants.push(cId);
-                }
-            }
-        }
+        // Don't set activeDialogueNpcId — group talk has no single target
+        this.state.activeDialogueNpcId = null;
+
+        const names = followingCompanions.map((c: any) => c.character.name.split(' ')[0]).join(', ');
+        const statusMsg = `*You address the party: ${names}.*`;
+        this.state.lastNarrative = statusMsg;
 
         await this.emitStateUpdate();
-        return result;
+        return statusMsg;
     }
 
     // ---------------------------------------------------------------
