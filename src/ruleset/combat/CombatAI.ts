@@ -161,16 +161,15 @@ export class CombatAI {
             }
 
             case 'DEFENSIVE': {
+                // If low HP, dodge instead of attacking — check this FIRST
+                if (actor.hp.current / actor.hp.max < 0.3) {
+                    return { type: 'DODGE', targetId: actor.id };
+                }
                 // Prioritize enemies threatening the player
                 const player = allies.find(a => a.isPlayer);
                 if (player) {
-                    // Find enemy closest to the player
                     const threatToPlayer = this.getNearestTarget(player, enemies, grid);
                     if (threatToPlayer) return this.buildAttackOrMove(actor, threatToPlayer, grid);
-                }
-                // If low HP, dodge instead of attacking
-                if (actor.hp.current / actor.hp.max < 0.3) {
-                    return { type: 'DODGE', targetId: actor.id };
                 }
                 return null; // Fall through to default
             }
@@ -196,9 +195,11 @@ export class CombatAI {
 
             case 'PROTECT': {
                 // Position near the named ally and attack enemies threatening them
-                const protectTarget = directive.targetName
-                    ? allies.find(a => a.name.toLowerCase().includes(directive.targetName!.toLowerCase()))
-                    : allies.find(a => a.isPlayer);
+                const targetName = directive.targetName?.toLowerCase();
+                const isSelf = targetName === 'me' || targetName === 'player' || targetName === 'myself';
+                const protectTarget = isSelf || !targetName
+                    ? allies.find(a => a.isPlayer)
+                    : allies.find(a => a.name.toLowerCase().includes(targetName));
 
                 if (protectTarget) {
                     // Find enemy closest to the protected ally

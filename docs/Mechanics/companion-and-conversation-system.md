@@ -271,17 +271,245 @@ conversationHistory: {speaker, text, timestamp}[]  // Persistent across sessions
 
 ---
 
+## Combat Integration
+
+### Companion Combatant Type
+
+Companions enter combat via `CombatFactory.fromPlayer(companion.character, id, 'companion')`:
+- `type: 'companion'` (not `'player'`) — distinguishes from player in all combat logic
+- `isPlayer: false` — companions are AI-controlled, not player-controlled
+- Only following companions (`followState === 'following'`) enter combat; waiting companions stay at their hex
+
+### Initiative Tracker UI
+
+| Combatant Type | HP Bar Color | Cursor | Click Behavior |
+|----------------|-------------|--------|----------------|
+| Player | Green | Default | — |
+| Companion/Ally | **Blue** | Context-menu | Right-click: order flyout |
+| Enemy | Red | Pointer | Left-click: select as target |
+
+- Enemy cards: GameTooltip "Left-click to target enemy"
+- Ally cards: GameTooltip "Right-click to issue orders"
+- Right-click on enemy/player: browser context menu suppressed (preventDefault)
+
+### Friendly Fire Prevention
+
+`CombatResolutionEngine.resolveAttack()` checks attacker vs target faction:
+- Allies cannot attack allies, enemies cannot attack enemies
+- Returns MISS with message: "X cannot attack Y — they are an ally!"
+- Attack/Ranged buttons in CombatActionBar are **disabled** until an enemy target is selected
+
+### Death Saves for Companions
+
+- `applyCombatDamage()` triggers `DeathEngine.handleDowned()` for companions (not just player)
+- Companions auto-roll death saves on their turn (player rolls manually via button)
+- 3 failures = permanent death, companion removed from party
+- 3 successes = stabilize (HP set to 1, Unconscious removed)
+- Death check runs on both victory and flee sync paths
+
+### Combat Memory
+
+After combat ends (victory or flee), `recordCombatForCompanions()` appends:
+- `biography.chronicles[]` — long-term biographical event: "Fought Goblin, Orc for 3 rounds and won."
+- `meta.conversationHistory[]` — "[Battle memory] {narrative summary}" for dialogue awareness
+
+Companions can reference shared battles in future dialogue via the enriched DialogueContext.
+
+---
+
+## Starter Equipment
+
+Companions receive role-based equipment at recruitment using the same item catalog and equipment system as the player.
+
+### Role Equipment Sets
+
+| Role | Main Hand | Off Hand | Armor | Extra Items |
+|------|-----------|----------|-------|-------------|
+| Guard/Fighter | Longsword | Shield | Chain Mail | — |
+| Bandit/Scout | Shortsword | — | Leather Armor | Shortbow, Arrows |
+| Hunter | Shortbow | — | Leather Armor | Shortsword, Arrows |
+| Scholar | Quarterstaff | — | — | Component Pouch |
+| Druid | Quarterstaff | — | Leather Armor | Herbalism Kit |
+| Hermit (Cleric) | Mace | — | Leather Armor | Shield |
+| Noble | Rapier | — | Leather Armor | — |
+| Merchant | Dagger | — | — | Light Crossbow, Bolts |
+
+### Equipment System
+
+- Items added to `inventory.items[]` with unique `instanceId` (UUID)
+- Equipped via `equipmentSlots.mainHand/offHand/armor = instanceId`
+- AC calculated by `EquipmentEngine.recalculateAC()` — same system as player
+- Weight/capacity rules apply: capacity = STR × 15 lbs
+- `CombatFactory.calculatePlayerTactics()` reads equipped weapons for reach/range/damage
+
+### Companion Attack Resolution
+
+In `performAITurn()`, companions use a dedicated COMPANION branch (not monster data):
+- Looks up equipped weapon via `equipmentSlots.mainHand` → `instanceId` → `DataManager.getItem()`
+- Calculates stat modifier (STR or DEX for finesse/ranged)
+- Adds proficiency bonus based on companion level
+- Damage formula from weapon data (not hardcoded 1d4)
+
+---
+
+## Companion Spellcasting
+
+### Spell Slot Assignment
+
+On recruitment, caster companions receive spell slots via `buildSpellSlotsFromProgression()` — the same function used for player character creation in `LevelingEngine`.
+
+### Known Spells by Class
+
+| Class | Cantrips | Level 1 Spells | Level 2 Spells |
+|-------|----------|----------------|----------------|
+| Wizard | Fire Bolt, Mage Hand, Prestidigitation | Magic Missile, Shield, Mage Armor | Scorching Ray, Misty Step |
+| Cleric | Sacred Flame, Guidance, Spare the Dying | Cure Wounds, Bless, Guiding Bolt | Spiritual Weapon, Hold Person |
+| Druid | Produce Flame, Shillelagh, Guidance | Cure Wounds, Entangle, Thunderwave | Moonbeam, Barkskin |
+| Warlock | Eldritch Blast, Minor Illusion | Hex | Hold Person, Misty Step |
+| Bard | Vicious Mockery, Minor Illusion | Cure Wounds, Healing Word, Thunderwave | Hold Person, Shatter |
+| Ranger | — | Cure Wounds, Hunter's Mark | Pass Without Trace |
+
+### Spell Casting in Combat
+
+CombatAI SUPPORT directive checks for healing spells and available spell slots:
+- If wounded ally exists (below 50% HP) and companion has a `cure|heal|restore|mend` spell + slot → casts it
+- Simplified resolution: consumes lowest available slot, heals 1d8 + WIS modifier
+- If no healing needed or no slots, falls through to normal attack behavior
+
+---
+
+## Combat Tactical Directives
+
+### Per-Companion Directives
+
+Each companion can receive an individual tactical order stored in `CombatState.companionDirectives[companionId]`.
+
+| Directive | AI Behavior |
+|-----------|------------|
+| **FOCUS** | Target the named enemy specifically, ignoring proximity |
+| **AGGRESSIVE** | Target the weakest enemy (finish them off) |
+| **DEFENSIVE** | Target enemies threatening the player. If below 30% HP: **Dodge** instead |
+| **SUPPORT** | If wounded ally exists + has healing spell: **Cast heal**. Otherwise: attack normally |
+| **PROTECT** | Target enemies nearest to the player (or named ally). "me"/"player" maps to player |
+
+`CombatAI.decideAction()` reads per-companion directive first, falls back to global `partyDirective`.
+
+### Right-Click Ally Context Menu
+
+Right-clicking an ally card in the InitiativeTracker opens a styled flyout:
+
+- **Focus Target** — uses the currently left-click-selected enemy. Shows enemy name if selected.
+- **Protect Me** — companion prioritizes enemies threatening the player
+- **Heal / Support** — companion heals wounded allies if able
+- **Be Defensive** — companion guards player or dodges if low HP
+- **Go Aggressive** — companion targets weakest enemy
+
+A **directive badge** appears on the ally card (top-right) with colored icon:
+- AGG = red flame, DEF = blue shield, SUP = green heart, FOC = red swords, PRT = purple shield-check
+
+### Text Order Input
+
+The text input field (right of End Turn button) accepts free-text orders:
+
+**Global orders** (no names mentioned): apply to ALL companions
+```
+/directive both be defensive
+/directive heal the party
+/directive focus the orc
+```
+
+**Per-companion orders** (names mentioned): split and assigned individually
+```
+/directive Grimjaw be defensive, Lyra focus the orc
+/directive Grimjaw protect me, Lyra heal
+```
+
+### Multi-NPC Order Resolution
+
+1. Text scanned for companion first names, sorted by position
+2. Text split into segments bounded by consecutive names
+3. Each segment parsed independently via keyword matching
+4. Unnamed companions get the global directive
+5. Failed orders produce a random flavor message from `CombatNarrativePool`
+
+### Combat Narrative Flavor Pools
+
+`CombatNarrativePool.ts` provides varied messages for programmatic combat events (no LLM calls):
+
+| Pool | Count | Example |
+|------|-------|---------|
+| Order failed | 10 | "The roar of battle drowned out Aldric's command before Grimjaw could hear it." |
+| Order received | 5 | "Grimjaw nods sharply — understood." |
+| Companion attacks (hit/miss) | 8 | "Grimjaw's weapon finds its mark on Goblin!" |
+| Companion damaged | 4 | "Grimjaw grits their teeth as 8 damage lands!" |
+| Companion dodges | 3 | "Grimjaw takes a defensive stance, ready to dodge." |
+| Companion heals | 3 | "Lyra channels healing energy, restoring 6 HP to Aldric!" |
+| Companion downed | 3 | "Grimjaw collapses, grievously wounded!" |
+| Death save progress | 2 | "Grimjaw clings to life (1/3 successes, 2/3 failures)." |
+
+---
+
+## Rest Recovery
+
+Companions receive the same rest benefits as the player:
+
+| Rest Type | HP | Hit Dice | Spell Slots | Death Saves |
+|-----------|----|----|-------------|-------------|
+| **Long rest** (8h+) | Full recovery | All restored | All restored | Cleared |
+| **Short rest** (<8h) | Auto-spend 1 hit die (avg + CON mod) | -1 spent | — | — |
+
+Implemented in `GameLoop.completeRest()` — iterates all following companions and applies the same rules.
+
+---
+
+## Unconscious / Dead Companion Handling
+
+### Status Display
+
+PartyPanel shows:
+- **"☠ Unconscious"** in red when `hp.current <= 0`
+- Talk button **disabled** with tooltip "Unconscious — cannot talk"
+- ConversationManager blocks dialogue: "X is unconscious and cannot respond."
+
+### Movement Restriction
+
+Player **cannot move to another hex** while a following companion is unconscious:
+- Message: "You cannot travel while X is unconscious. Heal them or dismiss them from the party first."
+- Player must either heal (rest/spell) or `/dismiss_companion` the downed member
+
+### Contextual Greetings
+
+`ConversationManager.buildGreetingContext()` creates situational greetings based on:
+- Recent combat (checks conversation history for battle keywords)
+- Companion HP status ("badly wounded" / "took some hits")
+- Time of day ("late at night — tired or reflective")
+- Last narrative event (snippet of what just happened)
+- Prior conversation summary
+- Instructs LLM: "React to the situation, don't just say hello."
+
+---
+
 ## Key Files
 
 | File | Purpose |
 |------|---------|
-| `schemas/CompanionSchema.ts` | Companion data model, cost calculation, role mappings |
-| `schemas/ConversationSchema.ts` | Conversation state, talk modes, speech bubbles, constants |
-| `combat/CompanionManager.ts` | Recruitment, dismissal, NPC conversion |
-| `combat/managers/ConversationManager.ts` | Dialogue orchestration, chatter, context building |
+| `schemas/CompanionSchema.ts` | Companion data model, cost calculation, role/class mappings, desertion threshold |
+| `schemas/ConversationSchema.ts` | Conversation state, talk modes, speech bubbles, chatter constants |
+| `schemas/CombatSchema.ts` | CombatState with companionDirectives and partyDirective fields |
+| `combat/CompanionManager.ts` | Recruitment, dismissal, NPC conversion, starter equipment, spellcasting setup |
+| `combat/CombatAI.ts` | AI decision engine with directive support, parseDirective keyword parser |
+| `combat/CombatNarrativePool.ts` | Flavor message pools for combat narration (no LLM) |
+| `combat/CombatFactory.ts` | fromPlayer() with companion type support |
+| `combat/CombatResolutionEngine.ts` | Friendly fire prevention |
+| `combat/EquipmentEngine.ts` | Shared AC recalculation (used by player and companions) |
+| `combat/LevelingEngine.ts` | buildSpellSlotsFromProgression (used by player and companions) |
+| `combat/managers/CombatOrchestrator.ts` | performAITurn with COMPANION/DODGE/SPELL branches, death saves, combat memory |
+| `combat/managers/ConversationManager.ts` | Dialogue orchestration, chatter, context building, contextual greetings |
 | `agents/NPCService.ts` | LLM dialogue with DialogueContext enrichment |
-| `agents/NarratorService.ts` | Narrator receives conversation summary |
-| `ui/components/character/PartyPanel.tsx` | Party UI with talk modes, bubbles, context menu |
+| `agents/NarratorService.ts` | Narrator receives conversation summary + party context |
+| `ui/components/combat/InitiativeTracker.tsx` | Ally/enemy cards with right-click directive menu, badges, tooltips |
+| `ui/components/combat/CombatActionBar.tsx` | Text directive input, target-required offensive actions |
+| `ui/components/character/PartyPanel.tsx` | Party UI with talk modes, bubbles, context menu, unconscious state |
 | `ui/components/narrative/TalkModeIndicator.tsx` | Talk mode banner |
 
 ---
@@ -343,6 +571,56 @@ Background chatter triggers automatically during exploration turns. To see it:
 5. Check browser console for "[ConversationManager] Background conversation:" logs
 ```
 
+### Combat Directives
+
+```
+/directive focus the orc            -- All companions focus the orc
+/directive be defensive             -- All companions play defensive
+/directive heal                     -- All companions prioritize healing
+/directive Grimjaw be defensive, Lyra focus the orc  -- Per-companion orders
+/set_companion_directive companion_0 FOCUS Goblin    -- Direct ID-based directive (UI uses this)
+```
+
+Or use right-click on ally cards in the InitiativeTracker for click-based orders.
+
+### Testing Combat with Companions
+
+```
+1. /recruit_test Guard              -- Get a Fighter companion with longsword + chain mail
+2. /recruit_test Scholar            -- Get a Wizard companion with quarterstaff + spells
+3. Explore until combat triggers
+4. Verify: ally HP bars are BLUE, enemy HP bars are RED
+5. Left-click an enemy to select target (Attack button activates)
+6. Right-click an ally → order flyout appears
+7. Set "Focus Target" on one ally, "Protect Me" on another
+8. Verify: directive badges appear on ally cards (colored icons)
+9. Type in text input: "Grimjaw be defensive, Lyra heal"
+10. Observe: companions behave differently based on their orders
+11. If companion drops to 0 HP: auto-rolls death saves on their turn
+12. After combat: right-click companion → Relationship → conversation count increased
+```
+
+### Testing Rest Recovery
+
+```
+1. After combat, note companion HP values
+2. Use the Rest button → Short Rest
+3. Verify: companion HP increased (hit die spent)
+4. Use the Rest button → Long Rest (8 hours)
+5. Verify: companion HP at full, spell slots restored
+```
+
+### Testing Unconscious Companion
+
+```
+1. After combat where companion reached 0 HP
+2. Companion card shows "☠ Unconscious" in red
+3. Talk button is disabled
+4. Try to move (/move N) → blocked with message
+5. /dismiss_companion <name> → removes unconscious companion
+6. Movement works again
+```
+
 ### Testing Desertion
 
 ```
@@ -356,15 +634,27 @@ Background chatter triggers automatically during exploration turns. To see it:
 ### Running Automated Tests
 
 ```bash
-# Dry logic tests (no LLM, fast)
+# Companion recruitment, dismissal, party management (30 checks)
+npx tsx src/ruleset/tests/test_companion_system.ts
+
+# Conversation logic: history, modes, matching, edge cases (30 checks)
 npx tsx src/ruleset/tests/test_conversation_logic.ts
 
-# Live LLM scenario tests (requires OPENROUTER_API_KEY in .env)
-npx tsx src/ruleset/tests/test_conversation_live.ts
+# Combat: rest recovery, friendly fire, death saves, movement blocking (24 checks)
+npx tsx src/ruleset/tests/test_combat_companion_fixes.ts
 
-# NPC trait system tests
+# Combat directives: parsing, AI behavior per directive type (28 checks)
+npx tsx src/ruleset/tests/test_directive_combat_live.ts
+
+# Equipment, spellcasting, directive integration (25 checks)
+npx tsx src/ruleset/tests/test_combat_sprint2.ts
+
+# NPC trait system: generation, contradictions, names (7 tests)
 npx tsx src/ruleset/tests/test_npc_traits.ts
 
-# Companion recruitment/combat tests
-npx tsx src/ruleset/tests/test_companion_system.ts
+# Live LLM dialogue scenarios (requires OPENROUTER_API_KEY in .env)
+npx tsx src/ruleset/tests/test_conversation_live.ts
+
+# Live LLM multi-turn NPC dialogue differentiation
+npx tsx src/ruleset/tests/test_npc_dialogue_integration.ts
 ```
