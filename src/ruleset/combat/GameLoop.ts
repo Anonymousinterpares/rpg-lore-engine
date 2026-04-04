@@ -226,8 +226,32 @@ export class GameLoop {
                 return await this.handleCommand(dialogueIntent);
             }
 
-            // Route ALL free-text input to NPCService
-            const npc = this.state.worldNpcs.find(n => n.id === this.state.activeDialogueNpcId);
+            // Route ALL free-text input to NPCService — check both world NPCs and companions
+            let npc = this.state.worldNpcs.find(n => n.id === this.state.activeDialogueNpcId);
+
+            // If not in worldNpcs, check companions (they're removed from world on recruitment)
+            if (!npc) {
+                const companionDialogue = this.state.companions.find((c: any) =>
+                    c.meta.sourceNpcId === this.state.activeDialogueNpcId
+                );
+                if (companionDialogue) {
+                    npc = {
+                        id: companionDialogue.meta.sourceNpcId,
+                        name: companionDialogue.character.name,
+                        traits: companionDialogue.meta.originalTraits || [],
+                        relationship: { standing: 30, interactionLog: [], lastInteraction: undefined },
+                        conversationHistory: [],
+                        isMerchant: false,
+                        dialogue_triggers: [],
+                        inventory: [],
+                        availableQuests: [],
+                        stats: companionDialogue.character.stats,
+                        role: companionDialogue.meta.originalRole,
+                        factionId: companionDialogue.meta.originalFactionId,
+                    } as any;
+                }
+            }
+
             if (!npc) {
                 this.state.activeDialogueNpcId = null;
                 await this.emitStateUpdate();
@@ -289,7 +313,7 @@ export class GameLoop {
             // Trade and examination commands are fully deterministic — bypass the LLM narrator pipeline entirely.
             const tradeCommands = ['trade', 'buy', 'sell', 'haggle', 'intimidate', 'deceive', 'buyback', 'closetrade', 'examine', 'identify', 'merchantidentify',
                 'levelup', 'level', 'invest', 'resetskills', 'asi', 'feat', 'multiclass', 'skillability', 'ability', 'chooseability', 'use',
-                'companion_wait', 'companion_follow', 'dismiss_companion', 'recruit_test'];
+                'talk', 'endtalk', 'companion_wait', 'companion_follow', 'dismiss_companion', 'recruit_test'];
             if (tradeCommands.includes(intent.command || '')) {
                 this.state.lastNarrative = systemResponse;
                 await this.emitStateUpdate();
@@ -1106,6 +1130,47 @@ export class GameLoop {
 
             case 'talk': {
                 const npcIdOrName = args.join(' ');
+
+                // Check companions first — they travel with the player
+                const companionMatch = this.state.companions.find((c: any) =>
+                    c.meta.sourceNpcId === npcIdOrName ||
+                    c.character.name.toLowerCase() === npcIdOrName.toLowerCase() ||
+                    c.character.name.toLowerCase().includes(npcIdOrName.toLowerCase())
+                );
+
+                if (companionMatch) {
+                    // Build a temporary WorldNPC-like object from companion data for dialogue
+                    const compNpc = {
+                        id: companionMatch.meta.sourceNpcId,
+                        name: companionMatch.character.name,
+                        traits: companionMatch.meta.originalTraits || [],
+                        relationship: { standing: 30, interactionLog: [], lastInteraction: undefined },
+                        conversationHistory: [],
+                        isMerchant: false,
+                        dialogue_triggers: [],
+                        inventory: [],
+                        availableQuests: [],
+                        stats: companionMatch.character.stats,
+                        role: companionMatch.meta.originalRole,
+                        factionId: companionMatch.meta.originalFactionId,
+                    } as any;
+
+                    this.state.activeDialogueNpcId = compNpc.id;
+                    await this.emitStateUpdate();
+
+                    try {
+                        const greeting = await NPCService.generateDialogue(this.state, compNpc, "[GREETING / START CONVERSATION — this is your traveling companion, the player wants to chat]");
+                        this.state.lastNarrative = greeting ? `**${compNpc.name}:** ${greeting}` : `${compNpc.name} looks at you expectantly.`;
+                        const turnStart = this.state.worldTime.totalTurns;
+                        this.state.conversationHistory.push({ role: 'narrator', content: this.state.lastNarrative, turnNumber: turnStart });
+                        await this.emitStateUpdate();
+                        return this.state.lastNarrative;
+                    } catch (e) {
+                        return `${compNpc.name} seems distracted.`;
+                    }
+                }
+
+                // Then check world NPCs
                 const npcToTalk = this.state.worldNpcs.find(n =>
                     n.id === npcIdOrName || n.name.toLowerCase() === npcIdOrName.toLowerCase()
                 );
