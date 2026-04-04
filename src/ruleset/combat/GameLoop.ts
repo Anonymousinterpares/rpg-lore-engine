@@ -12,6 +12,7 @@ import { NarratorOutput } from '../agents/ICPSchemas';
 import { LoreService } from '../agents/LoreService';
 import { NPCService } from '../agents/NPCService';
 import { CompanionManager } from './CompanionManager';
+import { NPCFactory } from '../factories/NPCFactory';
 import { MovementEngine } from './MovementEngine';
 import { GameStateManager } from './GameStateManager';
 import { StoryScribe } from './StoryScribe';
@@ -287,7 +288,8 @@ export class GameLoop {
 
             // Trade and examination commands are fully deterministic — bypass the LLM narrator pipeline entirely.
             const tradeCommands = ['trade', 'buy', 'sell', 'haggle', 'intimidate', 'deceive', 'buyback', 'closetrade', 'examine', 'identify', 'merchantidentify',
-                'levelup', 'level', 'invest', 'resetskills', 'asi', 'feat', 'multiclass', 'skillability', 'ability', 'chooseability', 'use'];
+                'levelup', 'level', 'invest', 'resetskills', 'asi', 'feat', 'multiclass', 'skillability', 'ability', 'chooseability', 'use',
+                'companion_wait', 'companion_follow', 'dismiss_companion', 'recruit_test'];
             if (tradeCommands.includes(intent.command || '')) {
                 this.state.lastNarrative = systemResponse;
                 await this.emitStateUpdate();
@@ -1167,6 +1169,25 @@ export class GameLoop {
                 return dismissMsg;
             }
 
+            // DEV: Force-recruit a test companion for UI testing
+            case 'recruit_test': {
+                const roles = ['Guard', 'Scholar', 'Bandit', 'Merchant', 'Hermit'];
+                const role = args[0] || roles[Math.floor(Math.random() * roles.length)];
+                const npc = NPCFactory.generateRandomNPC(
+                    (this.hexMapManager.getHex(this.state.location.hexId)?.biome || 'Plains') as any,
+                    this.state.worldNpcs
+                );
+                npc.role = role;
+                npc.relationship.standing = 75; // 75+ = free recruitment (true loyalty)
+                const npcTraits = [...npc.traits]; // Capture before recruitment moves the NPC
+                this.state.worldNpcs.push(npc);
+                const currentHex = this.hexMapManager.getHex(this.state.location.hexId);
+                if (currentHex?.npcs) currentHex.npcs.push(npc.id);
+                const result = CompanionManager.recruit(this.state, npc.id);
+                await this.emitStateUpdate();
+                return `[DEV] ${result.message} (Role: ${role}, Traits: ${npcTraits.join(', ')})`;
+            }
+
             // ===== LEVELING =====
             case 'levelup':
             case 'level': {
@@ -1300,6 +1321,19 @@ export class GameLoop {
 
                 await this.emitStateUpdate();
                 return `Multiclassed into ${targetClass}! On your next level up, use /levelup <class> to choose which class gains the level.`;
+            }
+
+            // ===== USE CLASS ABILITY (Rage, Second Wind, etc.) =====
+            case 'ability': {
+                if (!args[0]) return 'Usage: /ability <ability name>';
+                const abilityTarget = args.join(' ');
+                if (this.state.mode !== 'COMBAT' || !this.state.combat) {
+                    return 'Abilities can only be used in combat.';
+                }
+                const abilityResult = await this.combatOrchestrator.useAbility(abilityTarget);
+                this.state.lastNarrative = abilityResult;
+                await this.emitStateUpdate();
+                return abilityResult;
             }
 
             // ===== USE ITEM (Spell Scrolls etc.) =====

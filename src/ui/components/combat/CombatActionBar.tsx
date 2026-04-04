@@ -114,7 +114,7 @@ export const CombatActionBar: React.FC = () => {
     };
 
     const handleUseAbility = async (ability: CombatAbility) => {
-        await processCommand(`/use ${ability.name}`);
+        await processCommand(`/ability ${ability.name}`);
         setShowAbilities(false);
     };
 

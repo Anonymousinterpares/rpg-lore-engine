@@ -1283,9 +1283,6 @@ export class CombatOrchestrator {
         this.ensureFeatureUsages(char);
 
         const allAbilities = AbilityParser.getCombatAbilities(char);
-        console.log('[useAbility] Looking for:', abilityName, '| Class:', char.class, '| Level:', char.level);
-        console.log('[useAbility] All abilities:', allAbilities.map(a => a.name));
-        console.log('[useAbility] DataManager.getClass:', !!DataManager.getClass(char.class));
         const ability = allAbilities.find(a => a.name.toLowerCase() === abilityName.toLowerCase());
 
         if (!ability) return `You don't have an ability named "${abilityName}".`;
