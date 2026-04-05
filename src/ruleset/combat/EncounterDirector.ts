@@ -55,11 +55,15 @@ export class EncounterDirector {
         else if (travelType === 'Path') infraMultiplier = 0.7;
         else if (travelType === 'Ancient') infraMultiplier = 0.1; // Magical safety!
 
-        const chance = baseChance * infraMultiplier;
+        // Party size deterrent: larger groups are attacked LESS often, but harder
+        // -20% frequency per companion (4-person party = 0.4x encounter rate)
+        const activeCompanions = (state.companions || []).filter((c: any) => c.meta?.followState === 'following').length;
+        const partyDeterrent = Math.max(0.2, 1.0 - (0.2 * activeCompanions));
+        const chance = baseChance * infraMultiplier * partyDeterrent;
 
         if (Math.random() < chance) {
             const difficulty = state.settings?.gameplay?.difficulty || 'normal';
-            return this.generateEncounter(hex.biome, state.character.level, difficulty as any);
+            return this.generateEncounter(hex.biome, state.character.level, difficulty as any, activeCompanions);
         }
         return null;
     }
@@ -114,14 +118,18 @@ export class EncounterDirector {
         return pRaw;
     }
 
-    private generateEncounter(biome: string, level: number, difficulty: 'easy' | 'normal' | 'hard' = 'normal'): Encounter {
+    private generateEncounter(biome: string, level: number, difficulty: 'easy' | 'normal' | 'hard' = 'normal', companionCount: number = 0): Encounter {
         const potentialMonsters = DataManager.getMonstersByBiome(biome);
         const thresholds = XP_THRESHOLDS[level] || { easy: level * 25, medium: level * 50, hard: level * 75, deadly: level * 100 };
 
-        // Map UI difficulty to XP target
-        const xpTarget = difficulty === 'easy' ? thresholds.easy :
+        // Map UI difficulty to XP target, scaled by party size
+        // When enemies DO attack a larger party, they bring more force
+        // +30% XP budget per companion (4-person party faces ~2x enemies)
+        const partyScale = 1.0 + (0.3 * companionCount);
+        const baseTarget = difficulty === 'easy' ? thresholds.easy :
             difficulty === 'hard' ? thresholds.hard :
                 thresholds.medium;
+        const xpTarget = Math.round(baseTarget * partyScale);
 
         if (potentialMonsters.length === 0) {
             return {
@@ -134,8 +142,12 @@ export class EncounterDirector {
         }
 
         // 1. Pick a base monster from the biome
-        // Filter out monsters that are "Deadly" solo if we want a balanced encounter
-        const validBasics = potentialMonsters.filter(m => MechanicsEngine.getCRtoXP(m.cr) <= xpTarget);
+        // Filter: not too strong (solo deadly) and not too weak for party size
+        // A 4-person party shouldn't face CR 1/4 goblins alone — minimum CR scales with party
+        const minCR = companionCount > 0 ? Math.max(0.25, companionCount * 0.25) : 0;
+        const validBasics = potentialMonsters.filter(m =>
+            MechanicsEngine.getCRtoXP(m.cr) <= xpTarget && m.cr >= minCR
+        );
         const baseMonsterInfo = validBasics.length > 0
             ? validBasics[Math.floor(Math.random() * validBasics.length)]
             : potentialMonsters.sort((a, b) => a.cr - b.cr)[0];
