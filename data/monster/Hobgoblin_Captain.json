@@ -1,0 +1,51 @@
+{
+  "name": "Hobgoblin Captain",
+  "cr": 3,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "lawful evil",
+  "ac": 17,
+  "hp": {
+    "average": 39,
+    "formula": "6d8+12"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 15,
+    "DEX": 14,
+    "CON": 14,
+    "INT": 12,
+    "WIS": 10,
+    "CHA": 13
+  },
+  "traits": [
+    {
+      "name": "Martial Advantage",
+      "description": "Once per turn, the hobgoblin can deal an extra 10 (3d6) damage to a creature it hits with a weapon attack if that creature is within 5 ft. of an ally of the hobgoblin that isn't incapacitated."
+    },
+    {
+      "name": "Leadership",
+      "description": "For 1 minute, the hobgoblin captain can utter a special command or warning whenever a nonhostile creature that it can see within 30 feet of it makes an attack roll or a saving throw. The creature can add a d4 to its roll provided it can hear and understand the hobgoblin captain. A creature can benefit from only one Leadership die at a time. This effect ends if the hobgoblin captain is incapacitated. (Recharges after a Short or Long Rest)"
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The hobgoblin captain makes two greatsword attacks."
+    },
+    {
+      "name": "Greatsword",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 9 (2d6 + 2) slashing damage.",
+      "attackBonus": 4,
+      "damage": "2d6+2"
+    },
+    {
+      "name": "Javelin",
+      "description": "Melee or Ranged Weapon Attack: +4 to hit, reach 5 ft. or range 30/120 ft., one target. Hit: 5 (1d6 + 2) piercing damage.",
+      "attackBonus": 4,
+      "damage": "1d6+2"
+    }
+  ],
+  "legendaryActions": [],
+  "darkvision": 60
+}

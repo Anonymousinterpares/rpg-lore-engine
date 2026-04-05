@@ -1,0 +1,47 @@
+{
+  "name": "Gnoll Fang of Yeenoghu",
+  "cr": 4,
+  "size": "Medium",
+  "type": "fiend",
+  "alignment": "chaotic evil",
+  "ac": 14,
+  "hp": {
+    "average": 65,
+    "formula": "10d8+20"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 17,
+    "DEX": 15,
+    "CON": 15,
+    "INT": 10,
+    "WIS": 11,
+    "CHA": 13
+  },
+  "traits": [
+    {
+      "name": "Rampage",
+      "description": "When the gnoll reduces a creature to 0 hit points with a melee attack on its turn, the gnoll can take a bonus action to move up to half its speed and make a bite attack."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The gnoll makes three attacks: one with its bite and two with its claws."
+    },
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) piercing damage, and the target must succeed on a DC 12 Constitution saving throw or take 7 (2d6) poison damage.",
+      "attackBonus": 5,
+      "damage": "1d6+3"
+    },
+    {
+      "name": "Claw",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 7 (1d8 + 3) slashing damage.",
+      "attackBonus": 5,
+      "damage": "1d8+3"
+    }
+  ],
+  "legendaryActions": [],
+  "darkvision": 60
+}

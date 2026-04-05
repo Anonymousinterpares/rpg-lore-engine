@@ -1,0 +1,55 @@
+{
+  "name": "Orc War Chief",
+  "cr": 4,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "chaotic evil",
+  "ac": 16,
+  "hp": {
+    "average": 93,
+    "formula": "11d8+44"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 18,
+    "DEX": 12,
+    "CON": 18,
+    "INT": 11,
+    "WIS": 11,
+    "CHA": 16
+  },
+  "traits": [
+    {
+      "name": "Aggressive",
+      "description": "As a bonus action, the orc can move up to its speed toward a hostile creature that it can see."
+    },
+    {
+      "name": "Gruumsh's Fury",
+      "description": "The orc deals an extra 4 (1d8) damage when it hits with a weapon attack (included in the attacks)."
+    },
+    {
+      "name": "Battle Cry",
+      "description": "Each creature of the war chief's choice that is within 30 feet of it, can hear it, and is not already affected by Battle Cry gains advantage on attack rolls until the start of the war chief's next turn. The war chief can then make one attack as a bonus action. (1/Day)"
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The orc makes two attacks with its greataxe or its spear."
+    },
+    {
+      "name": "Greataxe",
+      "description": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 15 (1d12 + 4 + 1d8) slashing damage.",
+      "attackBonus": 6,
+      "damage": "1d12+4"
+    },
+    {
+      "name": "Spear",
+      "description": "Melee or Ranged Weapon Attack: +6 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 12 (1d6 + 4 + 1d8) piercing damage, or 13 (1d8 + 4 + 1d8) piercing damage if used with two hands to make a melee attack.",
+      "attackBonus": 6,
+      "damage": "1d6+4"
+    }
+  ],
+  "legendaryActions": [],
+  "darkvision": 60
+}

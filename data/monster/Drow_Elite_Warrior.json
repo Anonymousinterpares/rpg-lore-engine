@@ -1,0 +1,55 @@
+{
+  "name": "Drow Elite Warrior",
+  "cr": 5,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "neutral evil",
+  "ac": 18,
+  "hp": {
+    "average": 71,
+    "formula": "11d8+22"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 13,
+    "DEX": 18,
+    "CON": 14,
+    "INT": 11,
+    "WIS": 13,
+    "CHA": 12
+  },
+  "traits": [
+    {
+      "name": "Fey Ancestry",
+      "description": "The drow has advantage on saving throws against being charmed, and magic can't put the drow to sleep."
+    },
+    {
+      "name": "Sunlight Sensitivity",
+      "description": "While in sunlight, the drow has disadvantage on attack rolls, as well as on Wisdom (Perception) checks that rely on sight."
+    },
+    {
+      "name": "Innate Spellcasting",
+      "description": "The drow's innate spellcasting ability is Charisma (spell save DC 11). It can innately cast the following spells, requiring no material components:\n\nAt will: dancing lights\n1/day each: darkness, faerie fire, levitate (self only)"
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The drow makes two shortsword attacks."
+    },
+    {
+      "name": "Shortsword",
+      "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 7 (1d6 + 4) piercing damage plus 10 (3d6) poison damage.",
+      "attackBonus": 7,
+      "damage": "1d6+4"
+    },
+    {
+      "name": "Hand Crossbow",
+      "description": "Ranged Weapon Attack: +7 to hit, range 30/120 ft., one target. Hit: 7 (1d6 + 4) piercing damage, and the target must succeed on a DC 13 Constitution saving throw or be poisoned for 1 hour. If the saving throw fails by 5 or more, the target is also unconscious while poisoned in this way. The target wakes up if it takes damage or if another creature takes an action to shake it awake.",
+      "attackBonus": 7,
+      "damage": "1d6+4"
+    }
+  ],
+  "legendaryActions": [],
+  "darkvision": 120
+}

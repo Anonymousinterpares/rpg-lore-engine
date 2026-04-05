@@ -1,0 +1,67 @@
+{
+  "name": "Sahuagin Baron",
+  "cr": 5,
+  "size": "Large",
+  "type": "humanoid",
+  "alignment": "lawful evil",
+  "ac": 16,
+  "hp": {
+    "average": 76,
+    "formula": "9d10+27"
+  },
+  "speed": "walk: 30 ft., swim: 50 ft.",
+  "stats": {
+    "STR": 19,
+    "DEX": 15,
+    "CON": 16,
+    "INT": 14,
+    "WIS": 13,
+    "CHA": 17
+  },
+  "traits": [
+    {
+      "name": "Blood Frenzy",
+      "description": "The sahuagin has advantage on melee attack rolls against any creature that doesn't have all its hit points."
+    },
+    {
+      "name": "Limited Amphibiousness",
+      "description": "The sahuagin can breathe air and water, but it needs to be submerged at least once every 4 hours to avoid suffocating."
+    },
+    {
+      "name": "Shark Telepathy",
+      "description": "The sahuagin can magically command any shark within 120 feet of it, using a limited telepathy."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The sahuagin makes three attacks: one with its bite, one with its claws, and one with its tail."
+    },
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 9 (2d4 + 4) piercing damage.",
+      "attackBonus": 7,
+      "damage": "2d4+4"
+    },
+    {
+      "name": "Claws",
+      "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 11 (2d6 + 4) slashing damage.",
+      "attackBonus": 7,
+      "damage": "2d6+4"
+    },
+    {
+      "name": "Tail",
+      "description": "Melee Weapon Attack: +7 to hit, reach 5 ft., one target. Hit: 8 (1d8 + 4) bludgeoning damage.",
+      "attackBonus": 7,
+      "damage": "1d8+4"
+    },
+    {
+      "name": "Trident",
+      "description": "Melee or Ranged Weapon Attack: +7 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 11 (2d6 + 4) piercing damage, or 13 (2d8 + 4) piercing damage if used with two hands to make a melee attack.",
+      "attackBonus": 7,
+      "damage": "2d6+4"
+    }
+  ],
+  "legendaryActions": [],
+  "darkvision": 120
+}

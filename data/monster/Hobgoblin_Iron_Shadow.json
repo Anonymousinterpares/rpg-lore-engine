@@ -1,0 +1,73 @@
+{
+  "name": "Hobgoblin Iron Shadow",
+  "cr": 2,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "lawful evil",
+  "ac": 15,
+  "hp": {
+    "average": 32,
+    "formula": "5d8+10"
+  },
+  "speed": "walk: 40 ft.",
+  "stats": {
+    "STR": 14,
+    "DEX": 16,
+    "CON": 15,
+    "INT": 14,
+    "WIS": 15,
+    "CHA": 11
+  },
+  "traits": [
+    {
+      "name": "Unarmored Defense",
+      "description": "While the hobgoblin is wearing no armor and wielding no shield, its AC includes its Wisdom modifier."
+    },
+    {
+      "name": "Shadow Jaunt",
+      "description": "As a bonus action, the hobgoblin can teleport up to 30 feet to an unoccupied space it can see. Both the space it teleports from and the space it teleports to must be in dim light or darkness. The hobgoblin can use this ability between its attacks as part of its Multiattack action."
+    },
+    {
+      "name": "Spellcasting",
+      "description": "The hobgoblin is a 2nd-level spellcaster. Its spellcasting ability is Intelligence (spell save DC 12, +4 to hit with spell attacks). It has the following wizard spells prepared:\n\n- Cantrips (at will): minor illusion, prestidigitation, true strike\n- 1st level (3 slots): charm person, disguise self, expeditious retreat, silent image"
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The hobgoblin makes four attacks, each of which can be an unarmed strike or a dart attack. It can also use Shadow Jaunt once, either before or after one of the attacks."
+    },
+    {
+      "name": "Unarmed Strike",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 5 (1d4 + 3) bludgeoning damage.",
+      "attackBonus": 5,
+      "damage": "1d4+3"
+    },
+    {
+      "name": "Dart",
+      "description": "Ranged Weapon Attack: +5 to hit, range 20/60 ft., one target. Hit: 5 (1d4 + 3) piercing damage.",
+      "attackBonus": 5,
+      "damage": "1d4+3"
+    }
+  ],
+  "legendaryActions": [],
+  "spellcasting": {
+    "slots": {
+      "1": {
+        "count": 3,
+        "spells": [
+          "charm person",
+          "disguise self",
+          "expeditious retreat",
+          "silent image"
+        ]
+      }
+    },
+    "cantrips": [
+      "minor illusion",
+      "prestidigitation",
+      "true strike"
+    ]
+  },
+  "darkvision": 60
+}

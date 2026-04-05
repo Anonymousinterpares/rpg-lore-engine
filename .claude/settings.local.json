@@ -25,7 +25,14 @@
       "Bash(ls:*)",
       "Bash(node -e ':*)",
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('desc' if 'description' in d else 'NO DESC'\\)\")",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(python -c 'import json; json.load\\(open\\('\\\\''__TRACKED_VAR__'\\\\''\\)\\); print\\('\\\\''VALID'\\\\''\\)')",
+      "Bash(python -c ':*)",
+      "Bash(python3 -c 'import json; d=json.load\\(open\\('\\\\''__TRACKED_VAR__'\\\\''\\)\\); print\\(d.get\\('\\\\''name'\\\\'','\\\\''???'\\\\''\\)\\)')",
+      "Bash(node -e 'const d=require\\('\\\\''./__TRACKED_VAR__'\\\\''\\); console.log\\(d.name || '\\\\''???'\\\\''\\)')",
+      "Bash(node -e \"const fs=require\\('fs'\\); const d=JSON.parse\\(fs.readFileSync\\('data/spell/Black_Tentacles.json'\\)\\); console.log\\(d.name\\);\")",
+      "Bash(node -e \"const fs=require\\('fs'\\); const d=JSON.parse\\(fs.readFileSync\\('data/spell/Acid_Arrow.json'\\)\\); console.log\\(d.name\\);\")",
+      "Bash(python -c \"import json; [json.load\\(open\\(f\\)\\) for f in ['data/monster/Drow_Mage.json','data/monster/Hobgoblin_Devastator.json','data/spell/Chromatic_Orb.json','data/spell/Thorn_Whip.json','data/spell/Ray_of_Sickness.json','data/spell/Witch_Bolt.json']]; print\\('All 6 files are valid JSON'\\)\")"
     ]
   }
 }

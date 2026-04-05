@@ -1,0 +1,100 @@
+{
+  "name": "Drow Mage",
+  "cr": 7,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "neutral evil",
+  "ac": 12,
+  "hp": {
+    "average": 45,
+    "formula": "10d8"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 9,
+    "DEX": 14,
+    "CON": 10,
+    "INT": 17,
+    "WIS": 13,
+    "CHA": 12
+  },
+  "traits": [
+    {
+      "name": "Fey Ancestry",
+      "description": "The drow has advantage on saving throws against being charmed, and magic can't put the drow to sleep."
+    },
+    {
+      "name": "Sunlight Sensitivity",
+      "description": "While in sunlight, the drow has disadvantage on attack rolls, as well as on Wisdom (Perception) checks that rely on sight."
+    },
+    {
+      "name": "Innate Spellcasting",
+      "description": "The drow's innate spellcasting ability is Charisma (spell save DC 12). It can innately cast the following spells, requiring no material components:\n\nAt will: dancing lights\n1/day each: darkness, faerie fire, levitate (self only)"
+    },
+    {
+      "name": "Spellcasting",
+      "description": "The drow is a 10th-level spellcaster. Its spellcasting ability is Intelligence (spell save DC 14, +6 to hit with spell attacks). The drow has the following wizard spells prepared:\n\n- Cantrips (at will): mage hand, minor illusion, poison spray, ray of frost\n- 1st level (4 slots): mage armor, magic missile, shield, witch bolt\n- 2nd level (3 slots): alter self, misty step, web\n- 3rd level (3 slots): fly, lightning bolt\n- 4th level (3 slots): black tentacles, greater invisibility\n- 5th level (2 slots): cloudkill"
+    }
+  ],
+  "actions": [
+    {
+      "name": "Staff",
+      "description": "Melee Weapon Attack: +2 to hit, reach 5 ft., one target. Hit: 2 (1d6 - 1) bludgeoning damage, or 3 (1d8 - 1) bludgeoning damage if used with two hands, plus 3 (1d6) poison damage.",
+      "attackBonus": 2,
+      "damage": "1d6-1"
+    },
+    {
+      "name": "Summon Demon",
+      "description": "The drow attempts to magically summon a quasit or a shadow demon with a 50 percent chance of success. If the attempt fails, the drow takes 5 (1d10) psychic damage. Otherwise, the summoned demon appears in an unoccupied space within 60 feet of its summoner, acts as an ally of its summoner, and can't summon other demons. It remains for 10 minutes, until it or its summoner dies, or until its summoner dismisses it as an action. (1/Day)"
+    }
+  ],
+  "legendaryActions": [],
+  "spellcasting": {
+    "slots": {
+      "1": {
+        "count": 4,
+        "spells": [
+          "mage armor",
+          "magic missile",
+          "shield",
+          "witch bolt"
+        ]
+      },
+      "2": {
+        "count": 3,
+        "spells": [
+          "alter self",
+          "misty step",
+          "web"
+        ]
+      },
+      "3": {
+        "count": 3,
+        "spells": [
+          "fly",
+          "lightning bolt"
+        ]
+      },
+      "4": {
+        "count": 3,
+        "spells": [
+          "black tentacles",
+          "greater invisibility"
+        ]
+      },
+      "5": {
+        "count": 2,
+        "spells": [
+          "cloudkill"
+        ]
+      }
+    },
+    "cantrips": [
+      "mage hand",
+      "minor illusion",
+      "poison spray",
+      "ray of frost"
+    ]
+  },
+  "darkvision": 120
+}

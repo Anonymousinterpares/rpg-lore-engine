@@ -1,0 +1,42 @@
+{
+  "name": "Chromatic Orb",
+  "level": 1,
+  "school": "Evocation",
+  "time": "1 action",
+  "range": "90 feet",
+  "components": {
+    "v": true,
+    "s": true,
+    "m": "a diamond worth at least 50 gp"
+  },
+  "duration": "Instantaneous",
+  "concentration": false,
+  "description": "You hurl a 4-inch-diameter sphere of energy at a creature that you can see within range. You choose acid, cold, fire, lightning, poison, or thunder for the type of orb you create, and then make a ranged spell attack against the target. If the attack hits, the creature takes 3d8 damage of the type you chose.",
+  "classes": [
+    "Sorcerer",
+    "Wizard"
+  ],
+  "damage": {
+    "dice": "3d8",
+    "type": "Acid, Cold, Fire, Lightning, Poison, or Thunder",
+    "scaling": {
+      "levels": [2, 3, 4, 5, 6, 7, 8, 9],
+      "values": ["4d8", "5d8", "6d8", "7d8", "8d8", "9d8", "10d8", "11d8"]
+    }
+  },
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "INSTANT",
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": 1
+    },
+    "damage": {
+      "dice": "3d8",
+      "type": "Variable"
+    }
+  }
+}

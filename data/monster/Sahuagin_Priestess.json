@@ -1,0 +1,89 @@
+{
+  "name": "Sahuagin Priestess",
+  "cr": 2,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "lawful evil",
+  "ac": 12,
+  "hp": {
+    "average": 33,
+    "formula": "6d8+6"
+  },
+  "speed": "walk: 30 ft., swim: 40 ft.",
+  "stats": {
+    "STR": 13,
+    "DEX": 11,
+    "CON": 12,
+    "INT": 12,
+    "WIS": 14,
+    "CHA": 13
+  },
+  "traits": [
+    {
+      "name": "Blood Frenzy",
+      "description": "The sahuagin has advantage on melee attack rolls against any creature that doesn't have all its hit points."
+    },
+    {
+      "name": "Limited Amphibiousness",
+      "description": "The sahuagin can breathe air and water, but it needs to be submerged at least once every 4 hours to avoid suffocating."
+    },
+    {
+      "name": "Shark Telepathy",
+      "description": "The sahuagin can magically command any shark within 120 feet of it, using a limited telepathy."
+    },
+    {
+      "name": "Spellcasting",
+      "description": "The sahuagin is a 6th-level spellcaster. Its spellcasting ability is Wisdom (spell save DC 12, +4 to hit with spell attacks). It has the following cleric spells prepared:\n\n- Cantrips (at will): guidance, thaumaturgy\n- 1st level (4 slots): bless, detect magic, guiding bolt\n- 2nd level (3 slots): hold person, spiritual weapon\n- 3rd level (3 slots): mass healing word, tongues"
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The sahuagin makes two melee attacks: one with her bite and one with her claws."
+    },
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 3 (1d4 + 1) piercing damage.",
+      "attackBonus": 3,
+      "damage": "1d4+1"
+    },
+    {
+      "name": "Claws",
+      "description": "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 3 (1d4 + 1) slashing damage.",
+      "attackBonus": 3,
+      "damage": "1d4+1"
+    }
+  ],
+  "legendaryActions": [],
+  "spellcasting": {
+    "slots": {
+      "1": {
+        "count": 4,
+        "spells": [
+          "bless",
+          "detect magic",
+          "guiding bolt"
+        ]
+      },
+      "2": {
+        "count": 3,
+        "spells": [
+          "hold person",
+          "spiritual weapon"
+        ]
+      },
+      "3": {
+        "count": 3,
+        "spells": [
+          "mass healing word",
+          "tongues"
+        ]
+      }
+    },
+    "cantrips": [
+      "guidance",
+      "thaumaturgy"
+    ]
+  },
+  "darkvision": 120
+}

@@ -169,3 +169,121 @@ These features require a per-companion emotional state tracker (beyond current t
 - [ ] **Story Scribe overflow handling** — HistoryManager buffer trim is functional but Scribe overflow summarization for very long sessions may need enhancement.
 
 - [ ] **Profile extraction enhancement** — ProfileExtractor works but could be extended with: grudge/gratitude tracking, emotional state persistence, secret knowledge logging from background conversations.
+
+---
+
+## Mixed Encounter Composition System
+
+### Current Problem
+
+`EncounterDirector.generateEncounter()` picks ONE monster type and fills the encounter with copies. "Pack of Goblins" = 4× Goblin. No mixed groups, no leader/minion composition, no thematic variety. A goblin warband should be 1 Hobgoblin Captain + 3 Goblins + 1 Bugbear, not 5 identical goblins.
+
+### Architecture (4 modular files)
+
+```
+src/ruleset/combat/encounters/
+├── MonsterFamilies.ts       — Which monsters naturally group together
+├── EncounterTemplates.ts    — Composition patterns (patrol, warband, boss, etc.)
+├── EncounterComposer.ts     — Runtime composition (picks template + fills with monsters)
+└── EncounterNaming.ts       — Generates thematic encounter names
+```
+
+### MonsterFamilies.ts — 25 Creature Families
+
+Each family defines members sorted by CR, with role hints inferred from CR position:
+
+| Family | Minions (low CR) | Soldiers (mid CR) | Leaders (high CR) |
+|--------|-----------------|-------------------|-------------------|
+| **Goblinoids** | Goblin (0.25) | Hobgoblin (0.5) | Bugbear (1), Goblin Boss (1), Hobgoblin Captain (3) |
+| **Bandits** | Bandit (0.125) | Thug (0.5), Scout (0.5) | Bandit Captain (2), Spy (1) |
+| **Cultists** | Cultist (0.125) | Acolyte (0.25) | Cult Fanatic (2), Priest (2) |
+| **Orcs** | Orc (0.5) | Orc Warrior (1) | Orc War Chief (4), Orc Eye of Gruumsh (2) |
+| **Gnolls** | Gnoll (0.5) | — | Gnoll Pack Lord (2), Gnoll Fang of Yeenoghu (4) |
+| **Kobolds** | Kobold (0.125) | Winged Kobold (0.25) | Kobold Scale Sorcerer (1), Kobold Inventor (1/4) |
+| **Drow** | Drow (0.25) | Drow Elite Warrior (5) | Drow Priestess of Lolth (8) |
+| **Wolves** | Wolf (0.25) | Dire Wolf (1), Worg (0.5) | Winter Wolf (3) |
+| **Spiders** | Spider (0), Giant Wolf Spider (0.25) | Giant Spider (1), Ettercap (2) | Phase Spider (3) |
+| **Undead Low** | Skeleton (0.25), Zombie (0.25) | Ghoul (1), Shadow (0.5), Ghast (2) | Wight (3), Mummy (3) |
+| **Undead High** | Vampire Spawn (5) | Wraith (5) | Vampire (13), Mummy Lord (15), Lich (21) |
+| **Devils** | Lemure (0), Imp (1) | Bearded Devil (3), Barbed Devil (5) | Chain Devil (8), Horned Devil (11) |
+| **Demons** | Dretch (0.25), Quasit (1) | Vrock (6), Hezrou (8) | Glabrezu (9), Marilith (16) |
+| **Giants** | Ogre (2) | Ettin (4), Hill Giant (5), Troll (5) | Stone/Frost/Fire Giant (7-9) |
+| **Bears** | Black Bear (0.5) | Brown Bear (1), Polar Bear (2) | Cave Bear (2) |
+| **Snakes** | Poisonous Snake (0.125) | Giant Poisonous Snake (0.25) | Giant Constrictor Snake (2) |
+| **Rats** | Rat (0), Swarm of Rats (0.25) | Giant Rat (0.125) | — |
+| **Hags** | — | Sea Hag (2), Green Hag (3) | Night Hag (5) |
+| **Elementals** | Mephits (0.25-0.5) | Azer (2), Gargoyle (2) | Air/Earth/Fire/Water Elemental (5) |
+| **Oozes** | Gray Ooze (0.5) | Gelatinous Cube (2), Ochre Jelly (2) | Black Pudding (4) |
+| **Lizardfolk** | Lizardfolk (0.5) | — | Lizardfolk Shaman (2), Lizardfolk King (4) |
+| **Sahuagin** | Sahuagin (0.5) | — | Sahuagin Priestess (2), Sahuagin Baron (5) |
+| **Chromatic Dragons** | Wyrmlings (2-4) | Young (6-10) | Adult (13-17), Ancient (20-24) |
+| **Metallic Dragons** | Wyrmlings (1-3) | Young (6-10) | Adult (13-17), Ancient (20-24) |
+| **Lycanthropes** | Wererat (2), Werewolf (3) | Wereboar (4), Weretiger (4) | Werebear (5) |
+
+### EncounterTemplates.ts — Composition Patterns
+
+| Template | Structure | When Used | Example |
+|----------|-----------|-----------|---------|
+| **PATROL** | 2-4× same creature | Low XP budget, single-type family | 3 Wolves |
+| **WARBAND** | 1 leader + 3-6 minions | Mid budget, has leader variant | 1 Hobgoblin + 4 Goblins |
+| **RAIDING_PARTY** | 1 leader + 2-3 soldiers + 1-2 minions | High budget | 1 Bandit Captain + 2 Thugs + 3 Bandits |
+| **BOSS_AND_MINIONS** | 1 boss (2+ CR tiers above minions) + 2-4 minions | Boss encounter | 1 Bugbear + 3 Goblins |
+| **LONE_PREDATOR** | 1 powerful creature | Budget fits single strong creature | 1 Owlbear |
+| **PACK** | 4-8× same beast | Animal encounters | 6 Wolves |
+| **AMBUSH** | 2-3 stealth types + 1-2 ranged | Forests, swamps | 2 Goblins + 1 Bugbear (surprise) |
+| **LAIR** | 1 boss + environmental hazards + 1-3 minions | Dungeon encounters | 1 Phase Spider + 2 Giant Spiders + webs |
+
+### EncounterComposer.ts — Runtime Logic
+
+```
+Input: biome, XP budget, party size
+1. Get available monster families for this biome (from biome_monster_mapping)
+2. Pick a family (weighted by biome affinity)
+3. Pick a template based on XP budget:
+   - Budget < 200: PATROL or LONE_PREDATOR
+   - Budget 200-500: WARBAND or PACK
+   - Budget 500-1000: RAIDING_PARTY or BOSS_AND_MINIONS
+   - Budget > 1000: BOSS_AND_MINIONS with high-CR leader
+4. Fill template slots from family members within XP budget
+5. Role assignment: highest CR = leader, lowest = minions, mid = soldiers
+6. Return Encounter with mixed monsters[]
+```
+
+### EncounterNaming.ts — Thematic Names
+
+Based on template + family:
+- WARBAND goblinoids → "Goblin War Party"
+- BOSS_AND_MINIONS undead → "Wight and its Skeletal Servants"
+- LONE_PREDATOR beast → "Prowling Owlbear"
+- PACK wolves → "Hungry Wolf Pack"
+- AMBUSH bandits → "Highway Ambush"
+- RAIDING_PARTY orcs → "Orc Raiding Party"
+
+### Missing Leader Variants Needed
+
+To enable mixed encounters for all families, these monster JSON files need to be created (D&D 5e SRD-accurate):
+
+| Monster | CR | Type | Family | Role |
+|---------|------|------|--------|------|
+| Goblin Boss | 1 | humanoid | Goblinoids | Leader |
+| Hobgoblin Captain | 3 | humanoid | Goblinoids | Leader |
+| Bugbear Chief | 3 | humanoid | Goblinoids | Leader |
+| Orc War Chief | 4 | humanoid | Orcs | Leader |
+| Orc Eye of Gruumsh | 2 | humanoid | Orcs | Shaman |
+| Orc Blade of Ilneval | 5 | humanoid | Orcs | Champion |
+| Gnoll Pack Lord | 2 | humanoid | Gnolls | Leader |
+| Gnoll Fang of Yeenoghu | 4 | humanoid | Gnolls | Elite |
+| Winged Kobold | 1/4 | humanoid | Kobolds | Variant |
+| Kobold Scale Sorcerer | 1 | humanoid | Kobolds | Caster |
+| Kobold Inventor | 1/4 | humanoid | Kobolds | Specialist |
+| Lizardfolk Shaman | 2 | humanoid | Lizardfolk | Caster |
+| Lizardfolk King/Queen | 4 | humanoid | Lizardfolk | Leader |
+| Sahuagin Priestess | 2 | humanoid | Sahuagin | Caster |
+| Sahuagin Baron | 5 | humanoid | Sahuagin | Leader |
+| Drow Elite Warrior | 5 | humanoid | Drow | Soldier |
+| Drow Priestess of Lolth | 8 | humanoid | Drow | Leader |
+| Drow Mage | 7 | humanoid | Drow | Caster |
+| Gnoll Witherling | 1/4 | undead | Gnolls | Minion |
+| Orc Nurtured One of Yurtrus | 1/2 | humanoid | Orcs | Specialist |
+| Hobgoblin Devastator | 4 | humanoid | Goblinoids | Caster |
+| Hobgoblin Iron Shadow | 2 | humanoid | Goblinoids | Stealth |

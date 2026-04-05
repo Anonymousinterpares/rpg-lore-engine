@@ -1,0 +1,51 @@
+{
+  "name": "Goblin Boss",
+  "cr": 1,
+  "size": "Small",
+  "type": "humanoid",
+  "alignment": "neutral evil",
+  "ac": 17,
+  "hp": {
+    "average": 21,
+    "formula": "6d6"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 10,
+    "DEX": 14,
+    "CON": 10,
+    "INT": 10,
+    "WIS": 8,
+    "CHA": 10
+  },
+  "traits": [
+    {
+      "name": "Nimble Escape",
+      "description": "The goblin can take the Disengage or Hide action as a bonus action on each of its turns."
+    },
+    {
+      "name": "Redirect Attack",
+      "description": "When a creature the goblin boss can see targets it with an attack, the goblin boss chooses another goblin within 5 feet of it. The two goblins swap places, and the chosen goblin becomes the target instead."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The goblin boss makes two attacks with its scimitar. The second attack has disadvantage."
+    },
+    {
+      "name": "Scimitar",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) slashing damage.",
+      "attackBonus": 4,
+      "damage": "1d6+2"
+    },
+    {
+      "name": "Javelin",
+      "description": "Melee or Ranged Weapon Attack: +2 to hit, reach 5 ft. or range 30/120 ft., one target. Hit: 3 (1d6) piercing damage.",
+      "attackBonus": 2,
+      "damage": "1d6"
+    }
+  ],
+  "legendaryActions": [],
+  "darkvision": 60
+}

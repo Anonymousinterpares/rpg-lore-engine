@@ -1,0 +1,85 @@
+{
+  "name": "Lizardfolk Shaman",
+  "cr": 2,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "neutral",
+  "ac": 13,
+  "hp": {
+    "average": 27,
+    "formula": "5d8+5"
+  },
+  "speed": "walk: 30 ft., swim: 30 ft.",
+  "stats": {
+    "STR": 15,
+    "DEX": 10,
+    "CON": 13,
+    "INT": 10,
+    "WIS": 15,
+    "CHA": 8
+  },
+  "traits": [
+    {
+      "name": "Hold Breath",
+      "description": "The lizardfolk can hold its breath for 15 minutes."
+    },
+    {
+      "name": "Spellcasting",
+      "description": "The lizardfolk is a 5th-level spellcaster. Its spellcasting ability is Wisdom (spell save DC 12, +4 to hit with spell attacks). The lizardfolk has the following druid spells prepared:\n\n- Cantrips (at will): druidcraft, produce flame, thorn whip\n- 1st level (4 slots): entangle, fog cloud\n- 2nd level (3 slots): heat metal, spike growth\n- 3rd level (2 slots): conjure animals, plant growth"
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The lizardfolk makes two attacks: one with its bite and one with its claws."
+    },
+    {
+      "name": "Bite",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) piercing damage.",
+      "attackBonus": 4,
+      "damage": "1d6+2"
+    },
+    {
+      "name": "Claws",
+      "description": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 4 (1d4 + 2) slashing damage.",
+      "attackBonus": 4,
+      "damage": "1d4+2"
+    },
+    {
+      "name": "Change Shape",
+      "description": "The lizardfolk magically polymorphs into a crocodile, remaining in that form for up to 1 hour. It can revert to its true form as a bonus action. Its statistics, other than its size, are the same in each form. Any equipment it is wearing or carrying isn't transformed. It reverts to its true form if it dies."
+    }
+  ],
+  "legendaryActions": [],
+  "spellcasting": {
+    "slots": {
+      "1": {
+        "count": 4,
+        "spells": [
+          "entangle",
+          "fog cloud"
+        ]
+      },
+      "2": {
+        "count": 3,
+        "spells": [
+          "heat metal",
+          "spike growth"
+        ]
+      },
+      "3": {
+        "count": 2,
+        "spells": [
+          "conjure animals",
+          "plant growth"
+        ]
+      }
+    },
+    "cantrips": [
+      "druidcraft",
+      "produce flame",
+      "thorn whip"
+    ]
+  },
+  "darkvision": 0
+}

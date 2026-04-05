@@ -1,0 +1,68 @@
+{
+  "name": "Orc Eye of Gruumsh",
+  "cr": 2,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "chaotic evil",
+  "ac": 16,
+  "hp": {
+    "average": 45,
+    "formula": "6d8+18"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 16,
+    "DEX": 12,
+    "CON": 16,
+    "INT": 9,
+    "WIS": 13,
+    "CHA": 12
+  },
+  "traits": [
+    {
+      "name": "Aggressive",
+      "description": "As a bonus action, the orc can move up to its speed toward a hostile creature that it can see."
+    },
+    {
+      "name": "Gruumsh's Fury",
+      "description": "The orc deals an extra 4 (1d8) damage when it hits with a weapon attack (included in the attacks)."
+    },
+    {
+      "name": "Spellcasting",
+      "description": "The orc eye of Gruumsh is a 3rd-level spellcaster. Its spellcasting ability is Wisdom (spell save DC 11, +3 to hit with spell attacks). The orc has the following cleric spells prepared:\n\n- Cantrips (at will): guidance, resistance, thaumaturgy\n- 1st level (4 slots): bless, command\n- 2nd level (2 slots): augury, spiritual weapon"
+    }
+  ],
+  "actions": [
+    {
+      "name": "Spear",
+      "description": "Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 11 (1d6 + 3 + 1d8) piercing damage, or 12 (1d8 + 3 + 1d8) piercing damage if used with two hands to make a melee attack.",
+      "attackBonus": 5,
+      "damage": "1d6+3"
+    }
+  ],
+  "legendaryActions": [],
+  "spellcasting": {
+    "slots": {
+      "1": {
+        "count": 4,
+        "spells": [
+          "bless",
+          "command"
+        ]
+      },
+      "2": {
+        "count": 2,
+        "spells": [
+          "augury",
+          "spiritual weapon"
+        ]
+      }
+    },
+    "cantrips": [
+      "guidance",
+      "resistance",
+      "thaumaturgy"
+    ]
+  },
+  "darkvision": 60
+}

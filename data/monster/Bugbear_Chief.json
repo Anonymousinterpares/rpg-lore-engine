@@ -1,0 +1,55 @@
+{
+  "name": "Bugbear Chief",
+  "cr": 3,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "chaotic evil",
+  "ac": 17,
+  "hp": {
+    "average": 65,
+    "formula": "10d8+20"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 17,
+    "DEX": 14,
+    "CON": 14,
+    "INT": 11,
+    "WIS": 12,
+    "CHA": 11
+  },
+  "traits": [
+    {
+      "name": "Brute",
+      "description": "A melee weapon deals one extra die of its damage when the bugbear hits with it (included in the attack)."
+    },
+    {
+      "name": "Surprise Attack",
+      "description": "If the bugbear surprises a creature and hits it with an attack during the first round of combat, the target takes an extra 7 (2d6) damage from the attack."
+    },
+    {
+      "name": "Heart of Hruggek",
+      "description": "The bugbear has advantage on saving throws against being frightened."
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The bugbear makes two melee attacks."
+    },
+    {
+      "name": "Morningstar",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 11 (2d8 + 3) piercing damage.",
+      "attackBonus": 5,
+      "damage": "2d8+3"
+    },
+    {
+      "name": "Javelin",
+      "description": "Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or range 30/120 ft., one target. Hit: 6 (1d6 + 3) piercing damage, or 12 (2d6 + 3) piercing damage in melee.",
+      "attackBonus": 5,
+      "damage": "1d6+3"
+    }
+  ],
+  "legendaryActions": [],
+  "darkvision": 60
+}

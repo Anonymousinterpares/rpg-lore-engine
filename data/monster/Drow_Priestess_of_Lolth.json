@@ -1,0 +1,106 @@
+{
+  "name": "Drow Priestess of Lolth",
+  "cr": 8,
+  "size": "Medium",
+  "type": "humanoid",
+  "alignment": "neutral evil",
+  "ac": 16,
+  "hp": {
+    "average": 71,
+    "formula": "13d8+13"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 10,
+    "DEX": 14,
+    "CON": 12,
+    "INT": 13,
+    "WIS": 17,
+    "CHA": 18
+  },
+  "traits": [
+    {
+      "name": "Fey Ancestry",
+      "description": "The drow has advantage on saving throws against being charmed, and magic can't put the drow to sleep."
+    },
+    {
+      "name": "Sunlight Sensitivity",
+      "description": "While in sunlight, the drow has disadvantage on attack rolls, as well as on Wisdom (Perception) checks that rely on sight."
+    },
+    {
+      "name": "Innate Spellcasting",
+      "description": "The drow's innate spellcasting ability is Charisma (spell save DC 15). She can innately cast the following spells, requiring no material components:\n\nAt will: dancing lights\n1/day each: darkness, faerie fire, levitate (self only)"
+    },
+    {
+      "name": "Spellcasting",
+      "description": "The drow is a 10th-level spellcaster. Her spellcasting ability is Wisdom (spell save DC 14, +6 to hit with spell attacks). The drow has the following cleric spells prepared:\n\n- Cantrips (at will): guidance, poison spray, resistance, spare the dying, thaumaturgy\n- 1st level (4 slots): animal friendship, cure wounds, detect poison and disease, ray of sickness\n- 2nd level (3 slots): lesser restoration, protection from poison, web\n- 3rd level (3 slots): conjure animals (2 giant spiders), dispel magic\n- 4th level (3 slots): divination, freedom of movement\n- 5th level (2 slots): insect plague, mass cure wounds"
+    },
+    {
+      "name": "Summon Demon",
+      "description": "The drow attempts to magically summon a yochlol with a 30 percent chance of success. If the attempt fails, the drow takes 5 (1d10) psychic damage. Otherwise, the summoned demon appears in an unoccupied space within 60 feet of its summoner, acts as an ally of its summoner, and can't summon other demons. It remains for 10 minutes, until it or its summoner dies, or until its summoner dismisses it as an action. (1/Day)"
+    }
+  ],
+  "actions": [
+    {
+      "name": "Multiattack",
+      "description": "The drow makes two scourge attacks."
+    },
+    {
+      "name": "Scourge",
+      "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) piercing damage plus 17 (5d6) poison damage.",
+      "attackBonus": 5,
+      "damage": "1d6+2"
+    }
+  ],
+  "legendaryActions": [],
+  "spellcasting": {
+    "slots": {
+      "1": {
+        "count": 4,
+        "spells": [
+          "animal friendship",
+          "cure wounds",
+          "detect poison and disease",
+          "ray of sickness"
+        ]
+      },
+      "2": {
+        "count": 3,
+        "spells": [
+          "lesser restoration",
+          "protection from poison",
+          "web"
+        ]
+      },
+      "3": {
+        "count": 3,
+        "spells": [
+          "conjure animals",
+          "dispel magic"
+        ]
+      },
+      "4": {
+        "count": 3,
+        "spells": [
+          "divination",
+          "freedom of movement"
+        ]
+      },
+      "5": {
+        "count": 2,
+        "spells": [
+          "insect plague",
+          "mass cure wounds"
+        ]
+      }
+    },
+    "cantrips": [
+      "guidance",
+      "poison spray",
+      "resistance",
+      "spare the dying",
+      "thaumaturgy"
+    ]
+  },
+  "darkvision": 120
+}

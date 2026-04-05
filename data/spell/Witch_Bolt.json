@@ -1,0 +1,47 @@
+{
+  "name": "Witch Bolt",
+  "level": 1,
+  "school": "Evocation",
+  "time": "1 action",
+  "range": "30 feet",
+  "components": {
+    "v": true,
+    "s": true,
+    "m": "a twig from a tree that has been struck by lightning"
+  },
+  "duration": "Up to 1 minute",
+  "concentration": true,
+  "description": "A beam of crackling, blue energy lances out toward a creature within range, forming a sustained arc of lightning between you and the target. Make a ranged spell attack against that creature. On a hit, the target takes 1d12 lightning damage, and on each of your turns for the duration, you can use your action to deal 1d12 lightning damage to the target automatically. The spell ends if you use your action to do anything else. The spell also ends if the target is ever outside the spell's range or if it has total cover from you.",
+  "classes": [
+    "Sorcerer",
+    "Warlock",
+    "Wizard"
+  ],
+  "damage": {
+    "dice": "1d12",
+    "type": "Lightning",
+    "scaling": {
+      "levels": [2, 3, 4, 5, 6, 7, 8, 9],
+      "values": ["2d12", "3d12", "4d12", "5d12", "6d12", "7d12", "8d12", "9d12"]
+    }
+  },
+  "effect": {
+    "category": "DAMAGE",
+    "timing": "DURATION",
+    "duration": {
+      "value": 1,
+      "unit": "MINUTE"
+    },
+    "area": {
+      "shape": "SINGLE"
+    },
+    "targets": {
+      "type": "ENEMY",
+      "count": 1
+    },
+    "damage": {
+      "dice": "1d12",
+      "type": "Lightning"
+    }
+  }
+}

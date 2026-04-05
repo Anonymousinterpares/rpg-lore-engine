@@ -1,0 +1,74 @@
+{
+  "name": "Kobold Scale Sorcerer",
+  "cr": 1,
+  "size": "Small",
+  "type": "humanoid",
+  "alignment": "lawful evil",
+  "ac": 15,
+  "hp": {
+    "average": 27,
+    "formula": "5d6+10"
+  },
+  "speed": "walk: 30 ft.",
+  "stats": {
+    "STR": 7,
+    "DEX": 15,
+    "CON": 14,
+    "INT": 10,
+    "WIS": 9,
+    "CHA": 14
+  },
+  "traits": [
+    {
+      "name": "Sunlight Sensitivity",
+      "description": "While in sunlight, the kobold has disadvantage on attack rolls, as well as on Wisdom (Perception) checks that rely on sight."
+    },
+    {
+      "name": "Pack Tactics",
+      "description": "The kobold has advantage on an attack roll against a creature if at least one of the kobold's allies is within 5 ft. of the creature and the ally isn't incapacitated."
+    },
+    {
+      "name": "Sorcery Points",
+      "description": "The kobold has 2 sorcery points. It can spend 1 or more sorcery points to gain one of the following benefits:\nHeightened Spell: When it casts a spell that forces a creature to make a saving throw, it can spend 3 sorcery points to give one target disadvantage on its first saving throw against the spell.\nSubtle Spell: When it casts a spell, it can spend 1 sorcery point to cast the spell without any somatic or verbal components."
+    },
+    {
+      "name": "Spellcasting",
+      "description": "The kobold is a 3rd-level spellcaster. Its spellcasting ability is Charisma (spell save DC 12, +4 to hit with spell attacks). It has the following sorcerer spells prepared:\n\n- Cantrips (at will): fire bolt, mage hand, mending, poison spray\n- 1st level (4 slots): charm person, chromatic orb, expeditious retreat, shield\n- 2nd level (2 slots): scorching ray"
+    }
+  ],
+  "actions": [
+    {
+      "name": "Dagger",
+      "description": "Melee or Ranged Weapon Attack: +4 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 4 (1d4 + 2) piercing damage.",
+      "attackBonus": 4,
+      "damage": "1d4+2"
+    }
+  ],
+  "legendaryActions": [],
+  "spellcasting": {
+    "slots": {
+      "1": {
+        "count": 4,
+        "spells": [
+          "charm person",
+          "chromatic orb",
+          "expeditious retreat",
+          "shield"
+        ]
+      },
+      "2": {
+        "count": 2,
+        "spells": [
+          "scorching ray"
+        ]
+      }
+    },
+    "cantrips": [
+      "fire bolt",
+      "mage hand",
+      "mending",
+      "poison spray"
+    ]
+  },
+  "darkvision": 60
+}
